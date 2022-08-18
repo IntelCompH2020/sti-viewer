@@ -1,0 +1,14 @@
+<div class="container-fluid p-0">
+	<app-navigation [expanded]="expanded" (onToggleNav)="toggleExpanded($event)"></app-navigation>
+	<div class="main-app-content">
+		<div class="side-panel background-primary pt-3 d-none d-md-block" [class.side-panel-expanded]="expanded || (contentHover$ | async)">
+			<div (mouseenter)="onNavigationMouseEnter()" (mouseleave)="onNavigationMouseLeave()">
+				<app-side-navigation [expanded]="expanded || (contentHover$ | async)"></app-side-navigation>
+			</div>
+		</div>
+		<div class="content col p-0" [class.content-shift]="expanded">
+			<router-outlet></router-outlet>
+		</div>
+	</div>
+	<app-ui-notification></app-ui-notification>
+</div>

@@ -1,0 +1,67 @@
+.contents {
+    display: flex;
+    flex-direction: row;
+    gap: .5rem;
+}
+
+.contents-list {
+    display: flex;
+    flex-direction: column;
+    gap: .2rem;
+    min-width: 15rem;
+    z-index: 1;
+}
+
+.details{
+    z-index: 0;
+}
+
+.indicator-overview {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.indicator-actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.indicator-select-link {
+    outline: none;
+    text-decoration: none;
+    color: #2c2c2c;
+}
+
+.indicator-select-link:link {
+    cursor: pointer;
+    outline: none;
+    text-decoration: none;
+    color: #757474;
+}
+
+.indicator-select-link:visited {
+    cursor: pointer;
+    outline: none;
+    text-decoration: none;
+    color: #2c2c2c;
+}
+
+.indicator-select-link:focus {
+    cursor: pointer;
+    outline: none;
+    text-decoration: none;
+    color: #757474;
+}
+
+.indicator-select-link:hover {
+    cursor: pointer;
+    outline: none;
+    text-decoration: underline;
+    color: #757474;
+}
+
+.indicator-select-link:active {
+    color: #2c2c2c;
+}

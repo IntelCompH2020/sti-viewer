@@ -1,0 +1,10 @@
+<mat-form-field class="col-md-12" *ngIf="form">
+    <mat-label>{{'APP.INDICATOR-EDITOR.FIELDS.CONFIG'| translate }}</mat-label>
+    <mat-select [(ngModel)]="selectedColumns" multiple>
+        <mat-option (onSelectionChange)="onSelectColumn($event)"
+            *ngFor="let field of this.editorModel?.indicatorElastic?.schema?.fields" [value]="field.code">
+            {{field.name}}
+        </mat-option>
+    </mat-select>
+
+</mat-form-field>

@@ -1,0 +1,10 @@
+
+<mat-card>
+    <mat-card-title>
+        {{column}}
+    </mat-card-title>
+
+    <mat-form-field>
+        <app-multiple-auto-complete [disabled]="disabled" [formControl]="control" [configuration]="autoCompleteConfiguration"></app-multiple-auto-complete>
+    </mat-form-field>
+</mat-card>

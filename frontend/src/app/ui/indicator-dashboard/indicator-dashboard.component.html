@@ -1,0 +1,24 @@
+
+<div class="col">
+	<div class="row align-items-center mt-4">
+		<div class="col-auto">
+			<button mat-icon-button (click)="toggleBookmark()" [matTooltip]="(bookmark? 'APP.INDICATOR-DASHBOARD.UNBOOKMARK': 'APP.INDICATOR-DASHBOARD.BOOKMARK') | translate">
+				<mat-icon>{{bookmark? 'bookmark' : 'bookmark_outline'}}</mat-icon>
+			</button>
+		</div>
+		<div class="col">
+			<h2 *ngIf="indicatorQueryParams?.displayName">{{indicatorQueryParams.displayName}}</h2>
+		</div>
+	</div>
+	
+	<ng-container *ngIf="dashboardConfig?.tabs?.length">
+		<div class="row editor-actions" >
+			<div class="col-auto"  *ngFor="let tab of dashboardConfig.tabs; let i = index">
+				<button mat-stroked-button [color]="(i === selectedTabIndex ) ? 'accent':'primary'" type="button" (click)="selectTab(i)">{{tab.name}}</button>
+			</div>
+		</div>
+		<div class="row" *ngIf="selectedTabIndex >= 0">
+			<app-indicator-dashboard-tab [indicatorQueryParams]="indicatorQueryParams" class="col-12" [tabConfig]="dashboardConfig.tabs[selectedTabIndex]"></app-indicator-dashboard-tab>
+		</div>
+	</ng-container>
+</div>

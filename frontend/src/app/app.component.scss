@@ -1,0 +1,40 @@
+.main-app-content {
+	padding-top: 64px;
+	height: 100vh;
+	display: flex;
+}
+
+
+.side-panel{
+	position: absolute;
+	height: calc(100% - 64px);
+	// background-color: #1e1e2d ;
+	color: white;
+	width: 70px;
+	transition: all .3s ease-out;
+	z-index: 2;
+	// box-shadow: -2px 1px 14px 0px #42c39a;
+	box-shadow: -2px 1px 14px 0px gray;
+}
+.side-panel-expanded{
+	width: 250px;
+}
+.content{
+	flex: 1;
+	// margin-left: 70px;
+	transition: all .3s ease-out;
+	z-index: 1;
+	height: 100%;
+	overflow-y: scroll;
+	padding-bottom: 2rem !important;
+}
+
+@media screen and (min-width:768px) {
+	.content{
+		margin-left: 70px;
+	}
+
+	.content-shift{
+		margin-left: 250px;
+	}
+}

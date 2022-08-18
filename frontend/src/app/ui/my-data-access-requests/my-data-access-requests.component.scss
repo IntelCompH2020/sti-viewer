@@ -1,0 +1,18 @@
+.view-container{
+    z-index: 1;
+	position: relative;
+	&::before{
+		position: fixed;
+		font-family: "Material Icons";
+		overflow: hidden;
+		content: "card_travel";
+		font-size: 60rem;
+		width: 100vw;
+		height: 100vh;
+		z-index: -1;
+		bottom: 0;
+		right: 20px;
+		text-align: end;
+		opacity: .1;
+	}
+}

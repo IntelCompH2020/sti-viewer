@@ -1,0 +1,67 @@
+
+<mat-card>
+    <mat-card-title>
+        {{column}}
+    </mat-card-title>
+
+    <mat-card-content>
+        <p>
+            {{'APP.MY-DATA-ACCESS-REQUESTS.COLUMNS-EDITOR.GROUPS' | translate}}
+        </p>
+
+        <ul>
+            <li *ngFor="let item of dataGroups">
+                {{item.name}}
+
+                <button mat-icon-button (click)="editGroup(item)">
+                    <mat-icon>
+                        edit
+                    </mat-icon>
+                </button>
+
+                <button mat-icon-button [disabled]="!item.approved" (click)="navigateToGroupDashboard(item.groupHash, item.name)">
+                    <mat-icon>
+                        area_chart
+                    </mat-icon>
+                </button>
+                <button mat-icon-button (click)="deleteGroup(item.requestId)">
+                    <mat-icon>
+                        delete
+                    </mat-icon>
+                </button>
+            </li>
+        </ul>
+
+        <button mat-stroked-button (click)="createGroup()" class="mb-2">
+            {{'APP.MY-DATA-ACCESS-REQUESTS.COLUMNS-EDITOR.CREATE-GROUP' | translate}}
+        </button>
+        <mat-divider></mat-divider>
+        <div class="row mt-2">
+            <div class="col-12">
+                <mat-form-field appearance="legacy">
+                    <mat-label>
+                        {{'APP.MY-DATA-ACCESS-REQUESTS.COLUMNS-EDITOR.SEARCH' | translate}}
+                    </mat-label>
+                    <input type="text" matInput [(ngModel)]="searchText" (ngModelChange)="onSearchTextChange($event)">
+                </mat-form-field>
+            </div>
+        </div>
+
+        <div class="row fields-container">
+            <div class="col-12">
+                <ul>
+                    <li *ngFor="let field of fields">
+                        {{field}}
+                        <button mat-icon-button (click)="navigateToDashboard(field)">
+                            <mat-icon>insights</mat-icon>
+                        </button>
+                    </li>
+                </ul>
+        
+                <button *ngIf="totalCount > fields?.length " mat-raised-button color="primary" (click)="loadMore()">
+                    {{'APP.MY-DATA-ACCESS-REQUESTS.COLUMNS-EDITOR.LOAD-MORE' | translate}}
+                </button>
+            </div>
+        </div>
+    </mat-card-content>
+</mat-card>

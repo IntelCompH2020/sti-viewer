@@ -1,0 +1,18 @@
+<div class="row m-0 view-container">
+    <ng-container *ngFor="let iGroup of indicatorGroups">
+        <div class="col-12 col-lg-6 mt-3" *ngFor="let filterColumn of iGroup.filterColumns">
+            <app-my-indicator-columns-editor 
+                [dashboardKey]="iGroup.dashboardKey" 
+                [groups]="getGroups(iGroup, filterColumn)" 
+                [indicators]="iGroup.indicators" 
+                [column]="filterColumn" 
+
+                (onDeleteGroup)="onDeleteGroup($event)" 
+                (onGroupUpdate)="onUpdateGroup(filterColumn, iGroup.id, $event)"
+                (onGroupCreate)="onAddNewGroup( filterColumn , $event, iGroup.id)" 
+                >
+            </app-my-indicator-columns-editor>
+        </div>
+    </ng-container>
+</div>
+

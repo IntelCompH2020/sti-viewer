@@ -1,0 +1,108 @@
+.root-container{
+    width: 100%;
+    height: 100%;
+    // background-image: linear-gradient(to bottom, #42c39a, #00989b, #006c85, #21425d, #1e1e2d);
+    // background-image: url(./../../../assets/images/background.png);
+    display: flex;
+    flex-direction: column;
+    // justify-content: center;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.root-container::before {
+    content: "";
+    position: fixed;
+    top: 0; 
+    right: 20px;
+    width: 50rem; 
+    height: 100%;  
+    opacity: .4; 
+    z-index: -1;
+    // background: url(./../../../assets/images/back.png);
+    // background-size: contain;
+    // background-repeat: no-repeat;
+    // background-position-y: bottom;
+    filter: blur(1px);
+}
+
+.banner{
+    display: flex;
+    align-self: stretch;
+    justify-content: center;
+    // align-items: center;
+    padding-top: 2rem;
+    flex-basis: 15rem;
+    flex-shrink: 0;
+}
+.content{
+    flex: 3;
+    align-self: stretch;
+}
+.welcome_screen{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1rem;
+    max-width: 30rem;
+    margin: 0 auto;
+    .content-card{
+        z-index: 1;
+        position: relative;
+    }
+    .content-card::before{
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        background-image: url(../../../assets/images/magnifying-glass-solid.svg);
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: right;
+        opacity: .01;
+    }
+}
+.card{
+    transform: translateY(-50%);
+}
+
+:host ::ng-deep .mat-card{
+    background-color: #ffffffe0;
+}
+
+.bookmarks{
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(3, 1fr);
+    max-width: 2100px;
+    margin: 0 auto;
+}
+
+@media screen and (max-width:1300px) {
+    .bookmarks{
+        grid-template-columns: repeat(2,1fr);
+    }
+}
+@media screen and (max-width:900px) {
+    .bookmarks{
+        grid-template-columns: 1fr;
+    }
+}
+@media screen and (min-width:1900px) {
+    .bookmarks{
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+.bookmark-description{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+           line-clamp: 3; 
+    -webkit-box-orient: vertical;
+}

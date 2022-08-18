@@ -1,0 +1,677 @@
+{
+	"tabs": [
+		{
+			"name": "Input",
+			"chartGroups": [
+				{
+					"name": "EU Contribution &  Total Cost of Projects",
+					"charts": [
+						{
+							"indicatorId": "1ad3f3f0-c714-4f4b-a842-28526b0cdd26",
+							"type": "line",
+							"name": "EU Contribution &  Total Cost of Projects",
+							"description": "....",
+							"metrics": [
+								{
+									"name": "EU",
+									"fieldCode": "ecMaxContribution",
+									"tooltipName": "EU Funding",
+									"calculation": "Sum"
+								},
+								{
+									"name": "Total",
+									"fieldCode": "totalCost",
+									"tooltipName": "Total Funding",
+									"calculation": "Sum"
+								}
+							],
+							"bucket":{
+								"name": "Year",
+								"fieldCode": "startDate",
+								"type": "DateHistogram",
+								"dateInternal": "Year"
+							},
+							"xaxis": {
+
+							},
+							"areaStyle":{}
+						}
+					]
+				},
+				{
+					"name": "EU Contribution per Country",
+					"charts": [
+						{
+							"indicatorId": "",
+							"type": "map",
+							"name": "EU Contribution per Country",
+							"description": "....",
+							"metrics": [
+								{
+									"name": "EU",
+									"fieldCode": "eu_contribution",
+									"tooltipName": "EU Funding",
+									"calculation": "sum"
+								}
+							],
+							"groupBy": [
+								{
+									"fieldCode": "country"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "EU Contribution per Organization Sector",
+					"charts": [
+						{
+							"indicatorId": "",
+							"type": "line",
+							"name": "EU Contribution per Organization Sector",
+							"description": "....",
+							"metrics": [
+								{
+									"name": "EU",
+									"fieldCode": "eu_contribution",
+									"tooltipName": "EU Funding",
+									"calculation": "sum"
+								}
+							],
+							"bucket":{
+								"name": "Year",
+								"fieldCode": "startDate",
+								"type": "DateHistogram",
+								"dateInternal": "Year"
+							},
+							"groupBy": [
+								{
+									"fieldCode": "organization_sector"
+								}
+							],
+							"xaxis": {
+								"name": "Year",
+								"fieldCode": "year",
+								"type": "date",
+								"dateInternal": "year"
+							}
+						}
+					]
+				},
+				{
+					"name": "EU Contribution per within Major Category",
+					"charts": [
+						{
+							"indicatorId": "",
+							"type": "line",
+							"name": "EU Contribution per within Major Category",
+							"description": "....",
+							"metrics": [
+								{
+									"name": "EU",
+									"fieldCode": "eu_contribution",
+									"tooltipName": "EU Funding",
+									"calculation": "sum"
+								}
+							],
+							"bucket":{
+								"name": "Year",
+								"fieldCode": "startDate",
+								"type": "DateHistogram",
+								"dateInternal": "Year"
+							},
+							"groupBy": [
+								{
+									"fieldCode": "topic"
+								}
+							],
+							"xaxis": {
+								"name": "Year",
+								"fieldCode": "year",
+								"type": "date",
+								"dateInternal": "year"
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Throughput/Output",
+			"chartGroups": [
+				{
+					"name": "",
+					"charts": [
+						{
+							"indicatorId": "",
+							"type": "bar",
+							"name": "Project Publications",
+							"description": "....",
+							"metrics": [
+								{
+									"name": "EU",
+									"fieldCode": "eu_contribution",
+									"tooltipName": "EU Funding",
+									"calculation": "sum"
+								},
+								{
+									"name": "Total",
+									"fieldCode": "cost_of_projects",
+									"tooltipName": "Total Funding",
+									"calculation": "sum"
+								}
+							],
+							"xaxis": {
+								"name": "Year",
+								"fieldCode": "year",
+								"dataType": "date",
+								"type": "value",
+								"dateInternal": "year"
+							},
+							"yaxis": {
+								"name": "Year",
+								"fieldCode": "year",
+								"dataType": "date",
+								"type": "category",
+								"dateInternal": "year"
+							},
+							"stack":"x"
+						}
+					]
+				},
+				{
+					"name": "",
+					"charts": [
+						{
+							"indicatorId": "",
+							"type": "bar",
+							"name": "Project Ino",
+							"description": "....",
+							"metrics": [
+								{
+									"name": "EU",
+									"fieldCode": "eu_contribution",
+									"tooltipName": "EU Funding",
+									"calculation": "sum"
+								}
+							],
+							"groupBy": [
+								{
+									"fieldCode": "country"
+								}
+							],
+							"horizontal":true
+						}
+					]
+				},
+				{
+					"name": "",
+					"charts": [
+						{
+							"indicatorId": "",
+							"type": "polar_bar",
+							"name": "EU Contribution per Organization Sector",
+							"description": "....",
+							"metrics": [
+								{
+									"name": "EU",
+									"fieldCode": "eu_contribution",
+									"tooltipName": "EU Funding",
+									"calculation": "sum"
+								}
+							],
+							"groupBy": [
+								{
+									"fieldCode": "organization_sector"
+								}
+							],
+							"xaxis": {
+								"name": "Year",
+								"fieldCode": "year",
+								"type": "date",
+								"dateInternal": "year"
+							}
+						}
+					]
+				},
+				{
+					"name": "",
+					"charts": [
+						{
+							"indicatorId": "",
+							"type": "line",
+							"name": "EU Contribution per within Major Category",
+							"description": "....",
+							"metrics": [
+								{
+									"name": "EU",
+									"fieldCode": "eu_contribution",
+									"tooltipName": "EU Funding",
+									"calculation": "sum"
+								}
+							],
+							"groupBy": [
+								{
+									"fieldCode": "topic"
+								}
+							],
+							"xaxis": {
+								"name": "Year",
+								"fieldCode": "year",
+								"type": "date",
+								"dateInternal": "year"
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Academic Impact",
+			"chartGroups": [
+				{
+					"name": "",
+					"charts": [
+						{
+							"indicatorId": "",
+							"type": "line",
+							"name": "EU Contribution &  Total Cost of Projects",
+							"description": "....",
+							"metrics": [
+								{
+									"name": "EU",
+									"fieldCode": "eu_contribution",
+									"tooltipName": "EU Funding",
+									"calculation": "sum"
+								},
+								{
+									"name": "Total",
+									"fieldCode": "cost_of_projects",
+									"tooltipName": "Total Funding",
+									"calculation": "sum"
+								}
+							],
+							"bucket":{
+								"name": "Year",
+								"fieldCode": "startDate",
+								"type": "DateHistogram",
+								"dateInternal": "Year"
+							},
+							"xaxis": {
+								"name": "Year",
+								"fieldCode": "year",
+								"type": "date",
+								"dateInternal": "year"
+							},
+							"stack":"x",
+							"areaStyle":{}
+						}
+					]
+				},
+				{
+					"name": "",
+					"charts": [
+						{
+							"indicatorId": "",
+							"type": "bar",
+							"name": "EU Contribution per Country",
+							"description": "....",
+							"metrics": [
+								{
+									"name": "EU",
+									"fieldCode": "eu_contribution",
+									"tooltipName": "EU Funding",
+									"calculation": "sum"
+								}
+							],
+							"bucket":{
+								"name": "Year",
+								"fieldCode": "startDate",
+								"type": "DateHistogram",
+								"dateInternal": "Year"
+							},
+							"groupBy": [
+								{
+									"fieldCode": "country"
+								}
+							],
+							"stack":"x",
+							"horizontal":true
+						}
+					]
+				},
+				{
+					"name": "",
+					"charts": [
+						{
+							"indicatorId": "",
+							"type": "line",
+							"name": "EU Contribution per Organization Sector",
+							"description": "....",
+							"metrics": [
+								{
+									"name": "EU",
+									"fieldCode": "eu_contribution",
+									"tooltipName": "EU Funding",
+									"calculation": "sum"
+								}
+							],
+							"bucket":{
+								"name": "Year",
+								"fieldCode": "startDate",
+								"type": "DateHistogram",
+								"dateInternal": "Year"
+							},
+							"groupBy": [
+								{
+									"fieldCode": "organization_sector"
+								}
+							],
+							"xaxis": {
+								"name": "Year",
+								"fieldCode": "year",
+								"type": "date",
+								"dateInternal": "year"
+							}
+						}
+					]
+				},
+				{
+					"name": "",
+					"charts": [
+						{
+							"indicatorId": "",
+							"type": "line",
+							"name": "EU Contribution per within Major Category",
+							"description": "....",
+							"metrics": [
+								{
+									"name": "EU",
+									"fieldCode": "eu_contribution",
+									"tooltipName": "EU Funding",
+									"calculation": "sum"
+								}
+							],
+							"bucket":{
+								"name": "Year",
+								"fieldCode": "startDate",
+								"type": "DateHistogram",
+								"dateInternal": "Year"
+							},
+							"groupBy": [
+								{
+									"fieldCode": "topic"
+								}
+							],
+							"xaxis": {
+								"name": "Year",
+								"fieldCode": "year",
+								"type": "date",
+								"dateInternal": "year"
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Economic Impact",
+			"chartGroups": [
+				{
+					"name": "",
+					"charts": [
+						{
+							"indicatorId": "",
+							"type": "pie",
+							"name": "EU Contribution &  Total Cost of Projects",
+							"description": "....",
+							"metrics": [
+								{
+									"name": "EU",
+									"fieldCode": "eu_contribution",
+									"tooltipName": "EU Funding",
+									"calculation": "sum"
+								},
+								{
+									"name": "Total",
+									"fieldCode": "cost_of_projects",
+									"tooltipName": "Total Funding",
+									"calculation": "sum"
+								}
+							],
+							"bucket":{
+								"name": "Year",
+								"fieldCode": "startDate",
+								"type": "DateHistogram",
+								"dateInternal": "Year"
+							},
+							"xaxis": {
+								"name": "Year",
+								"fieldCode": "year",
+								"type": "date",
+								"dateInternal": "year"
+							}
+						}
+					]
+				},
+				{
+					"name": "",
+					"charts": [
+						{
+							"indicatorId": "",
+							"type": "map",
+							"name": "EU Contribution per Country",
+							"description": "....",
+							"metrics": [
+								{
+									"name": "EU",
+									"fieldCode": "eu_contribution",
+									"tooltipName": "EU Funding",
+									"calculation": "sum"
+								}
+							],
+							"groupBy": [
+								{
+									"fieldCode": "country"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "",
+					"charts": [
+						{
+							"indicatorId": "",
+							"type": "polar_bar",
+							"name": "EU Contribution per Organization Sector",
+							"description": "....",
+							"metrics": [
+								{
+									"name": "EU",
+									"fieldCode": "eu_contribution",
+									"tooltipName": "EU Funding",
+									"calculation": "sum"
+								}
+							],
+							"groupBy": [
+								{
+									"fieldCode": "organization_sector"
+								}
+							],
+							"xaxis": {
+								"name": "Year",
+								"fieldCode": "year",
+								"type": "date",
+								"dateInternal": "year"
+							}
+						}
+					]
+				},
+				{
+					"name": "",
+					"charts": [
+						{
+							"indicatorId": "",
+							"type": "line",
+							"name": "EU Contribution per within Major Category",
+							"description": "....",
+							"metrics": [
+								{
+									"name": "EU",
+									"fieldCode": "eu_contribution",
+									"tooltipName": "EU Funding",
+									"calculation": "sum"
+								}
+							],
+							"groupBy": [
+								{
+									"fieldCode": "topic"
+								}
+							],
+							"bucket":{
+								"name": "Year",
+								"fieldCode": "startDate",
+								"type": "DateHistogram",
+								"dateInternal": "Year"
+							},
+							"xaxis": {
+								"name": "Year",
+								"fieldCode": "year",
+								"type": "date",
+								"dateInternal": "year"
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Societal Impact",
+			"chartGroups": [
+				{
+					"name": "",
+					"charts": [
+						{
+							"indicatorId": "",
+							"type": "bar",
+							"name": "EU Contribution &  Total Cost of Projects",
+							"description": "....",
+							"metrics": [
+								{
+									"name": "EU",
+									"fieldCode": "eu_contribution",
+									"tooltipName": "EU Funding",
+									"calculation": "sum"
+								},
+								{
+									"name": "Total",
+									"fieldCode": "cost_of_projects",
+									"tooltipName": "Total Funding",
+									"calculation": "sum"
+								}
+							],
+							"xaxis": {
+								"name": "Year",
+								"fieldCode": "year",
+								"type": "date",
+								"dateInternal": "year"
+							}
+						}
+					]
+				},
+				{
+					"name": "",
+					"charts": [
+						{
+							"indicatorId": "",
+							"type": "pie",
+							"name": "EU Contribution per Country",
+							"description": "....",
+							"metrics": [
+								{
+									"name": "EU",
+									"fieldCode": "eu_contribution",
+									"tooltipName": "EU Funding",
+									"calculation": "sum"
+								}
+							],
+							"groupBy": [
+								{
+									"fieldCode": "country"
+								}
+							],
+							"roseType":"area"
+						}
+					]
+				},
+				{
+					"name": "",
+					"charts": [
+						{
+							"indicatorId": "",
+							"type": "scatter",
+							"name": "EU Contribution per Organization Sector",
+							"description": "....",
+							"metrics": [
+								{
+									"name": "EU",
+									"fieldCode": "eu_contribution",
+									"tooltipName": "EU Funding",
+									"calculation": "sum"
+								}
+							],
+							"groupBy": [
+								{
+									"fieldCode": "organization_sector"
+								}
+							],
+							"xaxis": {
+								"name": "Year",
+								"fieldCode": "year",
+								"type": "date",
+								"dateInternal": "year"
+							}
+						}
+					]
+				},
+				{
+					"name": "",
+					"charts": [
+						{
+							"indicatorId": "",
+							"type": "line",
+							"name": "EU Contribution per within Major Category",
+							"description": "....",
+							"metrics": [
+								{
+									"name": "EU",
+									"fieldCode": "eu_contribution",
+									"tooltipName": "EU Funding",
+									"calculation": "sum"
+								}
+							],
+							"groupBy": [
+								{
+									"fieldCode": "topic"
+								}
+							],
+							"bucket":{
+								"name": "Year",
+								"fieldCode": "startDate",
+								"type": "DateHistogram",
+								"dateInternal": "Year"
+							},
+							"xaxis": {
+								"name": "Year",
+								"fieldCode": "year",
+								"type": "date",
+								"dateInternal": "year"
+							}
+						}
+					]
+				}
+			]
+		}
+	]
+}

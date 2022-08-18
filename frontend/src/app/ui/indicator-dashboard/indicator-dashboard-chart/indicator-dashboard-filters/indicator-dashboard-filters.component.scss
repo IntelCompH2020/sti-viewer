@@ -1,0 +1,50 @@
+@mixin indicator-dashboard-filters-themed($theme) {
+	$primary: map-get($theme, primary);
+	$accent: map-get($theme, accent);
+	$accent-color: mat-color($accent);
+	$primary-color: mat-color($primary);
+
+		.custom-slider .ngx-slider .ngx-slider-bar {
+			background: mat-color($primary, 100);
+			height: 2px;
+		}
+		.custom-slider .ngx-slider .ngx-slider-selection {
+			background: $accent-color;
+		}
+
+		.custom-slider .ngx-slider .ngx-slider-pointer {
+			width: 8px;
+			height: 16px;
+			top: auto; /* to remove the default positioning */
+			bottom: 0;
+			background-color: $accent-color;
+			border-top-left-radius: 3px;
+			border-top-right-radius: 3px;
+		}
+
+		.custom-slider .ngx-slider .ngx-slider-pointer:after {
+			display: none;
+		}
+
+		.custom-slider .ngx-slider .ngx-slider-bubble {
+			bottom: 14px;
+		}
+
+		.custom-slider .ngx-slider .ngx-slider-limit {
+			font-weight: bold;
+			color: $primary-color;
+		}
+
+		.custom-slider .ngx-slider .ngx-slider-tick {
+			width: 1px;
+			height: 10px;
+			margin-left: 4px;
+			border-radius: 0;
+			background: $primary-color;
+			top: -1px;
+		}
+
+		.custom-slider .ngx-slider .ngx-slider-tick.ngx-slider-selected {
+			background: $primary-color;
+		}
+}

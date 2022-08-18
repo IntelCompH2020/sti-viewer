@@ -1,0 +1,9 @@
+<div class="indicators-list">
+	<mat-card class="w-100" *ngFor="let chartGroup of tabConfig.chartGroups">
+		<mat-card-title>{{chartGroup.name}}</mat-card-title>
+		
+		<app-indicator-carousel>
+			<app-indicator-dashboard-chart [indicatorQueryParams]="indicatorQueryParams" appIndicatorCarouselItem *ngFor="let chart of chartGroup.charts" [chartConfig]="chart"></app-indicator-dashboard-chart>
+		</app-indicator-carousel>
+	</mat-card>
+</div>

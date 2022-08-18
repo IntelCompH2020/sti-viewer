@@ -1,0 +1,18 @@
+queue:
+  rabbitmq:
+    durable: true
+    queue: ic_development_core_sti-viewer_inbox_queue
+    exchange: ic_development_queue
+    listenerEnabled: true
+    publisherEnabled: true
+  task:
+    publisher:
+      options:
+        exchange: ic_development_queue
+      rabbitmq:
+        enable: true
+    listener:
+      options:
+        exchange: ic_development_queue
+      rabbitmq:
+        enable: false

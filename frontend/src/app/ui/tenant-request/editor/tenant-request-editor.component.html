@@ -1,0 +1,61 @@
+<div class="row tenant-request-editor">
+	<div class="col-md-8 offset-md-2">
+		<mat-card>
+			<mat-card-title *ngIf="isNew">{{'APP.TENANT-REQUEST-EDITOR.TITLE.NEW' | translate}}</mat-card-title>
+			<mat-card-title *ngIf="!isNew">{{'APP.TENANT-REQUEST-EDITOR.TITLE.VIEW' | translate}}</mat-card-title>
+			<mat-card-content>
+				<form (ngSubmit)="formSubmit()" [formGroup]="formGroup">
+					<div class="row">
+						<mat-form-field *ngIf="!isNew" class="col-md-12">
+							<mat-label>{{'APP.TENANT-REQUEST-EDITOR.FIELDS.STATUS' | translate}}</mat-label>
+							<input matInput type="text" name="status" formControlName="status" disabled readonly="true">
+						</mat-form-field>
+						<mat-form-field class="col-md-12">
+							<mat-label>{{'APP.TENANT-REQUEST-EDITOR.FIELDS.EMAIL' | translate}}</mat-label>
+							<input matInput type="text" name="email" formControlName="email" required>
+							<mat-error *ngIf="formGroup.get('email').hasError('backendError')">
+								{{formGroup.get('email').getError('backendError')?.message}}</mat-error>
+							<mat-error *ngIf="formGroup.get('email').hasError('required')">
+								{{'COMMONS.VALIDATION.REQUIRED' | translate}}</mat-error>
+						</mat-form-field>
+						<mat-form-field *ngIf="!isNew"  class="col-md-12">
+							<mat-label>{{'APP.TENANT-REQUEST-EDITOR.FIELDS.FIRST-NAME' | translate}}</mat-label>
+							<input matInput type="text" name="firstName" formControlName="firstName" required>
+							<mat-error *ngIf="formGroup.get('firstName').hasError('backendError')">
+								{{formGroup.get('firstName').getError('backendError')?.message}}</mat-error>
+							<mat-error *ngIf="formGroup.get('firstName').hasError('required')">
+								{{'COMMONS.VALIDATION.REQUIRED' | translate}}</mat-error>
+						</mat-form-field>
+						<mat-form-field *ngIf="!isNew"  class="col-md-12">
+							<mat-label>{{'APP.TENANT-REQUEST-EDITOR.FIELDS.LAST-NAME' | translate}}</mat-label>
+							<input matInput type="text" name="lastName" formControlName="lastName" required>
+							<mat-error *ngIf="formGroup.get('lastName').hasError('backendError')">
+								{{formGroup.get('lastName').getError('backendError')?.message}}</mat-error>
+							<mat-error *ngIf="formGroup.get('lastName').hasError('required')">
+								{{'COMMONS.VALIDATION.REQUIRED' | translate}}</mat-error>
+						</mat-form-field>
+						<mat-form-field class="col-md-12">
+							<mat-label>{{'APP.TENANT-REQUEST-EDITOR.FIELDS.MESSAGE' | translate}}</mat-label>
+							<input matInput type="text" name="message" formControlName="message">
+							<mat-error *ngIf="formGroup.get('message').hasError('backendError')">
+								{{formGroup.get('message').getError('backendError')?.message}}</mat-error>
+						</mat-form-field>
+					</div>
+					<div class="row editor-actions">
+						<div class="col"></div>
+						<div class="col-auto" *ngIf="this.canEdit"><button mat-raised-button color="primary" (click)="save()" type="submit">{{'APP.EDITOR-ACTIONS.SAVE' | translate}}</button></div>
+						<div class="col-auto" *ngIf="this.canSubmit"><button mat-raised-button color="primary" (click)="submit()" type="button">{{'APP.TENANT-REQUEST-EDITOR.ACTIONS.SUBMIT' | translate}}</button></div>
+						<div class="col-auto" *ngIf="this.canApprove"><button mat-raised-button color="primary" (click)="setStatus(tenantRequestStatusEnum.APPROVED)" type="button">{{'APP.TENANT-REQUEST-EDITOR.ACTIONS.APPROVE' | translate}}</button></div>
+						<div class="col-auto" *ngIf="this.canReject"><button mat-raised-button color="primary" (click)="setStatus(tenantRequestStatusEnum.REJECTED)" type="button">{{'APP.TENANT-REQUEST-EDITOR.ACTIONS.REJECT' | translate}}</button></div>
+						<div class="col-auto" *ngIf="this.canWithdrawn"><button mat-raised-button color="primary" (click)="setStatus(tenantRequestStatusEnum.WITHDRAWN)" type="button">{{'APP.TENANT-REQUEST-EDITOR.ACTIONS.WITHDRAWN' | translate}}</button></div>
+						<div class="col-auto"><button mat-raised-button color="primary" (click)="cancel()" type="button">{{'APP.EDITOR-ACTIONS.BACK' | translate}}</button></div>
+					</div>
+					<!--<app-editor-actions-component
+						[canDelete]="authService.hasPermission(authService.permissionEnum.DeleteTenantRequest) && !isDeleted && !isNew"
+						[canSave]="authService.hasPermission(authService.permissionEnum.EditTenantRequest) && !isDeleted"
+						(onDelete)="delete()" (onCancel)="cancel()" (onSave)="save()"></app-editor-actions-component>-->
+				</form>
+			</mat-card-content>
+		</mat-card>
+	</div>
+</div>

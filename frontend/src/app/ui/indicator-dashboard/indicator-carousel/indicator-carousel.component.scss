@@ -1,0 +1,52 @@
+@use '@angular/material' as mat;
+
+.carousel-custom{
+    position: relative;
+    overflow: hidden;
+    .carousel-custom-inner{
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        transition: 600ms 100ms transform ease;
+        // transform: translateX(-50%);
+    }
+
+}
+
+
+.navigation-dots{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: .2rem;
+}
+
+.dot{
+    width: 8px;
+    height: 8px;
+    // background-color: rgba(128, 128, 128, 0.562);
+    border-radius: 50%;
+    transition: all .6s;
+    cursor: pointer;
+    opacity: .4;
+}
+
+.selected-dot{
+    transform: scale(1.2);
+    opacity: 1;
+}
+
+
+@mixin app-carousel-indicators($theme){
+	$primary: map-get($theme, primary );
+	$accent: map-get($theme, accent);
+	$accent-color: mat-color($accent);
+    $primary-color: mat-color($primary);
+	.dot{
+		background-color: $primary-color;
+	}
+    .selected-dot{
+        background-color: $accent-color;
+    }
+	
+}

@@ -1,0 +1,6 @@
+formatting:
+  options:
+    integer-format: "%,d"
+    decimal-digits-round: 2
+    decimal-format: "#0.00"
+    date-time-format: "YYYY-MM-dd'T'HH:mm:ss"

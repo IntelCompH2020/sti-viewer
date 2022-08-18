@@ -1,0 +1,44 @@
+<div class="row master-item-editor">
+	<div class="col-md-8 offset-md-2">
+		<mat-card>
+			<mat-card-title *ngIf="isNew">{{'APP.MASTER-ITEM-EDITOR.TITLE.NEW' | translate}}</mat-card-title>
+			<mat-card-title *ngIf="!isNew">{{formGroup.get('title').value}}</mat-card-title>
+			<mat-card-content>
+				<form (ngSubmit)="formSubmit()" [formGroup]="formGroup">
+					<div class="row">
+						<mat-form-field class="col-md-12">
+							<mat-label>{{'APP.MASTER-ITEM-EDITOR.FIELDS.TITLE' | translate}}</mat-label>
+							<input matInput type="text" name="master-item-title" formControlName="title" required>
+							<mat-error *ngIf="formGroup.get('title').hasError('backendError')">{{formGroup.get('title').getError('backendError')?.message}}</mat-error>
+							<mat-error *ngIf="formGroup.get('title').hasError('required')">{{'COMMONS.VALIDATION.REQUIRED' | translate}}</mat-error>
+						</mat-form-field>
+						<mat-form-field class="col-md-12">
+							<mat-label>{{'APP.MASTER-ITEM-EDITOR.FIELDS.NOTES' | translate}}</mat-label>
+							<textarea matInput rows="5" name="notes" formControlName="notes"></textarea>
+							<mat-error *ngIf="formGroup.get('notes').hasError('backendError')">{{formGroup.get('notes').getError('backendError')?.message}}</mat-error>
+						</mat-form-field>
+					</div>
+					<div class="row">
+						<div class="col-12">
+							<div class="row">
+								<h4 class="col">{{'APP.MASTER-ITEM-EDITOR.FIELDS.DETAILS' | translate}}</h4>
+								<mat-slide-toggle class="toggle col-auto" (change)="showInactiveDetails = $event.checked">
+									{{'APP.MASTER-ITEM-EDITOR.DETAILS.SHOW-INACTIVE' | translate}}
+								</mat-slide-toggle>
+							</div>
+						</div>
+						<app-detail-items-editor class="col-12" [detailsFormArray]="formGroup.get('details')" (removeItemAt)="removeItemAt($event)"></app-detail-items-editor>
+					</div>
+					<div class="row" *ngIf="showInactiveDetails">
+						<h4 class="col-12">{{'APP.MASTER-ITEM-EDITOR.FIELDS.INACTIVE-DETAILS' | translate}}</h4>
+						<app-detail-items-editor class="col-12" [detailsFormArray]="formGroup.get('inactiveDetails')" [showRemoveButton]="false"></app-detail-items-editor>
+					</div>
+					<button mat-icon-button type="button" (click)="addDetailItem()">
+						<mat-icon>add</mat-icon>
+					</button>
+					<app-editor-actions-component [canDelete]="authService.hasPermission(authService.permissionEnum.DeleteMasterItem) && !isDeleted && !isNew" [canSave]="authService.hasPermission(authService.permissionEnum.EditMasterItem) && !isDeleted" (onDelete)="delete()" (onCancel)="cancel()" (onSave)="save()"></app-editor-actions-component>
+				</form>
+			</mat-card-content>
+		</mat-card>
+	</div>
+</div>

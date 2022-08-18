@@ -1,0 +1,35 @@
+cipher-profiles:
+  profile-map:
+    configuration-profile-name: "configuration"
+    queue-profile-name: "queue"
+    notification-profile-name: "queue"
+
+cipher:
+#  salted-hash:
+#    default-o: null
+#    options: null
+  symetric-encryption:
+    default-o: null
+    options:
+      configuration:
+        aes:
+          key: ${CIPHER_SYMETRIC_ENCRYPTION_CONFIGURATION_AES_KEY:}
+          iv: ${CIPHER_SYMETRIC_ENCRYPTION_CONFIGURATION_AES_IV:}
+      queue:
+        aes:
+          key: ${CIPHER_SYMETRIC_ENCRYPTION_QUEUE_AES_KEY:}
+          iv: ${CIPHER_SYMETRIC_ENCRYPTION_QUEUE_AES_IV:}
+  masking:
+    default: null
+    options:
+      configuration:
+        character: "*"
+        clear-begining: 2
+        clear-ending: 4
+        at-least-percentage: 70
+  digital-signature:
+    default: null
+    options:
+      configuration:
+        certificate-path: null
+        certificate-password: null

@@ -1,0 +1,22 @@
+<div class="row">
+	<!-- <div class="col-12" [class.invisible]="!(chartOptions && (uiMinimumTimePased$ | async))" >
+		<button (click)="openFilters()" [matTooltip]="'APP.INDICATOR-DASHBOARD.CHART.FILTERS' | translate" *ngIf="chartConfig?.filters?.length" [disabled]="!(chartOptions && (uiMinimumTimePased$ | async))" mat-icon-button><mat-icon>filter_alt</mat-icon></button>
+		<button (click)="downloadData()" [matTooltip]="'APP.INDICATOR-DASHBOARD.CHART.DOWNLOAD-DATA' | translate" [disabled]="!(chartOptions && (uiMinimumTimePased$ | async))" mat-icon-button><mat-icon>cloud_download</mat-icon></button>
+	</div> -->
+	<div echarts [options]="chartOptions" [@fadeIn]  class="col-12 chart" *ngIf="(chartOptions && (uiMinimumTimePased$ | async)) else loading"></div>
+	<ng-template #loading>
+		<div class="loading-container col-12">
+			<mat-spinner *ngIf="!errorLoading else errorLoadingTemplate"></mat-spinner>
+			<ng-template #errorLoadingTemplate>
+				{{'COMMONS.ERRORS.DEFAULT' | translate}}
+			</ng-template>
+		</div>
+	</ng-template>
+
+	<div class="col-12" *ngIf="chartConfig.description">	
+		<p>
+			<b>Description/Source:</b>
+			{{chartConfig.description}}
+		</p>
+	</div>
+</div>

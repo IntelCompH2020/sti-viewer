@@ -1,0 +1,34 @@
+<mat-card class="mat-form-field col-md-12 m-1">
+    <mat-card-actions [align]="'end'">
+        <button *ngIf="!disabled" (click)="this.onDeleteColumn.emit(this.index)" type="button" mat-flat-button>
+            <mat-icon>delete_forever</mat-icon>
+        </button>
+    </mat-card-actions>
+    <div class="col-md-12 text-center">
+        <mat-label>{{'APP.DATA-ACCESS-REQUEST-EDITOR.FIELDS.FILTER-COLUMNS-CONFIG'| translate }} :</mat-label>
+    </div>
+    <mat-card-content style="margin-top:0.4rem">
+        <mat-form-field class="col-md-12">
+            <mat-label>{{'APP.DATA-ACCESS-REQUEST-EDITOR.FIELDS.COLUMN'| translate }}</mat-label>
+            <mat-select [disabled]="disabled" [formControl]="this.filterColumn.get('column')">
+                <mat-option (onSelectionChange)="selectColumn($event)" *ngFor="let columnValue of availableColumns"
+                    [value]="columnValue">
+                    {{columnValue}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field class="col-md-12">
+            <mat-label>{{'APP.DATA-ACCESS-REQUEST-EDITOR.FIELDS.VALUES'| translate }}</mat-label>
+            <mat-select [disabled]="disabled" [formControl]="filterColumn.get('values')" multiple>
+                <div *ngIf="disabled">
+                    <mat-option *ngFor=" let columnValue of filterColumn.get('values').value" [value]="columnValue">
+                        {{columnValue}}
+                    </mat-option>
+                </div>
+                <mat-option *ngFor=" let columnValue of availableColumnValues" [value]="columnValue">
+                    {{columnValue}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </mat-card-content>
+</mat-card>

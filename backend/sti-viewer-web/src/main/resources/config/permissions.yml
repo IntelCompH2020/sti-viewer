@@ -1,0 +1,642 @@
+permissions:
+  extendedClaims: [ ]
+  policies:
+    EditNotification:
+      roles:
+        - superuser
+        - tenantadmin
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    DeferredAffiliation:
+      roles:
+        - superuser
+        - tenantadmin
+        - stiguest
+        - tenantuser
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    #Datasets
+    BrowseDataset:
+      roles:
+        - superuser
+        - user
+      clients: [ ]
+      allowAnonymous: true
+      allowAuthenticated: false
+      timeOfDay:
+        startingAt: "01:00"
+        endingAt: "23:00"
+    EditDataset:
+      roles:
+        - superuser
+        - user
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    DeleteDataset:
+      roles:
+        - superuser
+      claims: [ ]
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+
+    # Indicators
+    BrowseIndicator:
+      roles:
+        - superuser
+        - user
+        - tenantadmin
+      clients: [ ]
+      allowAnonymous: true
+      allowAuthenticated: false
+    EditIndicator:
+      roles:
+        - superuser
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    DeleteIndicator:
+      roles:
+        - superuser
+      claims: [ ]
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    BrowseIndicatorReportConfig:
+      roles:
+        - superuser
+      clients: [ ]
+      indicator:
+        roles:
+          - tenantadmin
+          - tenantuser
+      allowAnonymous: false
+      allowAuthenticated: false # Indicators
+    # Bookmarks
+    BrowseBookmark:
+      roles:
+        - superuser
+      clients: [ ]
+      allowAnonymous: true
+      allowAuthenticated: false
+    EditBookmark:
+      roles:
+        - superuser
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    DeleteBookmark:
+      roles:
+        - superuser
+      claims: [ ]
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    BrowseIndicatorElastic:
+      roles:
+        - superuser
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    # DataAccessRequest
+    BrowseDataAccessRequest:
+      roles:
+        - superuser
+        - tenantadmin
+      clients: [ ]
+      allowAnonymous: true
+      allowAuthenticated: false
+    EditDataAccessRequest:
+      roles:
+        - superuser
+        - tenantadmin
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    CreateDataAccessRequest:
+      roles:
+        - tenantadmin
+        - superuser
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    ApproveDataAccessRequest:
+      roles:
+        - superuser
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    RejectDataAccessRequest:
+      roles:
+        - superuser
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    DeleteDataAccessRequest:
+      roles:
+        - superuser
+      claims: [ ]
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    
+    # DataGroupRequest
+    BrowseDataGroupRequest:
+      roles:
+        - superuser
+        - tenantadmin
+      clients: [ ]
+      allowAnonymous: true
+      allowAuthenticated: false
+    EditDataGroupRequest:
+      roles:
+        - superuser
+        - tenantadmin
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    CreateDataGroupRequest:
+      roles:
+        - tenantadmin
+        - superuser
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    DeleteDataGroupRequest:
+      roles:
+        - superuser
+        - tenantadmin
+      claims: [ ]
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    # IndicatorAccess
+    BrowseIndicatorAccess:
+      roles:
+        - superuser
+        - tenantadmin
+      clients: [ ]
+      allowAnonymous: true
+      allowAuthenticated: false
+    EditIndicatorAccess:
+      roles:
+        - superuser
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    DeleteIndicatorAccess:
+      roles:
+        - superuser
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+
+    # Tenants
+    BrowseTenant:
+      roles:
+        - superuser
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    EditTenant:
+      roles:
+        - superuser
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    DeleteTenant:
+      roles:
+        - superuser
+      claims: [ ]
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    AllowNoTenant:
+      roles:
+        - superuser
+      claims: [ ]
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+
+    # TenantUsers
+    BrowseTenantUser:
+      roles:
+        - superuser
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    EditTenantUser:
+      roles:
+        - superuser
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    DeleteTenantUser:
+      roles:
+        - superuser
+      claims: [ ]
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+
+    # Tenant Requests
+    BrowseTenantRequest:
+      roles:
+        - superuser
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    EditTenantRequest:
+      roles:
+        - superuser
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    CreateTenantRequest:
+      roles:
+        - tenantadmin
+        - stiguest
+        - superuser
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    ApproveTenantRequest:
+      roles:
+        - superuser
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    RejectTenantRequest:
+      roles:
+        - superuser
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    DeleteTenantRequest:
+      roles:
+        - superuser
+      claims: [ ]
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+
+    # Users
+    BrowseUser:
+      roles:
+        - superuser
+        - tenantadmin
+      clients: [ ]
+      allowAnonymous: true
+      allowAuthenticated: false
+    EditUser:
+      roles:
+        - admin
+        - superuser
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    DeleteUser:
+      roles:
+        - superuser
+      claims: [ ]
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+
+    # UserInvitations
+    BrowseUserInvitation:
+      roles:
+        - superuser
+        - user
+      clients: [ ]
+      allowAnonymous: true
+      allowAuthenticated: false
+    EditUserInvitation:
+      roles:
+        - superuser
+        - user
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    DeleteUserInvitation:
+      roles:
+        - superuser
+      claims: [ ]
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+
+    # UserSettings
+    BrowseUserSettings:
+      roles:
+        - superuser
+      clients: [ ]
+      allowAnonymous: true
+      allowAuthenticated: false
+    EditUserSettings:
+      roles:
+        - superuser
+        - user
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    DeleteUserSettings:
+      roles:
+        - superuser
+      claims: [ ]
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    # BrowseDataTree
+    BrowseBrowseDataTreeConfig:
+      roles:
+        - superuser
+        - tenantadmin
+        - tenantuser
+      clients: [ ]
+      allowAnonymous: true
+      allowAuthenticated: false
+    BrowseBrowseDataTree:
+      roles:
+        - superuser
+        - tenantadmin
+        - tenantuser
+      clients: [ ]
+      allowAnonymous: true
+      allowAuthenticated: false
+    GetDashboard:
+      roles:
+        - superuser
+        - tenantadmin
+        - tenantuser
+      clients: [ ]
+      allowAnonymous: true
+      allowAuthenticated: false
+    # UserContactInfo
+    BrowseUserContactInfo:
+      roles:
+        - superuser
+      clients: [ ]
+      allowAnonymous: true
+      allowAuthenticated: false
+    EditUserContactInfo:
+      roles:
+        - superuser
+        - user
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    DeleteUserContactInfo:
+      roles:
+        - superuser
+      claims: [ ]
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+
+    # Master Items
+    BrowseMasterItem:
+      roles:
+        - superuser
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    EditMasterItem:
+      roles:
+        - superuser
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    DeleteMasterItem:
+      roles:
+        - superuser
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+
+    # IndicatorPoints
+    BrowseIndicatorPoint:
+      roles:
+        - superuser
+      clients: [ ]
+      indicator:
+        roles:
+          - tenantadmin
+      allowAnonymous: false
+      allowAuthenticated: false
+    EditIndicatorPoint:
+      roles:
+        - superuser
+      clients: [ ]
+      indicator:
+        roles:
+          - tenantadmin
+      allowAnonymous: false
+      allowAuthenticated: false
+    DeleteIndicatorPoint:
+      roles:
+        - superuser
+      clients: [ ]
+      indicator:
+        roles:
+          - tenantadmin
+      allowAnonymous: false
+      allowAuthenticated: false
+    # Blueprint Request
+    BrowseBlueprintRequest:
+      roles:
+        - superuser
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    CreateBlueprintRequest:
+      roles:
+        - superuser
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    UpdateBlueprintRequest:
+      roles:
+        - superuser
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    DeleteBlueprintRequest:
+      roles:
+        - superuser
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    # Create Blueprint
+    CreateBlueprint:
+      roles:
+        - superuser
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+
+    # ViewPage Permissions
+    ViewDatasetPage:
+      roles:
+        - superuser
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    ViewIndicatorPage:
+      roles:
+        - superuser
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    ViewIndicatorReportsPage:
+      roles:
+        - tenantadmin
+        - tenantuser
+        - superuser
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    ViewIndicatorReportsDashboardPage:
+      roles:
+        - tenantadmin
+        - tenantuser
+        - superuser
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    ViewMasterItemPage:
+      roles:
+        - superuser
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    ViewTenantRequestPage:
+      roles:
+        - superuser
+        - tenantadmin
+        - stiguest
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    ViewDataAccessRequestPage:
+      roles:
+        - superuser
+        - tenantadmin
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    ViewMyDataAccessRequestPage:
+      roles:
+        - superuser
+        - tenantadmin
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    ViewTenantPage:
+      roles:
+        - superuser
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    ViewUsersPage:
+      roles:
+        - superuser
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    ViewApiClientsPage:
+      roles:
+        - superuser
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    ViewRoleAssignmentPage:
+      roles:
+        - superuser
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    ViewAccessTokensPage:
+      roles:
+        - superuser
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    ViewUserInvitationPage:
+      roles:
+        - superuser
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    ViewUserProfilePage:
+      roles:
+        - superuser
+        - tenantadmin
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    ViewForgetMeRequestPage:
+      roles:
+        - superuser
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    ViewWhatYouKnowAboutMeRequestPage:
+      roles:
+        - superuser
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    ViewTenantConfigurationPage:
+      roles:
+        - superuser
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    ViewNotificationPage:
+      roles:
+        - superuser
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    ViewNotificationEventRulePage:
+      roles:
+        - superuser
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    ViewInAppNotificationPage:
+      roles:
+        - superuser
+        - tenantadmin
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    ViewNotificationTemplatePage:
+      roles:
+        - superuser
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    ViewBlueprintRequestPage:
+      roles:
+        - superuser
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    DownloadReport:
+      roles:
+        - superuser
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    ViewBlueprintTemplatePage:
+      roles:
+        - superuser
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false

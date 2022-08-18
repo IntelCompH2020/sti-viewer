@@ -1,0 +1,68 @@
+<div class="row table-responsive detail-items-editor">
+	<table *ngIf="detailsFormArray" class="col-12 table details-table-container">
+		<thead>
+			<tr>
+				<th class="column-numbering-header">#</th>
+				<th>{{'APP.MASTER-ITEM-EDITOR.DETAILS.COLUMNS.TITLE' | translate}}</th>
+				<th>{{'APP.MASTER-ITEM-EDITOR.DETAILS.COLUMNS.DECIMAL' | translate}}</th>
+				<th>{{'APP.MASTER-ITEM-EDITOR.DETAILS.COLUMNS.DATE-TIME' | translate}}</th>
+				<th>{{'APP.MASTER-ITEM-EDITOR.DETAILS.COLUMNS.TIME' | translate}}</th>
+				<th>{{'APP.MASTER-ITEM-EDITOR.DETAILS.COLUMNS.DATE' | translate}}</th>
+				<th>{{'APP.MASTER-ITEM-EDITOR.DETAILS.COLUMNS.DATASET' | translate}}</th>
+				<th *ngIf="showRemoveButton" class="column-actions-header">{{'APP.MASTER-ITEM-EDITOR.DETAILS.COLUMNS.ACTIONS' | translate}}</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr *ngFor="let detailFormGroup of detailsFormArray.controls; let i = index">
+				<th class="column-numbering">{{i + 1}}</th>
+				<td>
+					<mat-form-field class="col-md-12" floatLabel="never">
+						<input matInput placeholder="{{'APP.MASTER-ITEM-EDITOR.DETAILS.FIELDS.TITLE' | translate}}" type="text" name="detail-item-title" [formControl]="detailFormGroup.get('title')" required>
+						<mat-error *ngIf="detailFormGroup.get('title').hasError('backendError')">{{detailFormGroup.get('title').getError('backendError')?.message}}</mat-error>
+						<mat-error *ngIf="detailFormGroup.get('title').hasError('required')">{{'COMMONS.VALIDATION.REQUIRED' | translate}}</mat-error>
+					</mat-form-field>
+				</td>
+				<td>
+					<mat-form-field class="col-md-12" floatLabel="never">
+						<span matPrefix>$ &nbsp;</span>
+						<input matInput placeholder="{{'APP.MASTER-ITEM-EDITOR.DETAILS.FIELDS.DECIMAL' | translate}}" type="number" [min]="0" name="decimal" autocomplete="off" [formControl]="detailFormGroup.get('decimal')">
+						<mat-error *ngIf="detailFormGroup.get('decimal').hasError('backendError')">{{detailFormGroup.get('decimal').getError('backendError')?.message}}</mat-error>
+						<mat-error *ngIf="detailFormGroup.get('decimal').hasError('min')">{{'COMMONS.VALIDATION.MIN' | translate}}</mat-error>
+					</mat-form-field>
+				</td>
+				<td>
+					<mat-form-field class="col-md-12" floatLabel="never">
+						<mat-placeholder>{{'APP.MASTER-ITEM-EDITOR.DETAILS.FIELDS.DATE-TIME' | translate}}</mat-placeholder>
+						<mat-datetimepicker-toggle [for]="datetimePicker" matSuffix></mat-datetimepicker-toggle>
+						<mat-datetimepicker #datetimePicker type="datetime" openOnFocus="true" timeInterval="5"></mat-datetimepicker>
+						<input matInput [matDatetimepicker]="datetimePicker" autocomplete="false" [formControl]="detailFormGroup.get('dateTime')">
+					</mat-form-field>
+				</td>
+				<td>
+					<app-time-picker class="col-md-12" floatLabel="never" placeholder="{{'APP.MASTER-ITEM-EDITOR.DETAILS.FIELDS.TIME' | translate}}" [reactiveFormControl]="detailFormGroup.get('time')" [validationError]="detailFormGroup.get('time').getError('backendError')?.message"></app-time-picker>
+				</td>
+				<td>
+					<mat-form-field class="col-md-12" floatLabel="never">
+						<input matInput [matDatepicker]="datePicker" placeholder="{{'APP.MASTER-ITEM-EDITOR.DETAILS.FIELDS.DATE' | translate}}" type="text" name="date" autocomplete="off" [formControl]="detailFormGroup.get('date')">
+						<mat-datepicker-toggle matSuffix [for]="datePicker"></mat-datepicker-toggle>
+						<mat-datepicker #datePicker></mat-datepicker>
+						<mat-error *ngIf="detailFormGroup.get('date').hasError('backendError')">{{detailFormGroup.get('date').getError('backendError')?.message}}</mat-error>
+					</mat-form-field>
+				</td>
+				<td>
+					<mat-form-field class="col-md-12" floatLabel="never">
+						<!-- <span matPrefix>$ &nbsp;</span> -->
+						<app-single-auto-complete placeholder="{{'APP.MASTER-ITEM-EDITOR.DETAILS.FIELDS.DATASET' | translate}}" [formControl]="detailFormGroup.get('dataset')" [configuration]="datasetAutocompleteConfiguration">
+						</app-single-auto-complete>
+						<mat-error *ngIf="detailFormGroup.get('dataset').hasError('backendError')">{{detailFormGroup.get('dataset').getError('backendError')?.message}}</mat-error>
+					</mat-form-field>
+				</td>
+				<td *ngIf="showRemoveButton" class="column-actions">
+					<button mat-icon-button type="button" (click)="removeDetail(i)">
+						<mat-icon>delete</mat-icon>
+					</button>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>

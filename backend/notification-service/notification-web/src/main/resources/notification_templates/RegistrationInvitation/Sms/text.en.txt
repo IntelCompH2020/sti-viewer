@@ -1,0 +1,1 @@
+Hi {name}, you have been invited to register in {tenant-code}. Go to {installation-url}/t/{tenant-code} and use your invitation code: {token}. The invitation will remain active for {duration} hours.

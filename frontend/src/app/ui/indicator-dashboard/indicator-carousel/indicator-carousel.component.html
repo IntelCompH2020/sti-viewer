@@ -1,0 +1,13 @@
+<div class="carousel-custom">
+    <div class="carousel-custom-inner" [ngStyle]="slide">
+        <ng-content>
+
+        </ng-content>
+    </div>
+</div>
+
+<div class="navigation-dots" *ngIf="indicators.length > 1">
+    <div class="dot" [class.selected-dot]="slideIndex === index" *ngFor="let item of indicators; let index = index" (click)="setSelectedSlide(index)">
+    </div>
+</div>
+

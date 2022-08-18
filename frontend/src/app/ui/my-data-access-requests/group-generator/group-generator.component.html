@@ -1,0 +1,70 @@
+<h3>{{'APP.MY-DATA-ACCESS-REQUESTS.GROUP-GENERATOR.ALL-FIELDS' | translate}} ({{fieldsAvailable}})</h3>
+
+
+<div class="row m-0"> 
+    <div class="col-12">
+        <mat-form-field appearance="legacy">
+            <mat-label>{{'APP.MY-DATA-ACCESS-REQUESTS.GROUP-GENERATOR.SEARCH' | translate}}</mat-label>
+            <input type="text" matInput [(ngModel)]="searchTerm" (ngModelChange)="onSearchTextChange($event)">
+        </mat-form-field>
+    </div>
+</div>
+
+<div class="row m-0 items-list">
+
+    <div class="col-12 p-0">
+        <div class="row m-0" *ngFor="let field of fields">
+            <div class="col">
+                {{field}}
+            </div>
+            <div class="col-auto">
+                <mat-checkbox [checked]="selectedFields?.includes(field)" (change)="onSelectChange($event, field)"></mat-checkbox>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 p-0 mt-2" *ngIf="fieldsAvailable > fields?.length">
+        <button mat-raised-button color="primary" (click)="onLoadMore()">{{'APP.MY-DATA-ACCESS-REQUESTS.GROUP-GENERATOR.LOAD-MORE' | translate}}</button>
+    </div>
+</div>
+
+<div class="row m-0 mt-4">
+    <div class="col-12">
+        <mat-form-field appearance="legacy">
+            <mat-label>{{'APP.MY-DATA-ACCESS-REQUESTS.GROUP-GENERATOR.GROUP-NAME' | translate}}</mat-label>
+            <input type="text" matInput [formControl]="nameControl">
+            <mat-error *ngIf="nameControl?.errors?.required">{{'COMMONS.VALIDATION.REQUIRED' | translate}}</mat-error>
+        </mat-form-field>
+    </div>
+    <div class="col-12">
+        <span>
+            {{selectedFields?.length}} {{'APP.MY-DATA-ACCESS-REQUESTS.GROUP-GENERATOR.SELECTED' | translate}}
+        </span>
+        <small class="text-danger" *ngIf="atLeastError">
+            ({{'COMMONS.VALIDATION.REQUIRED' | translate}})
+        </small>
+    </div>
+</div>
+<div class="row m-0">
+    <div class="col-12 selected-items-container">
+        <mat-chip-list aria-label="Selected fields">
+            <mat-chip *ngFor="let item of selectedFields; let index = index">
+                {{item}}
+                <button matChipRemove (click)="removeSelectedField(index)">
+                    <mat-icon>cancel</mat-icon>
+                </button>
+            </mat-chip>
+        </mat-chip-list>
+    </div>
+</div>
+
+
+<div class="row justify-content-end m-0 mt-4">
+    <div class="col-auto">
+        <button mat-raised-button (click)="cancel()">{{'APP.MY-DATA-ACCESS-REQUESTS.GROUP-GENERATOR.CANCEL' | translate}}</button>
+    </div>
+
+    <div class="col-auto">
+        <button mat-raised-button color="primary" (click)="submit()">{{'APP.MY-DATA-ACCESS-REQUESTS.GROUP-GENERATOR.SUBMIT' | translate}}</button>
+    </div>
+</div>

@@ -1,0 +1,819 @@
+{
+    "id": "someDashboardId",
+    "tabs": [{
+            "name": "Input",
+            "chartGroups": [{
+                    "name": "EU Contribution &  Total Cost of Projects",
+                    "charts": [{
+                            "indicatorId": "41bbd969-2b77-4ab0-a6b9-a0219f5bb7e4",
+                            "type": "line",
+                            "dataZoom": {
+                                "inside": true
+                            },
+                            "legend": {},
+                            "name": "EU Contribution &  Total Cost of Projects",
+                            "chartName": "Title inside chart",
+                            "xAxis": {
+                                "name": "'Ετος"
+                            },
+                            "yAxis": {
+                                "name": "Κόστος"
+                            },
+                            "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ab, amet. Molestias suscipit sunt officiis mollitia libero doloremque nam veritatis, quod corrupti ducimus quasi minus, numquam aliquam voluptates pariatur eligendi vero.",
+                            "bucket": {
+                                "type": "DateHistogram",
+                                "field": "date_from",
+                                "interval": "Year",
+                                "metrics": [{
+                                        "type": "Sum",
+                                        "field": "total_cost"
+                                    }, {
+                                        "type": "Average",
+                                        "field": "total_cost"
+                                    }, {
+                                        "type": "Average",
+                                        "field": "contribution"
+                                    }, {
+                                        "type": "Sum",
+                                        "field": "contribution"
+                                    }
+                                ]
+                            },
+                            "labelSortKey":"date_from",
+                            "labelsTransform": {
+                                "type": "date",
+                                "params": "y"
+                            },
+                            "series":[
+								{
+									"label":{
+                                        "color":"purple",
+										"name": "Sum of Total Cost",
+										"labelKey": "date_from"
+									} ,
+									"values":{
+										"valueKey": "value",
+										"tests":[
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "total_cost"
+											}
+										]
+									}
+								},
+								{
+									"label":{
+                                        "color":"yellow",
+										"name": "Average of Total Cost",
+										"labelKey": "date_from"
+									} ,
+									"values":{
+										"valueKey": "value",
+										"tests":[
+											{
+												"aggregateType": "Average"
+											},
+											{
+												"field": "total_cost"
+											}
+										]
+									}
+								},
+								{
+									"label":{
+										"name": "Average of Total Contribution",
+										"labelKey": "date_from"
+									} ,
+									"values":{
+										"valueKey": "value",
+										"tests":[
+											{
+												"aggregateType": "Average"
+											},
+											{
+												"field": "contribution"
+											}
+										]
+									}
+								},
+								{
+									"label":{
+										"name": "Sum of Total Contribution",
+										"labelKey": "date_from"
+									} ,
+									"values":{
+										"valueKey": "value",
+										"tests":[
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "contribution"
+											}
+										]
+									}
+								}
+							],
+                            "areaStyle": {},
+                            "filters": [{
+                                    "type": "select",
+                                    "name": "Funding scheme",
+                                    "fieldCode": "fundingScheme",
+                                    "indicatorFilterType": "keyword",
+                                    "values": [{
+                                            "name": "BBI-IA-FLAG",
+                                            "value": "BBI-IA-FLAG"
+                                        }, {
+                                            "name": "BBI-IA-DEMO",
+                                            "value": "BBI-IA-DEMO"
+                                        }, {
+                                            "name": "ERC-POC",
+                                            "value": "ERC-POC"
+                                        }
+                                    ]
+                                }, {
+                                    "type": "select",
+                                    "name": "Funding scheme",
+                                    "fieldCode": "fundingScheme",
+                                    "indicatorFilterType": "keyword"
+                                }, {
+                                    "type": "select",
+                                    "name": "multi select",
+                                    "fieldCode": "frameworkProgramme",
+                                    "multiple": true,
+                                    "indicatorFilterType": "keyword",
+                                    "values": [{
+                                            "name": "BBI-IA-FLAG",
+                                            "value": "BBI-IA-FLAG"
+                                        }, {
+                                            "name": "BBI-IA-DEMO",
+                                            "value": "BBI-IA-DEMO"
+                                        }, {
+                                            "name": "ERC-POC",
+                                            "value": "ERC-POC"
+                                        }
+                                    ]
+                                }, {
+                                    "type": "select",
+                                    "name": "multi select",
+                                    "fieldCode": "frameworkProgramme",
+                                    "indicatorFilterType": "keyword",
+                                    "multiple": true
+                                }, {
+                                    "type": "slider",
+                                    "name": "Slider",
+                                    "fieldCode": "date_from",
+                                    "range": true,
+                                    "indicatorFilterType": "date_range",
+                                    "values": [{
+                                            "name": "2007",
+                                            "value": 2007
+                                        }, {
+                                            "value": 2010
+                                        }, {
+                                            "name": "2011",
+                                            "value": 2011
+                                        }, {
+                                            "value": 2015
+                                        }, {
+                                            "name": "2017",
+                                            "value": 2017
+                                        }, {
+                                            "name": "2025",
+                                            "value": 2025
+                                        }
+                                    ]
+                                }
+                            ],
+                            "chartDownloadData": {},
+                            "chartDownloadImage": {}
+                        }, {
+                            "indicatorId": "41bbd969-2b77-4ab0-a6b9-a0219f5bb7e4",
+                            "type": "line",
+                            "dataZoom": {
+                                "inside": true
+                            },
+                            "legend": {},
+                            "name": "EU Contribution &  Total Cost of Projects",
+                            "chartName": "Title inside chart",
+                            "xAxis": {
+                                "name": "'Ετος"
+                            },
+                            "yAxis": {
+                                "name": "Κόστος"
+                            },
+                            "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ab, amet. Molestias suscipit sunt officiis mollitia libero doloremque nam veritatis, quod corrupti ducimus quasi minus, numquam aliquam voluptates pariatur eligendi vero.",
+                            "bucket": {
+                                "type": "DateHistogram",
+                                "field": "date_from",
+                                "interval": "Year",
+                                "metrics": [{
+                                        "type": "Sum",
+                                        "field": "total_cost"
+                                    }, {
+                                        "type": "Average",
+                                        "field": "total_cost"
+                                    }, {
+                                        "type": "Average",
+                                        "field": "contribution"
+                                    }, {
+                                        "type": "Sum",
+                                        "field": "contribution"
+                                    }
+                                ]
+                            },
+                            "metrics": [{
+                                    "type": "Sum",
+                                    "field": "total_cost"
+                                }, {
+                                    "type": "Average",
+                                    "field": "total_cost"
+                                }
+                            ],
+                            "areaStyle": {}
+                        }, {
+                            "indicatorId": "41bbd969-2b77-4ab0-a6b9-a0219f5bb7e4",
+                            "type": "line",
+                            "dataZoom": {
+                                "inside": true
+                            },
+                            "legend": {},
+                            "name": "EU Contribution &  Total Cost of Projects",
+                            "chartName": "Title inside chart",
+                            "xAxis": {
+                                "name": "'Ετος"
+                            },
+                            "yAxis": {
+                                "name": "Κόστος"
+                            },
+                            "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ab, amet. Molestias suscipit sunt officiis mollitia libero doloremque nam veritatis, quod corrupti ducimus quasi minus, numquam aliquam voluptates pariatur eligendi vero.",
+                            "bucket": {
+                                "type": "DateHistogram",
+                                "field": "date_from",
+                                "interval": "Year",
+                                "metrics": [{
+                                        "type": "Sum",
+                                        "field": "total_cost"
+                                    }, {
+                                        "type": "Average",
+                                        "field": "total_cost"
+                                    }, {
+                                        "type": "Average",
+                                        "field": "contribution"
+                                    }, {
+                                        "type": "Sum",
+                                        "field": "contribution"
+                                    }
+                                ]
+                            },
+                            "metrics": [{
+                                    "type": "Sum",
+                                    "field": "total_cost"
+                                }, {
+                                    "type": "Average",
+                                    "field": "total_cost"
+                                }
+                            ],
+                            "areaStyle": {}
+                        }
+                    ]
+                }, {
+                    "name": "EU Contribution per Country",
+                    "charts": [{
+                            "indicatorId": "8ebb829a-4c7c-4ef0-9a48-a26c31c48c4c",
+                            "type": "map",
+                            "name": "EU Contribution per Country",
+                            "chartName": "Title inside chart",
+                            "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ab, amet. Molestias suscipit sunt officiis mollitia libero doloremque nam veritatis, quod corrupti ducimus quasi minus, numquam aliquam voluptates pariatur eligendi vero.",
+                            "bucket": {
+                                "type": "Composite",
+                                "field": "country",
+                                "sources": [{
+                                        "field": "country"
+                                    }
+                                ],
+                                "metrics": [{
+                                        "type": "Sum",
+                                        "field": "contribution"
+                                    }
+                                ]
+                            },
+                            "labelSortKey":"date_from",
+                            "series":[
+                                {
+									"label":{
+										"name": "EU Contribution per Country",
+										"labelKey": "country"
+									} ,
+									"values":{
+										"valueKey": "value",
+										"tests":[
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "contribution"
+											}
+										]
+									}
+								}
+                            ],
+                            "mapChartConfig": {
+                                "high": {
+                                    "text": "HIGH",
+                                    "color": "purple"
+                                }
+                            }
+                        }
+                    ]
+                }, {
+                    "name": "EU Contribution per Organization Sector",
+                    "charts": [{
+                            "indicatorId": "b3401a17-33bb-46a6-95ac-429b81331ed6",
+                            "type": "line",
+                            "name": "EU Contribution per Organization Sector",
+                            "chartName": "Title inside chart",
+                            "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ab, amet. Molestias suscipit sunt officiis mollitia libero doloremque nam veritatis, quod corrupti ducimus quasi minus, numquam aliquam voluptates pariatur eligendi vero.",
+                            "bucket": {
+                                "type": "Composite",
+                                "sources": [{
+                                        "field": "activity_type"
+                                    }
+                                ],
+                                "dateHistogramSource": {
+                                    "type": "DateHistogram",
+                                    "field": "date_from",
+                                    "fieldFormatter": {
+                                        "type": "date"
+                                    },
+                                    "interval": "Year"
+                                },
+                                "metrics": [{
+                                        "type": "Sum",
+                                        "field": "contribution"
+                                    }
+                                ]
+                            },
+                            "labelSortKey":"date_from",
+                            "labelsTransform": {
+                                "type": "date",
+                                "params": "y"
+                            },
+                            "yAxis":{
+                                "name": "ETOS YEAR"
+                            },
+							"series":[
+								{
+									"splitSeries":[
+										{
+											"key":"activity_type"
+										}
+									],
+									"label":{
+										"name": "my test",
+										"labelKey": "date_from"
+									} ,
+									"values":{
+										"valueKey": "value",
+										"tests":[
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "contribution"
+											}
+										]
+									}
+								}
+							],
+                            "stack":"x",
+                            "areaStyle":{}
+                        }
+                    ]
+                }, {
+                    "name": "EU Contribution per within Major Category",
+                    "charts": [{
+                            "indicatorId": "1ad3f3f0-c714-4f4b-a842-28526b0cdd26",
+                            "type": "line",
+                            "name": "EU Contribution per within Major Category",
+                            "chartName": "Title inside chart",
+                            "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ab, amet. Molestias suscipit sunt officiis mollitia libero doloremque nam veritatis, quod corrupti ducimus quasi minus, numquam aliquam voluptates pariatur eligendi vero.",
+                            "bucket": {
+                                "type": "DateHistogram",
+                                "field": "date_from",
+                                "interval": "Year",
+                                "metrics": [{
+                                        "type": "Sum",
+                                        "field": "total_cost"
+                                    }, {
+                                        "type": "Sum",
+                                        "field": "contribution"
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        }, {
+            "name": "Throughput/Output",
+            "chartGroups": [{
+                    "name": "Project Publications",
+                    "charts": [{
+                            "indicatorId": "1ad3f3f0-c714-4f4b-a842-28526b0cdd26",
+                            "type": "bar",
+                            "name": "Project Publications",
+                            "chartName": "Title inside chart",
+                            "xAxis": {
+                                "name": "Έτος"
+                            },
+                            "yAxis": {
+                                "name": "Κόστος"
+                            },
+                            "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ab, amet. Molestias suscipit sunt officiis mollitia libero doloremque nam veritatis, quod corrupti ducimus quasi minus, numquam aliquam voluptates pariatur eligendi vero.",
+                            "bucket": {
+                                "type": "DateHistogram",
+                                "field": "date_from",
+                                "interval": "Year",
+                                "metrics": [{
+                                        "type": "Sum",
+                                        "field": "total_cost"
+                                    }, {
+                                        "type": "Sum",
+                                        "field": "contribution"
+                                    }
+                                ]
+                            },
+                            "stack": "x",
+                            "dataZoom": {
+                                "inside": true,
+                                "slider": true
+                            }
+                        }
+                    ]
+                }, {
+                    "name": "Project Innovations",
+                    "charts": [{
+                            "indicatorId": "1ad3f3f0-c714-4f4b-a842-28526b0cdd26",
+                            "type": "bar",
+                            "name": "Project Innovations",
+                            "chartName": "Title inside chart",
+                            "xAxis": {
+                                "name": "'Ετος"
+                            },
+                            "yAxis": {
+                                "name": "Κόστος"
+                            },
+                            "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ab, amet. Molestias suscipit sunt officiis mollitia libero doloremque nam veritatis, quod corrupti ducimus quasi minus, numquam aliquam voluptates pariatur eligendi vero.",
+                            "bucket": {
+                                "type": "DateHistogram",
+                                "field": "date_from",
+                                "interval": "Year",
+                                "metrics": [{
+                                        "type": "Sum",
+                                        "field": "total_cost"
+                                    }, {
+                                        "type": "Sum",
+                                        "field": "contribution"
+                                    }
+                                ]
+                            },
+                            "horizontal": true
+                        }
+                    ]
+                }, {
+                    "name": "Project Publications Cited in Patents per Funder",
+                    "charts": [{
+                            "indicatorId": "1ad3f3f0-c714-4f4b-a842-28526b0cdd26",
+                            "type": "polar_bar",
+                            "name": "Project Publications Cited in Patents per Funder",
+                            "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ab, amet. Molestias suscipit sunt officiis mollitia libero doloremque nam veritatis, quod corrupti ducimus quasi minus, numquam aliquam voluptates pariatur eligendi vero.",
+                            "bucket": {
+                                "type": "DateHistogram",
+                                "field": "date_from",
+                                "interval": "Year",
+                                "metrics": [{
+                                        "type": "Sum",
+                                        "field": "total_cost"
+                                    }, {
+                                        "type": "Sum",
+                                        "field": "contribution"
+                                    }
+                                ]
+                            },
+                            "radiusAxis": {
+                                "name": "Κόστος"
+                            },
+                            "dataZoom": {
+                                "inside": true,
+                                "slider": true
+                            }
+                        }
+                    ]
+                }, {
+                    "name": "EU Contribution per within Major Category",
+                    "charts": [{
+                            "indicatorId": "1ad3f3f0-c714-4f4b-a842-28526b0cdd26",
+                            "type": "line",
+                            "name": "EU Contribution per within Major Category",
+                            "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ab, amet. Molestias suscipit sunt officiis mollitia libero doloremque nam veritatis, quod corrupti ducimus quasi minus, numquam aliquam voluptates pariatur eligendi vero.",
+                            "bucket": {
+                                "type": "DateHistogram",
+                                "field": "date_from",
+                                "interval": "Year",
+                                "metrics": [{
+                                        "type": "Sum",
+                                        "field": "total_cost"
+                                    }, {
+                                        "type": "Sum",
+                                        "field": "contribution"
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        }, {
+            "name": "Academic Impact",
+            "chartGroups": [{
+                    "name": "",
+                    "charts": [{
+                            "indicatorId": "1ad3f3f0-c714-4f4b-a842-28526b0cdd26",
+                            "type": "line",
+                            "name": "EU Contribution &  Total Cost of Projects",
+                            "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ab, amet. Molestias suscipit sunt officiis mollitia libero doloremque nam veritatis, quod corrupti ducimus quasi minus, numquam aliquam voluptates pariatur eligendi vero.",
+                            "bucket": {
+                                "type": "DateHistogram",
+                                "field": "date_from",
+                                "interval": "Year",
+                                "metrics": [{
+                                        "type": "Sum",
+                                        "field": "total_cost"
+                                    }, {
+                                        "type": "Sum",
+                                        "field": "contribution"
+                                    }
+                                ]
+                            },
+                            "stack": "x",
+                            "areaStyle": {}
+                        }
+                    ]
+                }, {
+                    "name": "",
+                    "charts": [{
+                            "indicatorId": "1ad3f3f0-c714-4f4b-a842-28526b0cdd26",
+                            "type": "bar",
+                            "name": "EU Contribution per Country",
+                            "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ab, amet. Molestias suscipit sunt officiis mollitia libero doloremque nam veritatis, quod corrupti ducimus quasi minus, numquam aliquam voluptates pariatur eligendi vero.",
+                            "bucket": {
+                                "type": "DateHistogram",
+                                "field": "date_from",
+                                "interval": "Year",
+                                "metrics": [{
+                                        "type": "Sum",
+                                        "field": "total_cost"
+                                    }, {
+                                        "type": "Sum",
+                                        "field": "contribution"
+                                    }
+                                ]
+                            },
+                            "stack": "x",
+                            "horizontal": true
+                        }
+                    ]
+                }, {
+                    "name": "",
+                    "charts": [{
+                            "indicatorId": "1ad3f3f0-c714-4f4b-a842-28526b0cdd26",
+                            "type": "line",
+                            "name": "EU Contribution per Organization Sector",
+                            "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ab, amet. Molestias suscipit sunt officiis mollitia libero doloremque nam veritatis, quod corrupti ducimus quasi minus, numquam aliquam voluptates pariatur eligendi vero.",
+                            "bucket": {
+                                "type": "DateHistogram",
+                                "field": "date_from",
+                                "interval": "Year",
+                                "metrics": [{
+                                        "type": "Sum",
+                                        "field": "total_cost"
+                                    }, {
+                                        "type": "Sum",
+                                        "field": "contribution"
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }, {
+                    "name": "",
+                    "charts": [{
+                            "indicatorId": "1ad3f3f0-c714-4f4b-a842-28526b0cdd26",
+                            "type": "line",
+                            "name": "EU Contribution per within Major Category",
+                            "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ab, amet. Molestias suscipit sunt officiis mollitia libero doloremque nam veritatis, quod corrupti ducimus quasi minus, numquam aliquam voluptates pariatur eligendi vero.",
+                            "bucket": {
+                                "type": "DateHistogram",
+                                "field": "date_from",
+                                "interval": "Year",
+                                "metrics": [{
+                                        "type": "Sum",
+                                        "field": "total_cost"
+                                    }, {
+                                        "type": "Sum",
+                                        "field": "contribution"
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        }, {
+            "name": "Economic Impact",
+            "chartGroups": [{
+                    "name": "",
+                    "charts": [{
+                            "indicatorId": "1ad3f3f0-c714-4f4b-a842-28526b0cdd26",
+                            "type": "pie",
+                            "name": "EU Contribution &  Total Cost of Projects",
+                            "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ab, amet. Molestias suscipit sunt officiis mollitia libero doloremque nam veritatis, quod corrupti ducimus quasi minus, numquam aliquam voluptates pariatur eligendi vero.",
+                            "bucket": {
+                                "type": "DateHistogram",
+                                "field": "date_from",
+                                "interval": "Year",
+                                "metrics": [{
+                                        "type": "Sum",
+                                        "field": "total_cost"
+                                    }, {
+                                        "type": "Sum",
+                                        "field": "contribution"
+                                    }
+                                ]
+                            },
+                            "metrics": [{
+                                    "type": "Sum",
+                                    "field": "total_cost"
+                                }, {
+                                    "type": "Sum",
+                                    "field": "contribution"
+                                }
+                            ]
+                        }
+                    ]
+                }, {
+                    "name": "",
+                    "charts": [{
+                            "indicatorId": "1ad3f3f0-c714-4f4b-a842-28526b0cdd26",
+                            "type": "map",
+                            "name": "EU Contribution per Country",
+                            "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ab, amet. Molestias suscipit sunt officiis mollitia libero doloremque nam veritatis, quod corrupti ducimus quasi minus, numquam aliquam voluptates pariatur eligendi vero.",
+                            "bucket": {
+                                "type": "Nested",
+                                "field": "countryContr",
+                                "bucket": {
+                                    "type": "Composite",
+                                    "sources": [{
+                                            "field": "key"
+                                        }
+                                    ],
+                                    "metrics": [{
+                                            "type": "Sum",
+                                            "field": "val"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                }, {
+                    "name": "",
+                    "charts": [{
+                            "indicatorId": "1ad3f3f0-c714-4f4b-a842-28526b0cdd26",
+                            "type": "polar_bar",
+                            "name": "EU Contribution per Organization Sector",
+                            "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ab, amet. Molestias suscipit sunt officiis mollitia libero doloremque nam veritatis, quod corrupti ducimus quasi minus, numquam aliquam voluptates pariatur eligendi vero.",
+                            "bucket": {
+                                "type": "DateHistogram",
+                                "field": "date_from",
+                                "interval": "Year",
+                                "metrics": [{
+                                        "type": "Sum",
+                                        "field": "total_cost"
+                                    }, {
+                                        "type": "Sum",
+                                        "field": "contribution"
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }, {
+                    "name": "",
+                    "charts": [{
+                            "indicatorId": "1ad3f3f0-c714-4f4b-a842-28526b0cdd26",
+                            "type": "line",
+                            "name": "EU Contribution per within Major Category",
+                            "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ab, amet. Molestias suscipit sunt officiis mollitia libero doloremque nam veritatis, quod corrupti ducimus quasi minus, numquam aliquam voluptates pariatur eligendi vero.",
+                            "bucket": {
+                                "type": "DateHistogram",
+                                "field": "date_from",
+                                "interval": "Year",
+                                "metrics": [{
+                                        "type": "Sum",
+                                        "field": "total_cost"
+                                    }, {
+                                        "type": "Sum",
+                                        "field": "contribution"
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        }, {
+            "name": "Societal Impact",
+            "chartGroups": [{
+                    "name": "",
+                    "charts": [{
+                            "indicatorId": "1ad3f3f0-c714-4f4b-a842-28526b0cdd26",
+                            "type": "bar",
+                            "name": "EU Contribution &  Total Cost of Projects",
+                            "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ab, amet. Molestias suscipit sunt officiis mollitia libero doloremque nam veritatis, quod corrupti ducimus quasi minus, numquam aliquam voluptates pariatur eligendi vero.",
+                            "bucket": {
+                                "type": "DateHistogram",
+                                "field": "date_from",
+                                "interval": "Year",
+                                "metrics": [{
+                                        "type": "Sum",
+                                        "field": "total_cost"
+                                    }, {
+                                        "type": "Sum",
+                                        "field": "contribution"
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }, {
+                    "name": "",
+                    "charts": [{
+                            "indicatorId": "1ad3f3f0-c714-4f4b-a842-28526b0cdd26",
+                            "type": "pie",
+                            "name": "EU Contribution per Country",
+                            "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ab, amet. Molestias suscipit sunt officiis mollitia libero doloremque nam veritatis, quod corrupti ducimus quasi minus, numquam aliquam voluptates pariatur eligendi vero.",
+                            "metrics": [{
+                                    "color": "purple",
+                                    "type": "Sum",
+                                    "field": "total_cost"
+                                }, {
+                                    "color": "green",
+                                    "type": "Sum",
+                                    "field": "contribution"
+                                }
+                            ],
+                            "roseType": "area"
+                        }
+                    ]
+                }, {
+                    "name": "",
+                    "charts": [{
+                            "indicatorId": "1ad3f3f0-c714-4f4b-a842-28526b0cdd26",
+                            "type": "scatter",
+                            "name": "EU Contribution per Organization Sector",
+                            "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ab, amet. Molestias suscipit sunt officiis mollitia libero doloremque nam veritatis, quod corrupti ducimus quasi minus, numquam aliquam voluptates pariatur eligendi vero.",
+                            "legend": {}
+                        }
+                    ]
+                }, {
+                    "name": "",
+                    "charts": [{
+                            "indicatorId": "1ad3f3f0-c714-4f4b-a842-28526b0cdd26",
+                            "type": "line",
+                            "name": "EU Contribution per within Major Category",
+                            "chartName": "EU Contribution per within Major Category",
+                            "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ab, amet. Molestias suscipit sunt officiis mollitia libero doloremque nam veritatis, quod corrupti ducimus quasi minus, numquam aliquam voluptates pariatur eligendi vero.",
+                            "bucket": {
+                                "type": "DateHistogram",
+                                "field": "date_from",
+                                "interval": "Year",
+                                "metrics": [{
+                                        "type": "Sum",
+                                        "field": "total_cost"
+                                    }, {
+                                        "type": "Sum",
+                                        "field": "contribution"
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

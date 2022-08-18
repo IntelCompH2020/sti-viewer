@@ -1,0 +1,66 @@
+error-thesaurus:
+  hash-conflict:
+    code: 100
+    message: there is a hash conflict for the item modified. please reload to get the latest changes
+  forbidden:
+    code: 101
+    message: insufficient rights
+  system-error:
+    code: 102
+    message: an unexpected system error occurred
+  missing-tenant:
+    code: 103
+    message: tenant scope not provided
+  invalid-api-key:
+    code: 104
+    message: provided APIKey not valid
+  stale-api-key:
+    code: 105
+    message: there was a problem authorizing you with your API key. Please try again. Contact the system administrator if the problem persists
+  model-validation:
+    code: 106
+    message: validation error
+  sensitive-info:
+    code: 107
+    message: you are attempting to access sensitive information. please don't do that
+  non-person-principal:
+    code: 108
+    message: the operation is available only to person users
+  routee-authentication-failed:
+    code: 109
+    message: could not retrieve access token
+  routee-send-sms-failed:
+    code: 110
+    message: could not send sms
+  routee-track-sms-failed:
+    code: 111
+    message: could not retrieve tracking status for sms
+  slack-broadcast-failed:
+    code: 112
+    message: could not broadcast message through slack
+  blocking-consent:
+    code: 113
+    message: user consents are not sufficient to complete the operation
+  what-you-know-about-me-incompatible-state:
+    code: 114
+    message: the what you know about me request is in incompatible state with respect to the action
+  existing-primary-notification-template:
+    code: 115
+    message: there is already a notification template set as primary
+  single-tenant-configuration-per-type-supported:
+    code: 116
+    message: a single tenant configuration entry per config type is supported
+  incompatible-tenant-configuration-types:
+    code: 117
+    message: the provided tenant configuration type is incompatible
+  missing-totp-token:
+    code: 118
+    message: totp token not provided
+  overlapping-tenant-configuration-notifier-list:
+    code: 119
+    message: Overlapping Tenant Configuration Notifier List
+  notification-kind-must-be-set:
+    code: 120
+    message: notification kind must be set
+  
+  

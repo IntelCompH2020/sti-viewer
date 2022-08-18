@@ -1,0 +1,23 @@
+.side-navigation-container{
+    padding-left: 1rem;
+    padding-right: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+.navigation-item{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: .4em;
+    cursor: pointer;
+    color: white;
+}
+.item-icon{
+    font-size: 2rem;
+    overflow: unset;
+}
+
+.side-navigation-container:hover .navigation-description{
+    // display: block !important;
+}

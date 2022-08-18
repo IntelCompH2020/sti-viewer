@@ -1,0 +1,17 @@
+button {
+    font-size: inherit;
+    padding: 0.2em;
+    margin: 0.1em 0.2em;
+    /* the following ensures they're all using the same box-model for rendering */
+    -moz-box-sizing: content-box;
+    /* or `border-box` */
+    -webkit-box-sizing: content-box;
+    box-sizing: content-box;
+    position: absolute;
+    top: 50%;
+}
+
+
+.wrapper {
+    text-align: center;
+}

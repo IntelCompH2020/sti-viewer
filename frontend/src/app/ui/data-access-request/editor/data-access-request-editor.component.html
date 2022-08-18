@@ -1,0 +1,76 @@
+<div *ngIf="this.formGroup" class="row data-access-request-editor m-0">
+	<div class="col-md-8 offset-md-2">
+		<mat-card>
+			<mat-card-title *ngIf="isNew">{{'APP.DATA-ACCESS-REQUEST-EDITOR.TITLE.NEW' | translate}}</mat-card-title>
+			<mat-card-title *ngIf="!isNew">{{'APP.DATA-ACCESS-REQUEST-EDITOR.TITLE.EXISTING' | translate}}
+			</mat-card-title>
+			<mat-card-content style="padding: 1rem;">
+				<form (ngSubmit)="formSubmit()" [formGroup]="formGroup" disabled>
+					<div class="row">
+						<mat-form-field *ngIf="!isNew" class="col-md-12">
+							<mat-label>{{'APP.DATA-ACCESS-REQUEST-LISTING.FIELDS.STATUS' | translate}}</mat-label>
+							<input matInput type="text" name="status" formControlName="status" disabled readonly="true">
+						</mat-form-field>
+						<app-indicator-config class="mat-form-field col-md-12"
+							*ngFor=" let control of this.formGroup.get('indicatorsConfigArray')['controls']; let i=index"
+							[disabled]="!isNew" [control]="control" [index]="i"
+							[alreadySelectedIndicators]="this.selectedIndicators"
+							(onDeleteConfig)="this.deleteConfig($event)">
+						</app-indicator-config>
+
+						<div class="col-md-12 text-center">
+							<mat-card-actions *ngIf="isNew">
+								<button (click)='addNewConfig()' type="button" mat-button>Add new
+									Configuration</button>
+							</mat-card-actions>
+						</div>
+
+						<div class="col-12" [class.d-none]="indicatorGroups?.length < 2">
+							<mat-form-field>
+								<mat-label>Select group</mat-label>
+								<mat-select [disabled]="isNew" multiple [(ngModel)]="selectedGroupIds" [ngModelOptions]="{standalone: true}" (ngModelChange)="onChangeGroup($event)">
+									<mat-option *ngFor="let item of indicatorGroups" [value]="item.id">{{item.name}}</mat-option>
+								</mat-select>
+							</mat-form-field>
+						</div>
+						<ng-container *ngFor="let fGroup of indicatorGroupsArray?.controls">
+							<app-indicator-columns-editor
+								[column]="it.value.column"
+								[control]="it.get('values')"
+								[disabled]="!isNew"
+								[indicatorIds]="fGroup.get('indicatorIds').value"
+								*ngFor="let it of fGroup.get('filterColumns')?.controls"
+							>
+							</app-indicator-columns-editor>
+						</ng-container>
+
+					</div>
+
+					<div class="row editor-actions">
+						<div class="col"></div>
+						<div class="col-auto" *ngIf="this.canEdit"><button mat-raised-button color="primary"
+								(click)="save()" type="submit">{{'APP.EDITOR-ACTIONS.SAVE' | translate}}</button></div>
+						<div class="col-auto" *ngIf="this.canSubmit"><button mat-raised-button color="primary"
+								(click)="submit()" type="button">{{'APP.DATA-ACCESS-REQUEST-EDITOR.ACTIONS.SUBMIT' |
+								translate}}</button></div>
+						<div class="col-auto" *ngIf="this.canApprove"><button mat-raised-button color="primary"
+								(click)="setStatus(dataAccessRequestStatus.APPROVED)"
+								type="button">{{'APP.DATA-ACCESS-REQUEST-EDITOR.ACTIONS.APPROVE' | translate}}</button>
+						</div>
+						<div class="col-auto" *ngIf="this.canReject"><button mat-raised-button color="primary"
+								(click)="setStatus(dataAccessRequestStatus.REJECTED)"
+								type="button">{{'APP.DATA-ACCESS-REQUEST-EDITOR.ACTIONS.REJECT' | translate}}</button>
+						</div>
+						<div class="col-auto" *ngIf="this.canWithdrawn"><button mat-raised-button color="primary"
+								(click)="setStatus(dataAccessRequestStatus.WITHDRAWN)"
+								type="button">{{'APP.DATA-ACCESS-REQUEST-EDITOR.ACTIONS.WITHDRAWN' |
+								translate}}</button>
+						</div>
+						<div class="col-auto"><button mat-raised-button color="primary" (click)="cancel()"
+								type="button">{{'APP.EDITOR-ACTIONS.BACK' | translate}}</button></div>
+					</div>
+				</form>
+			</mat-card-content>
+		</mat-card>
+	</div>
+</div>

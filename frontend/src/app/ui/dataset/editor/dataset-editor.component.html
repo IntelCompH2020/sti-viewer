@@ -1,0 +1,26 @@
+<div class="row dataset-editor">
+	<div class="col-md-8 offset-md-2">
+		<mat-card>
+			<mat-card-title *ngIf="isNew">{{'APP.DATASET-EDITOR.TITLE.NEW' | translate}}</mat-card-title>
+			<mat-card-title *ngIf="!isNew">{{formGroup.get('title').value}}</mat-card-title>
+			<mat-card-content>
+				<form (ngSubmit)="formSubmit()" [formGroup]="formGroup">
+					<div class="row">
+						<mat-form-field class="col-md-12">
+							<mat-label>{{'APP.DATASET-EDITOR.FIELDS.TITLE' | translate}}</mat-label>
+							<input matInput type="text" name="dataset-title" formControlName="title" required>
+							<mat-error *ngIf="formGroup.get('title').hasError('backendError')">{{formGroup.get('title').getError('backendError')?.message}}</mat-error>
+							<mat-error *ngIf="formGroup.get('title').hasError('required')">{{'COMMONS.VALIDATION.REQUIRED' | translate}}</mat-error>
+						</mat-form-field>
+						<mat-form-field class="col-md-12">
+							<mat-label>{{'APP.DATASET-EDITOR.FIELDS.NOTES' | translate}}</mat-label>
+							<textarea matInput rows="5" name="notes" formControlName="notes"></textarea>
+							<mat-error *ngIf="formGroup.get('notes').hasError('backendError')">{{formGroup.get('notes').getError('backendError')?.message}}</mat-error>
+						</mat-form-field>
+					</div>
+					<app-editor-actions-component [canDelete]="authService.hasPermission(authService.permissionEnum.DeleteDataset) && !isDeleted && !isNew" [canSave]="authService.hasPermission(authService.permissionEnum.EditDataset) && !isDeleted" (onDelete)="delete()" (onCancel)="cancel()" (onSave)="save()"></app-editor-actions-component>
+				</form>
+			</mat-card-content>
+		</mat-card>
+	</div>
+</div>

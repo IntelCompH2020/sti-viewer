@@ -1,0 +1,61 @@
+
+<div class="parent-root-container">
+<div *ngIf="configuration" class="col">
+    <div class="row justify-content-between mt-2 mb-2">
+        <div class="col-auto">
+            <h2>Browse all Topics</h2>
+        </div>
+        <div class="col-auto">
+            <mat-button-toggle-group name="fontStyle" [(value)]="selectedView" aria-label="Font Style">
+                <mat-button-toggle [value]="0">
+                    <mat-icon>
+                        view_stream
+                    </mat-icon>
+                </mat-button-toggle>
+                <mat-button-toggle [value]="1"><mat-icon>account_tree</mat-icon></mat-button-toggle>
+            </mat-button-toggle-group>
+        </div>
+
+    </div>
+
+
+    
+    <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" *ngIf="treeControl && dataSource" [class.d-none]="selectedView !== 1">
+        <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding [@fadeIn]>
+            <button mat-button (click)="navigateToNode(node)">
+                {{node.item}}
+            </button>
+        </mat-tree-node>
+        <mat-tree-node *matTreeNodeDef="let node; when: hasChild" matTreeNodePadding [@fadeIn]>
+            
+            <div class="d-flex flex-row align-items-center tree-item" style="gap: 1rem">
+                <button mat-icon-button
+                [attr.aria-label]="'Toggle ' + node.item" matTreeNodeToggle>
+                    <mat-icon class="mat-icon-rtl-mirror" [class.expanded]="treeControl.isExpanded(node)">
+                        chevron_right
+                    </mat-icon>
+                </button>
+                <span>
+                    {{node.item}}
+                </span>
+                    
+                <button mat-icon-button class="preview-item" color="accent" (click)="navigateToNode(node)">
+                    <mat-icon class="mat-icon-rtl-mirror">
+                        visibility
+                    </mat-icon>
+                </button>
+            </div>
+        </mat-tree-node>
+        </mat-tree>
+
+
+    <div class="contents" #contents  [class.d-none]="selectedView !== 0">
+        <div class="contents-details" *ngIf="configuration">
+            <app-indicator-details 
+                [configuration]="configuration"
+                (onIndicatorExpanded)="onExpand()">
+            </app-indicator-details>
+        </div>
+    </div>
+</div>
+</div>

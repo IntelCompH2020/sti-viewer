@@ -1,0 +1,112 @@
+.parent-root-container{
+
+    z-index: 1;
+	position: relative;
+	&::before{
+		position: fixed;
+		font-family: "Material Icons";
+    	content: "analytics";
+        overflow: hidden;
+		font-size: 60rem;
+		width: 100vw;
+		height: 100vh;
+		z-index: -1;
+		bottom: 0;
+		right: 20px;
+		text-align: end;
+		opacity: .1;
+	}
+}
+
+
+.contents {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    overflow-x: scroll;
+    
+}
+
+.contents-list {
+    display: flex;
+    flex-direction: column;
+    gap: .2rem;
+    min-width: 15rem;
+    z-index: 1;
+}
+.contents-details{
+    z-index: 0;
+}
+
+.indicator-overview {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.indicator-actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.indicator-select-link {
+    outline: none;
+    text-decoration: none;
+    color: #2c2c2c;
+}
+
+.indicator-select-link:link {
+    cursor: pointer;
+    outline: none;
+    text-decoration: none;
+    color: #757474;
+}
+
+.indicator-select-link:visited {
+    cursor: pointer;
+    outline: none;
+    text-decoration: none;
+    color: #2c2c2c;
+}
+
+.indicator-select-link:focus {
+    cursor: pointer;
+    outline: none;
+    text-decoration: none;
+    color: #757474;
+}
+
+.indicator-select-link:hover {
+    cursor: pointer;
+    outline: none;
+    text-decoration: underline;
+    color: #757474;
+}
+
+.indicator-select-link:active {
+    color: #2c2c2c;
+}
+
+
+.preview-item{
+    display: none;
+}
+.tree-item{
+    gap: 1rem;
+    &:hover{
+        .preview-item{
+            display: unset;
+        }
+    }
+}
+
+.mat-icon-rtl-mirror{
+    transition: all .2s ease-out;
+}
+
+.expanded{
+    transform: rotate(90deg) ;
+}

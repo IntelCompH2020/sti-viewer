@@ -1,0 +1,33 @@
+<mat-card class="mat-form-field col-md-12 m-1">
+    <mat-card-actions [align]="'end'">
+        <button *ngIf="!disabled" (click)="this.onDeleteConfig.emit(this.index)" type="button" matSuffix mat-icon-button
+            aria-label="Clear">
+            <mat-icon>delete_forever</mat-icon>
+        </button>
+    </mat-card-actions>
+    <div class="col-md-12 text-center">
+        <mat-label>{{'APP.DATA-ACCESS-REQUEST-EDITOR.TITLE.CONFIG' | translate}}</mat-label>
+    </div>
+    <mat-card-content style="margin-top:0.4rem">
+        <mat-form-field *ngIf="this.control" class="col-md-12">
+            <mat-label>{{'APP.DATA-ACCESS-REQUEST-EDITOR.FIELDS.INDICATORS'| translate }} :</mat-label>
+            <app-single-auto-complete [disabled]="disabled" [formControl]="this.control?.get('indicator')"
+                [configuration]="this.indicatorAutocompleteConfiguration" (optionSelected)="onSelectIndicator($event)">
+            </app-single-auto-complete>
+        </mat-form-field>
+        <div *ngIf="this.selectedIndicator && this.selectedIndicator.config">
+
+            <app-indicator-column-config *ngFor="let control of this.filterColumns['controls']; let i = index"
+                [disabled]="disabled" [selectedIndicator]=" this.selectedIndicator"
+                [selectedColumns]="this.selectedColumns" [index]="i" (onDeleteColumn)="this.deleteColumn($event)"
+                [filterColumn]="this.control">
+            </app-indicator-column-config>
+        </div>
+        <div class="col-md-12 text-center"
+            [hidden]="disabled || !this.selectedIndicator || !this.selectedIndicator.config || (this.selectedIndicator.config.filterColumns.length === this.selectedColumns.length)">
+            <button (click)='addNewColumn()' type="button" mat-flat-button>Add new
+                Colomn</button>
+
+        </div>
+    </mat-card-content>
+</mat-card>

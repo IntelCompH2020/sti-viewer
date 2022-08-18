@@ -1,0 +1,61 @@
+<div class="root-container">
+	<div class="banner background-primary">
+		<h1 class="text-white">{{ "APP.HOME-COMPONENT.TITLE" | translate }}</h1>
+	</div>
+	<div class="content">
+		<div class="welcome_screen">
+			<div class="card p-4">
+				<div class="content-card">
+					<!-- TODO TEXTS -->
+					<h3>{{'APP.HOME-COMPONENT.SEARCH-INDICATORS' | translate}}</h3>
+					<div class="row align-items-center">
+						<mat-form-field appearance="legacy" class="col">
+							<mat-label>{{'APP.HOME-COMPONENT.SEARCH-INDICATORS' | translate}}</mat-label>
+							<input matInput placeholder />
+						</mat-form-field>
+	
+						<button mat-icon-button color="primary" class="col-auto">
+							<mat-icon>search</mat-icon>
+						</button>
+					</div>
+					<span class="text-center">Or</span>
+					<button mat-button color="primary" class="m-auto" (click)="navigateToIndicators()">
+						{{'APP.HOME-COMPONENT.BROWSE-INDICATORS' | translate}}
+						<mat-icon>trending_up</mat-icon>
+					</button>
+				</div>
+			</div>
+		</div>
+
+
+		<div class="col mb-3" *ngIf="bookmarks?.length">
+			<div class="row justify-content-center align-items-center">
+				<div class="col-auto p-0">
+					<h3>{{'APP.HOME-COMPONENT.BOOKMARKS.TITLE' | translate}}</h3>
+				</div>
+				<div class="col-auto">
+					<h6 class="text-muted">({{totalBookmarks}})</h6>
+				</div>
+			</div>
+			<div class="bookmarks" [@listAnimationSequential]="bookmarks.length">
+				<mat-card *ngFor="let bookmark of bookmarks">
+					<img mat-card-image [src]="bookmark.img">
+					<mat-card-content>
+						<p class="bookmark-description">
+							{{bookmark.description}}
+						</p>
+					</mat-card-content>
+					<mat-card-actions align="end">
+						<button mat-button (click)="removeBookmark(bookmark)">{{'APP.HOME-COMPONENT.BOOKMARKS.UNDO-BOOKMARK' | translate}}<mat-icon>bookmark_outline</mat-icon></button>
+						<button mat-button (click)="navigateToBookmark(bookmark)"> {{'APP.HOME-COMPONENT.BOOKMARKS.GO-TO-CHART' | translate}}<mat-icon>navigate_next</mat-icon></button>
+					</mat-card-actions>
+				</mat-card>
+			</div>
+
+			<div class="row justify-content-center mt-4 mb-4">
+				<button mat-raised-button color="primary" [disabled]="!hasMoreBookmarks" (click)="loadMore()">{{ (hasMoreBookmarks ?  'APP.HOME-COMPONENT.BOOKMARKS.LOAD-MORE' : 'APP.HOME-COMPONENT.BOOKMARKS.NO-MORE-BOOKMARKS'  ) | translate}}</button>
+			</div>
+			
+		</div>
+	</div>
+</div>

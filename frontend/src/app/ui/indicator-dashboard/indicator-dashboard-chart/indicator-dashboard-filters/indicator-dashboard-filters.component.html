@@ -1,0 +1,81 @@
+<div class="col">
+    <h3>{{'APP.INDICATOR-DASHBOARD.CHART.FILTERS-DIALOG.TITLE' | translate}} {{chartName}}</h3>
+</div>
+<div class="col" *ngIf="filtersArray">
+	<div class="row" *ngFor="let filter of filters; let index = index">
+		<ng-container [ngSwitch]="filter.type" *ngIf="!bannedValues[filter.fieldCode]">
+			<ng-container *ngSwitchCase="FilterTypes.Select">
+
+				<ng-container *ngIf="filter.values?.length else autocomplete">
+					<mat-form-field appearance="legacy" class="col" >
+						<mat-label>{{ filter.name }}</mat-label>
+						<mat-select [multiple]="!!filter.multiple" [formControl]="filtersArray.controls[index].get('value')">
+							<mat-option [value]="null" *ngIf="!filter.multiple">-</mat-option>
+							<mat-option
+							*ngFor="let value of filter.values"
+							[value]="value.value"
+							>
+							{{ value.name }}
+							</mat-option>
+						</mat-select>
+					</mat-form-field>
+				</ng-container>
+
+
+				<ng-template #autocomplete>
+
+					
+					<ng-container *ngIf="!!filter.multiple else singleAutocomplete">
+						<mat-form-field appearance="legacy" class="col" style="position: relative;">
+							<mat-label>{{ filter.name }}</mat-label>
+							<app-multiple-auto-complete [formControl]="filtersArray.controls[index].get('value')"
+							[configuration]="filter.autoCompleteConfiguration">
+						</app-multiple-auto-complete>
+					</mat-form-field>
+					</ng-container>
+
+
+					<ng-template #singleAutocomplete>
+						<mat-form-field appearance="legacy" class="col" style="position: relative;">
+							<mat-label>{{ filter.name }}</mat-label>
+							<app-single-auto-complete [formControl]="filtersArray.controls[index].get('value')"
+								[configuration]="filter.autoCompleteConfiguration"
+								>
+							</app-single-auto-complete>
+						</mat-form-field>
+					</ng-template>
+
+
+				</ng-template>
+
+			</ng-container>
+
+
+
+			<ng-container *ngSwitchCase="FilterTypes.Slider">
+				<div class="col-12">
+					{{ filter.name }}
+				</div>
+				<div class="col custom-slider">
+					<ngx-slider
+						[formControl]="filtersArray.controls[index].get('value')"
+						[options]="sliderConfigurations[index]"
+						[manualRefresh]="manualRefresh"
+					></ngx-slider>
+				</div>
+			</ng-container>
+		</ng-container>
+	</div>
+
+    <div class="row justify-content-between mt-4">
+
+        <div class="col-auto">
+            <button mat-raised-button (click)="close()">{{'APP.INDICATOR-DASHBOARD.CHART.FILTERS-DIALOG.CANCEL' | translate}}</button>
+        </div>
+        <div class="col-auto">
+            <button (click)="submit()" mat-raised-button color="primary">{{'APP.INDICATOR-DASHBOARD.CHART.FILTERS-DIALOG.SUBMIT' | translate}}</button>
+        </div>
+
+    </div>
+</div>
+

@@ -1,0 +1,364 @@
+notification:
+  task:
+    processor:
+      enable: true
+      interval-seconds: 30
+      options:
+        retry-threshold: 300
+        max-retry-delay-seconds: 10800
+        too-old-to-send-seconds: 36000
+        too-old-to-track-seconds: 604800
+      overrides: []
+  resolver:
+    global-policies: 
+        - #RegistrationInvitation
+          type: 4FDBFA80-7A71-4A69-B854-67CBB70648F1
+          contacts: [ email, sms ]
+        - #TotpOverrideUsed
+          type: 065DEECD-21BB-44AF-9983-E660FDF24BC4
+          contacts: [ inapp, email ]
+        - #Credential Reset
+          type: 90DB0B46-42DE-BD89-AEBF-6F27EFEB256E
+          contacts: [ email ]
+        - #Direct Link
+          type: BFE68845-CB05-4C5A-A03D-29161A7C9660
+          contacts: [ email ]
+        - #FogetMe Request
+          type: 4542262A-22F8-4BAA-9DB6-1C8E70AC1DBB
+          contacts: [ email ]
+        - #WhatyouKnowAboutMe Request
+          type: D3CD55FE-8DA2-42E7-A501-3795EE4F16D3
+          contacts: [ email ]
+        - #WhatyouKnowAboutMe Request completed
+          type: 55736F7A-83AB-4190-AF43-9D031A6F9612
+          contacts: [ email ]
+        - #EmailReset Request
+          type: 223BB607-EFA1-4CE7-99EC-4BEABFEF9A8B
+          contacts: [ email ]
+        - #EmailReset Awareness
+          type: C9BC3F16-057E-4BBA-8A5F-36BD835E5604
+          contacts: [ email ]
+        - #EmailReset Remove
+          type: 1AEB49E8-C817-4088-8B45-08E0A5155796
+          contacts: [ email ]
+        - #GenerateFile Request completed
+          type: CE5BB8B5-3E00-4CC7-BCCF-DBCF40D19CAB
+          contacts: [ email ]
+  ad-hoc-config:
+    ad-hoc-notification-type: null
+  message:
+    email:
+      flows:
+          -  #RegistrationInvitation
+            key: 4FDBFA80-7A71-4A69-B854-67CBB70648F1
+            subject-path: classpath:notification_templates/RegistrationInvitation/Email/subject.{language}.txt
+            subject-field-options:
+              mandatory: [ ]
+              optional: [ ]
+
+            body-path: classpath:notification_templates/RegistrationInvitation/Email/body.{language}.html
+            body-field-options:
+              mandatory: [ "{installation-url}", "{token}" ]
+              optional:
+                  - key: "{tenant-code}"
+                    value:
+                  - key: "{name}"
+                    value:
+                  - key: "{duration}"
+                    value: ---
+              formatting:
+                '[{tenant-code}]': null
+                '[{installation-url}]': null
+                '[{token}]': null
+                '[{name}]': null
+                '[{duration}]': null
+            cc: [ ]
+            cc-mode: 0
+            bcc: [ ]
+            bcc-mode: 0
+            allow-attachments: false
+            cipher-fields: [ "{token}" ]
+          -  #TotpOverrideUsed
+            key: 065DEECD-21BB-44AF-9983-E660FDF24BC4
+            subject-path: classpath:notification_templates/TotpOverrideUsed/Email/subject.{language}.txt
+            subject-field-options:
+              mandatory: [ ]
+              optional: [ ]
+            body-path: classpath:notification_templates/TotpOverrideUsed/Email/body.{language}.html
+            body-field-options:
+              mandatory: [ ]
+              optional:
+                - key: "{name}"
+                  value:
+              formatting:
+                '[{name}]': null
+            cc: [ ]
+            cc-mode: 0
+            bcc: [ ]
+            bcc-mode: 0
+            allow-attachments: false
+            cipher-fields: [ ]
+          -    #Credential Reset
+            key: 90DB0B46-42DE-BD89-AEBF-6F27EFEB256E
+            subject-path: classpath:notification_templates/CredentialReset/Email/subject.{language}.txt
+            subject-field-options:
+              mandatory: [ ]
+              optional: [ ]
+            body-path: classpath:notification_templates/CredentialReset/Email/body.{language}.html
+            body-field-options:
+              mandatory: [ "{installation-url}", "{token}" ]
+              optional:
+                - key: "{tenant-code}"
+                  value:
+                - key: "{name}"
+                  value:
+                - key: "{duration}"
+                  value: ---
+              formatting:
+                '[{tenant-code}]': null
+                '[{installation-url}]': null
+                '[{token}]': null
+                '[{name}]': null
+                '[{duration}]': null
+            cc: [ ]
+            cc-mode: 0
+            bcc: [ ]
+            bcc-mode: 0
+            allow-attachments: false
+            cipher-fields: [ "{token}" ]
+          -    #Direct Link
+            key: BFE68845-CB05-4C5A-A03D-29161A7C9660
+            subject-path: classpath:notification_templates/DirectLink/Email/subject.{language}.txt
+            subject-field-options:
+              mandatory: [ ]
+              optional: [ ]
+            body-path: classpath:notification_templates/DirectLink/Email/body.{language}.html
+            body-field-options:
+              mandatory: [ "{installation-url}", "{direct-link-code}" ]
+              optional:
+                - key: "{tenant-code}"
+                  value:
+                - key: "{name}"
+                  value:
+                - key: "{duration}"
+                  value: ---
+              formatting:
+                '[{tenant-code}]': null
+                '[{installation-url}]': null
+                '[{direct-link-code}]': null
+                '[{name}]': null
+                '[{duration}]': null
+            cc: [ ]
+            cc-mode: 0
+            bcc: [ ]
+            bcc-mode: 0
+            allow-attachments: false
+            cipher-fields: [ "{direct-link-code}" ]
+          -    #ForgetMe Request
+            key: 4542262A-22F8-4BAA-9DB6-1C8E70AC1DBB
+            subject-path: classpath:notification_templates/ForgetMe/Email/subject.{language}.txt
+            subject-field-options:
+              mandatory: [ ]
+              optional: [ ]
+            body-path: classpath:notification_templates/ForgetMe/Email/body.{language}.html
+            body-field-options:
+              mandatory: [ "{tenant-code}", "{installation-url}", "{token}" ]
+              optional:
+                - key: "{name}"
+                  value:
+                - key: "{duration}"
+                  value: ---
+              formatting:
+                '[{tenant-code}]': null
+                '[{installation-url}]': null
+                '[{token}]': null
+                '[{name}]': null
+                '[{duration}]': null
+            cc: [ ]
+            cc-mode: 0
+            bcc: [ ]
+            bcc-mode: 0
+            allow-attachments: false
+            cipher-fields: [ "{token}" ]
+          -    #WhatYouKnowAboutMe Request
+            key: D3CD55FE-8DA2-42E7-A501-3795EE4F16D3
+            subject-path: classpath:notification_templates/WhatYouKnowAboutMe/Email/subject.{language}.txt
+            subject-field-options:
+              mandatory: [ ]
+              optional: [ ]
+            body-path: classpath:notification_templates/WhatYouKnowAboutMe/Email/body.{language}.html
+            body-field-options:
+              mandatory: [ "{tenant-code}", "{installation-url}", "{token}" ]
+              optional:
+                - key: "{name}"
+                  value:
+                - key: "{duration}"
+                  value: ---
+              formatting:
+                '[{tenant-code}]': null
+                '[{installation-url}]': null
+                '[{token}]': null
+                '[{name}]': null
+                '[{duration}]': null
+            cc: [ ]
+            cc-mode: 0
+            bcc: [ ]
+            bcc-mode: 0
+            allow-attachments: false
+            cipher-fields: [ "{token}" ]
+          -    #WhatYouKnowAboutMe Request Completed
+            key: 55736F7A-83AB-4190-AF43-9D031A6F9612
+            subject-path: classpath:notification_templates/WhatYouKnowAboutMeCompleted/Email/subject.{language}.txt
+            subject-field-options:
+              mandatory: [ ]
+              optional: [ ]
+            body-path: classpath:notification_templates/WhatYouKnowAboutMeCompleted/Email/body.{language}.html
+            body-field-options:
+              mandatory: [ "{tenant-code}", "{installation-url}" ]
+              optional:
+                - key: "{name}"
+                  value:
+                - key: "{duration}"
+                  value: ---
+              formatting:
+                '[{tenant-code}]': null
+                '[{installation-url}]': null
+                '[{token}]': null
+                '[{name}]': null
+                '[{duration}]': null
+            cc: [ ]
+            cc-mode: 0
+            bcc: [ ]
+            bcc-mode: 0
+            allow-attachments: false
+            cipher-fields: [ ]
+          -    #EmailReset Request
+            key: 223BB607-EFA1-4CE7-99EC-4BEABFEF9A8B
+            subject-path: classpath:notification_templates/EmailResetRequest/Email/subject.{language}.txt
+            subject-field-options:
+              mandatory: [ ]
+              optional: [ ]
+            body-path: classpath:notification_templates/EmailResetRequest/Email/body.{language}.html
+            body-field-options:
+              mandatory: [ "{tenant-code}", "{installation-url}", "{token}" ]
+              optional:
+                - key: "{name}"
+                  value:
+                - key: "{duration}"
+                  value: ---
+              formatting:
+                '[{tenant-code}]': null
+                '[{installation-url}]': null
+                '[{token}]': null
+                '[{name}]': null
+                '[{duration}]': null
+            cc: [ ]
+            cc-mode: 0
+            bcc: [ ]
+            bcc-mode: 0
+            allow-attachments: false
+            cipher-fields: [ "{token}" ]
+          -    #EmailResetAwareness Request
+            key: C9BC3F16-057E-4BBA-8A5F-36BD835E5604
+            subject-path: classpath:notification_templates/EmailResetAwareness/Email/subject.{language}.txt
+            subject-field-options:
+              mandatory: [ ]
+              optional: [ ]
+            body-path: classpath:notification_templates/EmailResetAwareness/Email/body.{language}.html
+            body-field-options:
+              mandatory: [ "{tenant-code}", "{installation-url}", "{token}", "{target-email}" ]
+              optional:
+                - key: "{name}"
+                  value:
+                - key: "{duration}"
+                  value: ---
+              formatting:
+                '[{tenant-code}]': null
+                '[{installation-url}]': null
+                '[{token}]': null
+                '[{name}]': null
+                '[{duration}]': null
+            cc: [ ]
+            cc-mode: 0
+            bcc: [ ]
+            bcc-mode: 0
+            allow-attachments: false
+            cipher-fields: [ "{token}" ]
+          -    #EmailResetAwareness Remove
+            key: 1AEB49E8-C817-4088-8B45-08E0A5155796
+            subject-path: classpath:notification_templates/EmailResetRemove/Email/subject.{language}.txt
+            subject-field-options:
+              mandatory: [ ]
+              optional: [ ]
+            body-path: classpath:notification_templates/EmailResetRemove/Email/body.{language}.html
+            body-field-options:
+              mandatory: [ "{tenant-code}", "{installation-url}", "{token}" ]
+              optional:
+                - key: "{name}"
+                  value:
+                - key: "{duration}"
+                  value: ---
+              formatting:
+                '[{tenant-code}]': null
+                '[{installation-url}]': null
+                '[{token}]': null
+                '[{name}]': null
+                '[{duration}]': null
+            cc: [ ]
+            cc-mode: 0
+            bcc: [ ]
+            bcc-mode: 0
+            allow-attachments: false
+            cipher-fields: [ "{token}" ]
+          -    #GenerateFile Request Completed
+            key: CE5BB8B5-3E00-4CC7-BCCF-DBCF40D19CAB
+            subject-path: classpath:notification_templates/GenerateFileCompleted/Email/subject.{language}.txt
+            subject-field-options:
+              mandatory: [ ]
+              optional: [ ]
+            body-path: classpath:notification_templates/GenerateFileCompleted/Email/body.{language}.html
+            body-field-options:
+              mandatory: [ "{tenant-code}", "{installation-url}", "{file-id}" ]
+              optional:
+                - key: "{name}"
+                  value:
+                - key: "{duration}"
+                  value: ----
+              formatting:
+                '[{tenant-code}]': null
+                '[{installation-url}]': null
+                '[{file-id}]': null
+                '[{name}]': null
+                '[{duration}]': null
+            cc: [ ]
+            cc-mode: 0
+            bcc: [ ]
+            bcc-mode: 0
+            allow-attachments: false
+            cipher-fields: [ ]
+      template-cache:
+        prefix: ${CACHE_DISAMBIGUATION:}
+        key-pattern: "{prefix}:Notification_Message_Email_Template:{key}:v0"
+    in-app:
+      flows:
+        -  #TotpOverrideUsed
+          key: 065DEECD-21BB-44AF-9983-E660FDF24BC4
+          subject-path: classpath:notification_templates/TotpOverrideUsed/InApp/subject.{language}.txt
+          subject-field-options:
+            mandatory: [ ]
+            optional: [ ]
+            formatting: [ ]
+          body-path: classpath:notification_templates/TotpOverrideUsed/InApp/body.{language}.html
+          body-field-options:
+            mandatory: [ ]
+            optional: [ ]
+            formatting: [ ]
+          priority-key: null
+          cipher-fields: [ ]
+      template-cache:
+        prefix: ${CACHE_DISAMBIGUATION:}
+        key-pattern: "{prefix}:Notification_Message_InApp_Template:{key}:v0"
+  override-cache:
+    template-cache:
+      prefix: ${CACHE_DISAMBIGUATION:}
+      key-pattern: "{prefix}:Notification_Override_Template:{tenant}:{type}:{channel}:{{language}}:v0"

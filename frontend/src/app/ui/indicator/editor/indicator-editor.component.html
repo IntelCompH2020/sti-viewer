@@ -1,0 +1,46 @@
+<div class="row indicator-editor">
+	<div class="col-md-8 offset-md-2">
+		<mat-card>
+			<mat-card-title *ngIf="isNew">{{'APP.INDICATOR-EDITOR.TITLE.NEW' | translate}}</mat-card-title>
+			<mat-card-title *ngIf="isNew">{{'APP.INDICATOR-EDITOR.TITLE.EXISTING' | translate}}</mat-card-title>
+			<mat-card-content>
+				<form (ngSubmit)="formSubmit()" [formGroup]="formGroup">
+
+					<div class="row">
+						<mat-form-field class="col-md-12">
+							<mat-label>{{'APP.INDICATOR-EDITOR.FIELDS.CODE' | translate}}</mat-label>
+							<input matInput type="text" name="code" formControlName="code" required>
+							<mat-error *ngIf="formGroup.get('code').hasError('backendError')">
+								{{formGroup.get('code').getError('backendError')?.message}}</mat-error>
+							<mat-error *ngIf="formGroup.get('code').hasError('required')">
+								{{'COMMONS.VALIDATION.REQUIRED' | translate}}</mat-error>
+						</mat-form-field>
+						<mat-form-field class="col-md-12">
+							<mat-label>{{'APP.INDICATOR-EDITOR.FIELDS.NAME' | translate}}</mat-label>
+							<input matInput type="text" name="name" formControlName="name" required>
+							<mat-error *ngIf="formGroup.get('name').hasError('backendError')">
+								{{formGroup.get('name').getError('backendError')?.message}}</mat-error>
+							<mat-error *ngIf="formGroup.get('name').hasError('required')">
+								{{'COMMONS.VALIDATION.REQUIRED' | translate}}</mat-error>
+						</mat-form-field>
+						<mat-form-field class="col-md-12">
+							<mat-label>{{'APP.INDICATOR-EDITOR.FIELDS.DESCRIPTION' | translate}}</mat-label>
+							<textarea matInput rows="5" name="description" formControlName="description"
+								required></textarea>
+							<mat-error *ngIf="formGroup.get('description').hasError('backendError')">
+								{{formGroup.get('description').getError('backendError')?.message}}</mat-error>
+						</mat-form-field>
+						<app-access-request-config class="mat-form-field col-md-12"
+							[form]="formGroup?.get('config')?.get('filterColumns')" [editorModel]="this.editorModel">
+						</app-access-request-config>
+					</div>
+					<app-editor-actions-component
+						[canDelete]=" authService.hasPermission(authService.permissionEnum.DeleteIndicator) && !isDeleted && !isNew"
+						[canSave]="authService.hasPermission(authService.permissionEnum.EditIndicator) && !isDeleted"
+						(onDelete)="delete()" (onCancel)="cancel()" (onSave)="save()">
+					</app-editor-actions-component>
+				</form>
+			</mat-card-content>
+		</mat-card>
+	</div>
+</div>

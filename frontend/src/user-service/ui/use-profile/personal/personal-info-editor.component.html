@@ -1,0 +1,31 @@
+<div class="user-profile-personal-editor">
+	<form *ngIf="formGroup" (ngSubmit)="formSubmit()" [formGroup]="formGroup">
+		<div class="row">
+			<mat-form-field class="col-md-12">
+				<mat-label>{{'USER-SERVICE.USER-PROFILE-COMPONENT.PERSONAL.FIRST-NAME' | translate}}</mat-label>
+				<input matInput type="text" name="firstName" [formControl]="formGroup.get('firstName')">
+				<mat-error *ngIf="formGroup.get('firstName').hasError('backendError')">
+					{{formGroup.get('firstName').getError('backendError').message}}</mat-error>
+				<mat-error *ngIf="formGroup.get('firstName').hasError('required')">{{'COMMONS.VALIDATION.REQUIRED' |
+					translate}}</mat-error>
+			</mat-form-field>
+			<mat-form-field class="col-md-12">
+				<mat-label>{{'USER-SERVICE.USER-PROFILE-COMPONENT.PERSONAL.LAST-NAME' | translate}}</mat-label>
+				<input matInput type="text" name="lastName" [formControl]="formGroup.get('lastName')">
+				<mat-error *ngIf="formGroup.get('lastName').hasError('backendError')">
+					{{formGroup.get('lastName').getError('backendError').message}}</mat-error>
+				<mat-error *ngIf="formGroup.get('lastName').hasError('required')">
+					{{'COMMONS.VALIDATION.REQUIRED' |
+					translate}}</mat-error>
+			</mat-form-field>
+		</div>
+
+		<div class="row editor-actions">
+			<div class="col-auto"><button mat-raised-button color="primary" (click)="cancel()"
+					type="button">{{'USER-SERVICE.USER-PROFILE-COMPONENT.ACTIONS.CANCEL' | translate}}</button></div>
+			<div class="col"></div>
+			<div class="col-auto"><button mat-raised-button color="primary" (click)="save()"
+					type="submit">{{'USER-SERVICE.USER-PROFILE-COMPONENT.ACTIONS.SAVE' | translate}}</button></div>
+		</div>
+	</form>
+</div>

@@ -1,0 +1,37 @@
+<div class="contents">
+    <div class="contents-list" [@listAnimation]="data?.length">
+        <ng-container *ngFor="let item of data; let i = index">
+            <ng-container *ngFor="let levelItem of item.items; let j = index">
+                <mat-card class="p-1 pl-3 pr-3 cursor-pointer" (click)="onSelectIndicator(i,j)"
+                    [class.background-accent]="i === selectedIindex && selectedJindex === j"
+                    [class.text-white]="i === selectedIindex && selectedJindex === j">
+                    <div class="indicator-overview">
+                        <div class="indicator-info">
+                            {{levelItem.value}}
+                            <ng-container *ngIf="item?.supportedDashboards?.length && item.supportSubLevel">
+                                <br>
+                                <small>
+                                    <i >
+                                        <a class="indicator-select-link" (click)=" $event.stopPropagation(); selectReport(i, j)">
+                                            Overview
+                                        </a>
+                                    </i>
+                                </small>
+                            </ng-container>
+                        </div>
+                        <div class=" indicator-actions" *ngIf="item.supportSubLevel">
+                            <mat-icon>navigate_next</mat-icon>
+                        </div>
+    
+                    </div>
+                </mat-card>
+            </ng-container>
+        </ng-container>
+    </div>
+    <div class="details" *ngIf="childConfiguration">
+        <app-indicator-details 
+            [configuration]="childConfiguration"
+            (onIndicatorExpanded)="onExpand()">
+        </app-indicator-details>
+    </div>
+</div>

@@ -1,0 +1,38 @@
+error-thesaurus:
+  hash-conflict:
+    code: 100
+    message: there is a hash conflict for the item modifed. please reload to get the latest changes
+  forbidden:
+    code: 101
+    message: insufficient rights
+  system-error:
+    code: 102
+    message: an unexpected system error occured
+  missing-tenant:
+    code: 103
+    message: tenant scope not provided
+  model-validation:
+    code: 106
+    message: validation error
+  tenant-code-required:
+    code: 108
+    message: tenant code required
+  tenant-name-required:
+    code: 109
+    message: tenant name required
+  index-already-exists:
+    code: 110
+    message: index already exists
+  config-required:
+    code: 111
+    message: config is required
+  config-indicators-required:
+    code: 112
+    message: config indicators is required
+  tenant-not-allowed:
+    code: 113
+    message: tenant not allowed
+  bookmark-hash-conflict:
+    code: 114
+    message: there is a hash conflict for the bookmark
+  
