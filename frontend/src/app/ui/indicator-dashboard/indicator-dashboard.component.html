@@ -18,7 +18,7 @@
 			</div>
 		</div>
 		<div class="row" *ngIf="selectedTabIndex >= 0">
-			<app-indicator-dashboard-tab [indicatorQueryParams]="indicatorQueryParams" class="col-12" [tabConfig]="dashboardConfig.tabs[selectedTabIndex]"></app-indicator-dashboard-tab>
+			<app-indicator-dashboard-tab [dashboardConfig]="dashboardConfig" [indicatorQueryParams]="indicatorQueryParams" class="col-12" [tabConfig]="dashboardConfig.tabs[selectedTabIndex]"></app-indicator-dashboard-tab>
 		</div>
 	</ng-container>
 </div>

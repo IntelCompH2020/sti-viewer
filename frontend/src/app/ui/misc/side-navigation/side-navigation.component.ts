@@ -42,6 +42,11 @@ export class SideNavigationComponent extends BaseComponent implements OnInit {
 	@Output()
 	onNavigate  = new EventEmitter<void>();
 
+
+	get hasTenant():boolean{
+		return !!this.authService.selectedTenant();
+	}
+
 	constructor(
 		public authService: AuthService,
 		public router: Router,

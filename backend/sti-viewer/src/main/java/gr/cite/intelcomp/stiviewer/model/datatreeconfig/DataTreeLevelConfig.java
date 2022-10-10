@@ -11,8 +11,11 @@ public class DataTreeLevelConfig {
 	private Boolean supportSubLevel;
 	public static final String _supportSubLevel = "supportSubLevel";
 
-	private List<String> supportedDashboards;
-	public static final String _supportedDashboards = "supportedDashboards";
+	private List<String> defaultDashboards;
+	public static final String _defaultDashboards = "defaultDashboards";
+
+	private List<DataTreeLevelDashboardOverride> dashboardOverrides;
+	public static final String _dashboardOverrides = "dashboardOverrides";
 
 	public DataTreeDataField getField() {
 		return field;
@@ -30,12 +33,12 @@ public class DataTreeLevelConfig {
 		this.supportSubLevel = supportSubLevel;
 	}
 
-	public List<String> getSupportedDashboards() {
-		return supportedDashboards;
+	public List<String> getDefaultDashboards() {
+		return defaultDashboards;
 	}
 
-	public void setSupportedDashboards(List<String> supportedDashboards) {
-		this.supportedDashboards = supportedDashboards;
+	public void setDefaultDashboards(List<String> defaultDashboards) {
+		this.defaultDashboards = defaultDashboards;
 	}
 
 	public int getOrder() {
@@ -45,8 +48,13 @@ public class DataTreeLevelConfig {
 	public void setOrder(int order) {
 		this.order = order;
 	}
+
+	public List<DataTreeLevelDashboardOverride> getDashboardOverrides() {
+		return dashboardOverrides;
+	}
+
+	public void setDashboardOverrides(List<DataTreeLevelDashboardOverride> dashboardOverrides) {
+		this.dashboardOverrides = dashboardOverrides;
+	}
 }
-
-
-
 

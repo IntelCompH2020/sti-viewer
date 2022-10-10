@@ -1,0 +1,1694 @@
+{
+	"id": "dg01_pv01_dashboard",
+	"tabs": [
+		{
+			"name": "Science",
+			"chartGroups": [
+				{
+					"name": "Scientific Production Trends",
+					"charts": [
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "line",
+							"dataZoom": {
+								"inside": true,
+								"slider": true
+							},
+							"name": "",
+							"chartName": "Publications in Energy over time",
+							"xAxis": {
+								"name": "year"
+							},
+							"yAxis": {
+								"name": "publications"
+							},
+							"description": "The graph shows the evolution in the number of publications in the Energy domain, over time.",
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv01"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv01"]
+									},
+									{
+										"field": "indid",
+										"value": ["i01"]
+									}
+								]
+							},
+							"labelSortKey": "key",
+							"labelsTransform": {},
+							"series": [
+								{
+									"label": {
+										"name": "publications",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"areaStyle": {},
+							"filters": [],
+							"chartDownloadData": {},
+							"chartDownloadImage": {}
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "line",
+							"dataZoom": {
+								"inside": true
+							},
+							"legend": {},
+							"name": "",
+							"chartName": "Publication in sub-topics of Energy over time",
+							"xAxis": {
+								"name": "year"
+							},
+							"yAxis": {
+								"name": "publications"
+							},
+							"labelSortKey": "year",
+							"description": "The graph shows the evolution in the number of publications in different topics in the Energy domain, over time. The ontology of topics is taken from the technical annex of the Final Report of the [EU taxonomy for sustainable activities](<a href=\"https://finance.ec.europa.eu/sustainable-finance/tools-and-standards/eu-taxonomy-sustainable-activities_en#documents\" target=\"_blank\">https://finance.ec.europa.eu/sustainable-finance/tools-and-standards/eu-taxonomy-sustainable-activities_en#documents</a>) (Chapter 4. “Electricity, gas, steam and air conditioning supply,” p. 205). Our Fields of Science (FoS) classification system uses deep learning techniques to assign a scientific publication to different FoS classes, down to level 6, which we subsequently map to the ontology of topics in Energy.",
+							"chartDownloadData": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Composite",
+								"field": "key",
+								"sources": [
+									{
+										"field": "key"
+									},
+									{
+										"field": "year"
+									}
+								],
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv01"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv02"]
+									},
+									{
+										"field": "indid",
+										"value": ["i09"]
+									}
+								]
+							},
+							"series": [
+								{
+									"splitSeries": [
+										{
+											"key": "key"
+										}
+									],
+									"label": {
+										"name": "Topic",
+										"labelKey": "year"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"areaStyle": {},
+							"stack": "x"
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "line",
+							"dataZoom": {
+								"inside": true
+							},
+							"name": "",
+							"chartName": "Open Access publications in energy over time",
+							"xAxis": {
+								"name": "year"
+							},
+							"yAxis": {
+								"name": "publications"
+							},
+							"labelSortKey": "year",
+							"description": "The graph shows the evolution in the number of publications that are open access (best available access rights).",
+							"chartDownloadData": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Composite",
+								"field": "key",
+								"sources": [
+									{
+										"field": "key"
+									},
+									{
+										"field": "indid"
+									}
+								],
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv01"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv01"]
+									},
+									{
+										"field": "indid",
+										"value": ["i01", "i23"]
+									}
+								]
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Open access publications over time",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										],
+										"groupTests": [
+											{
+												"indid": "i23"
+											}
+										]
+									}
+								},
+								{
+									"nested": {
+										"type": "bar"
+									},
+									"label": {
+										"name": "Publications over time",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										],
+										"groupTests": [
+											{
+												"indid": "i01"
+											}
+										]
+									}
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Scientific Production Origins",
+					"charts": [
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "map",
+							"name": "",
+							"chartName": "Publications by Country",
+							"description": "The graph shows the number of publications by the country of the affiliated organization of an author. In the case of multiple authors each organization and corresponding country is counted as a separate publication (e.g., one publication with three authors, where two are from Greece and one is from Spain is counted as two publications in Greece and one in Spain).",
+							"chartDownloadData": {},
+							"chartDownloadImage": {},
+							"mapChartConfig": {
+								"high": {
+									"text": "High",
+									"color": "#42c39a"
+								}
+							},
+							"countryNameMapping": {
+								"Italy": "Italy"
+							},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv01"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv09"]
+									},
+									{
+										"field": "indid",
+										"value": ["i01"]
+									}
+								]
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Publications by Country",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							]
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "bar",
+							"name": "",
+							"chartName": "Publications by Organization (top 100)",
+							"description": "The graph shows the top 100 organizations in terms of number of publications in Energy.",
+							"horizontal": false,
+							"dataZoom": {
+								"inside": true,
+								"slider": true,
+								"areaZoom": {
+									"start": 0,
+									"end": 20
+								}
+							},
+							"chartDownloadData": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"xAxis": {
+								"axisLabel": {
+									"rotate": 45,
+									"width": 100
+								}
+							},
+							"rawDataRequest": {
+								"keyField": "key",
+								"valueField": "value",
+								"order": {
+									"items": ["-value"]
+								},
+								"page": {
+									"offset": 0,
+									"size": 100
+								}
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv01"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv06"]
+									},
+									{
+										"field": "indid",
+										"value": ["i01"]
+									}
+								]
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Energy publications per organization",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							]
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "polar_bar",
+							"horizontal": false,
+							"dataZoom": {
+								"inside": true,
+								"slider": true,
+								"areaZoom": {
+									"start": 0,
+									"end": 20
+								}
+							},
+							"name": "",
+							"chartName": "Publications by Funder",
+							"description": "The graph shows the number of grant-supported publications in Energy by funder (those that are currently integrated in OpenAIRE. See Methodology for a list).",
+							"xAxis": {
+								"name": "funder",
+								"axisLabel": {
+									"width": 100,
+									"rotate": 45
+								}
+							},
+							"yAxis": {
+								"name": "publications"
+							},
+							"chartDownloadData": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"rawDataRequest": {
+								"keyField": "key",
+								"valueField": "value",
+								"order": {
+									"items": ["-value"]
+								},
+								"page": {
+									"offset": 0,
+									"size": 100
+								}
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Citations per publication",
+										"labelKey": "key"
+									},
+									"values": {
+										"valueKey": "value",
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv01"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv12"]
+									},
+									{
+										"field": "indid",
+										"value": ["i23"]
+									}
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Scientific Production Characteristics",
+					"charts": [
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "treemap",
+							"name": "",
+							"chartName": "Publications by SDG",
+							"description": "The graph shows the number of publications by UN Sustainable Development Goal (SDG, <a href=\"https://sdgs.un.org/goals\" target=\"_blank\">https://sdgs.un.org/goals</a>). Our SDG classification system uses deep learning techniques to assign a scientific publication to the SDGs that are related to it.",
+							"treeName": "Publications by SDG",
+							"toolTip": {
+								"name": "Publications"
+							},
+							"treeColors": {
+								"1. No poverty": "#eb1c2c",
+								"2. Zero hunger": "#d3a029",
+								"3. Good health": "#279b47",
+								"4. Education": "#c21e32",
+								"5. Gender equality": "#ee402a",
+								"6. Clean water": "#00add8",
+								"7. Clean energy": "#fdb713",
+								"8. Economic growth": "#8f1838",
+								"9. Industry and infrastructure": "#f26c25FF",
+								"10. No inequality": "#e11484",
+								"11. Sustainability": "#f99d26",
+								"12. Responsible consumption": "#cf8d2a",
+								"13. Climate action": "#48773e",
+								"14. Life underwater": "#007cbc",
+								"15. Life on land": "#3eb049",
+								"16. Peace & justice": "#02548a"
+							},
+							"chartDownloadData": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv01"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv05"]
+									},
+									{
+										"field": "indid",
+										"value": ["i01"]
+									}
+								]
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Publicatios by SDG",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"stack": "x",
+							"areaStyle": {}
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "sankey",
+							"chartName": "Top 50 Journals and Publishers",
+							"description": "The graph shows the number of publications by pubslisher and journal for the 50 journals with the most publications in Energy.",
+							"chartDownloadData": {},
+							"chartDownloadImage": {},
+                            "dataZoom": {
+								"inside": true
+							},
+							"bucket": {
+								"type": "Composite",
+								"field": "key",
+								"sources": [
+									{
+										"field": "publisher"
+									},
+									{
+										"field": "key"
+									}
+								],
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "svid",
+										"value": ["sv10"]
+									},
+									{
+										"field": "indid",
+										"value": ["i01"]
+									}
+								]
+							},
+							"labelsTransform": {},
+							"connectionExtractor":{
+                                "sourceKeyExtractor": "publisher",
+                                "targetKeyExtractor": "key",
+                                "valueKeyExtractor": "value"
+                            }
+						}
+					]
+				},
+				{
+					"name": "Scientific Impact Trends",
+					"charts": [
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "line",
+							"name": "",
+							"chartName": "Citable scientific publications over time",
+							"description": "The graph shows the number of scientific publications in the Energy domain, originating from European organizations with at least one citation, over time.",
+							"xAxis": {
+								"name": "year"
+							},
+							"yAxis": {
+								"name": "publications"
+							},
+							"chartDownloadData": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Composite",
+								"field": "key",
+								"sources": [
+									{
+										"field": "key"
+									},
+									{
+										"field": "indid"
+									}
+								],
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv01"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv01"]
+									},
+									{
+										"field": "indid",
+										"value": ["i05", "i01"]
+									}
+								]
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Publications over time",
+										"labelKey": "key"
+									},
+									"nested": {
+										"type": "bar"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										],
+										"groupTests": [
+											{
+												"indid": "i01"
+											}
+										]
+									}
+								},
+								{
+									"label": {
+										"name": "Citable publications over time",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										],
+										"groupTests": [
+											{
+												"indid": "i05"
+											}
+										]
+									}
+								}
+							],
+							"labelSortKey": "key"
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "line",
+							"name": "",
+							"chartName": "Total citations over time",
+							"description": "The graph shows the total number of citations of scientific publications in the Energy domain, originating from European organizations, over time by the year of publication.",
+							"xAxis": {
+								"name": "year"
+							},
+							"yAxis": {
+								"name": "citations"
+							},
+							"areaStyle": {},
+							"chartDownloadData": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"labelSortKey": "key",
+							"series": [
+								{
+									"label": {
+										"name": "Number of citations of scientific publications in Energy domain",
+										"labelKey": "key"
+									},
+									"values": {
+										"valueKey": "value",
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv01"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv01"]
+									},
+									{
+										"field": "indid",
+										"value": ["i06"]
+									}
+								]
+							}
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "line",
+							"name": "",
+							"chartName": "Average citations per publication over time",
+							"description": "The graph shows the average number of citations per scientific publication in the Energy domain, originating from European organizations, over time by the year of publication.",
+							"xAxis": {
+								"name": "year"
+							},
+							"yAxis": {
+								"name": "citations per publication"
+							},
+							"chartDownloadData": {},
+							"chartDownloadImage": {},
+							"areaStyle": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"labelSortKey": "key",
+							"series": [
+								{
+									"label": {
+										"name": "Number of scientific publications in energy domain",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv01"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv01"]
+									},
+									{
+										"field": "indid",
+										"value": ["i07"]
+									}
+								]
+							}
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "line",
+							"name": "",
+							"chartName": "Field-weighted citation index over time",
+							"description": "The graph shows the evolution of the field-weighted citation index of publications in Energy. The index is defined as the total number of citations received over the average number in the same subject in the field world-wide.",
+							"xAxis": {
+								"name": "year"
+							},
+							"yAxis": {
+								"name": "citation index"
+							},
+							"chartDownloadData": {},
+							"chartDownloadImage": {},
+							"areaStyle": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"labelSortKey": "key",
+							"series": [
+								{
+									"label": {
+										"name": "Citation index of publications in Energy",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv01"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv01"]
+									},
+									{
+										"field": "indid",
+										"value": ["i08"]
+									}
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Scientific Impact Origins",
+					"charts": [
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "map",
+							"name": "",
+							"chartName": "Citations per publication by country",
+							"description": "The graph shows the average number of citations per publication by the country of the affiliated organization of an author. In the case of multiple authors each organization and corresponding country is counted as a separate publication (e.g., one publication with three authors, where two are from Greece and one is from Spain is counted as two publications in Greece and one in Spain).",
+							"chartDownloadData": {},
+							"chartDownloadImage": {},
+							"mapChartConfig": {
+								"high": {
+									"text": "High",
+									"color": "#42c39a"
+								}
+							},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Average Number of citation",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv01"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv09"]
+									},
+									{
+										"field": "indid",
+										"value": ["i07"]
+									}
+								]
+							}
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "bar",
+							"horizontal": false,
+							"dataZoom": {
+								"inside": true,
+								"slider": true,
+								"areaZoom": {
+									"start": 0,
+									"end": 20
+								}
+							},
+							"name": "",
+							"chartName": "Citations per publication by organization (top 100)",
+							"description": "The graph shows the top 100 organizations in terms of average number of citations per publication in Energy.",
+							"xAxis": {
+								"name": "organization",
+								"axisLabel": {
+									"width": 100,
+									"rotate": 45
+								}
+							},
+							"yAxis": {
+								"name": "citations per publications"
+							},
+							"chartDownloadData": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"rawDataRequest": {
+								"keyField": "key",
+								"valueField": "value",
+								"order": {
+									"items": ["-value"]
+								},
+								"page": {
+									"offset": 0,
+									"size": 100
+								}
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Average Number of citation",
+										"labelKey": "key"
+									},
+									"values": {
+										"valueKey": "value",
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv01"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv06"]
+									},
+									{
+										"field": "indid",
+										"value": ["i07"]
+									}
+								]
+							}
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "polar_bar",
+							"horizontal": false,
+							"dataZoom": {
+								"inside": true,
+								"slider": true,
+								"areaZoom": {
+									"start": 0,
+									"end": 20
+								}
+							},
+							"name": "",
+							"chartName": "Citations per publication by funder",
+							"description": "The graph shows citations per publication for grant-supported publications, by funder (for funders integrated in OpenAIRE – see Methodology for a list).",
+							"xAxis": {
+								"name": "funder",
+								"axisLabel": {
+									"width": 100,
+									"rotate": 45
+								}
+							},
+							"yAxis": {
+								"name": "citations per publication"
+							},
+							"chartDownloadData": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"rawDataRequest": {
+								"keyField": "key",
+								"valueField": "value",
+								"order": {
+									"items": ["-value"]
+								},
+								"page": {
+									"offset": 0,
+									"size": 100
+								}
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Citations per publication",
+										"labelKey": "key"
+									},
+									"values": {
+										"valueKey": "value",
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv01"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv12"]
+									},
+									{
+										"field": "indid",
+										"value": ["i07"]
+									}
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Scientific Impact Characteristics",
+					"charts": [
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "pie",
+							"roseType": "area",
+							"name": "",
+							"chartName": "Citations per publication by topic in Energy",
+							"description": "The graph shows the average number of citations per scientific publication for different topics in the Energy domain. The ontology of topics is taken from the technical annex of the Final Report of the [EU taxonomy for sustainable activities](<a href=\"https://finance.ec.europa.eu/sustainable-finance/tools-and-standards/eu-taxonomy-sustainable-activities_en#documents\" target=\"_blank\">https://finance.ec.europa.eu/sustainable-finance/tools-and-standards/eu-taxonomy-sustainable-activities_en#documents</a>) (Chapter 4. “Electricity, gas, steam and air conditioning supply,” p. 205). Our Fields of Science (FoS) classification system uses deep learning techniques to assign a scientific publication to different FoS classes, down to level 6, which we subsequently map to the ontology of topics in Energy.",
+							"xAxis": {
+								"name": "topic"
+							},
+							"yAxis": {
+								"name": ""
+							},
+							"chartDownloadData": {},
+							"chartDownloadImage": {},
+							"legend": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"rawDataRequest": {
+								"keyField": "key",
+								"valueField": "value",
+								"order": {
+									"items": ["-value"]
+								}
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Average Number of citation",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv01"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv02"]
+									},
+									{
+										"field": "indid",
+										"value": ["i07"]
+									}
+								]
+							}
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "treemap",
+							"name": "",
+							"chartName": "Citations per publication by SDG",
+							"description": "The graph shows the average number of citations per scientific publication by UN Sustainable Development Goal (SDG, <a href=\"https://sdgs.un.org/goals\" target=\"_blank\">https://sdgs.un.org/goals</a>). Our SDG classification system uses deep learning techniques to assign a scientific publication to the SDGs that are related to it.",
+							"treeName": "Average publications by Development Goal ",
+							"toolTip": {
+								"name": "Average publications"
+							},
+							"treeColors": {
+								"1. No poverty": "#eb1c2c",
+								"2. Zero hunger": "#d3a029",
+								"3. Good health": "#279b47",
+								"4. Education": "#c21e32",
+								"5. Gender equality": "#ee402a",
+								"6. Clean water": "#00add8",
+								"7. Clean energy": "#fdb713",
+								"8. Economic growth": "#8f1838",
+								"9. Industry and infrastructure": "#f26c25FF",
+								"10. No inequality": "#e11484",
+								"11. Sustainability": "#f99d26",
+								"12. Responsible consumption": "#cf8d2a",
+								"13. Climate action": "#48773e",
+								"14. Life underwater": "#007cbc",
+								"15. Life on land": "#3eb049",
+								"16. Peace & justice": "#02548a"
+							},
+							"chartDownloadData": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv01"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv05"]
+									},
+									{
+										"field": "indid",
+										"value": ["i07"]
+									}
+								]
+							},
+
+							"series": [
+								{
+									"label": {
+										"name": "UN Sustainable Development Goal",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Scientific Collaborations",
+					"charts": [
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "line",
+							"dataZoom": {
+								"inside": true
+							},
+							"legend": {},
+							"name": "",
+							"chartName": "International collaborations over time",
+							"xAxis": {
+								"name": "year"
+							},
+							"yAxis": {
+								"name": "publications"
+							},
+							"labelSortKey": "year",
+							"description": "The graph shows the evolution in the number of publications with authors affiliated to organizations in at least two different countries. Superimposed is the number of those that are cited by at least one publication.",
+							"chartDownloadData": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Composite",
+								"field": "key",
+								"sources": [
+									{
+										"field": "key"
+									},
+									{
+										"field": "indid"
+									}
+								],
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv01"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv01"]
+									},
+									{
+										"field": "indid",
+										"value": ["i19", "i20", "i01"]
+									}
+								]
+							},
+							"series": [
+								{
+									"nested": {
+										"type": "bar"
+									},
+									"label": {
+										"name": "Publications over time",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										],
+										"groupTests": [
+											{
+												"indid": "i01"
+											}
+										]
+									}
+								},
+								{
+									"label": {
+										"name": "Citable international co-publications",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										],
+										"groupTests": [
+											{
+												"indid": "i20"
+											}
+										]
+									}
+								},
+								{
+									"label": {
+										"name": "International co-publications",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										],
+										"groupTests": [
+											{
+												"indid": "i19"
+											}
+										]
+									}
+								}
+							]
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "pie",
+							"roseType": "area",
+							"name": "",
+							"chartName": "International collaborations by topic",
+							"description": "The graph shows the number of publications with authors affiliated to organizations in at least two different countries by topic in the Energy domain. The ontology of topics is taken from the technical annex of the Final Report of the EU taxonomy for sustainable activities (Chapter 4. “Electricity, gas, steam and air conditioning supply,” p. 205). Our Fields of Science (FoS) classification system uses deep learning techniques to assign a scientific publication to different FoS classes, down to level 6, which we subsequently map to the ontology of topics in Energy.",
+							"xAxis": {
+								"name": "topic"
+							},
+							"yAxis": {
+								"name": ""
+							},
+							"rawDataRequest": {
+								"keyField": "key",
+								"valueField": "value",
+								"order": {
+									"items": ["-value"]
+								},
+								"page": {
+									"offset": 0,
+									"size": 1000
+								}
+							},
+							"chartDownloadData": {},
+							"chartDownloadImage": {},
+							"legend": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Average Number of citation",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv01"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv02"]
+									},
+									{
+										"field": "indid",
+										"value": ["i19"]
+									}
+								]
+							}
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "treemap",
+							"name": "",
+							"chartName": "International collaborations by SDG",
+							"description": "The graph shows the number of publications with authors affiliated to organizations in at least two different countries by UN Sustainable Development Goal (SDG, <a href=\"https://sdgs.un.org/goals\" target=\"_blank\">https://sdgs.un.org/goals</a>). Our SDG classification system uses deep learning techniques to assign a scientific publication to the SDGs that are related to it.",
+							"treeName": "International collaborations by SDG",
+							"toolTip": {
+								"name": "Publications"
+							},
+							"treeColors": {
+								"1. No poverty": "#eb1c2c",
+								"2. Zero hunger": "#d3a029",
+								"3. Good health": "#279b47",
+								"4. Education": "#c21e32",
+								"5. Gender equality": "#ee402a",
+								"6. Clean water": "#00add8",
+								"7. Clean energy": "#fdb713",
+								"8. Economic growth": "#8f1838",
+								"9. Industry and infrastructure": "#f26c25FF",
+								"10. No inequality": "#e11484",
+								"11. Sustainability": "#f99d26",
+								"12. Responsible consumption": "#cf8d2a",
+								"13. Climate action": "#48773e",
+								"14. Life underwater": "#007cbc",
+								"15. Life on land": "#3eb049",
+								"16. Peace & justice": "#02548a"
+							},
+							"chartDownloadData": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv01"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv05"]
+									},
+									{
+										"field": "indid",
+										"value": ["i19"]
+									}
+								]
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Publicatios by SDG",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"stack": "x",
+							"areaStyle": {}
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Technology",
+			"chartGroups": []
+		},
+		{
+			"name": "Industry",
+			"chartGroups": []
+		},
+		{
+			"name": "Human Resources",
+			"chartGroups": []
+		},
+		{
+			"name": "Policy",
+			"chartGroups": []
+		},
+		{
+			"name": "Society",
+			"chartGroups": []
+		}
+	]
+}

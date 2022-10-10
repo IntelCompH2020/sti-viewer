@@ -1,5 +1,6 @@
 package gr.cite.intelcomp.stiviewer.query.lookup;
 
+import gr.cite.intelcomp.stiviewer.elastic.query.lookup.IndicatorPointLookup;
 import gr.cite.tools.data.query.Lookup;
 
 import java.util.List;
@@ -7,25 +8,15 @@ import java.util.List;
 public class IndicatorReportLevelLookup extends Lookup {
 
 	private String configId;
+	private IndicatorPointLookup filters;
+	private List<String> selectedLevels;
 
-	private List<SelectedLevel> selectedLevels;
-
-	private LevelFilters levelFilters;
-
-	public List<SelectedLevel> getSelectedLevels() {
+	public List<String> getSelectedLevels() {
 		return selectedLevels;
 	}
 
-	public void setSelectedLevels(List<SelectedLevel> selectedLevels) {
+	public void setSelectedLevels(List<String> selectedLevels) {
 		this.selectedLevels = selectedLevels;
-	}
-
-	public LevelFilters getLevelFilters() {
-		return levelFilters;
-	}
-
-	public void setLevelFilters(LevelFilters levelFilters) {
-		this.levelFilters = levelFilters;
 	}
 
 	public String getConfigId() {
@@ -36,38 +27,11 @@ public class IndicatorReportLevelLookup extends Lookup {
 		this.configId = configId;
 	}
 
-	public static class SelectedLevel {
-
-		private String code;
-
-		private String value;
-
-		public String getCode() {
-			return code;
-		}
-
-		public void setCode(String code) {
-			this.code = code;
-		}
-
-		public String getValue() {
-			return value;
-		}
-
-		public void setValue(String value) {
-			this.value = value;
-		}
+	public IndicatorPointLookup getFilters() {
+		return filters;
 	}
 
-	public static class LevelFilters extends Lookup {
-		private String like;
-
-		public String getLike() {
-			return like;
-		}
-
-		public void setLike(String like) {
-			this.like = like;
-		}
+	public void setFilters(IndicatorPointLookup filters) {
+		this.filters = filters;
 	}
 }

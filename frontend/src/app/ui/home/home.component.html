@@ -11,10 +11,10 @@
 					<div class="row align-items-center">
 						<mat-form-field appearance="legacy" class="col">
 							<mat-label>{{'APP.HOME-COMPONENT.SEARCH-INDICATORS' | translate}}</mat-label>
-							<input matInput placeholder />
+							<input #searchTerm matInput placeholder (keyup.enter)="search(searchTerm.value)" />
 						</mat-form-field>
 	
-						<button mat-icon-button color="primary" class="col-auto">
+						<button mat-icon-button color="primary" class="col-auto" (click)="search(searchTerm.value)">
 							<mat-icon>search</mat-icon>
 						</button>
 					</div>

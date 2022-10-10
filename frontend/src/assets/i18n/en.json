@@ -32,7 +32,7 @@
 			"INAPP-NOTIFICATIONS": "Notifications",
 			"BLUEPRINT-REQUESTS": "Blueprint Requests",
 			"BLUEPRINT-TEMPLATES": "Blueprint Templates",
-			"INDICATOR-REPORTS": "Reports",
+			"INDICATOR-REPORTS": "Browse Data",
 			"INDICATOR-DASHBOARD": "Indicator Dashboard"
 		},
 		"HOME-COMPONENT": {
@@ -51,6 +51,21 @@
 				"LOAD-MORE": "Load more bookmarks",
 				"NO-MORE-BOOKMARKS": "No more bookmarks found"
 			}
+		},
+		"SEARCH-COMPONENT":{
+			"SEARCH-RESULTS":"Search results",
+			"KEYWORDS":"Keywords",
+			"SEARCH-RESULTS-FOR": "Search results for",
+			"NO-RESULTS": "No results found.",
+			"PAGINATOR":{
+				"NEXT-PAGE":"Next page",
+				"PREVIOUS-PAGE":"Previous page",
+				"ITEMS-PER-PAGE":"Items per page"
+			}
+		},
+		"INDICATOR-REPORTS-PAGE":{
+			"TITLE":"Browse all Topics",
+			"SEARCH":"Search"
 		},
 		"TENANT-CHOOSE-DIALOG": {
 			"TITLE": "Choose the tenant you wish to connect to",

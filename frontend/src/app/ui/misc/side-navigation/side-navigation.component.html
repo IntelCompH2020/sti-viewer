@@ -32,8 +32,9 @@
             translate}}</a>
     </a> -->
 
-    <a (click)="handleNavigation()" routerLink="data-access-requests" routerLinkActive="text-accent"
-        class="navigation-item" *ngIf="authService.hasPermission(authService.permissionEnum.ViewDataAccessRequestPage)">
+    <!-- <a (click)="handleNavigation()" routerLink="data-access-requests" routerLinkActive="text-accent" disabled -->
+    <a matTooltip="Coming soon" matTooltipShowDelay="800"
+        class="navigation-item text-muted" *ngIf="authService.hasPermission(authService.permissionEnum.ViewDataAccessRequestPage)">
         <div>
             <mat-icon class="item-icon">content_paste</mat-icon>
         </div>
@@ -42,8 +43,9 @@
             translate}}</a>
     </a>
 
-    <a (click)="handleNavigation()" routerLink="my-data-access-requests" routerLinkActive="text-accent"
-        class="navigation-item" *ngIf="authService.hasPermission(authService.permissionEnum.ViewMyDataAccessRequestPage)">
+    <!-- <a (click)="handleNavigation()" routerLink="my-data-access-requests" routerLinkActive="text-accent" disabled -->
+    <a matTooltip="Coming soon" matTooltipShowDelay="800" 
+        class="navigation-item text-muted" *ngIf="authService.hasPermission(authService.permissionEnum.ViewMyDataAccessRequestPage)">
         <div>
             <mat-icon class="item-icon">card_travel</mat-icon>
         </div>
@@ -62,7 +64,7 @@
     </a>
 
     <a (click)="handleNavigation()" routerLink="tenant-requests" routerLinkActive="text-accent" class="navigation-item"
-        *ngIf="authService.hasPermission(authService.permissionEnum.ViewTenantRequestPage)">
+        *ngIf="!hasTenant && authService.hasPermission(authService.permissionEnum.ViewTenantRequestPage)">
         <div>
             <mat-icon class="item-icon">real_estate_agent</mat-icon>
         </div>

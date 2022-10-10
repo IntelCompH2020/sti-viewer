@@ -1,7 +1,9 @@
 import { HttpResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { AggregateResponseModel } from "@app/core/model/aggregate-response/aggregate-reponse.model";
+import { IndicatorPoint } from "@app/core/model/indicator-point/indicator-point.model";
 import { IndicatorPointReportLookup } from "@app/core/query/indicator-point-report.lookup";
+import { IndicatorPointLookup } from "@app/core/query/indicator-point.lookup";
 import { IndicatorPointDistinctLookup } from "@app/core/query/IndicatorPointDistinctLookup";
 import { BaseHttpService } from "@common/base/base-http.service";
 import { BaseHttpParams } from "@common/http/base-http-params";
@@ -26,13 +28,6 @@ export class IndicatorPointService {
 
     public getIndicatorPointReport(id: Guid | string, lookup: IndicatorPointReportLookup, skipLoader?: boolean,): Observable<AggregateResponseModel> {
         let _id = id;
-
-        // const lookup = this._buildLookupIndicatorPointLookup(bucket, metrics, indicatorQueryParams);
-
-        // if(indicatorQueryParams?.indicatorId && id?.toString() === 'inherited'){
-        //     _id = indicatorQueryParams.indicatorId;
-        // }
-
 
         if (_id === 'inherited') {
             return of({
@@ -73,5 +68,19 @@ export class IndicatorPointService {
             .post<ElasticValuesResponse<string>>(url, lookup).pipe(
                 catchError((error: any) => throwError(error)));
 
+    }
+
+    public query(lookup: IndicatorPointLookup):Observable<QueryResult<Record<string, string>>>{
+        const url = `${this.apiBase}/query`;
+
+        return this.http.post<QueryResult<Record<string, string>>>(url, lookup).pipe(
+            catchError((error: any) => throwError(error)));;
+    }
+
+    public getGlobalSearchConfig(key: string):Observable<string>{
+        const url = `${this.apiBase}/global-search-config-by-key/${key}`;
+
+        return this.http.get<string>(url).pipe(
+            catchError((error: any) => throwError(error)));;
     }
 }

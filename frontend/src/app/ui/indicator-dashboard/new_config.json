@@ -1,0 +1,373 @@
+{
+	"id": "test",
+	"tabs": [
+		{
+			"name": "Science",
+			"chartGroups": [
+				{
+					"name": "Count of scientific publications",
+					"charts": [
+						{
+							"indicatorId": "4051148f-6651-4e28-96e4-82e6bfb5ac5b",
+							"type": "line",
+							"dataZoom": {
+								"inside": true,
+								"slider": true
+							},
+							"name": "",
+							"chartName": "",
+							"xAxis": {
+								"name": "year"
+							},
+							"yAxis": {
+								"name": "publications"
+							},
+							"description": "Evolution in the number of publications in AI over time.",
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "svid",
+										"value": ["sv01"]
+									},
+									{
+										"field": "indid",
+										"value": ["i01"]
+									}
+								]
+							},
+							"labelSortKey": "key",
+							"labelsTransform": {},
+							"series": [
+								{
+									"label": {
+										"name": "publications",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"areaStyle": {},
+							"filters": [],
+							"chartDownloadData": {},
+							"chartDownloadImage": {}
+						}
+					]
+				},
+				{
+					"name": "Topic trends (share on a topic over time)",
+					"charts": [
+						{
+							"indicatorId": "4051148f-6651-4e28-96e4-82e6bfb5ac5b",
+							"type": "line",
+							"dataZoom": {
+								"inside": true
+							},
+							"legend": {},
+							"name": "",
+							"chartName": "",
+							"xAxis": {
+								"name": "year"
+							},
+							"yAxis": {
+								"name": "publications"
+							},
+							"labelSortKey": "year",
+							"description": "Evolution in the number of publications in different topics in AI over time.",
+							"chartDownloadData": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Composite",
+								"field": "topicLabel",
+								"sources": [
+									{
+										"field": "topicLabel"
+									},
+									{
+										"field": "key"
+									}
+								],
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "svid",
+										"value": ["sv02"]
+									},
+									{
+										"field": "indid",
+										"value": ["i03"]
+									}
+								]
+							},
+							"series": [
+								{
+									"splitSeries": [
+										{
+											"key": "topicLabel"
+										}
+									],
+									"label": {
+										"name": "Topic",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"areaStyle": {},
+							"stack": "x"
+						}
+					]
+				},
+				{
+					"name": "Number of citable scientific publications",
+					"charts": [
+						{
+							"indicatorId": "4051148f-6651-4e28-96e4-82e6bfb5ac5b",
+							"type": "line",
+							"name": "",
+							"chartName": "",
+							"description": "Number of scientific publications in AI with at least one citation by another AI publication over time.",
+							"xAxis": {
+								"name": "year"
+							},
+							"yAxis": {
+								"name": "publications"
+							},
+							"dataZoom": {
+								"inside": true,
+								"slider": true
+							},
+							"chartDownloadData": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Composite",
+								"field": "key",
+								"sources": [
+									{
+										"field": "key"
+									},
+									{
+										"field": "indid"
+									}
+								],
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "svid",
+										"value": [
+											"sv01"
+										]
+									},
+									{
+										"field": "indid",
+										"value": [
+											"i05",
+											"i01"
+										]
+									}
+								]
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Publications over time",
+										"labelKey": "key"
+									},
+									"nested":{
+										"type": "bar"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										],
+										"groupTests":[
+											{
+												"indid":"i01"
+											}
+										]
+									}
+								},
+								{
+									
+									"label": {
+										"name": "Citable publications over time",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										],
+										"groupTests":[
+											{
+												"indid":"i05"
+											}
+										]
+									}
+								}
+							],
+							"labelSortKey": "key"
+						}
+					]
+				},
+				{
+					"name": "Average number of citations per scientific publication",
+					"charts": [
+						{
+							"indicatorId": "4051148f-6651-4e28-96e4-82e6bfb5ac5b",
+							"type": "line",
+							"name": "",
+							"chartName": "",
+							"description": "Number of AI publications cited on average by another ai publication over time.",
+							"xAxis": {
+								"name": "year"
+							},
+							"yAxis": {
+								"name": "citations per publication"
+							},
+							"chartDownloadData": {},
+							"chartDownloadImage": {},
+                            "areaStyle": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"labelSortKey": "key",
+							"series": [
+								{
+									"label": {
+										"name": "Number of scientific publications in energy domain",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "svid",
+										"value": ["sv01"]
+									},
+									{
+										"field": "indid",
+										"value": ["i07"]
+									}
+								]
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Technology",
+			"chartGroups": []
+		},
+		{
+			"name": "Industry",
+			"chartGroups": []
+		},
+		{
+			"name": "Human Resources",
+			"chartGroups": []
+		},
+		{
+			"name": "Policy",
+			"chartGroups": []
+		},
+		{
+			"name": "Society",
+			"chartGroups": []
+		}
+	]
+}

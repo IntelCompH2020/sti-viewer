@@ -12,6 +12,7 @@ import java.util.UUID;
 public class IndicatorPointLookup extends Lookup {
 	private List<UUID> ids;
 	private List<String> groupHashes;
+	private List<UUID> indicatorIds;
 	private List<IndicatorPointKeywordFilter> keywordFilters;
 	private Collection<IndicatorPointDateFilter> dateFilters;
 	private Collection<IndicatorPointIntegerFilter> integerFilters;
@@ -101,9 +102,18 @@ public class IndicatorPointLookup extends Lookup {
 		this.fieldLikeFilter = fieldLikeFilter;
 	}
 
+	public List<UUID> getIndicatorIds() {
+		return indicatorIds;
+	}
+
+	public void setIndicatorIds(List<UUID> indicatorIds) {
+		this.indicatorIds = indicatorIds;
+	}
+
 	public IndicatorPointQuery enrich(QueryFactory queryFactory) {
 		IndicatorPointQuery query = queryFactory.query(IndicatorPointQuery.class);
 		if (this.ids != null) query.ids(this.ids);
+		if (this.indicatorIds != null) query.indicatorIds(this.indicatorIds);
 		if (this.groupHashes != null) query.groupHashes(this.groupHashes);
 		if (this.keywordFilters != null) query.keywordFilters(this.keywordFilters);
 		if (this.dateFilters != null) query.dateFilters(this.dateFilters);

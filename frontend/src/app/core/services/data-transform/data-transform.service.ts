@@ -4,7 +4,7 @@ import { BucketAggregateType } from "@app/core/enum/bucket-aggregate-type.enum";
 import { AggregateResponseModel } from "@app/core/model/aggregate-response/aggregate-reponse.model";
 import { Bucket, CompositeBucket, DataHistogramBucket, NestedBucket, TermsBucket } from "@app/core/model/bucket/bucket.model";
 import { Metric } from "@app/core/model/metic/metric.model";
-import { BaseIndicatorDashboardChartConfig, DateFieldFormatterConfig, FieldFormatterType, IndicatorConfigBucket, IndicatorConfigCompositeBucket, IndicatorConfigDataHistogramBucket, IndicatorConfigMetric, IndicatorConfigNestedBucket, IndicatorConfigTermsBucket } from "@app/ui/indicator-dashboard/indicator-dashboard-config";
+import { BaseIndicatorDashboardChartConfig, DateFieldFormatterConfig, FieldFormatterType, IndicatorConfigBucket, IndicatorConfigCompositeBucket, IndicatorConfigDataHistogramBucket, IndicatorConfigMetric, IndicatorConfigNestedBucket, IndicatorConfigTermsBucket, IndicatorDashboardSankeyChartConfig, SeriesValueFormatterType, SeriesValueNumberFormatter } from "@app/ui/indicator-dashboard/indicator-dashboard-config";
 
 @Injectable()
 export class DataTransformService {
@@ -98,6 +98,69 @@ export class DataTransformService {
 	}
 
 
+
+	
+
+	public aggregateResponseModelToConnections(records: AggregateResponseModel, config: IndicatorDashboardSankeyChartConfig): ChartConnection[]{
+		if(!config.connectionExtractor){
+			throw 'No sankey extractor provided in config';
+		}
+
+		const {sourceKeyExtractor, targetKeyExtractor, valueKeyExtractor, valueTests, groupTests} = config.connectionExtractor;
+
+		if(!sourceKeyExtractor || !targetKeyExtractor){
+			throw 'No source key or target key extractor specified';
+		}
+
+		const connections: ChartConnection[] = [];
+
+
+		records.items?.forEach(record =>{
+
+			if(!record?.group?.items){
+				return;
+			}
+
+			if(! this._validateTest(record.group.items, groupTests)){
+				return;
+			}
+			
+			const valueRecord = record?.values?.find(value => this._validateTest(value, valueTests));
+			if(!valueRecord) return;
+			
+
+			const target = record.group.items[targetKeyExtractor];
+			const source = record.group.items[sourceKeyExtractor];
+
+			if(!target || !source){
+				return;
+			}
+
+
+			const value = valueRecord[valueKeyExtractor];
+
+			connections.push({
+				target,
+				source,
+				value
+			})
+
+		});
+
+
+
+		return connections;
+
+	}
+
+
+	private _validateTest(value: Record<string, any>, test: Record<string, any>):boolean{
+		if(!test){
+			return true
+		}
+		return Object.keys(test).every(key => test[key] === value?.[key]);
+	} 
+
 	public aggregateResponseModelToLineChartDataFromConfiguration(
 		records: AggregateResponseModel,
 		// configurationMetrics: ConfigurationMetrics,
@@ -107,14 +170,13 @@ export class DataTransformService {
 		let seriesData: SeriesData[] = [];
 		let standAloneData: StandAloneData[];
 
-
-		// * SORTING RESULTS
-		if(!config.labelSortKey){
-			throw('Not sort key specified');
+		// * SORTING RESULTS IF CONFIGURED
+		if(config.labelSortKey){
+			// throw('Not sort key specified');
+			records.items.sort(
+				(a, b) => a.group.items[config.labelSortKey]?.localeCompare(b.group.items[config.labelSortKey])
+			)
 		}
-		records.items.sort(
-			(a, b) => a.group.items[config.labelSortKey]?.localeCompare(b.group.items[config.labelSortKey])
-		)
 
 
 
@@ -143,7 +205,8 @@ export class DataTransformService {
 				labelKey: serieConfiguration.label.labelKey, //* key that we may use to exract its x axis labels from labelValuesDictionary
 				name: serieConfiguration.label.name, //* name of the serie
 				color: serieConfiguration.label.color, //*  color preffered color of the serie
-				splitSeriesData: serieConfiguration.splitSeries?.reduce((aggr, current) => ({...aggr, [current.key]: {}}) , {}) // * if serie has split series store them here
+				splitSeriesData: serieConfiguration.splitSeries?.reduce((aggr, current) => ({...aggr, [current.key]: {}}) , {}), // * if serie has split series store them here
+				type: serieConfiguration.nested?.type
 			}));
 
 			
@@ -161,19 +224,50 @@ export class DataTransformService {
 				//* foreact serie configuration extract values and append them to series array (middle serie representation)
 				config.series.forEach((serieConfiguration, _configurationIndex) =>{
 
-					//* find the value that passes tests specified in configuration and get its value
-					const value = record.values.find(value => {		
-						const testPassed = serieConfiguration.values.tests.every(
+
+
+					const groupTestsSuite = serieConfiguration?.values?.groupTests
+
+					let groupTestsPassed = true;
+
+					if(groupTestsSuite?.length){
+						groupTestsPassed =  groupTestsSuite.every(
 							test =>{
-								return Object.keys(test).every(key => test[key] === value[key]);
-							}
+								return Object.keys(test).every(key => test[key] === record.group?.items?.[key]);
+							}	
 						)
-						
-						if(testPassed){
-							return value;
+					}
+					let value: any =0;
+					if(groupTestsPassed){
+						//* find the value that passes tests specified in configuration and get its value
+						value = record.values.find(value => {		
+							const testPassed = serieConfiguration.values.tests.every(
+								test =>{
+									return Object.keys(test).every(key => test[key] === value[key]);
+								}
+							)
+													
+							if(testPassed){
+								return value;
+							}
+							return false;
+						})?.[serieConfiguration.values.valueKey];
+					}
+
+
+					const formatter = serieConfiguration.values.formatter;
+					if(formatter && ((value !== undefined) && ( value !==null ))){
+						switch(formatter.type){
+							case SeriesValueFormatterType.Number:{
+								const numberFormatter = formatter as SeriesValueNumberFormatter;
+								if(!isNaN(numberFormatter.decimalAccuracy) && numberFormatter.decimalAccuracy >= 0){
+									const multiplier = Math.pow(10, numberFormatter.decimalAccuracy);
+									value = Math.round(value * multiplier)/multiplier;
+								}
+								break;
+							}
 						}
-						return false;
-					})?.[serieConfiguration.values.valueKey];
+					}
 
 					//* store value extracted into series array
 					tempSeries[_configurationIndex].data.push(value);
@@ -240,7 +334,8 @@ export class DataTransformService {
 						chartSerie[commonserie.name] = {
 							data: this._aggregateData(commonserie.data, helperArray, AggregateDataType.Max) , 
 							name: commonserie.name, 
-							color: commonserie.color
+							color: commonserie.color,
+							type: commonserie.type
 						}
 
 						return;
@@ -278,6 +373,7 @@ export class DataTransformService {
 							}else{
 								lblValues = lblValues.map(lbl => datePipe.transform(lbl, castedFormatter.params));
 							}
+							break;
 						}
 					}
 				}
@@ -293,6 +389,15 @@ export class DataTransformService {
 
 			seriesData = result;
 
+			if(config.reverseValues){
+				seriesData.forEach(serieData =>{
+					serieData.labels = serieData.labels?.reverse();
+					Object.keys(serieData.series).forEach(key =>{
+						const serie = serieData.series[key];
+						serie.data = serie.data?.reverse();
+					})
+				})
+			}
 		}
 
 		return {
@@ -331,7 +436,8 @@ export class DataTransformService {
 						const aggrData = this._aggregateData(data, helperArray, AggregateDataType.Max);
 						chartSerie[splitSerieValue] = {
 							name: splitSerieValue,
-							data: aggrData
+							data: aggrData,
+							type: commonserie.type
 						}
 					}
 				)
@@ -358,8 +464,15 @@ export class DataTransformService {
 
 		})
 
+		const defaultValue = 0;
+
 		if(type === AggregateDataType.Max){
-			return tempArray.map(record => Math.max(...record));
+			return tempArray.map(record => Math.max(...record.map(x => {
+				if((x!== null) && (x!==undefined)){
+					return x;
+				}
+				return defaultValue;
+			})));
 		}
 
 		if(type === AggregateDataType.Sum){
@@ -385,7 +498,7 @@ interface SeriesData{
 	series: ChartSerie;
 }
 
-interface StandAloneData{
+export interface StandAloneData{
 	name: string;
 	value: number;
 	color?: string;
@@ -396,17 +509,25 @@ export interface LineChartData{
 	standAloneData?:StandAloneData[]
 }
 
-export type ChartSerie = Record<string, {color?: string,name: string, data: number[]}>
+export type ChartSerie = Record<string, {color?: string,name: string, data: number[], type: string}>
 
 
 
 interface SerieDataInfo{
+	type: string;
 	labelKey: string;
 	data: number[];
 	color?: string;
 	name: string;
 	// *  splitserieKey => splitseriekeyvalue => splitseirie data [] (store at numbers array the index of the data array)
 	splitSeriesData: Record<string, Record<string, number[]>>
+}
+
+
+interface ChartConnection{
+	source: string;
+	target: string;
+	value: number;
 }
 
 

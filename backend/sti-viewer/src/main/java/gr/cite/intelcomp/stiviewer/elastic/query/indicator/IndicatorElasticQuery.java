@@ -1,6 +1,7 @@
 package gr.cite.intelcomp.stiviewer.elastic.query.indicator;
 
 import gr.cite.intelcomp.stiviewer.authorization.AuthorizationFlags;
+import gr.cite.intelcomp.stiviewer.config.elastic.AppElasticProperties;
 import gr.cite.intelcomp.stiviewer.elastic.data.IndicatorElasticEntity;
 import gr.cite.intelcomp.stiviewer.model.IndicatorElastic;
 import gr.cite.tools.data.query.FieldResolver;
@@ -48,11 +49,13 @@ public class IndicatorElasticQuery extends ElasticQuery<IndicatorElasticEntity, 
 	}
 
 	private final QueryFactory queryFactory;
+	private final AppElasticProperties appElasticProperties;
 
 	@Autowired()
-	public IndicatorElasticQuery(ElasticsearchRestTemplate elasticsearchRestTemplate, ElasticProperties elasticProperties, QueryFactory queryFactory) {
+	public IndicatorElasticQuery(ElasticsearchRestTemplate elasticsearchRestTemplate, ElasticProperties elasticProperties, QueryFactory queryFactory, AppElasticProperties appElasticProperties) {
 		super(elasticsearchRestTemplate, elasticProperties);
 		this.queryFactory = queryFactory;
+		this.appElasticProperties = appElasticProperties;
 	}
 
 	@Override
@@ -95,6 +98,12 @@ public class IndicatorElasticQuery extends ElasticQuery<IndicatorElasticEntity, 
 		else return null;
 	}
 
+	@Override
+	protected String[] getIndex() {
+		List<String> indexNames = new ArrayList<>();
+		indexNames.add(this.appElasticProperties.getIndicatorIndexName());
+		return indexNames.toArray(new String[indexNames.size()]);
+	}
 
 	@Override
 	protected UUID toKey(String key) {

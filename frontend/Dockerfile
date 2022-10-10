@@ -1,19 +1,19 @@
 # stage1 as builder
-FROM node:12-alpine as builder
+FROM node:16-alpine as builder
 
 # copy the package.json to install dependencies
 COPY package.json ./
 COPY package-lock.json ./
 
 # Install the dependencies and make the folder
-RUN npm install && mkdir /src && mv ./node_modules ./src
+RUN npm install --legacy-peer-deps  && mkdir /src && mv ./node_modules ./src
 
 WORKDIR /src
 
 COPY . .
 
 # Build the project and copy the files
-RUN npm run ng build -- --prod
+RUN npm run ng build -- --configuration production
 #RUN node --max_old_space_size=8192 node_modules/@angular/cli/bin/ng build -- --deploy-url=/ --prod
 
 FROM nginx:alpine

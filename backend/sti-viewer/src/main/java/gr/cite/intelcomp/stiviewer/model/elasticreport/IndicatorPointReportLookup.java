@@ -8,6 +8,8 @@ public class IndicatorPointReportLookup {
 	private IndicatorPointLookup filters;
 	private List<Metric> metrics;
 	private Bucket bucket;
+	private Boolean isRawData;
+	private RawDataRequest rawDataRequest;
 
 	public List<Metric> getMetrics() {
 		return metrics;
@@ -31,6 +33,22 @@ public class IndicatorPointReportLookup {
 
 	public void setFilters(IndicatorPointLookup filters) {
 		this.filters = filters;
+	}
+
+	public Boolean getIsRawData() {
+		return isRawData;
+	}
+
+	public void setIsRawData(Boolean rawData) {
+		isRawData = rawData;
+	}
+
+	public RawDataRequest getRawDataRequest() {
+		return rawDataRequest;
+	}
+
+	public void setRawDataRequest(RawDataRequest rawDataRequest) {
+		this.rawDataRequest = rawDataRequest;
 	}
 }
 

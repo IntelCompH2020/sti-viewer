@@ -25,6 +25,8 @@ public class AuditableAction {
 	public static final EventId Indicator_Lookup = new EventId(3011, "Indicator_Lookup");
 	public static final EventId Indicator_Persist = new EventId(3012, "Indicator_Persist");
 	public static final EventId Indicator_Delete = new EventId(3013, "Indicator_Delete");
+	public static final EventId Indicator_ElasticPersist = new EventId(3012, "Indicator_ElasticPersist");
+	public static final EventId Indicator_ElasticDelete = new EventId(3013, "Indicator_ElasticDelete");
 
 	public static final EventId Data_Access_Request_Query = new EventId(3020, "Data_Access_Request_Query");
 	public static final EventId Data_Access_Request_Lookup = new EventId(3021, "Data_Access_Request_Lookup");
@@ -89,6 +91,7 @@ public class AuditableAction {
 	public static final EventId Indicator_Point_Report = new EventId(15005, "Indicator_Point_Report");
 	public static final EventId Indicator_Point_QueryDistinct = new EventId(15006, "Indicator_Point_QueryDistinct");
 	public static final EventId Indicator_Point_ExportXlsx = new EventId(15007, "Indicator_Point_ExportXlsx");
+	public static final EventId Indicator_Point_GetGlobalSearchConfig = new EventId(15008, "Indicator_Point_GetGlobalSearchConfig");
 
 	public static final EventId Indicator_Elastic_Query = new EventId(16000, "Indicator_Elastic_Query");
 

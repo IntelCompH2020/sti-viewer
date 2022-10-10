@@ -54,14 +54,16 @@ public class BrowseDataTreeLevelConfigBuilder extends BaseBuilder<DataTreeLevelC
 		List<DataTreeLevelConfig> IndicatorReportLevelConfigs = new ArrayList<>();
 
 		FieldSet filedFields = fields.extractPrefixed(this.asPrefix(DataTreeLevelConfig._field));
+		FieldSet dashboardOverrideFields = fields.extractPrefixed(this.asPrefix(DataTreeLevelConfig._dashboardOverrides));
 
 		for (DataTreeLevelConfigEntity d : data) {
 			DataTreeLevelConfig m = new DataTreeLevelConfig();
 
 			if (fields.hasField(this.asIndexer(DataTreeLevelConfig._order))) m.setOrder(d.getOrder());
 			if (fields.hasField(this.asIndexer(DataTreeLevelConfig._supportSubLevel))) m.setSupportSubLevel(d.getSupportSubLevel());
-			if (fields.hasField(this.asIndexer(DataTreeLevelConfig._supportedDashboards))) m.setSupportedDashboards(d.getSupportedDashboards());
+			if (fields.hasField(this.asIndexer(DataTreeLevelConfig._defaultDashboards))) m.setDefaultDashboards(d.getDefaultDashboards());
 			if (!filedFields.isEmpty()) m.setField(this.builderFactory.builder(BrowseDataFieldBuilder.class).authorize(this.authorize).build(filedFields, d.getField()));
+			if (!dashboardOverrideFields.isEmpty() && d.getDashboardOverrides() != null) m.setDashboardOverrides(this.builderFactory.builder(DataTreeLevelDashboardOverrideBuilder.class).authorize(this.authorize).build(dashboardOverrideFields, d.getDashboardOverrides()));
 
 			IndicatorReportLevelConfigs.add(m);
 		}

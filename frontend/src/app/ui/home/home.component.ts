@@ -74,6 +74,12 @@ export class HomeComponent extends BaseComponent implements OnInit{
 		})
 	}
 
+	search(searchTerm: string): void{
+		this.router.navigate(['search'], {queryParams:{
+			q: searchTerm
+		}})
+	}
+
 	removeBookmark(bookmark: ComponentBookmark): void{
 
 		this.dialog.open(ConfirmationDialogComponent,{

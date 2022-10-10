@@ -3,9 +3,9 @@
 <div *ngIf="configuration" class="col">
     <div class="row justify-content-between mt-2 mb-2">
         <div class="col-auto">
-            <h2>Browse all Topics</h2>
+            <h2>{{'APP.INDICATOR-REPORTS-PAGE.TITLE' | translate}}</h2>
         </div>
-        <div class="col-auto">
+        <!-- <div class="col-auto">
             <mat-button-toggle-group name="fontStyle" [(value)]="selectedView" aria-label="Font Style">
                 <mat-button-toggle [value]="0">
                     <mat-icon>
@@ -14,13 +14,13 @@
                 </mat-button-toggle>
                 <mat-button-toggle [value]="1"><mat-icon>account_tree</mat-icon></mat-button-toggle>
             </mat-button-toggle-group>
-        </div>
+        </div> -->
 
     </div>
 
 
     
-    <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" *ngIf="treeControl && dataSource" [class.d-none]="selectedView !== 1">
+    <!-- <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" *ngIf="treeControl && dataSource" [class.d-none]="selectedView !== 1">
         <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding [@fadeIn]>
             <button mat-button (click)="navigateToNode(node)">
                 {{node.item}}
@@ -46,15 +46,32 @@
                 </button>
             </div>
         </mat-tree-node>
-        </mat-tree>
+        </mat-tree> -->
 
 
-    <div class="contents" #contents  [class.d-none]="selectedView !== 0">
-        <div class="contents-details" *ngIf="configuration">
-            <app-indicator-details 
-                [configuration]="configuration"
-                (onIndicatorExpanded)="onExpand()">
-            </app-indicator-details>
+    <div [class.d-none]="selectedView !== 0">
+        <div class="contents" #contents>
+            <div class="contents-details" *ngIf="configuration">
+                <app-indicator-details 
+                    [configuration]="configuration"
+                    [disabled]="activeGotos?.includes( configuration.goTo)"
+                    (goto)="onGoto($event)"
+                    [availableForPresentation]="availableForPresentation"
+                    (onIndicatorExpanded)="onExpand()">
+                </app-indicator-details>
+            </div>
+        </div>
+    
+        <div class="contents" #detailContents *ngIf="nestedDetails?.length">
+            <div class="contents-details" *ngFor="let item of nestedDetails; let index = index">
+                <app-indicator-details 
+                    [disabled]="activeGotos?.includes(item.goTo)"
+                    [configuration]="item"
+                    (goto)="onGoto($event)"
+                    [availableForPresentation]="availableForPresentation"
+                    (onIndicatorExpanded)="onExpand(index)">
+                </app-indicator-details>
+            </div>
         </div>
     </div>
 </div>

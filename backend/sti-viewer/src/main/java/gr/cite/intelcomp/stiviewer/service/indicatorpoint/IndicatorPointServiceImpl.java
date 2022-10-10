@@ -5,9 +5,12 @@ import gr.cite.intelcomp.stiviewer.authorization.AuthorizationContentResolver;
 import gr.cite.intelcomp.stiviewer.authorization.AuthorizationFlags;
 import gr.cite.intelcomp.stiviewer.authorization.Permission;
 import gr.cite.intelcomp.stiviewer.common.enums.IndicatorFieldBaseType;
+import gr.cite.intelcomp.stiviewer.common.enums.UserSettingsEntityType;
+import gr.cite.intelcomp.stiviewer.common.enums.UserSettingsType;
 import gr.cite.intelcomp.stiviewer.convention.ConventionService;
 import gr.cite.intelcomp.stiviewer.data.IndicatorEntity;
 import gr.cite.intelcomp.stiviewer.data.TenantEntityManager;
+import gr.cite.intelcomp.stiviewer.data.UserSettingsEntity;
 import gr.cite.intelcomp.stiviewer.elastic.data.IndicatorDoubleMapEntity;
 import gr.cite.intelcomp.stiviewer.elastic.data.IndicatorIntegerMapEntity;
 import gr.cite.intelcomp.stiviewer.elastic.data.indicator.FieldEntity;
@@ -17,14 +20,17 @@ import gr.cite.intelcomp.stiviewer.elastic.data.indicatorpoint.IndicatorPointEnt
 import gr.cite.intelcomp.stiviewer.elastic.query.indicatorpoint.IndicatorPointQuery;
 import gr.cite.intelcomp.stiviewer.errorcode.ErrorThesaurusProperties;
 import gr.cite.intelcomp.stiviewer.model.Indicator;
+import gr.cite.intelcomp.stiviewer.model.UserSettings;
 import gr.cite.intelcomp.stiviewer.model.builder.elasticreport.AggregateResponseModelBuilder;
 import gr.cite.intelcomp.stiviewer.model.builder.indicatorpoint.IndicatorPointBuilder;
 import gr.cite.intelcomp.stiviewer.model.elasticreport.AggregateResponseModel;
 import gr.cite.intelcomp.stiviewer.model.elasticreport.Bucket;
 import gr.cite.intelcomp.stiviewer.model.elasticreport.IndicatorPointReportLookup;
+import gr.cite.intelcomp.stiviewer.model.elasticreport.RawDataRequest;
 import gr.cite.intelcomp.stiviewer.model.indicatorpoint.IndicatorPoint;
 import gr.cite.intelcomp.stiviewer.model.persist.indicatorpoint.DataGroupInfoColumnPersist;
 import gr.cite.intelcomp.stiviewer.model.persist.indicatorpoint.IndicatorPointPersist;
+import gr.cite.intelcomp.stiviewer.query.UserSettingsQuery;
 import gr.cite.intelcomp.stiviewer.service.indicator.IndicatorConfigItem;
 import gr.cite.intelcomp.stiviewer.service.indicator.IndicatorConfigService;
 import gr.cite.intelcomp.stiviewer.service.indicator.IndicatorService;
@@ -193,10 +199,14 @@ public class IndicatorPointServiceImpl implements IndicatorPointService {
 					switch (fieldEntity.getBaseType()) {
 						case String:
 						case Keyword:
-							if (prop.getValue() == null) {
-								properties.put(prop.getKey(), (Map<String, Double>) null);
-							} else {
-								properties.put(prop.getKey(), String.class.cast(prop.getValue()));
+							try {
+								if (prop.getValue() == null) {
+									properties.put(prop.getKey(), (Map<String, Double>) null);
+								} else {
+									properties.put(prop.getKey(), String.class.cast(prop.getValue()));
+								}
+							} catch (Exception e) {
+								throw e;
 							}
 							break;
 						case Date:
@@ -302,17 +312,78 @@ public class IndicatorPointServiceImpl implements IndicatorPointService {
 		IndicatorConfigItem indicatorConfigItem = this.getIndicatorConfigItem(indicatorId);
 		if (indicatorConfigItem == null) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{indicatorId, IndicatorConfigItem.class.getSimpleName()}, LocaleContextHolder.getLocale()));
 
-		AggregationQuery aggregationQuery = new AggregationQuery();
-		aggregationQuery.setMetrics(this.buildMetricsForQuery(f -> this.getIndicatorFieldBaseType(indicatorConfigItem, f), lookup.getMetrics()));
-		aggregationQuery.setBucketAggregate(this.buildBucketAggregate(f -> this.getIndicatorFieldBaseType(indicatorConfigItem, f), lookup.getBucket()));
+		boolean isRawData = lookup.getIsRawData() != null && lookup.getIsRawData();
 
 		IndicatorPointQuery indicatorPointQuery = lookup.getFilters() == null ? this.queryFactory.query(IndicatorPointQuery.class) : lookup.getFilters().enrich(this.queryFactory);
 		indicatorPointQuery = indicatorPointQuery.indicatorIds(indicatorId).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicatorOrIndicatorAccess);
 
-		AggregateResponse aggregateResponse = indicatorPointQuery.collectAggregate(aggregationQuery);
+		AggregateResponse aggregateResponse = null;
+		if (!isRawData) {
+			AggregationQuery aggregationQuery = new AggregationQuery();
+			aggregationQuery.setMetrics(this.buildMetricsForQuery(f -> this.getIndicatorFieldBaseType(indicatorConfigItem, f), lookup.getMetrics()));
+			aggregationQuery.setBucketAggregate(this.buildBucketAggregate(f -> this.getIndicatorFieldBaseType(indicatorConfigItem, f), lookup.getBucket()));
+			aggregateResponse = indicatorPointQuery.collectAggregate(aggregationQuery);
+		} else {
+			if (lookup.getRawDataRequest() == null) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{RawDataRequest.class.getSimpleName(), IndicatorPointReportLookup.class.getSimpleName()}, LocaleContextHolder.getLocale()));
+			if (lookup.getRawDataRequest().getOrder() != null) indicatorPointQuery.setOrder(lookup.getRawDataRequest().getOrder());
+			if (lookup.getRawDataRequest().getPage() != null) indicatorPointQuery.setPage(lookup.getRawDataRequest().getPage());
+
+			List<IndicatorPointEntity> indicatorPoints = indicatorPointQuery.collectAs(new BaseFieldSet().ensure(lookup.getRawDataRequest().getKeyField()).ensure(lookup.getRawDataRequest().getValueField()));
+			Long indicatorPointsCount = indicatorPointQuery.count();
+			aggregateResponse = mapIndicatorPointEntitiesToAggregateResponse(indicatorConfigItem, indicatorPoints, indicatorPointsCount, lookup.getRawDataRequest().getKeyField(), lookup.getRawDataRequest().getValueField());
+		}
+		return aggregateResponse;
+	}
+
+	private AggregateResponse mapIndicatorPointEntitiesToAggregateResponse(IndicatorConfigItem indicatorConfigItem, List<IndicatorPointEntity> indicatorPoints, Long indicatorPointsCount, String keyField, String valueField) {
+		AggregateResponse aggregateResponse = new AggregateResponse();
+		aggregateResponse.setTotal(indicatorPointsCount);
+		if (indicatorPoints == null) return aggregateResponse;
+
+		IndicatorFieldBaseType keyFieldBaseType = this.getIndicatorFieldBaseType(indicatorConfigItem, keyField);
+		IndicatorFieldBaseType valueFieldBaseType = this.getIndicatorFieldBaseType(indicatorConfigItem, valueField);
+
+		for (IndicatorPointEntity indicatorPoint : indicatorPoints) {
+			Object propKeyValue = indicatorPoint.getProperties().getOrDefault(keyField, null);
+			String keyValue = null;
+			if (propKeyValue != null) {
+				switch (keyFieldBaseType) {
+					case String:
+					case Keyword:
+						keyValue = (String) propKeyValue;
+						break;
+					case Integer:
+						keyValue = ((Integer) propKeyValue).toString();
+						break;
+					default:
+						throw new MyApplicationException("invalid type " + keyFieldBaseType);
+				}
+			}
+
+			Object propValue = indicatorPoint.getProperties().getOrDefault(valueField, null);
+			Double value = null;
+			if (propValue != null) {
+				switch (valueFieldBaseType) {
+					case Double:
+						value = (Double) propValue;
+						break;
+					case Integer:
+						value = ((Integer) propValue).doubleValue();
+						break;
+					default:
+						throw new MyApplicationException("invalid type " + keyFieldBaseType);
+				}
+			}
+			HashMap keyMap = new HashMap<>();
+			keyMap.put(keyField, keyValue);
+			AggregateResponseItem aggregateResponseItem = new AggregateResponseItem(new AggregateResponseGroup(keyMap));
+			aggregateResponseItem.getValues().add(new AggregateResponseValue(MetricAggregateType.Sum, valueField, value));
+			aggregateResponse.getItems().add(aggregateResponseItem);
+		}
 
 		return aggregateResponse;
 	}
+
 
 	public byte[] export(UUID indicatorId, IndicatorPointReportLookup lookup) throws InvalidApplicationException, IOException {
 		logger.debug(new MapLogEntry("export" + IndicatorPoint.class.getSimpleName()).And("lookup", lookup));
@@ -657,5 +728,17 @@ public class IndicatorPointServiceImpl implements IndicatorPointService {
 		else {
 			throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{fieldName, IndicatorIntegerMapEntity.class.getSimpleName()}, LocaleContextHolder.getLocale()));
 		}
+	}
+
+	@Override
+	public String getGlobalSearchConfig(String key) {
+		this.authorizationService.authorizeForce(Permission.GetDashboard);
+		UserSettingsEntity userSetting = this.queryFactory
+				.query(UserSettingsQuery.class)
+				.types(UserSettingsType.GlobalSearch).keys(key)
+				.entityTypes(UserSettingsEntityType.Application)
+				.firstAs(new BaseFieldSet().ensure(UserSettings._key).ensure(UserSettings._value));
+		if (userSetting == null) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{key, UserSettingsEntity.class.getSimpleName()}, LocaleContextHolder.getLocale()));
+		return userSetting.getValue();
 	}
 }

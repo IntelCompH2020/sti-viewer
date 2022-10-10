@@ -3,7 +3,6 @@ import { ActivatedRoute } from '@angular/router';
 import { BookmarkType } from '@app/core/enum/bookmark-type.enum';
 import { Bookmark } from '@app/core/model/bookmark/bookmark.model';
 import { IndicatorPointKeywordFilter } from '@app/core/query/indicator-point.lookup';
-import { SelectedLevel } from '@app/core/query/indicator-report-level-lookup';
 import { BookmarkService } from '@app/core/services/http/bookmark.service';
 import { IndicatorDashboardService } from '@app/core/services/http/indicator-dashboard.service';
 import { QueryParamsService } from '@app/core/services/ui/query-params.service';
@@ -16,7 +15,7 @@ import { nameof } from 'ts-simple-nameof';
 import { IndicatorDashboardConfig } from './indicator-dashboard-config';
 
 
-const DASHBOARD_CONFIG:IndicatorDashboardConfig = require('./dashboard-config2.json');
+const DASHBOARD_CONFIG:IndicatorDashboardConfig = require('./dashboard-config-3.json');
 
 @Component({
 	selector: 'app-indicator-dashboard',
@@ -27,7 +26,6 @@ export class IndicatorDashboardComponent extends BaseComponent implements OnInit
 	selectedTabIndex = -1;
 
 	dashboardConfig:IndicatorDashboardConfig;
-	keywordFilters: IndicatorPointKeywordFilter[];
 
 
 	indicatorQueryParams: IndicatorQueryParams;
@@ -141,7 +139,7 @@ export class IndicatorDashboardComponent extends BaseComponent implements OnInit
 
 export interface IndicatorQueryParams{
 	dashboard: string;
-	levels: SelectedLevel[];
+	keywordFilters: IndicatorPointKeywordFilter[];
 	displayName: string;
 	groupHash?: string;
 }

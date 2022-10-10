@@ -32,7 +32,7 @@
 			"INAPP-NOTIFICATIONS": "Ειδοποιήσεις",
 			"BLUEPRINT-REQUESTS": "Αιτήματα δημιουργίας αναφορών",
 			"BLUEPRINT-TEMPLATES": "Blueprint Templates",
-			"INDICATOR-REPORTS": "Δείκτες",
+			"INDICATOR-REPORTS": "Περιήγηση στα δεδομένα",
 			"INDICATOR-DASHBOARD": "Πίνακας δεικτών"
 		},
 		"HOME-COMPONENT": {
@@ -51,6 +51,21 @@
 				"LOAD-MORE": "Περισσότεροι σελιδοδείκτες",
 				"NO-MORE-BOOKMARKS": "Δεν βρέθηκαν παραπάνω σελιδοδείκτες"
 			}
+		},
+		"SEARCH-COMPONENT":{
+			"SEARCH-RESULTS":"Αποτελέσματα αναζήτησης",
+			"KEYWORDS":"Λέξεις κλειδιά",
+			"SEARCH-RESULTS-FOR": "Αποτελέσματα αναζήτησης για ",
+			"NO-RESULTS": "Δεν βρέθηκαν αποτελέσματα.",
+			"PAGINATOR":{
+				"NEXT-PAGE":"Επόμενη σελίδα",
+				"PREVIOUS-PAGE":"Προηγούμενη σελίδα",
+				"ITEMS-PER-PAGE":"Αποτελέσματα ανα σελίδα"
+			}
+		},
+		"INDICATOR-REPORTS-PAGE":{
+			"TITLE":"Εξερευνήστε όλους του δείκτες",
+			"SEARCH":"Αναζήτηση"
 		},
 		"TENANT-CHOOSE-DIALOG": {
 			"TITLE": "Επιλέξτε τον τομέα στον οποίο επιθυμείτε να συνδεθείτε",

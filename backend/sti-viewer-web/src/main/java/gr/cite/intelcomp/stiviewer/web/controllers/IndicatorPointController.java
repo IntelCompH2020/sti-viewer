@@ -7,6 +7,7 @@ import gr.cite.intelcomp.stiviewer.elastic.query.indicatorpoint.IndicatorPointQu
 import gr.cite.intelcomp.stiviewer.elastic.query.lookup.IndicatorPointDistinctLookup;
 import gr.cite.intelcomp.stiviewer.elastic.query.lookup.IndicatorPointLookup;
 import gr.cite.intelcomp.stiviewer.model.Indicator;
+import gr.cite.intelcomp.stiviewer.model.UserSettings;
 import gr.cite.intelcomp.stiviewer.model.builder.indicatorpoint.IndicatorPointBuilder;
 import gr.cite.intelcomp.stiviewer.model.censorship.IndicatorPointCensor;
 import gr.cite.intelcomp.stiviewer.model.elasticreport.AggregateResponseModel;
@@ -74,16 +75,13 @@ public class IndicatorPointController {
 		this.messageSource = messageSource;
 	}
 
-	@PostMapping("{indicatorId}/query")
-	public QueryResult<IndicatorPoint> query(@PathVariable("indicatorId") UUID indicatorId, @RequestBody IndicatorPointLookup lookup) throws MyApplicationException, MyForbiddenException {
+	@PostMapping("query")
+	public QueryResult<IndicatorPoint> query(@RequestBody IndicatorPointLookup lookup) throws MyApplicationException, MyForbiddenException {
 		logger.debug("querying {}", IndicatorPoint.class.getSimpleName());
 
 		this.censorFactory.censor(IndicatorPointCensor.class).censor(lookup.getProject());
 
-		IndicatorQuery indicatorQuery = this.queryFactory.query(IndicatorQuery.class).ids(indicatorId);
-		if (indicatorQuery.count() == 0) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{indicatorId, Indicator.class.getSimpleName()}, LocaleContextHolder.getLocale()));
-
-		IndicatorPointQuery query = lookup.enrich(this.queryFactory).indicatorIds(indicatorId).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator);
+		IndicatorPointQuery query = lookup.enrich(this.queryFactory).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator);
 		List<IndicatorPointEntity> data = query.collectAs(lookup.getProject());
 		List<IndicatorPoint> models = this.builderFactory.builder(IndicatorPointBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(lookup.getProject(), data);
 		long count = (lookup.getMetadata() != null && lookup.getMetadata().getCountAll()) ? query.count() : models.size();
@@ -197,6 +195,22 @@ public class IndicatorPointController {
 		));
 		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
 		return;
+	}
+
+
+	@GetMapping("global-search-config-by-key/{key}")
+	public String getGlobalSearchConfig(@PathVariable("key") String key) throws MyApplicationException, MyForbiddenException, MyNotFoundException {
+		logger.debug(new MapLogEntry("retrieving" + Indicator.class.getSimpleName()).And("key", key));
+
+		String model = this.indicatorPointService.getGlobalSearchConfig(key);
+		if (model == null || model.isBlank()) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{key, UserSettings.class.getSimpleName()}, LocaleContextHolder.getLocale()));
+
+		this.auditService.track(AuditableAction.Indicator_Point_GetGlobalSearchConfig, Map.ofEntries(
+				new AbstractMap.SimpleEntry<String, Object>("key", key)
+		));
+		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
+
+		return model;
 	}
 
 }

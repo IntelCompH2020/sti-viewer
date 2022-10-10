@@ -10,8 +10,9 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DataTreeConfigEntity implements Serializable {
 	private String id;
-
 	private String name;
+	private int order;
+	private String goTo;
 
 	private List<DataTreeLevelConfigEntity> levelConfigs;
 
@@ -37,5 +38,21 @@ public class DataTreeConfigEntity implements Serializable {
 
 	public void setLevelConfigs(List<DataTreeLevelConfigEntity> levelConfigs) {
 		this.levelConfigs = levelConfigs;
+	}
+
+	public int getOrder() {
+		return order;
+	}
+
+	public void setOrder(int order) {
+		this.order = order;
+	}
+
+	public String getGoTo() {
+		return goTo;
+	}
+
+	public void setGoTo(String goTo) {
+		this.goTo = goTo;
 	}
 }

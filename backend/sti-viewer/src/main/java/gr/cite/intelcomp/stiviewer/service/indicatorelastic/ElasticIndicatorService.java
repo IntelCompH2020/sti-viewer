@@ -2,6 +2,7 @@ package gr.cite.intelcomp.stiviewer.service.indicatorelastic;
 
 import gr.cite.intelcomp.stiviewer.model.IndicatorElastic;
 import gr.cite.intelcomp.stiviewer.model.persist.IndicatorElasticPersist;
+import gr.cite.tools.exception.MyForbiddenException;
 import gr.cite.tools.fieldset.FieldSet;
 
 import javax.management.InvalidApplicationException;
@@ -17,4 +18,6 @@ public interface ElasticIndicatorService {
 	String ensureIndex(UUID indicatorId) throws IOException, InvalidApplicationException;
 
 	String getIndexName(UUID indicatorId) throws InvalidApplicationException;
+
+	void deleteAndSave(UUID id) throws MyForbiddenException, InvalidApplicationException, IOException;
 }

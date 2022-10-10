@@ -9,7 +9,7 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import java.util.UUID;
 
-@Document(indexName = "ic-sti-indicator-dev")
+@Document(indexName = "ic-sti-indicator")
 public class IndicatorElasticEntity {
 	public static final class Fields {
 		public static final String id = "id";
@@ -18,7 +18,7 @@ public class IndicatorElasticEntity {
 	}
 
 	@Id
-	@Field(Fields.id)
+	@Field(value = Fields.id, type = FieldType.Keyword)
 	private UUID id;
 
 	@Field(value = Fields.metadata, type = FieldType.Object)

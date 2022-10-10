@@ -26,6 +26,11 @@ const appRoutes: Routes = [
 		loadChildren: () => import('@user-service/ui/users/user.module').then(m => m.UserModule)
 	},
 	{
+		path: 'search',
+		canLoad: [AuthGuard],
+		loadChildren: () => import('@app/ui/search/search.module').then(m => m.SearchModule)
+	},
+	{
 		path: 'datasets',
 		canLoad: [AuthGuard],
 		data: {

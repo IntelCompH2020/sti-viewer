@@ -1,11 +1,11 @@
 package gr.cite.intelcomp.stiviewer.elastic.data.indicatorpoint;
 
 import net.minidev.json.annotate.JsonIgnore;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
-import javax.persistence.Id;
 import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
@@ -20,10 +20,11 @@ public class IndicatorPointEntity {
 		public static final String batchTimestamp = "batch_timestamp";
 		public static final String timestamp = "timestamp";
 		public static final String groupInfo = "group_info";
+		public static final String score = "_score";
 	}
 
 	@Id
-	@Field(Fields.id)
+	@Field(value = Fields.id, type = FieldType.Keyword)
 	private UUID id;
 
 	@Field(value = Fields.timestamp, type = FieldType.Date)

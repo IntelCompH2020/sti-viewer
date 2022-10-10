@@ -1,8 +1,9 @@
 import { Injectable, NgZone } from "@angular/core";
 import { Metric } from "@app/core/model/metic/metric.model";
-import { BaseIndicatorDashboardChartConfig, FieldFormatterConfig, IndicatorDashboardBarChartConfig, IndicatorDashboardGraphChartConfig, IndicatorDashboardLineChartConfig, IndicatorDashboardMapChartConfig, IndicatorDashboardPieChartConfig, IndicatorDashboardPolarBarChartConfig, IndicatorDashboardScatterChartConfig, LegendConfig } from "@app/ui/indicator-dashboard/indicator-dashboard-config";
-import { DataZoomComponentOption, EChartsOption, LegendComponentOption, SeriesOption, ToolboxComponentOption, XAXisComponentOption, YAXisComponentOption } from "echarts";
+import { BaseIndicatorDashboardChartConfig, FieldFormatterConfig, IndicatorDashboardBarChartConfig, IndicatorDashboardGraphChartConfig, IndicatorDashboardLineChartConfig, IndicatorDashboardMapChartConfig, IndicatorDashboardPieChartConfig, IndicatorDashboardPolarBarChartConfig, IndicatorDashboardSankeyChartConfig, IndicatorDashboardScatterChartConfig, IndicatorDashboardTreeMapChartConfig, LegendConfig } from "@app/ui/indicator-dashboard/indicator-dashboard-config";
+import { DataZoomComponentOption, EChartsOption, LegendComponentOption, SeriesOption, TitleComponentOption, ToolboxComponentOption, TreemapSeriesOption, XAXisComponentOption, YAXisComponentOption } from "echarts";
 import { ChartSerie} from "./data-transform.service";
+// import { sankeyData } from "./sankey-data";
 
 
 const scatterData = new Array(7).fill(0).map((_,i) => ([
@@ -45,7 +46,7 @@ export class ChartBuilderService {
     public buildGeoMap(args:{config: IndicatorDashboardMapChartConfig, data: GeoMapData[], onDownload?:() => void, onFiltersOpen?:() => void }): EChartsOption{
 
 		const { config, data, onDownload, onFiltersOpen } = args;
-		let serie;
+		let serie: GeoMapData;
 
 		if(!data.length){
 			console.warn('Building Geomap no data found ');
@@ -57,11 +58,15 @@ export class ChartBuilderService {
 			console.warn('Too many series for map , selecting first serie')
 		}
 
+		//* get MinMax values
+
+		const allValues = serie.data.map(record => record.value);
+		const minValue = Math.min(...allValues);
+		const maxValue = Math.max(...allValues);
+
 
         return {
-			title: {
-				text: config.chartName
-			},
+			title: this._buildTitle(config),
 
 			tooltip: {
 				trigger: 'item',
@@ -78,8 +83,8 @@ export class ChartBuilderService {
 
 			visualMap: {
 				left: 'right',
-				min: 500000,
-				max: 38000000,
+				min: Math.floor(minValue * 0.8) -1,
+				max: Math.floor(maxValue * 1.2) +1,
 				inRange: {
 				  color: [
 					  config.mapChartConfig?.low?.color ?? '#dfeced',
@@ -108,6 +113,110 @@ export class ChartBuilderService {
     }
 
 
+	
+	public buildTreeMap(args: {config: IndicatorDashboardTreeMapChartConfig, data: TreeMapData[], onDownload?:() => void}): EChartsOption{
+
+		const {data, config, onDownload} = args;
+		function getLevelOption() {
+			return [
+			  {
+				itemStyle: {
+				  borderWidth: 0,
+				  gapWidth: 5
+				}
+			  },
+			  {
+				itemStyle: {
+				  gapWidth: 1
+				}
+			  },
+			//   {
+			// 	colorSaturation: [0.35, 0.5],
+			// 	itemStyle: {
+			// 	  gapWidth: 1,
+			// 	  borderColorSaturation: 0.6
+			// 	}
+			//   }
+			];
+		};
+
+		function getValueString(value: any, name?: string, metricName?: string ): string{
+
+			let valueString = '';
+			if(name){
+				valueString += name + ': ';
+			}
+
+			valueString += value; // TODO MAYBE FORMATTING HERE
+
+			if(config.toolTip.metricName){
+				valueString += ' ' + metricName;
+			}
+
+			return valueString;
+		}
+
+		return {
+			title: this._buildTitle(config),
+			toolbox: this._buildToolbox({config, onDownload}),
+			tooltip: config.toolTip ? {
+			  formatter: function (info) {
+				var value = info.value;
+				var treePathInfo = info.treePathInfo;
+				var treePath = [];
+				for (let i = 1; i < treePathInfo.length; i++) {
+				  treePath.push(treePathInfo[i].name);
+				}
+				return [
+					//*  title
+					`
+						<div class="tooltip-title">
+							${treePath.join('&#47;')}
+						</div>
+					`,
+
+					getValueString(value, config.toolTip.name, config.toolTip.metricName)
+
+				].join('');
+			  }
+			} : null,
+			series: [
+			  {
+				name: config.treeName ?? '',
+				type: 'treemap',
+				visibleMin: 300,
+				label: {
+				  show: true,
+				  formatter: '{b}'
+				},
+				itemStyle: {
+				  borderColor: '#fff'
+				},
+				levels: getLevelOption(),
+				data: this._buildTreeMapData(data, config)
+			  }
+			]
+		}
+	}
+
+	private _buildTreeMapData(data: TreeMapData[], config: IndicatorDashboardTreeMapChartConfig):any[]{
+
+		return data.map(node => {
+			
+			const color = config.treeColors?.[node.name];
+			const itemStyle = color? {
+				itemStyle: {color}
+			}:{};
+
+			return {
+				...node, 
+				...itemStyle
+			}
+		});
+	}
+
+	// itemStyle:{color: 'blue'}}
+
     // * POLAR BAR
     public buildPolarBar(args:{config : IndicatorDashboardPolarBarChartConfig, labels: string[], inputSeries: ChartSerie, onDownload?:() => void, onFiltersOpen?:() => void}): EChartsOption{
 		const {config, labels, inputSeries, onDownload, onFiltersOpen} = args;
@@ -124,13 +233,12 @@ export class ChartBuilderService {
 		const dataZoom = this._buildDataZoom(config);
 
 		return {
-			title:{
-				text: config.chartName,
-			},
+			title: this._buildTitle(config),
 			angleAxis: {
 			  type: 'category',
 			  data: labels
 			},
+			tooltip:{},
 			toolbox: this._buildToolbox({config, onFiltersOpen, onDownload}),
 			radiusAxis: {name: config?.radiusAxis?.name},
 			polar: {},
@@ -146,9 +254,7 @@ export class ChartBuilderService {
 		const {config , onDownload, onFiltersOpen} = args;
         return{
 			
-			title:{
-				text: config.chartName
-			},
+			title:this._buildTitle(config),
 			legend: this._buildLegend(config.legend),
 			xAxis: {
 				// type: 'value',
@@ -275,12 +381,18 @@ export class ChartBuilderService {
 	public buildPie(args:{config:IndicatorDashboardPieChartConfig, pieData: PieDataRecord[], onDownload?:() => void, onFiltersOpen?:() => void}):EChartsOption{
 		const {config, pieData, onDownload, onFiltersOpen} = args;
         return {
-            title: {
-                text: config.chartName,
-			},
+            title: this._buildTitle(config),
 			legend: this._buildLegend(config.legend),
 			tooltip:{
-				trigger: 'item'
+				trigger: 'item',
+				// formatter: (info) => {
+				// 	const value = info.value;
+				// 	const stringVal = value.toString();
+				// 	const [integer, decimal] = stringVal.split('.');
+
+				// 	return `<span>${integer}</span><small>${decimal ? '.' + decimal: ''}</small>`
+					
+				// },
 			},
 			toolbox:this._buildToolbox({
 				config,
@@ -292,6 +404,30 @@ export class ChartBuilderService {
             ]
         }
     }
+
+
+	public buildSankeyOptions(args: {data: SankeyData, config: IndicatorDashboardSankeyChartConfig, onDownload?:() => void, onFiltersOpen?:() => void}): EChartsOption{
+
+		const {config, onDownload, onFiltersOpen, data} = args;
+
+		return {
+			title: this._buildTitle(config),
+			toolbox: this._buildToolbox({
+				config,
+				onDownload,
+				onFiltersOpen
+			}),
+			tooltip:{},
+			series: {
+				type: 'sankey',
+				layout: 'none',
+				emphasis: {
+				  focus: 'adjacency'
+				},
+				...data
+			  }
+		}
+	}
 
 
     // *LINECHART
@@ -306,15 +442,14 @@ export class ChartBuilderService {
 				config: config,
 				data: inputSeries[key].data,
 				name: inputSeries[key].name,
-				color: inputSeries[key].color
+				color: inputSeries[key].color,
+				type: inputSeries[key].type
 			});
 		});
 
 
         return {
-			title: {
-				text: config.chartName
-			},
+			title: this._buildTitle(config),
 			legend: this._buildLegend(config.legend),
 			tooltip: {
 				trigger: 'axis',
@@ -342,16 +477,15 @@ export class ChartBuilderService {
 				config: config,
 				data: inputSeries[key].data,
 				name: inputSeries[key].name,
-				color: inputSeries[key].color
+				color: inputSeries[key].color,
+				type: inputSeries[key].type
 			})
 		});
 		const dataZoom = this._buildDataZoom(config);
         return {
-			title: {
-				text: config.chartName
-			},
+			title: this._buildTitle(config),
 			legend: this._buildLegend(config.legend),
-			tooltip: {},
+			tooltip: { trigger: 'axis'},
 			toolbox: this._buildToolbox({
 				config,
 				onDownload,
@@ -362,6 +496,9 @@ export class ChartBuilderService {
 			dataZoom,
 			series,
 			animationEasing: 'elasticOut',
+			grid:{
+				containLabel: true
+			},
 			animationDelayUpdate: (idx) => idx * 5,
 		};
     }
@@ -370,19 +507,53 @@ export class ChartBuilderService {
 	
     //* PRIVATES
 
+	private _buildTitle(config: BaseIndicatorDashboardChartConfig): TitleComponentOption{
+		return {
+			
+			text: config.chartName,
+			subtext:config.chartSubtitle,
+			
+		}
+	}
+
 
 	private _buildDataZoom(config:IndicatorDashboardBarChartConfig |  IndicatorDashboardLineChartConfig | IndicatorDashboardPolarBarChartConfig): DataZoomComponentOption[]{
 		let dataZoom = [];
 		if(config.dataZoom){
+			if(config.dataZoom.areaZoom){
+
+
+				const start = config.dataZoom.areaZoom.start ?? 0;
+				const end = config.dataZoom.areaZoom.end ?? 100;
+
+				const dataZ = {
+					show: true,
+					start,
+					end,
+				} as any;
+
+				// if((config as any).horizontal){
+				// 	dataZ.yAxisIndex = [0];
+				// }else{
+				// 	dataZ.xAxisIndex = [0];
+				// }
+
+				dataZoom.push(dataZ);
+			}
 			if(config.dataZoom.inside){
-				dataZoom.push({
-					type: 'inside',
-				})
+				const zoomItem = {type: 'inside'} as any;
+				if((config as any).horizontal){
+					zoomItem.yAxisIndex = 0;
+				}
+				dataZoom.push(zoomItem);
 			}
 			if(config.dataZoom.slider){
-				dataZoom.push({
-					type: 'slider',
-				})
+
+				const zoomItem = {type: 'slider'} as any;
+				if((config as any).horizontal){
+					zoomItem.yAxisIndex = 0;
+				}
+				dataZoom.push(zoomItem);
 			}
 		}
 		return dataZoom;
@@ -401,7 +572,10 @@ export class ChartBuilderService {
 		const chart :SeriesOption  =  {
 			type: 'pie',
 			data: data ?? [],
-			radius: ['40%', '70%'],
+			radius: [50, 250],
+			itemStyle: {
+				borderRadius: 8
+			},
 			color
 		}
 
@@ -413,11 +587,11 @@ export class ChartBuilderService {
 		return chart;
 	}
 
-    private _buildSerie( params:{config: IndicatorDashboardLineChartConfig, name:string, data: number[], animationDelay: (index: number) => number, color?: string}):SeriesOption{
-		const {config, name, data, animationDelay, color} = params;
+    private _buildSerie( params:{type: any, config: IndicatorDashboardLineChartConfig, name:string, data: number[], animationDelay: (index: number) => number, color?: string}):SeriesOption{
+		const {config, name, data, animationDelay, color, type} = params;
 		const serie:SeriesOption  = {
 			name,
-			type: config.type as any,
+			type: type ?? config.type as any,
 			data,
 			color,
 			animationDelay,
@@ -450,36 +624,58 @@ export class ChartBuilderService {
 	}
 
 	private _buildXAxis(config: IndicatorDashboardLineChartConfig, data:string[] = [] ):XAXisComponentOption{
-		if(config.horizontal) return {
-			name: config?.yAxis?.name,
-		};
-		return {
-			name: config?.xAxis?.name,
-			data,
-			type: 'category',
-			boundaryGap: config?.xAxis?.boundaryGap ?? true,
-			silent: false,
-			splitLine: {
-				show: false,
-			},
+		let xAxis: XAXisComponentOption ;
+		if(config.horizontal){
+			xAxis = {
+				name: config?.yAxis?.name,
+			};
+		} else{
+
+			const axisLabel = config?.xAxis?.axisLabel ? {
+				width: config.xAxis.axisLabel.width,
+				rotate: config.xAxis.axisLabel.rotate ?? 0,
+				overflow: 'truncate'
+			} :{};
+
+			xAxis = {
+				name: config?.xAxis?.name,
+				data,
+				type: 'category',
+				boundaryGap: config?.xAxis?.boundaryGap ?? true,
+				silent: false,
+				splitLine: {
+					show: false,
+				},
+				axisLabel
+			}
 		}
+
+		return xAxis;
 	}
 
 	private _buildYAxis(config:IndicatorDashboardLineChartConfig, data: string[]):YAXisComponentOption{
-		if(!config.horizontal) return {
-			name: config?.yAxis?.name
-		};
-
-
-		return {
-			name: config?.xAxis?.name,
-			boundaryGap: config?.xAxis?.boundaryGap ?? true,
-			data,
-			silent: false,
-			splitLine: {
-				show: false,
-			},
-		};
+		let yAxis: YAXisComponentOption;
+		
+		if(!config.horizontal){
+			yAxis = 	{
+				name: config?.yAxis?.name,
+			}
+		}else{
+			yAxis = {
+				name: config?.xAxis?.name,
+				boundaryGap: config?.xAxis?.boundaryGap ?? true,
+				data,
+				silent: false,
+				splitLine: {
+					show: false,
+				},
+				axisLabel:{
+					width: 100,
+					overflow: 'truncate',
+				} as any
+			}
+		}
+		return yAxis;
 	}
 
 
@@ -487,7 +683,12 @@ export class ChartBuilderService {
 		if(legendConfig) return {
 			orient: 'vertical',
 			right:10,
-			top:'center'			
+			top:'center',
+			backgroundColor: '#fff',
+			textStyle:{
+				width: 120,
+				overflow:'truncate'
+			}
 		};
 
 		return null
@@ -588,3 +789,19 @@ export interface GraphLink{
 export interface GraphCategory{
 	name: string;
 }
+
+export interface TreeMapData{
+	value: number;
+	name: string;
+	path?: string;
+	children?: TreeMapData[];
+}
+
+interface SankeyData{
+	data: {name: string}[];
+	links: {
+		source: string,
+		target: string,
+		value: number
+	}[]
+};

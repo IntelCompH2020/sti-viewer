@@ -65,3 +65,20 @@
 .indicator-select-link:active {
     color: #2c2c2c;
 }
+
+.item-preview{
+    transition: filter 600ms ease-in-out;
+}
+
+.disabled{
+    filter: grayscale(1);
+    cursor: unset !important;
+}
+
+
+
+
+.presentation-disabled{
+    background-color: lightgray !important;
+    cursor: default !important;
+}

@@ -53,7 +53,7 @@ export function InstallationConfigurationFactory(appConfig: InstallationConfigur
 		params.interceptorContext = {
 			excludedInterceptors: [
 				// InterceptorType.AuthToken,
-				InterceptorType.TenantHeaderInterceptor,
+				// InterceptorType.TenantHeaderInterceptor,
 				InterceptorType.JSONContentType,
 				InterceptorType.Locale,
 				InterceptorType.ProgressIndication,

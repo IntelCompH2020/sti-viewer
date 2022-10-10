@@ -5,18 +5,34 @@
 	</div> -->
 	<div echarts [options]="chartOptions" [@fadeIn]  class="col-12 chart" *ngIf="(chartOptions && (uiMinimumTimePased$ | async)) else loading"></div>
 	<ng-template #loading>
-		<div class="loading-container col-12">
-			<mat-spinner *ngIf="!errorLoading else errorLoadingTemplate"></mat-spinner>
-			<ng-template #errorLoadingTemplate>
-				{{'COMMONS.ERRORS.DEFAULT' | translate}}
+		<div class="loading-container col-12" >
+			<ng-container *ngIf="!noDataFound else noDataFoundTemplate">
+				<mat-spinner *ngIf="!errorLoading else errorLoadingTemplate"></mat-spinner>
+				<ng-template #errorLoadingTemplate>
+					{{'COMMONS.ERRORS.DEFAULT' | translate}}
+				</ng-template>
+			</ng-container>
+			<ng-template #noDataFoundTemplate>
+				{{
+					'COMMONS.LISTING-COMPONENT.MESSAGE.EMPTY' | translate
+				}}
 			</ng-template>
 		</div>
+
 	</ng-template>
 
 	<div class="col-12" *ngIf="chartConfig.description">	
 		<p>
 			<b>Description/Source:</b>
-			{{chartConfig.description}}
+			<span [innerHtml]="chartConfig.description">
+			</span>
 		</p>
 	</div>
 </div>
+
+<!-- <button (click)="unauthenticate()">
+	unauthenticate
+</button>
+<button (click)="request()">
+	request
+</button> -->

@@ -100,7 +100,6 @@ public class IndicatorController {
 	}
 
 	@GetMapping("{id}")
-	@Transactional
 	public Indicator Get(@PathVariable("id") UUID id, FieldSet fieldSet, Locale locale) throws MyApplicationException, MyForbiddenException, MyNotFoundException {
 		logger.debug(new MapLogEntry("retrieving" + Indicator.class.getSimpleName()).And("id", id).And("fields", fieldSet));
 
@@ -145,12 +144,23 @@ public class IndicatorController {
 
 		IndicatorElastic indicatorElastic = this.elasticIndicatorService.persist(model, fieldSet);
 
-		this.auditService.track(AuditableAction.Indicator_Persist, Map.ofEntries(
+		this.auditService.track(AuditableAction.Indicator_ElasticPersist, Map.ofEntries(
 				new AbstractMap.SimpleEntry<String, Object>("model", model),
 				new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
 		));
 		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
 		return indicatorElastic;
+	}
+
+	@DeleteMapping("delete/es/{id}")
+	@Transactional
+	public void DeleteElastic(@PathVariable("id") UUID id) throws MyForbiddenException, InvalidApplicationException, IOException {
+		logger.debug(new MapLogEntry("retrieving" + Indicator.class.getSimpleName()).And("id", id));
+
+		this.elasticIndicatorService.deleteAndSave(id);
+
+		this.auditService.track(AuditableAction.Indicator_Delete, "id", id);
+		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
 	}
 
 	@PostMapping("persist")

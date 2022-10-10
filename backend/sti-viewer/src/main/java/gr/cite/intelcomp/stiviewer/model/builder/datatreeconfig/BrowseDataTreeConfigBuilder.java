@@ -59,6 +59,8 @@ public class BrowseDataTreeConfigBuilder extends BaseBuilder<DataTreeConfig, Dat
 			DataTreeConfig m = new DataTreeConfig();
 
 			if (fields.hasField(this.asIndexer(DataTreeConfig._id))) m.setId(d.getId());
+			if (fields.hasField(this.asIndexer(DataTreeConfig._order))) m.setOrder(d.getOrder());
+			if (fields.hasField(this.asIndexer(DataTreeConfig._goTo))) m.setGoTo(d.getGoTo());
 			if (fields.hasField(this.asIndexer(DataTreeConfig._name))) m.setName(d.getName());
 			if (!levelConfigsFields.isEmpty() && d.getLevelConfigs() != null) m.setLevelConfigs(this.builderFactory.builder(BrowseDataTreeLevelConfigBuilder.class).authorize(this.authorize).build(levelConfigsFields, d.getLevelConfigs()));
 

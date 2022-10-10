@@ -26,6 +26,7 @@ public class IndicatorPoint {
 	public final static String _groupInfo = "groupInfo";
 	private DataGroupInfo groupInfo;
 
+	public final static String _score = "score";
 	private Map<String, Object> properties;
 
 	public UUID getId() {

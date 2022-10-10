@@ -6,7 +6,8 @@ public class DataTreeLevelConfigEntity {
 	private DataFieldEntity field;
 	private int order;
 	private Boolean supportSubLevel;
-	private List<String> supportedDashboards;
+	private List<String> defaultDashboards;
+	private List<DataTreeLevelDashboardOverrideEntity> dashboardOverrides;
 
 	public DataFieldEntity getField() {
 		return field;
@@ -24,14 +25,6 @@ public class DataTreeLevelConfigEntity {
 		this.supportSubLevel = supportSubLevel;
 	}
 
-	public List<String> getSupportedDashboards() {
-		return supportedDashboards;
-	}
-
-	public void setSupportedDashboards(List<String> supportedDashboards) {
-		this.supportedDashboards = supportedDashboards;
-	}
-
 	public int getOrder() {
 		return order;
 	}
@@ -39,5 +32,22 @@ public class DataTreeLevelConfigEntity {
 	public void setOrder(int order) {
 		this.order = order;
 	}
+
+	public List<String> getDefaultDashboards() {
+		return defaultDashboards;
+	}
+
+	public void setDefaultDashboards(List<String> defaultDashboards) {
+		this.defaultDashboards = defaultDashboards;
+	}
+
+	public List<DataTreeLevelDashboardOverrideEntity> getDashboardOverrides() {
+		return dashboardOverrides;
+	}
+
+	public void setDashboardOverrides(List<DataTreeLevelDashboardOverrideEntity> dashboardOverrides) {
+		this.dashboardOverrides = dashboardOverrides;
+	}
 }
+
 

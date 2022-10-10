@@ -27,6 +27,7 @@ public class UserSettingsQuery extends QueryBase<UserSettingsEntity> {
 
 	private String like;
 	private Collection<UUID> ids;
+	private Collection<UserSettingsType> userSettingsTypes;
 	private Collection<String> keys;
 	private Collection<UserSettingsType> types;
 	private Collection<UserSettingsEntityType> entityTypes;
@@ -62,6 +63,21 @@ public class UserSettingsQuery extends QueryBase<UserSettingsEntity> {
 
 	public UserSettingsQuery ids(Collection<UUID> values) {
 		this.ids = values;
+		return this;
+	}
+
+	public UserSettingsQuery userSettingsTypes(UserSettingsType value) {
+		this.userSettingsTypes = List.of(value);
+		return this;
+	}
+
+	public UserSettingsQuery userSettingsTypes(UserSettingsType... value) {
+		this.userSettingsTypes = Arrays.asList(value);
+		return this;
+	}
+
+	public UserSettingsQuery userSettingsTypes(Collection<UserSettingsType> values) {
+		this.userSettingsTypes = values;
 		return this;
 	}
 
@@ -169,6 +185,12 @@ public class UserSettingsQuery extends QueryBase<UserSettingsEntity> {
 		if (this.ids != null) {
 			CriteriaBuilder.In<UUID> inClause = queryContext.CriteriaBuilder.in(queryContext.Root.get(UserSettingsEntity._id));
 			for (UUID item : this.ids) inClause.value(item);
+			predicates.add(inClause);
+		}
+
+		if (this.userSettingsTypes != null) {
+			CriteriaBuilder.In<UserSettingsType> inClause = queryContext.CriteriaBuilder.in(queryContext.Root.get(UserSettingsEntity._type));
+			for (UserSettingsType item : this.userSettingsTypes) inClause.value(item);
 			predicates.add(inClause);
 		}
 

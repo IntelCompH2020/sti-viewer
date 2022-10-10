@@ -1,25 +1,27 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges, NgZone } from '@angular/core';
-import { ChartBuilderService, GraphOptions } from '@app/core/services/data-transform/charts-common.service';
-import { DataTransformService } from '@app/core/services/data-transform/data-transform.service';
+import { Component, Input, OnChanges, OnInit, SimpleChanges, NgZone, ViewChild, ElementRef } from '@angular/core';
+import { ChartBuilderService, GraphOptions, TreeMapData } from '@app/core/services/data-transform/charts-common.service';
+import { DataTransformService, StandAloneData } from '@app/core/services/data-transform/data-transform.service';
 import { IndicatorPointService } from '@app/core/services/http/indicator-point.service';
 import { GENERAL_ANIMATIONS } from '@app/animations';
 import { BaseComponent } from '@common/base/base.component';
 import { HttpErrorHandlingService } from '@common/modules/errors/error-handling/http-error-handling.service';
 import { UiNotificationService } from '@common/modules/notification/ui-notification-service';
 import { EChartsOption, registerMap} from 'echarts';
-import { BehaviorSubject, interval, of, Subject } from 'rxjs';
+import { BehaviorSubject, combineLatest, interval, of, Subject } from 'rxjs';
 import { delayWhen, filter, takeUntil } from 'rxjs/operators';
-import { BaseIndicatorDashboardChartConfig, IndicatorDashboardBarChartConfig, IndicatorDashboardGraphChartConfig, IndicatorDashboardLineChartConfig, IndicatorDashboardMapChartConfig, IndicatorDashboardPolarBarChartConfig, IndicatorDashboardScatterChartConfig, IndicatorFilterType} from '../indicator-dashboard-config';
+import { BaseIndicatorDashboardChartConfig, IndicatorDashboardBarChartConfig, IndicatorDashboardChartType, IndicatorDashboardConfig, IndicatorDashboardGraphChartConfig, IndicatorDashboardLineChartConfig, IndicatorDashboardMapChartConfig, IndicatorDashboardPolarBarChartConfig, IndicatorDashboardSankeyChartConfig, IndicatorDashboardScatterChartConfig, IndicatorDashboardTreeMapChartConfig, IndicatorFilterType} from '../indicator-dashboard-config';
 import { IndicatorQueryParams } from '../indicator-dashboard.component';
 import { MatDialog } from '@angular/material/dialog';
 import { IndicatorDashboardFiltersComponent, IndicatorListingFiltersComponentData } from './indicator-dashboard-filters/indicator-dashboard-filters.component';
 import * as FileSaver from 'file-saver';
-import { IndicatorPointReportLookup } from '@app/core/query/indicator-point-report.lookup';
-import { IndicatorPointLookup, IndicatorPointDateRangeFilter } from '@app/core/query/indicator-point.lookup';
+import { IndicatorPointReportLookup, RawDataRequest } from '@app/core/query/indicator-point-report.lookup';
+import { IndicatorPointLookup } from '@app/core/query/indicator-point.lookup';
 import moment from 'moment';
 const mapGeo = require('./world-sm.geo.json');
 const MAP_GEO_DICTIONARY = mapGeo.features.reduce((aggr, country) => ({...aggr, [country.properties.name]: country.properties.name}), {});
 const GRAPH_OPTIONS = require('./les-miserables.json') as GraphOptions;
+import { AuthService } from '@app/core/services/ui/auth.service';
+// const TREE_MAP_DATA = require('./disk.tree.json');
 
 @Component({
 	selector: 'app-indicator-dashboard-chart',
@@ -29,17 +31,26 @@ const GRAPH_OPTIONS = require('./les-miserables.json') as GraphOptions;
 })
 export class IndicatorDashboardChartComponent extends BaseComponent implements OnInit, OnChanges {
 
+	@Input() dashboardConfig: IndicatorDashboardConfig;
 	@Input() chartConfig: BaseIndicatorDashboardChartConfig;
 	@Input()
 	indicatorQueryParams: IndicatorQueryParams;
 	chartOptions: EChartsOption;
+
+
+
+	private _observer: IntersectionObserver;
+	private _previewSubject$ = new BehaviorSubject<boolean>(false);
+	private _inputChanges$ = new Subject<void>();
+
+	protected noDataFound: boolean = false;
 
 	private _extraFields: {fieldCode: string, value: any, indicatorFilterType: IndicatorFilterType  }[] = [];
 	private _ComponentInitializedSubject$ = new BehaviorSubject<boolean>(false);
 	public errorLoading = false;
 
 	public uiMinimumTimePased$ = this._ComponentInitializedSubject$.asObservable().pipe(
-		delayWhen(val => val ? interval(600) : of(val)),
+		delayWhen(val => val ? interval(100) : of(val)),
 		// delay(600),
 		takeUntil(this._destroyed)
 	);
@@ -51,17 +62,75 @@ export class IndicatorDashboardChartComponent extends BaseComponent implements O
 		private indicatorPointService: IndicatorPointService,
 		protected uiNotificationService: UiNotificationService,
 		protected httpErrorHandlingService: HttpErrorHandlingService,
+		private authService: AuthService,
+		private elementRef:ElementRef,
 		private _dialog: MatDialog) {
 		super();
+
+
+		
+		this._initialize()
+
 
 	}
 	ngOnInit(): void {
 
+		
 	}
 	ngOnChanges(): void {
-		this._buildChartOptions();
+		this._inputChanges$.next();
+		
 	}
 
+	private _initialize(): void{
+		this._registerIntersectionObserver();
+
+		combineLatest([
+
+			this._inputChanges$.asObservable(),
+			this._previewSubject$.asObservable().pipe(filter(x => x))
+		])
+		.pipe(
+			takeUntil(this._destroyed)
+		)
+		.subscribe(() => {
+			this._buildChartOptions();
+		})
+
+	}
+
+	private _registerIntersectionObserver():void{
+		if(this._observer){
+			return;
+		}
+		this._observer = new IntersectionObserver((event) =>{
+
+			event.forEach(entry => {
+				if((entry.target === this.elementRef.nativeElement) && entry.isIntersecting){
+					this._previewSubject$.next(true);
+					this._unregisterObserver();
+				}
+			})
+		}, {
+			root: null,
+			threshold: .1
+		});
+
+
+		this._observer.observe(this.elementRef.nativeElement);
+	}
+	private _unregisterObserver(): void{
+		this._observer?.unobserve(this.elementRef.nativeElement);
+		this._observer.disconnect();
+		this._observer = null;
+	}
+
+	// unauthenticate(): void{
+	// 	this.authService.selectedTenant(null);
+	// }
+	// request(): void{
+	// 	this.indicatorPointService.getIndicatorPointReport(this.chartConfig.indicatorId, this._buildIndicatorLookup(), true).subscribe(response => console.log({response}));
+	// }
 
 	private _buildChartOptions(): void {
 		this._ComponentInitializedSubject$.next(false);
@@ -72,7 +141,17 @@ export class IndicatorDashboardChartComponent extends BaseComponent implements O
 			return;
 		}
 
-		if (this.chartConfig.type === 'line' || this.chartConfig.type === 'bar' || this.chartConfig.type === 'polar_bar' || this.chartConfig.type === 'map' || this.chartConfig.type === 'pie') {
+		//TODO REMOVE IN FUTURE once no more cases in "generateChartOptions"
+		const availableResponseExtractionTypes = [
+			IndicatorDashboardChartType.Line,
+			IndicatorDashboardChartType.Bar,
+			IndicatorDashboardChartType.PolarBar,
+			IndicatorDashboardChartType.Map,
+			IndicatorDashboardChartType.Pie,
+			IndicatorDashboardChartType.TreeMap,
+			IndicatorDashboardChartType.Sankey,
+		]
+		if (availableResponseExtractionTypes.includes(this.chartConfig.type)) {
 			try { // TODO FIX THIS
 
 				const indicatorId = this.chartConfig?.indicatorId; ;
@@ -84,20 +163,51 @@ export class IndicatorDashboardChartComponent extends BaseComponent implements O
 				}
 
 				this.errorLoading = false;
+				this.noDataFound = false;
 				this.indicatorPointService.getIndicatorPointReport(indicatorId, this._buildIndicatorLookup(), true)
 				.pipe(
 					takeUntil(this._destroyed)
 				)
 				.subscribe((response) => {
-
 					try{
+
+						if(this.chartConfig.type === IndicatorDashboardChartType.Sankey){
+							const links = this.dataTransformService.aggregateResponseModelToConnections(response, this.chartConfig as IndicatorDashboardSankeyChartConfig);
+							
+							if(!links.length){
+								this.noDataFound = true;
+								return;
+							}
+
+							const data = [
+								...links.reduce((all, current) =>{
+									all.add(current.source);
+									all.add(current.target);
+									return all;
+								} , new Set())
+							].map(x => ({name: x as string}))
+
+							this.chartOptions = this.chartBuilderService.buildSankeyOptions({
+								config: this.chartConfig as IndicatorDashboardSankeyChartConfig, 
+								data: {
+									data,
+									links
+								}});
+
+							return;
+						}
 						const {seriesData : sd, standAloneData} = this.dataTransformService.aggregateResponseModelToLineChartDataFromConfiguration(response, this.chartConfig); // TODO FIX THIS
 					
 
 						const [seriesData] = sd;
 
+						if(!seriesData.labels?.length){
+							this.noDataFound = true;
+							return;
+						}
 
-						if (this.chartConfig.type === 'line') {
+
+						if (this.chartConfig.type === IndicatorDashboardChartType.Line) {
 							if (!seriesData) {
 								console.warn('No series found for line chart');
 								return;
@@ -118,7 +228,7 @@ export class IndicatorDashboardChartComponent extends BaseComponent implements O
 						}
 
 
-						if (this.chartConfig.type === 'bar') {
+						if (this.chartConfig.type === IndicatorDashboardChartType.Bar) {
 							if (!seriesData) {
 								console.warn('No series found for line bar');
 								return;
@@ -126,12 +236,15 @@ export class IndicatorDashboardChartComponent extends BaseComponent implements O
 							this.chartOptions = this.chartBuilderService.buildBar({
 								config: this.chartConfig as IndicatorDashboardBarChartConfig,
 								labels: seriesData.labels,
-								inputSeries: seriesData.series
+								inputSeries: seriesData.series,
+								onDownload: () => {
+									this.downloadData();
+								}
 							});
 							return;
 						}
 
-						if (this.chartConfig.type === 'polar_bar') {
+						if (this.chartConfig.type === IndicatorDashboardChartType.PolarBar) {
 							if (!seriesData) {
 								console.warn('No series found for polar bar');
 								return;
@@ -139,12 +252,15 @@ export class IndicatorDashboardChartComponent extends BaseComponent implements O
 							this.chartOptions = this.chartBuilderService.buildPolarBar({
 								config: this.chartConfig as IndicatorDashboardPolarBarChartConfig,
 								labels: seriesData.labels,
-								inputSeries: seriesData.series
+								inputSeries: seriesData.series,
+								onDownload: () => {
+									this.downloadData();
+								}
 							});
 							return;
 						}
 
-						if (this.chartConfig.type === 'map') {
+						if (this.chartConfig.type === IndicatorDashboardChartType.Map) {
 							if (!seriesData) {
 								console.warn('No series found for line map');
 								return;
@@ -153,29 +269,92 @@ export class IndicatorDashboardChartComponent extends BaseComponent implements O
 							registerMap('worldmap', mapGeo);
 							const seriesIds = Object.keys(series);
 
+							const mapChartConfig = this.chartConfig as IndicatorDashboardMapChartConfig;
 							this.chartOptions =  this.chartBuilderService.buildGeoMap({
 
-								config: this.chartConfig as IndicatorDashboardMapChartConfig,
+								config: mapChartConfig as IndicatorDashboardMapChartConfig,
 								data: seriesIds.map(sid => ({
 									data: series[sid].data.map((value, _index) => ({
 											value: value, 
-											name: MAP_GEO_DICTIONARY[labels[_index]]
+
+											// * give higher priortity to configurationMapping
+											name: mapChartConfig.countryNameMapping?.[labels[_index]] ?? MAP_GEO_DICTIONARY[labels[_index]]
 										})),
 									description: sid
 								}))
+								,onDownload: () => {
+									this.downloadData();
+								}
+							});
+							return;
+						}
+
+						if(this.chartConfig.type === IndicatorDashboardChartType.TreeMap){
+
+							const {series, labels} = seriesData;
+
+							const treeMapDataArray : TreeMapData[][] = Object.keys(series).map(key =>{
+								const data = series[key].data;
+								if(data.length !== labels.length){
+									console.warn('Mismatch lengths - Treemap ')
+									return null;
+								}
+								return data.map((value, index) => ({name: labels[index], value: value}) )
+							}).filter(x => x);
+
+							if(treeMapDataArray.length !== 1){
+								console.warn('More than one treemap data array. selecting first');
+							}
+							const treeMapdata = treeMapDataArray[0];
+
+							this.chartOptions = this.chartBuilderService.buildTreeMap({ 
+								config: this.chartConfig as IndicatorDashboardTreeMapChartConfig,
+								data:treeMapdata,
+								onDownload: () => {
+									this.downloadData();
+								}
 							});
 							return;
 						}
 
 
-						if (this.chartConfig.type === 'pie') {
-							if (!standAloneData) {
+						if (this.chartConfig.type === IndicatorDashboardChartType.Pie) {
+							let standAloneDataFromSeries:StandAloneData[];
+							standAloneCheck: if (!standAloneData) {
 								console.warn('No Data found for pie');
+
+								if(!seriesData) return;
+
+								// * get unique sereis Key
+								const seriesKeys = Object.keys(seriesData.series);
+								if(seriesKeys.length !== 1){
+									console.warn('Unique key for dataseries not found - chartpie');
+									break standAloneCheck;
+								}
+								const uniqueSeriesKey = seriesKeys[0];
+
+								const labels = seriesData.labels;
+								const data = seriesData.series[uniqueSeriesKey]?.data;
+
+								if(labels.length !== data?.length){
+									console.warn('Arrays length misshmatch - chartpie');
+									break standAloneCheck;
+								}
+
+								standAloneDataFromSeries = labels.map((label, index) => ({name: label, value: data[index]}));
+							}
+
+							if(!standAloneData && !standAloneDataFromSeries){
+								console.warn('Standalone data from series not found')
 								return;
 							}
+
 							this.chartOptions = this.chartBuilderService.buildPie({
 								config: this.chartConfig as any,
-								pieData: standAloneData
+								pieData: standAloneData ?? standAloneDataFromSeries,
+								onDownload: () => {
+									this.downloadData();
+								}
 							});
 						}
 					}catch{
@@ -197,20 +376,20 @@ export class IndicatorDashboardChartComponent extends BaseComponent implements O
 
 
 	private generateChartOptions(chartConfig: BaseIndicatorDashboardChartConfig): EChartsOption {
-		const xAxisData: string[] = [];
-		const data1: number[] = [];
-		const data2: number[] = [];
+		// const xAxisData: string[] = [];
+		// const data1: number[] = [];
+		// const data2: number[] = [];
 
-		for (let i = 0; i < 20; i++) {
-			xAxisData.push('category' + i);
-			data1.push(Math.abs((Math.sin(i / 5) * (i / 5 - 10) + i / 6) * 5));
-			data2.push(Math.abs((Math.cos(i / 5) * (i / 5 - 10) + i / 6) * 5));
-		}
+		// for (let i = 0; i < 20; i++) {
+		// 	xAxisData.push('category' + i);
+		// 	data1.push(Math.abs((Math.sin(i / 5) * (i / 5 - 10) + i / 6) * 5));
+		// 	data2.push(Math.abs((Math.cos(i / 5) * (i / 5 - 10) + i / 6) * 5));
+		// }
 
-		if (this.chartConfig.type === 'scatter') {
+		if (this.chartConfig.type === IndicatorDashboardChartType.Scatter) {
 			return this.chartBuilderService.buildScatterOptions({config: this.chartConfig as IndicatorDashboardScatterChartConfig});
 		}
-		if (this.chartConfig.type === 'graph') {
+		if (this.chartConfig.type === IndicatorDashboardChartType.Graph) {
 			return this.chartBuilderService.buildGraphOptions({
 				config: this.chartConfig as IndicatorDashboardGraphChartConfig,
 				graph: GRAPH_OPTIONS
@@ -230,10 +409,10 @@ export class IndicatorDashboardChartComponent extends BaseComponent implements O
 		const data: IndicatorListingFiltersComponentData = {
 			config: this.chartConfig,
 			values: this._extraFields,
-			bannedValues: this.indicatorQueryParams.levels.reduce((aggr, current) => {
+			bannedValues: this.indicatorQueryParams.keywordFilters.reduce((aggr, current) => {
 				const currentBan = {};
 
-				currentBan[current.code] = [current.value];
+				currentBan[current.field] = [current.values?.[0]]; // TODO
 				return {...aggr, ...currentBan};
 			} , {})
 		};
@@ -282,25 +461,14 @@ export class IndicatorDashboardChartComponent extends BaseComponent implements O
 		lookup.bucket = bucket;
 		lookup.metrics = metrics;
 
-		if (this.indicatorQueryParams?.levels?.length || this._extraFields.length || this.indicatorQueryParams?.groupHash) {
+		if (this.indicatorQueryParams?.keywordFilters?.length || this._extraFields.length || this.indicatorQueryParams?.groupHash) {
 			const indicatorPointLookup = new IndicatorPointLookup();
 
 			//query params
-
-			// TODO Pleonasmos
-			if (this.indicatorQueryParams?.levels?.length) {
-				const keywordFilters: Record<string, string[]> = this.indicatorQueryParams.levels.reduce((aggr, current) => {
-					aggr[current.code] = [...(aggr[current.code] ?? [] ), current.value];
-					return aggr;
-				} , {});
-
-				indicatorPointLookup.keywordFilters = Object.keys(keywordFilters).map((key) => ({
-					field: key,
-					values: keywordFilters[key]
-				}));
+			if (this.indicatorQueryParams?.keywordFilters?.length) {
+				
+				indicatorPointLookup.keywordFilters = this.indicatorQueryParams.keywordFilters;
 			}
-
-			//TODO END
 
 			if (this.indicatorQueryParams.groupHash) {
 				indicatorPointLookup.groupHashes = [this.indicatorQueryParams.groupHash];
@@ -358,6 +526,48 @@ export class IndicatorDashboardChartComponent extends BaseComponent implements O
 			});
 
 
+
+
+		}
+		
+		// ** Replace/add keywords filters coming from dashboard configuration if any
+		const staticKeywordFilters = this.chartConfig?.staticFilters?.keywordsFilters;
+		if(staticKeywordFilters?.length){
+			const filters = lookup.filters ?? new IndicatorPointLookup();
+			const keywordFilters = lookup.filters.keywordFilters ?? [];
+
+			const dashboardFieldCodes = staticKeywordFilters.map(item => item.field);
+
+			// * remove keywords that are defined in dashboard config if any
+			filters.keywordFilters = keywordFilters.filter(filter => !dashboardFieldCodes.includes(filter.field));
+			// * add dashboardconfig filters if any
+			staticKeywordFilters.forEach(keywordFilter =>{
+				filters.keywordFilters.push({
+					field: keywordFilter.field,
+					values: keywordFilter.value
+				})
+			});
+
+			//* update lookup
+			lookup.filters = filters;
+		}
+
+		// * append ordering from backend ordering
+		rawDataBlock: if(this.chartConfig.rawDataRequest){
+
+			const {keyField, order, valueField, page} = this.chartConfig.rawDataRequest;
+
+			if(!keyField || !valueField || !order){
+				console.warn('Raw data not configured properly breaking out of sorting');
+				break rawDataBlock;
+			}
+			const rawDataRequest: RawDataRequest = {
+				keyField, order, valueField, page
+			};
+
+			lookup.isRawData = true;
+			// (lookup as any).rawData = true;
+			lookup.rawDataRequest = rawDataRequest;
 		}
 
 		return lookup;

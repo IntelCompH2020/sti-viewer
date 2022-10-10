@@ -1,19 +1,22 @@
+import { Lookup } from "@common/model/lookup";
 import { Guid } from "@common/types/guid";
 import { Moment } from "moment";
 
-export class IndicatorPointLookup  implements IndicatorPointLookupFilter{
+export class IndicatorPointLookup extends Lookup implements IndicatorPointLookupFilter{
     ids: Guid[];
     keywordFilters:IndicatorPointKeywordFilter[];
     groupHashes?: string[];
+    indicatorIds?: Guid[];
     dateFilters?: IndicatorPointDateFilter[];
     integerFilters?: IndicatorPointIntegerFilter[];
     doubleFilters?: IndicatorPointDoubleFilter[];
     dateRangeFilters?: IndicatorPointDateRangeFilter[];
     integerRangeFilters?: IndicatorPointIntegerRangeFilter[];
     doubleRangeFilters?: IndicatorPointDoubleRangeFilter[];
-    fieldLikeFilter?: IndicatorPointLikeFilter[];
+    fieldLikeFilter?: IndicatorPointLikeFilter;
     
 	constructor() {
+        super();
 	}
 }
 
@@ -21,13 +24,14 @@ export interface IndicatorPointLookupFilter {
     ids: Guid[]
     keywordFilters: IndicatorPointKeywordFilter[];
     groupHashes?: string[];
+    indicatorIds?: Guid[];
     dateFilters?: IndicatorPointDateFilter[];
     integerFilters?: IndicatorPointIntegerFilter[];
     doubleFilters?: IndicatorPointDoubleFilter[];
     dateRangeFilters?: IndicatorPointDateRangeFilter[];
     integerRangeFilters?: IndicatorPointIntegerRangeFilter[];
     doubleRangeFilters?: IndicatorPointDoubleRangeFilter[];
-    fieldLikeFilter?: IndicatorPointLikeFilter[];
+    fieldLikeFilter?: IndicatorPointLikeFilter;
 }
 
 export interface IndicatorPointKeywordFilter{

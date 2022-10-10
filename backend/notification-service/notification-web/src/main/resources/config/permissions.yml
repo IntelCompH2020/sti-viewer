@@ -3,9 +3,9 @@ permissions:
   policies:
     DeferredAffiliation:
       roles:
-        - superuser
+        - ic-sti-superuser
         - tenantadmin
-        - stiguest
+        - ic-sti-guest
         - tenantuser
       clients: [ ]
       allowAnonymous: false
@@ -13,7 +13,7 @@ permissions:
     #Datasets
     BrowseDataset:
       roles:
-        - superuser
+        - ic-sti-superuser
         - user
       clients: [ ]
       allowAnonymous: true
@@ -23,14 +23,14 @@ permissions:
         endingAt: "23:00"
     EditDataset:
       roles:
-        - superuser
+        - ic-sti-superuser
         - user
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false
     DeleteDataset:
       roles:
-        - superuser
+        - ic-sti-superuser
       claims: [ ]
       clients: [ ]
       allowAnonymous: false
@@ -39,7 +39,7 @@ permissions:
     # Indicators
     BrowseIndicator:
       roles:
-        - superuser
+        - ic-sti-superuser
         - user
         - tenantadmin
       clients: [ ]
@@ -47,20 +47,20 @@ permissions:
       allowAuthenticated: false
     EditIndicator:
       roles:
-        - superuser
+        - ic-sti-superuser
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false
     DeleteIndicator:
       roles:
-        - superuser
+        - ic-sti-superuser
       claims: [ ]
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false
     BrowseIndicatorReportConfig:
       roles:
-        - superuser
+        - ic-sti-superuser
       clients: [ ]
       indicator:
         roles:
@@ -71,40 +71,40 @@ permissions:
     # Bookmarks
     BrowseBookmark:
       roles:
-        - superuser
+        - ic-sti-superuser
       clients: [ ]
       allowAnonymous: true
       allowAuthenticated: false
     EditBookmark:
       roles:
-        - superuser
+        - ic-sti-superuser
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false
     DeleteBookmark:
       roles:
-        - superuser
+        - ic-sti-superuser
       claims: [ ]
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false
     BrowseIndicatorElastic:
       roles:
-        - superuser
+        - ic-sti-superuser
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false
     # DataAccessRequest
     BrowseDataAccessRequest:
       roles:
-        - superuser
+        - ic-sti-superuser
         - tenantadmin
       clients: [ ]
       allowAnonymous: true
       allowAuthenticated: false
     EditDataAccessRequest:
       roles:
-        - superuser
+        - ic-sti-superuser
         - tenantadmin
       clients: [ ]
       allowAnonymous: false
@@ -112,25 +112,25 @@ permissions:
     CreateDataAccessRequest:
       roles:
         - tenantadmin
-        - superuser
+        - ic-sti-superuser
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false
     ApproveDataAccessRequest:
       roles:
-        - superuser
+        - ic-sti-superuser
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false
     RejectDataAccessRequest:
       roles:
-        - superuser
+        - ic-sti-superuser
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false
     DeleteDataAccessRequest:
       roles:
-        - superuser
+        - ic-sti-superuser
       claims: [ ]
       clients: [ ]
       allowAnonymous: false
@@ -138,20 +138,20 @@ permissions:
     # IndicatorAccess
     BrowseIndicatorAccess:
       roles:
-        - superuser
+        - ic-sti-superuser
         - tenantadmin
       clients: [ ]
       allowAnonymous: true
       allowAuthenticated: false
     EditIndicatorAccess:
       roles:
-        - superuser
+        - ic-sti-superuser
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false
     DeleteIndicatorAccess:
       roles:
-        - superuser
+        - ic-sti-superuser
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false
@@ -159,26 +159,26 @@ permissions:
     # Tenants
     BrowseTenant:
       roles:
-        - superuser
+        - ic-sti-superuser
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false
     EditTenant:
       roles:
-        - superuser
+        - ic-sti-superuser
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false
     DeleteTenant:
       roles:
-        - superuser
+        - ic-sti-superuser
       claims: [ ]
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false
     AllowNoTenant:
       roles:
-        - superuser
+        - ic-sti-superuser
       claims: [ ]
       clients: [ ]
       allowAnonymous: false
@@ -187,19 +187,19 @@ permissions:
     # TenantUsers
     BrowseTenantUser:
       roles:
-        - superuser
+        - ic-sti-superuser
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false
     EditTenantUser:
       roles:
-        - superuser
+        - ic-sti-superuser
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false
     DeleteTenantUser:
       roles:
-        - superuser
+        - ic-sti-superuser
       claims: [ ]
       clients: [ ]
       allowAnonymous: false
@@ -208,39 +208,39 @@ permissions:
     # Tenant Requests
     BrowseTenantRequest:
       roles:
-        - superuser
+        - ic-sti-superuser
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false
     EditTenantRequest:
       roles:
-        - superuser
+        - ic-sti-superuser
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false
     CreateTenantRequest:
       roles:
         - tenantadmin
-        - stiguest
-        - superuser
+        - ic-sti-guest
+        - ic-sti-superuser
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false
     ApproveTenantRequest:
       roles:
-        - superuser
+        - ic-sti-superuser
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false
     RejectTenantRequest:
       roles:
-        - superuser
+        - ic-sti-superuser
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false
     DeleteTenantRequest:
       roles:
-        - superuser
+        - ic-sti-superuser
       claims: [ ]
       clients: [ ]
       allowAnonymous: false
@@ -249,7 +249,7 @@ permissions:
     # Users
     BrowseUser:
       roles:
-        - superuser
+        - ic-sti-superuser
         - tenantadmin
       clients: [ ]
       allowAnonymous: true
@@ -257,13 +257,13 @@ permissions:
     EditUser:
       roles:
         - admin
-        - superuser
+        - ic-sti-superuser
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false
     DeleteUser:
       roles:
-        - superuser
+        - ic-sti-superuser
       claims: [ ]
       clients: [ ]
       allowAnonymous: false
@@ -272,21 +272,21 @@ permissions:
     # UserInvitations
     BrowseUserInvitation:
       roles:
-        - superuser
+        - ic-sti-superuser
         - user
       clients: [ ]
       allowAnonymous: true
       allowAuthenticated: false
     EditUserInvitation:
       roles:
-        - superuser
+        - ic-sti-superuser
         - user
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false
     DeleteUserInvitation:
       roles:
-        - superuser
+        - ic-sti-superuser
       claims: [ ]
       clients: [ ]
       allowAnonymous: false
@@ -295,20 +295,20 @@ permissions:
     # UserSettings
     BrowseUserSettings:
       roles:
-        - superuser
+        - ic-sti-superuser
       clients: [ ]
       allowAnonymous: true
       allowAuthenticated: false
     EditUserSettings:
       roles:
-        - superuser
+        - ic-sti-superuser
         - user
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false
     DeleteUserSettings:
       roles:
-        - superuser
+        - ic-sti-superuser
       claims: [ ]
       clients: [ ]
       allowAnonymous: false
@@ -316,7 +316,7 @@ permissions:
     # BrowseDataTree
     BrowseBrowseDataTreeConfig:
       roles:
-        - superuser
+        - ic-sti-superuser
         - tenantadmin
         - tenantuser
       clients: [ ]
@@ -324,7 +324,7 @@ permissions:
       allowAuthenticated: false
     BrowseBrowseDataTree:
       roles:
-        - superuser
+        - ic-sti-superuser
         - tenantadmin
         - tenantuser
       clients: [ ]
@@ -332,7 +332,7 @@ permissions:
       allowAuthenticated: false
     GetDashboard:
       roles:
-        - superuser
+        - ic-sti-superuser
         - tenantadmin
         - tenantuser
       clients: [ ]
@@ -341,20 +341,20 @@ permissions:
     # UserContactInfo
     BrowseUserContactInfo:
       roles:
-        - superuser
+        - ic-sti-superuser
       clients: [ ]
       allowAnonymous: true
       allowAuthenticated: false
     EditUserContactInfo:
       roles:
-        - superuser
+        - ic-sti-superuser
         - user
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false
     DeleteUserContactInfo:
       roles:
-        - superuser
+        - ic-sti-superuser
       claims: [ ]
       clients: [ ]
       allowAnonymous: false
@@ -363,19 +363,19 @@ permissions:
     # Master Items
     BrowseMasterItem:
       roles:
-        - superuser
+        - ic-sti-superuser
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false
     EditMasterItem:
       roles:
-        - superuser
+        - ic-sti-superuser
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false
     DeleteMasterItem:
       roles:
-        - superuser
+        - ic-sti-superuser
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false
@@ -383,7 +383,7 @@ permissions:
     # IndicatorPoints
     BrowseIndicatorPoint:
       roles:
-        - superuser
+        - ic-sti-superuser
       clients: [ ]
       indicator:
         roles:
@@ -392,7 +392,7 @@ permissions:
       allowAuthenticated: false
     EditIndicatorPoint:
       roles:
-        - superuser
+        - ic-sti-superuser
       clients: [ ]
       indicator:
         roles:
@@ -401,7 +401,7 @@ permissions:
       allowAuthenticated: false
     DeleteIndicatorPoint:
       roles:
-        - superuser
+        - ic-sti-superuser
       clients: [ ]
       indicator:
         roles:
@@ -411,32 +411,32 @@ permissions:
     # Blueprint Request
     BrowseBlueprintRequest:
       roles:
-        - superuser
+        - ic-sti-superuser
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false
     CreateBlueprintRequest:
       roles:
-        - superuser
+        - ic-sti-superuser
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false
     UpdateBlueprintRequest:
       roles:
-        - superuser
+        - ic-sti-superuser
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false
     DeleteBlueprintRequest:
       roles:
-        - superuser
+        - ic-sti-superuser
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false
     # Create Blueprint
     CreateBlueprint:
       roles:
-        - superuser
+        - ic-sti-superuser
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false
@@ -444,13 +444,13 @@ permissions:
     # ViewPage Permissions
     ViewDatasetPage:
       roles:
-        - superuser
+        - ic-sti-superuser
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false
     ViewIndicatorPage:
       roles:
-        - superuser
+        - ic-sti-superuser
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false
@@ -458,7 +458,7 @@ permissions:
       roles:
         - tenantadmin
         - tenantuser
-        - superuser
+        - ic-sti-superuser
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false
@@ -466,153 +466,153 @@ permissions:
       roles:
         - tenantadmin
         - tenantuser
-        - superuser
+        - ic-sti-superuser
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false
     ViewMasterItemPage:
       roles:
-        - superuser
+        - ic-sti-superuser
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false
     ViewTenantRequestPage:
       roles:
-        - superuser
+        - ic-sti-superuser
         - tenantadmin
-        - stiguest
+        - ic-sti-guest
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false
     ViewDataAccessRequestPage:
       roles:
-        - superuser
+        - ic-sti-superuser
         - tenantadmin
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false
     ViewMyDataAccessRequestPage:
       roles:
-      - superuser
-      - tenantadmin
+        - ic-sti-superuser
+        - tenantadmin
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false
     ViewTenantPage:
       roles:
-        - superuser
+        - ic-sti-superuser
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false
     ViewUsersPage:
       roles:
-        - superuser
+        - ic-sti-superuser
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false
     ViewApiClientsPage:
       roles:
-        - superuser
+        - ic-sti-superuser
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false
     ViewRoleAssignmentPage:
       roles:
-        - superuser
+        - ic-sti-superuser
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false
     ViewAccessTokensPage:
       roles:
-        - superuser
+        - ic-sti-superuser
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false
     ViewUserInvitationPage:
       roles:
-        - superuser
+        - ic-sti-superuser
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false
     ViewUserProfilePage:
       roles:
-        - superuser
+        - ic-sti-superuser
         - tenantadmin
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false
     ViewForgetMeRequestPage:
       roles:
-        - superuser
+        - ic-sti-superuser
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false
     ViewWhatYouKnowAboutMeRequestPage:
       roles:
-        - superuser
+        - ic-sti-superuser
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false
     ViewTenantConfigurationPage:
       roles:
-        - superuser
+        - ic-sti-superuser
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false
     ViewNotificationPage:
       roles:
-        - superuser
+        - ic-sti-superuser
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false
     ViewNotificationEventRulePage:
       roles:
-        - superuser
+        - ic-sti-superuser
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false
     ViewInAppNotificationPage:
       roles:
-        - superuser
+        - ic-sti-superuser
         - tenantadmin
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false
     ViewNotificationTemplatePage:
       roles:
-        - superuser
+        - ic-sti-superuser
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false
     ViewBlueprintRequestPage:
       roles:
-        - superuser
+        - ic-sti-superuser
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false
     DownloadReport:
       roles:
-        - superuser
+        - ic-sti-superuser
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false
     ViewBlueprintTemplatePage:
       roles:
-        - superuser
+        - ic-sti-superuser
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false
     #Notification
     BrowseNotification:
       roles:
-        - superuser
+        - ic-sti-superuser
         - user
       clients: [ ]
       allowAnonymous: true
       allowAuthenticated: false
     EditNotification:
       roles:
-        - superuser
+        - ic-sti-superuser
         - user
       clients: [ ]
       allowAnonymous: true
@@ -620,27 +620,27 @@ permissions:
     #Tenant Configuration
     BrowseTenantConfiguration:
       roles:
-        - superuser
+        - ic-sti-superuser
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false
     EditTenantConfiguration:
       roles:
-        - superuser
+        - ic-sti-superuser
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false
     #User Notification Preference
     BrowseUserNotificationPreference:
       roles:
-        - superuser
+        - ic-sti-superuser
       clients: [ ]
       allowAnonymous: true
       allowAuthenticated: false
     EditUserNotificationPreference:
-        roles:
-          - superuser
-          - user
-        clients: [ ]
-        allowAnonymous: false
-        allowAuthenticated: false
+      roles:
+        - ic-sti-superuser
+        - user
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false

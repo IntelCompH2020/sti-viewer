@@ -11,6 +11,12 @@ public class DataTreeConfig {
 	private String name;
 	public static final String _name = "name";
 
+	private int order;
+	public static final String _order = "order";
+
+	private String goTo;
+	public static final String _goTo = "goTo";
+
 	private List<DataTreeLevelConfig> levelConfigs;
 	public static final String _levelConfigs = "levelConfigs";
 
@@ -37,5 +43,21 @@ public class DataTreeConfig {
 
 	public void setLevelConfigs(List<DataTreeLevelConfig> levelConfigs) {
 		this.levelConfigs = levelConfigs;
+	}
+
+	public int getOrder() {
+		return order;
+	}
+
+	public void setOrder(int order) {
+		this.order = order;
+	}
+
+	public String getGoTo() {
+		return goTo;
+	}
+
+	public void setGoTo(String goTo) {
+		this.goTo = goTo;
 	}
 }

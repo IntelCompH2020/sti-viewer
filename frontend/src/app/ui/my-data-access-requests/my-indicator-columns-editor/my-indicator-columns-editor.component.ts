@@ -151,7 +151,7 @@ export class MyIndicatorColumnsEditorComponent extends BaseComponent implements 
 
         this.router.navigate(['indicator-report','dashboard'], { queryParams: {
             params: this.queryParamsService.serializeObject<IndicatorQueryParams>({
-              levels: [],
+              keywordFilters: [],
               displayName :this.language.instant('APP.MY-DATA-ACCESS-REQUESTS.COLUMNS-EDITOR.GROUP') + displayName,
               dashboard: this.dashboardKey,
               groupHash
@@ -179,13 +179,22 @@ export class MyIndicatorColumnsEditorComponent extends BaseComponent implements 
 
     protected navigateToDashboard(field: string): void{
         this.router.navigate(['indicator-report','dashboard'], { queryParams: {
+
+
             params: this.queryParamsService.serializeObject<IndicatorQueryParams>({
-              levels: [{
-                code:this.column,
-                value:field
-              }],
-              displayName: `${this.column} : ${field}`,
-              dashboard: 'someDashboardId'
+            //   levels: [{
+            //     code:this.column,
+            //     value:field
+            //   }],
+            
+              displayName: `${this.column} : ${field}`, // TODO
+              dashboard: 'someDashboardId',
+              keywordFilters: [
+                {
+                    field: this.column, 
+                    values: [field]
+                }
+              ]
             })}
           });
     }

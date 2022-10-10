@@ -1,0 +1,64 @@
+<div class="row m-0 parent-root-container" *ngIf="searchConfiguration">
+	<div class="col-12 pt-4">
+		<h2>{{'APP.SEARCH-COMPONENT.SEARCH-RESULTS' | translate}}</h2>
+		<div class="row m-0 align-items-center">
+			<mat-form-field appearance="legacy" class="col-auto">
+				<mat-label>{{'APP.SEARCH-COMPONENT.KEYWORDS' | translate}}</mat-label>
+				<input matInput placeholder [(ngModel)]="searchTerm" (keyup.enter)="search()" />
+			</mat-form-field>
+	
+			<button mat-icon-button color="primary" class="col-auto" (click)="search()">
+				<mat-icon>search</mat-icon>
+			</button>
+		</div>
+		<div class="row m-0" *ngIf="previousSearchTerm">
+			<h6>
+				{{'APP.SEARCH-COMPONENT.SEARCH-RESULTS-FOR' | translate}} "{{previousSearchTerm}}"
+			</h6>
+		</div>
+	</div>
+	<div class="col-12 mt-4" *ngIf="results?.length else noresults">
+
+		<div class="row m-0">
+			<mat-card *ngFor="let item of results" class="col-12 mt-1 mb-1" [class.disabled]="!item.availableForPresentation"  >
+				<mat-card-title>
+					<span *ngFor="let title of item.title; let last = last" (click)="item.availableForPresentation && title.payload && navigate(title)" [class.navigatable]="item.availableForPresentation && title.payload" [class.text-muted]="!item.availableForPresentation" [matTooltip]="item.availableForPresentation ? '': 'Coming soon' " matTooltipShowDelay="800" class="title-item">
+						{{title.textValue}}
+						<span *ngIf="(item.title.length !==1) && !last">&nbsp;|&nbsp;</span>
+					</span>
+				</mat-card-title>
+
+				<mat-card-subtitle>
+					<span *ngFor="let subtitle of item.subtitle ;let last = last" (click)="subtitle.payload && navigate(subtitle)" [class.navigatable]="subtitle.payload">
+						{{subtitle.textValue}}
+						<span *ngIf="(item.subtitle.length !==1) && !last">&nbsp;|&nbsp;</span>
+					</span>
+				</mat-card-subtitle>
+
+				<mat-card-content>{{item.text}}</mat-card-content>
+			</mat-card>
+		</div>
+
+		<div class="row m-0">
+			<mat-paginator [length]="totalResultsCount" class="col-12"
+              [pageSize]="pageSize"
+              [pageSizeOptions]="pageSizeOptions"
+			  [pageIndex]="currentPage"
+			  (page)="onPageChange($event)"
+              aria-label="Select page">
+			</mat-paginator>
+		</div>
+	</div>
+</div>
+
+
+
+
+
+
+
+<ng-template #noresults>
+	<div class="col-12">
+		{{'APP.SEARCH-COMPONENT.NO-RESULTS' | translate}}
+	</div>
+</ng-template>

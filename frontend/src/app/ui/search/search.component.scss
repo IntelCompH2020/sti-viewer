@@ -1,0 +1,43 @@
+.parent-root-container{
+
+    z-index: 1;
+	position: relative;
+	&::before{
+		position: fixed;
+		font-family: "Material Icons";
+    	content: "search";
+        overflow: hidden;
+		font-size: 60rem;
+		width: 100vw;
+		height: 100vh;
+		z-index: -1;
+		bottom: 0;
+		right: 20px;
+		text-align: end;
+		opacity: .1;
+	}
+}
+
+.content{
+    flex: 3;
+    align-self: stretch;
+}
+
+:host ::ng-deep .mat-card{
+    background-color: #ffffffe0;
+}
+
+.title-item{
+	cursor: default;
+}
+
+.navigatable{
+    cursor: pointer;
+    &:hover{
+        text-decoration: underline;
+    }
+}
+.disabled{
+	// background-color: rgba(240, 240, 240, 0.651);
+	background-color: lightgray;
+}

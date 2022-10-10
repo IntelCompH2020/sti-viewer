@@ -366,12 +366,20 @@ public class IndicatorPointQuery extends ElasticQuery<IndicatorPointEntity, UUID
 			predicates.add(this.fieldNotExists(this.elasticFieldOf(IndicatorPointEntity.Fields.groupHash)));
 		}
 
-		if (fieldLikeFilter != null && fieldLikeFilter.getFields() != null) {
+		if (fieldLikeFilter != null && fieldLikeFilter.getLike() != null && !fieldLikeFilter.getLike().isBlank() && fieldLikeFilter.getFields() != null) {
 			ElasticFields elasticFields = this.elasticFieldsOf();
 			for (String field : fieldLikeFilter.getFields()) {
-				elasticFields.add(field, true);
+				FieldEntity fieldEntity = this.getOrDefaultFieldEntity(field, null);
+				if (fieldEntity.getBaseType() == IndicatorFieldBaseType.Keyword || fieldEntity.getBaseType() == IndicatorFieldBaseType.KeywordArray) {
+					elasticFields.add(field, "text", true, "icu_analyzer_text");
+				} else {
+					elasticFields.add(field, true);
+				}
 			}
-			predicates.add(this.like(elasticFields, List.of(fieldLikeFilter.getLike())));
+			String like = fieldLikeFilter.getLike();
+			if (!fieldLikeFilter.getLike().startsWith("*")) like = "*" + like;
+			if (!fieldLikeFilter.getLike().endsWith("*")) like = like + "*";
+			predicates.add(this.like(elasticFields, List.of(like)));
 		}
 
 		if (keywordFilters != null) {
@@ -512,6 +520,7 @@ public class IndicatorPointQuery extends ElasticQuery<IndicatorPointEntity, UUID
 	@Override
 	protected ElasticField fieldNameOf(FieldResolver item) {
 		if (item.match(IndicatorPoint._id)) return this.elasticFieldOf(IndicatorPointEntity.Fields.id);
+		else if (item.match(IndicatorPoint._score)) return this.elasticFieldOf(IndicatorPointEntity.Fields.score).disableInfer(true);
 		else if (item.match(IndicatorPoint._batchId)) return this.elasticFieldOf(IndicatorPointEntity.Fields.batchId);
 		else if (item.match(IndicatorPoint._batchTimestamp)) return this.elasticFieldOf(IndicatorPointEntity.Fields.batchTimestamp);
 		else if (item.match(IndicatorPoint._timestamp)) return this.elasticFieldOf(IndicatorPointEntity.Fields.timestamp);

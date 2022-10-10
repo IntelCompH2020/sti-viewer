@@ -2,6 +2,7 @@ package gr.cite.intelcomp.stiviewer.common.types.bookmark;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import gr.cite.intelcomp.stiviewer.elastic.query.indicatorpointfilter.IndicatorPointKeywordFilter;
 
 import java.util.List;
 import java.util.Objects;
@@ -10,7 +11,7 @@ import java.util.Objects;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DashboardBookmarkEntity {
 	private String dashboard;
-	private List<DashboardBookmarkSelectedLevelEntity> levels;
+	private List<IndicatorPointKeywordFilter> keywordFilters;
 	private String groupHash;
 	private String displayName;
 
@@ -22,12 +23,12 @@ public class DashboardBookmarkEntity {
 		this.dashboard = dashboard;
 	}
 
-	public List<DashboardBookmarkSelectedLevelEntity> getLevels() {
-		return levels;
+	public List<IndicatorPointKeywordFilter> getKeywordFilters() {
+		return keywordFilters;
 	}
 
-	public void setLevels(List<DashboardBookmarkSelectedLevelEntity> levels) {
-		this.levels = levels;
+	public void setKeywordFilters(List<IndicatorPointKeywordFilter> keywordFilters) {
+		this.keywordFilters = keywordFilters;
 	}
 
 	public String getDisplayName() {
@@ -49,13 +50,13 @@ public class DashboardBookmarkEntity {
 				!Objects.equals(groupHash, that.groupHash) ||
 				!Objects.equals(displayName, that.displayName)) return false;
 
-		if (levels != null || that.levels != null) {
-			if (levels == null || that.levels == null) return false;
-			if (levels.size() != that.levels.size()) return false;
-			for (DashboardBookmarkSelectedLevelEntity level : levels) {
+		if (keywordFilters != null || that.keywordFilters != null) {
+			if (keywordFilters == null || that.keywordFilters == null) return false;
+			if (keywordFilters.size() != that.keywordFilters.size()) return false;
+			for (IndicatorPointKeywordFilter keywordFilter : keywordFilters) {
 				boolean find = false;
-				for (DashboardBookmarkSelectedLevelEntity thatLevel : that.levels) {
-					if (Objects.equals(level, thatLevel)) {
+				for (IndicatorPointKeywordFilter thatKeywordFilter : that.keywordFilters) {
+					if (Objects.equals(keywordFilter, thatKeywordFilter)) {
 						find = true;
 						break;
 					}
@@ -70,9 +71,9 @@ public class DashboardBookmarkEntity {
 	@Override
 	public int hashCode() {
 		int result = dashboard != null ? dashboard.hashCode() : 0;
-		if (levels != null) {
-			for (DashboardBookmarkSelectedLevelEntity level : levels) {
-				result = 31 * result + (level != null ? level.hashCode() : 0);
+		if (keywordFilters != null) {
+			for (IndicatorPointKeywordFilter keywordFilter : keywordFilters) {
+				result = 31 * result + (keywordFilter != null ? keywordFilter.hashCode() : 0);
 			}
 		}
 		result = 31 * result + (displayName != null ? displayName.hashCode() : 0);

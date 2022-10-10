@@ -78,6 +78,7 @@
     </dependencies>
 
 	<build>
+		<finalName>sti-viewer-notification-web</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>

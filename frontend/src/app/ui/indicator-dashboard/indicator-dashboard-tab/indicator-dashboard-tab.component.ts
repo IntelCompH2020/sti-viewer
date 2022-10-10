@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { BaseComponent } from '@common/base/base.component';
 import { HttpErrorHandlingService } from '@common/modules/errors/error-handling/http-error-handling.service';
 import { UiNotificationService } from '@common/modules/notification/ui-notification-service';
-import { IndicatorDashboardTabConfig } from '../indicator-dashboard-config';
+import { IndicatorDashboardConfig, IndicatorDashboardTabConfig } from '../indicator-dashboard-config';
 import { IndicatorQueryParams } from '../indicator-dashboard.component';
 
 @Component({
@@ -15,6 +15,8 @@ export class IndicatorDashboardTabComponent extends BaseComponent implements OnI
 	@Input() tabConfig: IndicatorDashboardTabConfig;
 	@Input()
 	indicatorQueryParams:IndicatorQueryParams;
+	@Input()
+	dashboardConfig : IndicatorDashboardConfig;
 
 	constructor(
 		protected uiNotificationService: UiNotificationService,

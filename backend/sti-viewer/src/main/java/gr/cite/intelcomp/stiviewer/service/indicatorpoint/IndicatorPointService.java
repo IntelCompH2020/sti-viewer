@@ -23,4 +23,6 @@ public interface IndicatorPointService {
 	byte[] export(UUID indicatorId, IndicatorPointReportLookup lookup) throws InvalidApplicationException, IOException;
 
 	void persist(UUID indicatorId, List<IndicatorPointPersist> models) throws MyForbiddenException, MyValidationException, MyApplicationException, MyNotFoundException, InvalidApplicationException;
+
+	String getGlobalSearchConfig(String key);
 }

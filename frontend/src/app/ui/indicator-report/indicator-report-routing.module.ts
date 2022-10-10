@@ -11,11 +11,6 @@ const routes: Routes = [
 		canActivate: [AuthGuard]
 	},
 	{
-		path: '',
-		component: IndicatorReportComponent,
-		canActivate: [AuthGuard]
-	},
-	{
 		path: 'dashboard',
 		data: {
 			authContext: {

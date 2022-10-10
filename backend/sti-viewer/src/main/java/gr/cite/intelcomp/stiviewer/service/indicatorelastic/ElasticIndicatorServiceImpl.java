@@ -7,6 +7,7 @@ import gr.cite.intelcomp.stiviewer.authorization.AuthorizationFlags;
 import gr.cite.intelcomp.stiviewer.authorization.Permission;
 import gr.cite.intelcomp.stiviewer.common.JsonHandlingService;
 import gr.cite.intelcomp.stiviewer.common.enums.IndicatorFieldBaseType;
+import gr.cite.intelcomp.stiviewer.config.elastic.AppElasticProperties;
 import gr.cite.intelcomp.stiviewer.data.IndicatorEntity;
 import gr.cite.intelcomp.stiviewer.data.TenantEntityManager;
 import gr.cite.intelcomp.stiviewer.elastic.data.IndicatorDoubleMapEntity;
@@ -23,6 +24,7 @@ import gr.cite.intelcomp.stiviewer.event.IndicatorTouchedEvent;
 import gr.cite.intelcomp.stiviewer.model.Indicator;
 import gr.cite.intelcomp.stiviewer.model.IndicatorElastic;
 import gr.cite.intelcomp.stiviewer.model.builder.IndicatorElasticBuilder;
+import gr.cite.intelcomp.stiviewer.model.deleter.IndicatorDeleter;
 import gr.cite.intelcomp.stiviewer.model.persist.IndicatorElasticPersist;
 import gr.cite.intelcomp.stiviewer.model.persist.IndicatorPersist;
 import gr.cite.intelcomp.stiviewer.model.persist.elasticindicator.*;
@@ -31,23 +33,31 @@ import gr.cite.intelcomp.stiviewer.service.indicator.IndicatorConfigService;
 import gr.cite.intelcomp.stiviewer.service.indicator.IndicatorIndexCacheService;
 import gr.cite.intelcomp.stiviewer.service.indicator.IndicatorService;
 import gr.cite.tools.data.builder.BuilderFactory;
+import gr.cite.tools.data.deleter.DeleterFactory;
 import gr.cite.tools.data.query.QueryFactory;
 import gr.cite.tools.exception.MyApplicationException;
+import gr.cite.tools.exception.MyForbiddenException;
 import gr.cite.tools.exception.MyNotFoundException;
 import gr.cite.tools.fieldset.FieldSet;
+import gr.cite.tools.logging.LoggerService;
+import gr.cite.tools.logging.MapLogEntry;
 import gr.cite.tools.validation.ValidationService;
+import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.indices.CreateIndexRequest;
 import org.elasticsearch.client.indices.CreateIndexResponse;
 import org.elasticsearch.client.indices.GetIndexRequest;
+import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
+import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.stereotype.Service;
 
 import javax.management.InvalidApplicationException;
@@ -59,6 +69,8 @@ import java.util.UUID;
 
 @Service
 public class ElasticIndicatorServiceImpl implements ElasticIndicatorService {
+
+	private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(ElasticIndicatorServiceImpl.class));
 
 	private final TenantEntityManager entityManager;
 	private final ElasticsearchRestTemplate elasticsearchRestTemplate;
@@ -77,8 +89,9 @@ public class ElasticIndicatorServiceImpl implements ElasticIndicatorService {
 	private final IndicatorIndexCacheService indicatorIndexCacheService;
 	private final MessageSource messageSource;
 	private final ErrorThesaurusProperties errors;
-
 	private final JsonHandlingService jsonHandlingService;
+	private final AppElasticProperties appElasticProperties;
+	private final DeleterFactory deleterFactory;
 
 	@Autowired
 	public ElasticIndicatorServiceImpl(TenantEntityManager entityManager,
@@ -94,7 +107,9 @@ public class ElasticIndicatorServiceImpl implements ElasticIndicatorService {
 	                                   IndicatorIndexCacheService indicatorIndexCacheService,
 	                                   ErrorThesaurusProperties errors,
 	                                   MessageSource messageSource,
-	                                   JsonHandlingService jsonHandlingService) {
+	                                   JsonHandlingService jsonHandlingService,
+	                                   AppElasticProperties appElasticProperties,
+	                                   DeleterFactory deleterFactory) {
 		this.entityManager = entityManager;
 		this.elasticsearchRestTemplate = elasticsearchRestTemplate;
 		this.eventBroker = eventBroker;
@@ -102,6 +117,8 @@ public class ElasticIndicatorServiceImpl implements ElasticIndicatorService {
 		this.vindicatorService = vindicatorService;
 		this.queryFactory = queryFactory;
 		this.jsonHandlingService = jsonHandlingService;
+		this.appElasticProperties = appElasticProperties;
+		this.deleterFactory = deleterFactory;
 		this.mapper = new ObjectMapper();
 		this.mapper.registerModule(new JavaTimeModule());
 		this.authorizationService = authorizationService;
@@ -115,6 +132,8 @@ public class ElasticIndicatorServiceImpl implements ElasticIndicatorService {
 
 	@Override
 	public IndicatorElastic persist(IndicatorElasticPersist persist, FieldSet fieldSet) throws IOException, InvalidApplicationException {
+		logger.debug(new MapLogEntry("persisting data indicator").And("persist", persist).And("fieldSet", fieldSet));
+
 		this.authorizationService.authorizeForce(Permission.EditIndicator);
 		UUID indicatorId = null;
 		if (persist.getId() != null) {
@@ -131,7 +150,7 @@ public class ElasticIndicatorServiceImpl implements ElasticIndicatorService {
 		data.setMetadata(this.buildIndicatorMetadataEntity(persist.getMetadata()));
 		data.setSchema(this.buildIndicatorSchemaEntity(persist.getSchema()));
 
-		data = elasticsearchRestTemplate.save(data);
+		data = elasticsearchRestTemplate.save(data, IndexCoordinates.of(this.appElasticProperties.getIndicatorIndexName()));
 		this.ensureIndex(data.getId());
 
 		this.eventBroker.emit(new IndicatorTouchedEvent(data.getId()));
@@ -282,12 +301,14 @@ public class ElasticIndicatorServiceImpl implements ElasticIndicatorService {
 	}
 
 	public String calculateIndexName(String code, boolean ensureUnique) throws IOException {
-		String index = "ic-sti-" + code + "-point-dev"; //TODO config
+		logger.debug(new MapLogEntry("calculate index name").And("code", code).And("ensureUnique", ensureUnique));
+		String index = this.appElasticProperties.getIndicatorPointIndexNamePattern().replace(this.appElasticProperties.getIndicatorCodeKey(), code);
 		if (ensureUnique && restHighLevelClient.indices().exists(new GetIndexRequest(index), RequestOptions.DEFAULT)) throw new MyApplicationException(this.errors.getIndexAlreadyExists().getCode(), this.errors.getIndexAlreadyExists().getMessage());
 		return index;
 	}
 
 	public String getIndexName(UUID indicatorId) throws InvalidApplicationException {
+		logger.debug(new MapLogEntry("get index name").And("indicatorId", indicatorId));
 		IndicatorIndexCacheService.IndicatorIndexCacheValue cacheValue = this.indicatorIndexCacheService.lookup(this.indicatorIndexCacheService.buildKey(indicatorId));
 		if (cacheValue == null) {
 			IndicatorEntity data = this.entityManager.find(IndicatorEntity.class, indicatorId);
@@ -342,7 +363,14 @@ public class ElasticIndicatorServiceImpl implements ElasticIndicatorService {
 			}
 			builder.endObject();
 
-			CreateIndexResponse createIndexResponse = restHighLevelClient.indices().create(new CreateIndexRequest(index).mapping(builder), RequestOptions.DEFAULT);
+			Settings.Builder settingsBuilder = Settings.builder()
+					.put("index.analysis.filter.english_stemmer.type", "stemmer")
+					.put("index.analysis.filter.english_stemmer.language", "english")
+					.put("index.analysis.filter.english_stop.type", "stop")
+					.put("index.analysis.filter.english_stop.language", "english")
+					.putList("index.analysis.analyzer.icu_analyzer_text.filter", "icu_folding", "english_stop", "english_stemmer")
+					.put("index.analysis.analyzer.icu_analyzer_text.tokenizer", "icu_tokenizer");
+			CreateIndexResponse createIndexResponse = restHighLevelClient.indices().create(new CreateIndexRequest(index).mapping(builder).settings(settingsBuilder), RequestOptions.DEFAULT);
 		}
 		return index;
 	}
@@ -351,16 +379,20 @@ public class ElasticIndicatorServiceImpl implements ElasticIndicatorService {
 		FieldType typeString = FieldType.Auto;
 		FieldType subTypeString = FieldType.Auto;
 		boolean isMap = false;
+		boolean supportTextSubField = false;
 		String mapKeyName = "";
 		String mapValueName = "";
+		String analyzer = null;
 
 		switch (type) {
 			case String:
 				typeString = FieldType.Text;
+				analyzer = "icu_analyzer_text";
 				break;
 			case Keyword:
 			case KeywordArray:
 				typeString = FieldType.Keyword;
+				supportTextSubField = true;
 				break;
 			case Date:
 				typeString = FieldType.Date;
@@ -396,6 +428,19 @@ public class ElasticIndicatorServiceImpl implements ElasticIndicatorService {
 			builder.startObject(name);
 			{
 				builder.field("type", typeString.getMappedName());
+				if (analyzer != null) builder.field("analyzer", "icu_analyzer_text");
+				if (supportTextSubField) {
+					builder.startObject("fields");
+					{
+						builder.startObject("text");
+						{
+							builder.field("type", FieldType.Text.getMappedName());
+							builder.field("analyzer", "icu_analyzer_text");
+						}
+						builder.endObject();
+					}
+					builder.endObject();
+				}
 			}
 			builder.endObject();
 		} else {
@@ -420,5 +465,19 @@ public class ElasticIndicatorServiceImpl implements ElasticIndicatorService {
 			}
 			builder.endObject();
 		}
+	}
+
+	public void deleteAndSave(UUID id) throws MyForbiddenException, InvalidApplicationException, IOException {
+		logger.debug("deleting dataset: {}", id);
+
+		this.authorizationService.authorizeForce(Permission.DeleteIndicator);
+		IndicatorElasticEntity data = this.queryFactory.query(IndicatorElasticQuery.class).ids(id).first();
+		if (data == null) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{id, IndicatorElastic.class.getSimpleName()}, LocaleContextHolder.getLocale()));
+
+		String index = this.getIndexName(id);
+
+		this.deleterFactory.deleter(IndicatorDeleter.class).deleteAndSaveByIds(List.of(id));
+		this.elasticsearchRestTemplate.delete(id.toString(), IndexCoordinates.of(this.appElasticProperties.getIndicatorIndexName()));
+		this.restHighLevelClient.indices().delete(new DeleteIndexRequest(index), RequestOptions.DEFAULT);
 	}
 }
