@@ -1,6 +1,8 @@
 package gr.cite.intelcomp.stiviewer.model.datatreeconfig;
 
 
+import gr.cite.intelcomp.stiviewer.model.IndicatorGroup;
+
 import java.util.List;
 
 public class DataTreeConfig {
@@ -10,6 +12,9 @@ public class DataTreeConfig {
 
 	private String name;
 	public static final String _name = "name";
+
+	private IndicatorGroup indicatorGroup;
+	public static final String _indicatorGroup = "indicatorGroup";
 
 	private int order;
 	public static final String _order = "order";
@@ -59,5 +64,13 @@ public class DataTreeConfig {
 
 	public void setGoTo(String goTo) {
 		this.goTo = goTo;
+	}
+
+	public IndicatorGroup getIndicatorGroup() {
+		return indicatorGroup;
+	}
+
+	public void setIndicatorGroup(IndicatorGroup indicatorGroup) {
+		this.indicatorGroup = indicatorGroup;
 	}
 }

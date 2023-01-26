@@ -1,7 +1,7 @@
 package gr.cite.intelcomp.stiviewer.model.persist;
 
 import gr.cite.intelcomp.stiviewer.common.validation.ValidId;
-import gr.cite.intelcomp.stiviewer.model.persist.indicatoraccessconfig.IndicatorAccessConfigPersist;
+import gr.cite.intelcomp.stiviewer.model.persist.indicatoraccess.IndicatorAccessConfigPersist;
 
 import javax.validation.constraints.NotNull;
 import java.util.UUID;

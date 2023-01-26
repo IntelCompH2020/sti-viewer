@@ -3,12 +3,13 @@ import { BaseHttpService } from '@common/base/base-http.service';
 import { InstallationConfigurationService } from '@common/installation-configuration/installation-configuration.service';
 import { QueryResult } from '@common/model/query-result';
 import { Guid } from '@common/types/guid';
-import { Observable, throwError } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { InterceptorType } from '@common/http/interceptors/interceptor-type';
 import { BaseHttpParams } from '@common/http/base-http-params';
 import { DataAccessRequestLookup } from '@app/core/query/data-access-request.lookup';
 import { DataAccessRequest, DataAccessRequestPersist, DataAccessRequestStatusPersist } from '@app/core/model/data-access-request/data-access-request.model';
+import { IndicatorGroupAccessConfigView } from '@app/core/model/indicator-group/indicator-group-access-config-view.model';
 
 @Injectable()
 export class DataAccessRequestService {
@@ -86,6 +87,22 @@ export class DataAccessRequestService {
 
 		return this.http
 			.post<Blob>(url, q, { responseType: 'blob' }).pipe(
+				catchError((error: any) => throwError(error)));
+	}
+
+
+
+	getIndicatorGroupAccessConfigView(code: string, fields: string[]):Observable<IndicatorGroupAccessConfigView>{
+
+		if(!code){
+			console.warn('no code provided - indicator-group-access-config-view');
+			return of(null);
+		}
+		const url = `${this.apiBase}/indicator-group-access-config-view/${code}`;
+		const options = { params: { f: fields } };
+
+		return this.http
+			.get<IndicatorGroupAccessConfigView>(url, options).pipe(
 				catchError((error: any) => throwError(error)));
 	}
 }

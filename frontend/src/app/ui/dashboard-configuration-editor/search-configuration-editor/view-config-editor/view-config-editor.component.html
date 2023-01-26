@@ -1,0 +1,54 @@
+<ng-container *ngIf="formGroup" [formGroup]="formGroup">
+    
+    <div>
+        <small class="text-muted">
+            <i>
+                {{'APP.GLOBAL-SEARCH-CONFIGURATION-EDITOR.VIEW-CONFIG-EDITOR.FIELDS' | translate}}
+            </i>
+        </small>
+    </div>
+   <div class="card mt-3 p-3 mb-1" *ngFor="let field of fields?.controls; let index = index" [formGroup]="field">
+
+        <button mat-mini-fab  class="delete-btn" (click)="removeField(index)">
+            <mat-icon>delete</mat-icon>
+        </button>
+
+        <div>
+            <mat-form-field class="col-md-6" appearance="legacy">
+                <mat-label>
+                    {{'APP.GLOBAL-SEARCH-CONFIGURATION-EDITOR.VIEW-CONFIG-EDITOR.TITLE' | translate}}
+                </mat-label>
+                <input type="text" matInput formControlName="title">
+            </mat-form-field>
+    
+            <mat-form-field class="col-md-6" appearance="legacy">
+                <mat-label>
+                    {{'APP.GLOBAL-SEARCH-CONFIGURATION-EDITOR.VIEW-CONFIG-EDITOR.CODE' | translate}}
+                </mat-label>
+                <input type="text" matInput formControlName="code">
+            </mat-form-field>
+    
+            <mat-form-field class="col-md-6" appearance="legacy">
+                <mat-label>
+                    {{'APP.GLOBAL-SEARCH-CONFIGURATION-EDITOR.VIEW-CONFIG-EDITOR.TYPE' | translate}}
+                </mat-label>
+                <mat-select formControlName="type">
+                    <mat-option *ngFor="let type of searchConfigViewTypes" [value]="type">{{type}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+    
+            <mat-form-field class="col-md-6" appearance="legacy">
+                <mat-label>
+                    {{'APP.GLOBAL-SEARCH-CONFIGURATION-EDITOR.VIEW-CONFIG-EDITOR.DASHBOARD-FILTER-CODE' | translate}}
+                </mat-label>
+                <input type="text" matInput formControlName="dashboardFilterCode">
+            </mat-form-field>
+        </div>
+   </div>
+   <div class="row m-0 justify-content-end">
+        <button mat-icon-button class="col-auto" (click)="addField()">
+            <mat-icon>add</mat-icon>
+        </button>
+    </div>
+
+</ng-container>

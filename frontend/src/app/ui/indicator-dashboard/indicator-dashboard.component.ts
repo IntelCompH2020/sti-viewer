@@ -1,26 +1,42 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit, Optional } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BookmarkType } from '@app/core/enum/bookmark-type.enum';
 import { Bookmark } from '@app/core/model/bookmark/bookmark.model';
 import { IndicatorPointKeywordFilter } from '@app/core/query/indicator-point.lookup';
 import { BookmarkService } from '@app/core/services/http/bookmark.service';
 import { IndicatorDashboardService } from '@app/core/services/http/indicator-dashboard.service';
+import { IndicatorPointService } from '@app/core/services/http/indicator-point.service';
+import { USE_CACHE } from '@app/core/services/tokens/caching.token';
 import { QueryParamsService } from '@app/core/services/ui/query-params.service';
 import { BaseComponent } from '@common/base/base.component';
 import { HttpErrorHandlingService } from '@common/modules/errors/error-handling/http-error-handling.service';
 import { UiNotificationService } from '@common/modules/notification/ui-notification-service';
-import { of } from 'rxjs';
-import { switchMap, takeUntil, tap } from 'rxjs/operators';
+import { combineLatest, of , BehaviorSubject, Observable} from 'rxjs';
+import { switchMap, takeUntil, map, tap } from 'rxjs/operators';
 import { nameof } from 'ts-simple-nameof';
-import { IndicatorDashboardConfig } from './indicator-dashboard-config';
+import { DashboardUITagsService } from './ui-services/dashboard-tags.service';
+import { IndicatorDashboardConfig, TabBlockConfig, TabBlockType } from './indicator-dashboard-config';
+import { DashboardTabBlockToChartGroupBlockPipe } from '../../core/formatting/pipes/dashboard-chart-group.pipe';
+import { DefaultsService } from '@app/core/services/data-transform/defaults.service';
+import { ChartLockZoomService } from './ui-services/chart-lock-zoom.service';
 
 
+// const DASHBOARD_CONFIG:IndicatorDashboardConfig = require('./4.json');
 const DASHBOARD_CONFIG:IndicatorDashboardConfig = require('./dashboard-config-3.json');
+// const DASHBOARD_CONFIG:IndicatorDashboardConfig = require('./6.json');
 
 @Component({
 	selector: 'app-indicator-dashboard',
 	templateUrl: './indicator-dashboard.component.html',
-	styleUrls: ['./indicator-dashboard.component.css']
+	styleUrls: ['./indicator-dashboard.component.css'],
+	providers:[ 
+		DashboardUITagsService ,
+		{
+			provide: USE_CACHE, useValue: true 
+		},
+		IndicatorPointService,
+		ChartLockZoomService
+	]
 })
 export class IndicatorDashboardComponent extends BaseComponent implements OnInit {
 	selectedTabIndex = -1;
@@ -33,6 +49,47 @@ export class IndicatorDashboardComponent extends BaseComponent implements OnInit
 	bookmark: Partial<Bookmark>;
 
 	bookmarks: Bookmark[];
+	
+	private _availableUniqueTags$ = new BehaviorSubject<string[]>([])
+
+
+	tags$: Observable<UniqueTag[]> = combineLatest([
+		this._availableUniqueTags$,
+		this.dashboardTagsUIService.activeChartTagsChanges$
+	]).pipe(
+		map(([tags, activeTags]) => tags?.map(tag => ({
+			selected: !!activeTags?.includes(tag),
+			value: tag
+		})) ?? [])
+	 )
+	 
+
+
+	@HostListener('window:keyup', ['$event'])
+	keyUp(event: KeyboardEvent) {
+
+		if(event.key.toLowerCase() !== 'shift'){
+			return;
+		}	
+		
+		console.info("locking graphs")
+		this.chartLockZoomService?.lockGraphs();
+	}
+
+
+	@HostListener('window:keydown', ['$event'])
+	keyDown(event: KeyboardEvent) {
+		if(event.repeat){
+			return;
+		}		
+		if(event.key.toLowerCase() !== 'shift' ){
+			return
+		}
+
+		console.info("unlocking graphs");
+		this.chartLockZoomService?.unlockGraphs();
+		
+	}
 
 	constructor(
 		protected uiNotificationService: UiNotificationService,
@@ -40,7 +97,11 @@ export class IndicatorDashboardComponent extends BaseComponent implements OnInit
 		private _activaterRoute: ActivatedRoute,
 		private _queryParamsService: QueryParamsService,
 		private _dashboardService: IndicatorDashboardService,
-		private bookmarkService: BookmarkService
+		private bookmarkService: BookmarkService,
+		private dashboardTagsUIService: DashboardUITagsService,
+		private tabBlockToChartGroupPipe: DashboardTabBlockToChartGroupBlockPipe,
+		private defautlsService: DefaultsService,
+		@Optional() private chartLockZoomService:ChartLockZoomService,
 		) {
 		super();
 
@@ -55,11 +116,32 @@ export class IndicatorDashboardComponent extends BaseComponent implements OnInit
 					}
 					return of(DASHBOARD_CONFIG);
 			}),
+			map(
+				dashboardConfig => this.defautlsService.enrichDashboardConfigWithDefaults(dashboardConfig)
+			),
 			takeUntil(this._destroyed)
 		)
 		.subscribe(
 			(configuration: IndicatorDashboardConfig) => {
 				this.dashboardConfig = configuration;
+
+				
+
+				const chartTags = [...(new Set(// unique tags
+
+					configuration?.tabs?.map(
+							tab => this.tabBlockToChartGroupPipe.transform(tab.chartGroups)?.map(
+								chartGroup => chartGroup?.charts?.map(
+									chart => chart?.tags?.attachedTags
+								).filter(x => !!x && Array.isArray(x)).reduce((all, tagArray) => [...all, ...tagArray] , []) ?? []// chartGroupLevel tags
+							).reduce((all, tags) => [...all, ...tags] , []) ?? [] // tab Level tags
+					).reduce((all, tags) => [...all, ...tags] ,[]) ?? [] // configuration level tags
+
+				))]
+				this._availableUniqueTags$.next(chartTags);
+				
+				
+				
 				this.selectedTabIndex = 0;
 			},
 			error => {
@@ -116,6 +198,10 @@ export class IndicatorDashboardComponent extends BaseComponent implements OnInit
 		this.selectedTabIndex = index;
 	}
 
+	selectTag(tag: string){
+		this.dashboardTagsUIService.toggleChartTag(tag);
+	}
+
 
 	private _validateBookmark():void{
 						
@@ -134,6 +220,7 @@ export class IndicatorDashboardComponent extends BaseComponent implements OnInit
 			}
 		})
 	}
+
 }
 
 
@@ -142,4 +229,10 @@ export interface IndicatorQueryParams{
 	keywordFilters: IndicatorPointKeywordFilter[];
 	displayName: string;
 	groupHash?: string;
+}
+
+
+interface UniqueTag{
+	selected: boolean;
+	value: string;
 }

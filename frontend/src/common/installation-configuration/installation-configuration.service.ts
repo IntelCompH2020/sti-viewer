@@ -138,6 +138,18 @@ export class InstallationConfigurationService extends BaseComponent {
 		return this._inAppNotificationsCountInterval || 3200;
 	}
 
+
+	private _portofolioConfigurationKey:string;
+	get portofolioConfigurationKey(): string {
+		return this._portofolioConfigurationKey;
+	}
+
+
+	private _dataTreeConfigurationKey: string;
+	get dataTreeConfigurationKey(): string{
+		return this._dataTreeConfigurationKey;
+	}
+
 	loadInstallationConfiguration(): Promise<any> {
 		return new Promise((r, e) => {
 
@@ -210,5 +222,8 @@ export class InstallationConfigurationService extends BaseComponent {
 		this._globalErrorHandlingAppName = config.globalErrorHandling.appName;
 
 		this._userSettingsVersion = config.userSettingsVersion;
+
+		this._portofolioConfigurationKey = config.portofolioConfigurationKey;
+		this._dataTreeConfigurationKey = config.dataTreeConfigurationKey;
 	}
 }

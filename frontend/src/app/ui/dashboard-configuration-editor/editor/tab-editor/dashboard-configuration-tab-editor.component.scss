@@ -1,0 +1,30 @@
+.chart-groups{
+    position: sticky;
+    top: 2rem;
+    align-self: flex-start;
+    max-width: 35rem;
+    // overflow: hidden;
+}
+:host ::ng-deep .break-spaces{
+    line-height: unset;
+    min-height: 3rem;
+    .mat-button-wrapper{
+        white-space: break-spaces;
+    }
+} 
+
+
+.break-spaces{
+    .delete-btn{
+		opacity: 0;
+		transition: opacity 300ms ease;
+		position: absolute;
+		top: -1rem;
+		right: -1rem;
+	}
+	&:hover{
+		.delete-btn{
+			opacity: 1;
+		}
+	}
+}

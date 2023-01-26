@@ -1,0 +1,25 @@
+<ng-container [formGroup]="formGroup" *ngIf="formGroup">
+
+    <!-- TODO TRANSLATIONS -->
+	<mat-form-field appearance="legacy" class="col-12">
+		<mat-label>
+			{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.GENERAL-INFO-EDITOR.CHART-TITLE' | translate}}
+		</mat-label>
+		<input type="text" matInput formControlName="name">
+	</mat-form-field>
+
+	<mat-form-field appearance="legacy" class="col-12">
+		<mat-label>
+			{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.GENERAL-INFO-EDITOR.INDICATOR-ID' | translate}}
+		</mat-label>
+		<input type="text" matInput formControlName="indicatorId">
+	</mat-form-field>
+
+	<mat-form-field class="col-12">
+		<mat-label>
+			{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.GENERAL-INFO-EDITOR.DESCRIPTION' | translate}}
+		</mat-label>
+		<textarea rows="4" matInput formControlName="description"></textarea>
+	</mat-form-field>
+
+</ng-container>

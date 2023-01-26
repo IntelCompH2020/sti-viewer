@@ -28,7 +28,7 @@
     </properties>
 
 
-    <!-- <profiles>
+    <profiles>
         <profile>
             <id>cite-dev</id>
             <repositories>
@@ -42,6 +42,6 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
         </profile>
-    </profiles> -->
+    </profiles>
 
 </project>

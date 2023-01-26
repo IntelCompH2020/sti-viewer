@@ -1,18 +1,33 @@
-<div class="row m-0 view-container">
-    <ng-container *ngFor="let iGroup of indicatorGroups">
-        <div class="col-12 col-lg-6 mt-3" *ngFor="let filterColumn of iGroup.filterColumns">
-            <app-my-indicator-columns-editor 
-                [dashboardKey]="iGroup.dashboardKey" 
-                [groups]="getGroups(iGroup, filterColumn)" 
-                [indicators]="iGroup.indicators" 
-                [column]="filterColumn" 
 
-                (onDeleteGroup)="onDeleteGroup($event)" 
-                (onGroupUpdate)="onUpdateGroup(filterColumn, iGroup.id, $event)"
-                (onGroupCreate)="onAddNewGroup( filterColumn , $event, iGroup.id)" 
-                >
-            </app-my-indicator-columns-editor>
-        </div>
-    </ng-container>
+
+<div class="row m-0 mt-4">
+    <div class="col-12">
+        <h2>
+            {{'APP.MY-DATA-ACCESS-REQUESTS.TITLE' | translate}}
+        </h2>
+    </div>
+</div>
+<div class="row m-0 view-container">
+    <div class="col-12 mt-5">
+        <button mat-raised-button color="primary" routerLink="./request">            
+            {{'APP.MY-DATA-ACCESS-REQUESTS.EDIT' | translate}}
+            <mat-icon>
+                edit
+            </mat-icon>
+        </button>
+    </div>
+    <div class="col-12 col-lg-4 mt-3" [class.col-lg-12]="column?.major" *ngFor="let column of config?.columns | columsOrdered">
+        <app-my-indicator-columns-editor
+            [defaultDashboards]="config.defaultDashboards"
+            [groups]="getGroups(config.indicatorGroup, column.field.code)"
+            [indicators]="config.indicatorGroup.indicators"
+            [column]="column"
+
+            (onDeleteGroup)="onDeleteGroup($event)"
+            (onGroupUpdate)="onUpdateGroup(column.field.code, config.indicatorGroup.id, $event)"
+            (onGroupCreate)="onAddNewGroup( column.field.code , $event, config.indicatorGroup.id)"
+            >
+        </app-my-indicator-columns-editor>
+    </div>
 </div>
 

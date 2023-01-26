@@ -5,8 +5,8 @@ import gr.cite.intelcomp.stiviewer.authorization.AuthorizationFlags;
 import gr.cite.intelcomp.stiviewer.authorization.Permission;
 import gr.cite.intelcomp.stiviewer.common.JsonHandlingService;
 import gr.cite.intelcomp.stiviewer.common.enums.IsActive;
-import gr.cite.intelcomp.stiviewer.common.types.indicatoraccessconfig.FilterColumnConfigEntity;
-import gr.cite.intelcomp.stiviewer.common.types.indicatoraccessconfig.IndicatorAccessConfigEntity;
+import gr.cite.intelcomp.stiviewer.common.types.indicatoraccess.FilterColumnConfigEntity;
+import gr.cite.intelcomp.stiviewer.common.types.indicatoraccess.IndicatorAccessConfigEntity;
 import gr.cite.intelcomp.stiviewer.convention.ConventionService;
 import gr.cite.intelcomp.stiviewer.data.IndicatorAccessEntity;
 import gr.cite.intelcomp.stiviewer.data.TenantEntityManager;
@@ -15,8 +15,8 @@ import gr.cite.intelcomp.stiviewer.model.IndicatorAccess;
 import gr.cite.intelcomp.stiviewer.model.builder.IndicatorAccessBuilder;
 import gr.cite.intelcomp.stiviewer.model.deleter.IndicatorAccessDeleter;
 import gr.cite.intelcomp.stiviewer.model.persist.IndicatorAccessPersist;
-import gr.cite.intelcomp.stiviewer.model.persist.indicatoraccessconfig.FilterColumnConfigPersist;
-import gr.cite.intelcomp.stiviewer.model.persist.indicatoraccessconfig.IndicatorAccessConfigPersist;
+import gr.cite.intelcomp.stiviewer.model.persist.indicatoraccess.FilterColumnConfigPersist;
+import gr.cite.intelcomp.stiviewer.model.persist.indicatoraccess.IndicatorAccessConfigPersist;
 import gr.cite.tools.data.builder.BuilderFactory;
 import gr.cite.tools.data.deleter.DeleterFactory;
 import gr.cite.tools.exception.MyApplicationException;
@@ -36,10 +36,7 @@ import org.springframework.web.context.annotation.RequestScope;
 
 import javax.management.InvalidApplicationException;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequestScope
@@ -109,21 +106,39 @@ public class IndicatorAccessServiceImpl implements IndicatorAccessService {
 	}
 
 	private IndicatorAccessConfigEntity buildIndicatorAccessConfig(IndicatorAccessEntity data, IndicatorAccessConfigPersist persist) {
-		if (persist == null || persist.getFilterColumns() == null || persist.getFilterColumns().isEmpty()) return null;
-
+		if (persist == null) return null;
 		IndicatorAccessConfigEntity config = this.jsonHandlingService.fromJsonSafe(IndicatorAccessConfigEntity.class, data.getConfig());
 		if (config == null) {
 			config = new IndicatorAccessConfigEntity();
 		}
 
-		List<FilterColumnConfigEntity> filterColumnConfigEntities = new ArrayList<>();
-		for (FilterColumnConfigPersist filterColumnConfigPersist : persist.getFilterColumns()) {
-			FilterColumnConfigEntity columnConfig = new FilterColumnConfigEntity();
-			columnConfig.setColumn(filterColumnConfigPersist.getColumn());
-			columnConfig.setValues(filterColumnConfigPersist.getValues());
-			filterColumnConfigEntities.add(columnConfig);
+		if (persist.getGlobalFilterColumns() != null && !persist.getGroupFilterColumns().isEmpty()){
+			List<FilterColumnConfigEntity> filterColumnConfigEntities = new ArrayList<>();
+			for (FilterColumnConfigPersist filterColumnConfigPersist : persist.getGlobalFilterColumns()) {
+				FilterColumnConfigEntity columnConfig = new FilterColumnConfigEntity();
+				columnConfig.setColumn(filterColumnConfigPersist.getColumn());
+				columnConfig.setValues(filterColumnConfigPersist.getValues());
+				filterColumnConfigEntities.add(columnConfig);
+			}
+			config.setGlobalFilterColumns(filterColumnConfigEntities);
 		}
-		config.setFilterColumns(filterColumnConfigEntities);
+		if (persist.getGroupFilterColumns() != null && !persist.getGroupFilterColumns().isEmpty()){
+			Map<UUID, List<FilterColumnConfigEntity>> filterColumnConfigEntitiesMap = new HashMap<>();
+			for (UUID groupId : persist.getGroupFilterColumns() .keySet()) {
+				List<FilterColumnConfigPersist> filterColumnConfigEntitiesToPersist = persist.getGroupFilterColumns().get(groupId);
+				if (filterColumnConfigEntitiesToPersist != null && !filterColumnConfigEntitiesToPersist.isEmpty()){
+					List<FilterColumnConfigEntity> filterColumnConfigEntities = new ArrayList<>();
+					for (FilterColumnConfigPersist filterColumnConfigPersist : filterColumnConfigEntitiesToPersist) {
+						FilterColumnConfigEntity columnConfig = new FilterColumnConfigEntity();
+						columnConfig.setColumn(filterColumnConfigPersist.getColumn());
+						columnConfig.setValues(filterColumnConfigPersist.getValues());
+						filterColumnConfigEntities.add(columnConfig);
+					}
+					filterColumnConfigEntitiesMap.put(groupId, filterColumnConfigEntities);
+				}
+			}
+			config.setGroupFilterColumns(filterColumnConfigEntitiesMap.isEmpty() ? null : filterColumnConfigEntitiesMap);
+		}
 
 		return config;
 	}

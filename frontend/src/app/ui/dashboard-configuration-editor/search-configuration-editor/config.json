@@ -1,0 +1,58 @@
+{
+    "id": "global_search_config",
+    "searchFields": [
+        "key", "ind", "dg"
+    ],
+    "indicatorIds": ["664de786-2879-4b65-82c7-df5d0d30be84"],
+    "staticFilters":{
+        "keywordsFilters":[
+            {
+                "field":"pvid",
+                "value": ["pv01"]
+            }
+        ]
+    },
+    "viewConfig": {
+        "fields": [
+            {
+                "code": "dg",
+                "title": "dg",
+                "type": "title",
+                "dashboardFilterCode": "dgid"
+            },
+            {
+                "code": "pv",
+                "title": "pv",
+                "type": "subtitle"
+            },
+            {
+                "code": "sv",
+                "title": "sv",
+                "type": "subtitle"
+            },
+            {
+                "code": "ind",
+                "title": "ind",
+                "type": "text"
+            },
+            {
+                "code": "key",
+                "title": "key",
+                "type": "text"
+            }
+        ] 
+    },
+    "supportedDashboards": [
+        "dg01_pv01_dashboard"
+    ],
+    "dashboardFilters":{
+        "staticFilters":{
+            "keywordsFilters":[
+                {
+                    "field":"pvid",
+                    "value": ["pv01"]
+                }
+            ]
+        }
+    }
+}

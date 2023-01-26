@@ -6,6 +6,8 @@ import gr.cite.intelcomp.stiviewer.common.types.indicatorgroup.IndicatorGroupEnt
 import gr.cite.intelcomp.stiviewer.convention.ConventionService;
 import gr.cite.intelcomp.stiviewer.model.Indicator;
 import gr.cite.intelcomp.stiviewer.model.IndicatorGroup;
+import gr.cite.intelcomp.stiviewer.model.builder.indicator.IndicatorConfigBuilder;
+import gr.cite.intelcomp.stiviewer.model.builder.indicatorgroup.FilterColumnBuilder;
 import gr.cite.intelcomp.stiviewer.query.IndicatorQuery;
 import gr.cite.tools.data.builder.BuilderFactory;
 import gr.cite.tools.data.query.QueryFactory;
@@ -55,14 +57,16 @@ public class IndicatorGroupBuilder extends BaseBuilder<IndicatorGroup, Indicator
 
 		FieldSet indicatorFields = fields.extractPrefixed(this.asPrefix(IndicatorGroup._indicators));
 		Map<UUID, Indicator> indicatorItemsMap = this.collectIndicators(indicatorFields, data.stream().map(x -> x.getIndicatorIds()).flatMap(List::stream).collect(Collectors.toList()));
+		
+		FieldSet filterColumnsFields = fields.extractPrefixed(this.asPrefix(IndicatorGroup._filterColumns));
 
 		List<IndicatorGroup> models = new ArrayList<>();
 		for (IndicatorGroupEntity d : data) {
 			IndicatorGroup m = new IndicatorGroup();
 			if (fields.hasField(this.asIndexer(IndicatorGroup._id))) m.setId(d.getId());
+			if (fields.hasField(this.asIndexer(IndicatorGroup._code))) m.setCode(d.getCode());
 			if (fields.hasField(this.asIndexer(IndicatorGroup._name))) m.setName(d.getName());
-			if (fields.hasField(this.asIndexer(IndicatorGroup._dashboardKey))) m.setDashboardKey(d.getDashboardKey());
-			if (fields.hasField(this.asIndexer(IndicatorGroup._filterColumns))) m.setFilterColumns(d.getFilterColumns());
+			if (!filterColumnsFields.isEmpty() && d.getFilterColumns() != null) m.setFilterColumns(this.builderFactory.builder(FilterColumnBuilder.class).authorize(this.authorize).build(filterColumnsFields, d.getFilterColumns()));
 			if (!indicatorFields.isEmpty() && indicatorItemsMap != null) {
 				if (d.getIndicatorIds() != null && !d.getIndicatorIds().isEmpty()) {
 					List<Indicator> indicators = new ArrayList<>();

@@ -25,19 +25,13 @@
 							</mat-card-actions>
 						</div>
 
-						<div class="col-12" [class.d-none]="indicatorGroups?.length < 2">
-							<mat-form-field>
-								<mat-label>Select group</mat-label>
-								<mat-select [disabled]="isNew" multiple [(ngModel)]="selectedGroupIds" [ngModelOptions]="{standalone: true}" (ngModelChange)="onChangeGroup($event)">
-									<mat-option *ngFor="let item of indicatorGroups" [value]="item.id">{{item.name}}</mat-option>
-								</mat-select>
-							</mat-form-field>
-						</div>
 						<ng-container *ngFor="let fGroup of indicatorGroupsArray?.controls">
 							<app-indicator-columns-editor
+								class="col-12"
+								[keywordFilters]="getKeyworkdFiltersForColumn(it.value.column, fGroup.get('filterColumns'))"
 								[column]="it.value.column"
 								[control]="it.get('values')"
-								[disabled]="!isNew"
+								[disabled]="!isNew || !preconditionsMetForColumn(it.value.column , fGroup.get('filterColumns'))"
 								[indicatorIds]="fGroup.get('indicatorIds').value"
 								*ngFor="let it of fGroup.get('filterColumns')?.controls"
 							>

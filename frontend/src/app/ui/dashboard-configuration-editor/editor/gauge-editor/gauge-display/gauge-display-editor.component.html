@@ -1,0 +1,64 @@
+<ng-container [formGroup]="formGroup" *ngIf="formGroup">
+
+
+	<section class="section-configuration">
+		<mat-icon color="primary">build</mat-icon>
+		<i class="text-muted">
+			{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.CHART-SPECIFIC-TYPE-CONFIGURATION' | translate}}
+		</i>
+	</section>
+	<!-- <app-dashboard-config-chart-type-editor class="w-100" [formGroup]="formGroup"></app-dashboard-config-chart-type-editor> -->
+	<app-gauge-type-editor class="w-100" [formGroup]="formGroup"></app-gauge-type-editor>
+	
+	<br>
+	<mat-form-field appearance="legacy" class="col-md-auto">
+		<mat-label>
+			{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.LABEL-OVERRIDE' | translate}}
+		</mat-label>
+		<input type="text" matInput formControlName="labelOverride">
+	</mat-form-field>
+	
+
+
+
+	<section class="section-configuration">
+		<mat-icon color="primary">auto_fix_high</mat-icon>
+		<i class="text-muted">
+			{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.CHART-ABILITIES' | translate}}
+		</i>
+	</section>
+
+	
+
+	<mat-form-field appearance="legacy" class="col-md-auto">
+		<mat-label>
+			{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.LABEL-SORT-KEY' | translate}}
+		</mat-label>
+		<input type="text" matInput formControlName="labelSortKey">
+	</mat-form-field>
+
+	<div class="col-12">
+		<mat-checkbox formControlName="reverseValues">
+			{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.REVERSE-VALUES' | translate}}
+		</mat-checkbox>
+	</div>
+
+	
+	<div class="col-12 pb-2">
+		<mat-checkbox [checked]="!!formGroup?.get('labelsTransform')?.value" (change)="onChange($event, ChangeField.LabelsTransform)">
+			{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.LABEL-TRANSFORM' | translate}}
+		</mat-checkbox>
+	</div>
+
+	<div class="col-12" *ngIf="!!formGroup?.get('labelsTransform')">
+		<mat-form-field>
+			<mat-label>
+				{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.LABEL-TRANSFORM-TYPE' | translate}}
+			</mat-label>
+			<mat-select formCotrolName="labelsTransform">
+				<mat-option *ngFor="let type of FieldFormatterTypes" [value]="type">{{type}}</mat-option>
+			</mat-select>
+		</mat-form-field>
+	</div>
+
+</ng-container>

@@ -10,6 +10,7 @@ import gr.cite.tools.exception.MyApplicationException;
 import gr.cite.tools.fieldset.FieldSet;
 import gr.cite.tools.logging.DataLogEntry;
 import gr.cite.tools.logging.LoggerService;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -26,8 +27,8 @@ public class UserSettingsBuilder extends BaseBuilder<UserSettings, UserSettingsE
 
 	private EnumSet<AuthorizationFlags> authorize = EnumSet.of(AuthorizationFlags.None);
 
-	public UserSettingsBuilder(ConventionService conventionService, LoggerService logger, BuilderFactory builderFactory, QueryFactory queryFactory) {
-		super(conventionService, logger);
+	public UserSettingsBuilder(ConventionService conventionService, BuilderFactory builderFactory, QueryFactory queryFactory) {
+		super(conventionService, new LoggerService(LoggerFactory.getLogger(UserSettingsBuilder.class)));
 		this.builderFactory = builderFactory;
 		this.queryFactory = queryFactory;
 	}

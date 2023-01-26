@@ -33,7 +33,8 @@ public class AuditableAction {
 	public static final EventId Data_Access_Request_Persist = new EventId(3022, "Data_Access_Request_Persist");
 	public static final EventId Data_Access_Request_Delete = new EventId(3023, "Data_Access_Request_Delete");
 	public static final EventId Data_Access_Request_PersistStatus = new EventId(3024, "Data_Access_Request_PersistStatus");
-
+	public static final EventId Data_Access_Request_GetIndicatorGroupAccessConfigView = new EventId(3025, "Data_Access_Request_GetIndicatorGroupAccessConfigView");
+	
 	public static final EventId MasterItem_Query = new EventId(4000, "MasterItem_Query");
 	public static final EventId MasterItem_Lookup = new EventId(4001, "MasterItem_Lookup");
 	public static final EventId MasterItem_Persist = new EventId(4002, "MasterItem_Persist");
@@ -97,6 +98,7 @@ public class AuditableAction {
 
 	public static final EventId DataTreeConfig_MyConfigs = new EventId(17000, "DataTreeConfig_MyConfigs");
 	public static final EventId DataTreeConfig_QueryLevel = new EventId(17001, "DataTreeConfig_QueryLevel");
+	public static final EventId DataTreeConfig_GetMyConfigByKey = new EventId(17002, "DataTreeConfig_GetMyConfigByKey");
 
 	public static final EventId Bookmark_QueryMine = new EventId(18000, "Bookmark_QueryMine");
 	public static final EventId Bookmark_LookupMine = new EventId(18001, "Bookmark_LookupMine");
@@ -110,6 +112,7 @@ public class AuditableAction {
 	public static final EventId Indicator_Group_Persist = new EventId(19002, "Indicator_Group_Persist");
 	public static final EventId Indicator_Group_Delete = new EventId(19003, "Indicator_Group_Delete");
 	public static final EventId Indicator_Group_Get_All = new EventId(19004, "Indicator_Group_Get_All");
+	public static final EventId Indicator_Group_LookupByCode = new EventId(19005, "Indicator_Group_LookupByCode");
 
 
 	public static final EventId Data_Group_Request_Query = new EventId(20000, "Data_Group_Request_Query");
@@ -129,4 +132,6 @@ public class AuditableAction {
 	public static final EventId Scheduled_Event_Canceled = new EventId(22004, "Scheduled_Event_Canceled");
 	public static final EventId Scheduled_Event_Run = new EventId(22005, "Scheduled_Event_Run");
 
+	public static final EventId PortofolioConfig_GetMyConfigs = new EventId(230000, "PortofolioConfig_GetMyConfigs");
+	public static final EventId PortofolioConfig_GetMyConfigByKey = new EventId(230001, "PortofolioConfig_GetMyConfigByKey");
 }

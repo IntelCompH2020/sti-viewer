@@ -1,14 +1,24 @@
 package gr.cite.intelcomp.stiviewer.common.types.indicatorgroup;
 
+import com.github.mustachejava.Code;
+
 import java.util.List;
 import java.util.UUID;
 
 public class IndicatorGroupEntity {
 	private UUID id;
 	private String name;
-	private String dashboardKey;
+	private String code;
 	private List<UUID> indicatorIds;
-	private List<String> filterColumns;
+	private List<FilterColumnEntity> filterColumns;
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
 
 	public String getName() {
 		return name;
@@ -26,11 +36,11 @@ public class IndicatorGroupEntity {
 		this.indicatorIds = indicatorIds;
 	}
 
-	public List<String> getFilterColumns() {
+	public List<FilterColumnEntity> getFilterColumns() {
 		return filterColumns;
 	}
 
-	public void setFilterColumns(List<String> filterColumns) {
+	public void setFilterColumns(List<FilterColumnEntity> filterColumns) {
 		this.filterColumns = filterColumns;
 	}
 
@@ -40,13 +50,5 @@ public class IndicatorGroupEntity {
 
 	public void setId(UUID id) {
 		this.id = id;
-	}
-
-	public String getDashboardKey() {
-		return dashboardKey;
-	}
-
-	public void setDashboardKey(String dashboardKey) {
-		this.dashboardKey = dashboardKey;
 	}
 }

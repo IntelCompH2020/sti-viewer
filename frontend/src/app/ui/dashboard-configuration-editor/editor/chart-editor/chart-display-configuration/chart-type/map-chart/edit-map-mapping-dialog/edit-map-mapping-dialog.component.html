@@ -1,0 +1,34 @@
+<ng-container *ngIf="formGroup" [formGroup]="formGroup">
+
+    <h4>
+        {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.CHART-TYPE-EDITOR.MAP-CHART.MAPPING-DIALOG.TITLE' | translate}}
+    </h4>
+
+    <mat-form-field class="col-6" appearance="legacy">
+        <mat-label>
+            {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.CHART-TYPE-EDITOR.MAP-CHART.MAPPING-DIALOG.JSON-NAME' | translate}}
+        </mat-label>
+        <input type="text" matInput formControlName="jsonName">
+    </mat-form-field>
+
+    <mat-form-field class="col-6" appearance="legacy">
+        <mat-label>
+            {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.CHART-TYPE-EDITOR.MAP-CHART.MAPPING-DIALOG.MAP-NAME' | translate}}
+        </mat-label>
+        <input type="text" matInput formControlName="mapName">
+    </mat-form-field>
+
+</ng-container>
+
+<div class="col-12 row justify-content-end">
+    <div class="col-auto">
+        <button mat-raised-button (click)="cancel()">
+            {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.CHART-TYPE-EDITOR.MAP-CHART.MAPPING-DIALOG.CANCEL' | translate}}
+        </button>
+    </div>
+    <div class="col-auto">
+        <button mat-raised-button (click)="submit()">
+            {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.CHART-TYPE-EDITOR.MAP-CHART.MAPPING-DIALOG.SUBMIT' | translate}}
+        </button>
+    </div>
+</div>

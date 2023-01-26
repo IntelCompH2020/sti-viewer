@@ -1,0 +1,48 @@
+<ng-container *ngIf="formGroup" [formGroup]="formGroup">
+    
+
+
+    <div>
+        <small class="text-muted">
+            <i>
+                {{'APP.GLOBAL-SEARCH-CONFIGURATION-EDITOR.STATIC-FILTERS-EDITOR.KEYWORDS-FILTERS' | translate}}
+            </i>
+        </small>
+    </div>
+
+    <div class="card mt-3 mb-1" *ngFor="let keywordFilter of keywordFiltersArray?.controls; let index = index" [formGroup]="keywordFilter">
+        <div>
+            <button mat-mini-fab  class="delete-btn" (click)="removeKeywordFilter(index)">
+                <mat-icon>delete</mat-icon>
+            </button>
+            <mat-form-field class="col-md-6" appearance="legacy">
+                <mat-label>{{'APP.GLOBAL-SEARCH-CONFIGURATION-EDITOR.STATIC-FILTERS-EDITOR.FIELD' | translate}}</mat-label>
+                <input type="text" matInput formControlName="field">
+            </mat-form-field>
+    
+            <mat-form-field class="col-12" appearance="legacy">
+                <mat-label>{{'APP.GLOBAL-SEARCH-CONFIGURATION-EDITOR.STATIC-FILTERS-EDITOR.VALUE' | translate}}</mat-label>
+                <mat-chip-list #chipList>
+                    <mat-chip *ngFor="let val of keywordFilter.value?.value; let idx = index">
+                    {{val}}
+                    <button matChipRemove (click)="removeKeywordFilterValue(index,idx)">
+                        <mat-icon>cancel</mat-icon>
+                    </button>
+                    </mat-chip>
+                    <input placeholder="{{'APP.GLOBAL-SEARCH-CONFIGURATION-EDITOR.STATIC-FILTERS-EDITOR.NEW-VALUE' | translate}}"
+                        #valueInput
+                            [matChipInputFor]="chipList"
+                            [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                            (keyup.enter)="addKeywordFilterValue(valueInput, index)"
+                            >
+                </mat-chip-list>
+            </mat-form-field>
+        </div>
+    </div>
+    <div class="row m-0 justify-content-end">
+        <button mat-icon-button class="col-auto" (click)="addKeywordFilter()">
+            <mat-icon>add</mat-icon>
+        </button>
+    </div>
+
+</ng-container>

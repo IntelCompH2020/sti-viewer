@@ -32,9 +32,9 @@
             translate}}</a>
     </a> -->
 
-    <!-- <a (click)="handleNavigation()" routerLink="data-access-requests" routerLinkActive="text-accent" disabled -->
-    <a matTooltip="Coming soon" matTooltipShowDelay="800"
-        class="navigation-item text-muted" *ngIf="authService.hasPermission(authService.permissionEnum.ViewDataAccessRequestPage)">
+    <!-- <a matTooltip="Coming soon" matTooltipShowDelay="800" -->
+    <a (click)="handleNavigation()" routerLink="data-access-requests" routerLinkActive="text-accent" disabled
+        class="navigation-item " *ngIf="authService.hasPermission(authService.permissionEnum.ViewDataAccessRequestPage)">
         <div>
             <mat-icon class="item-icon">content_paste</mat-icon>
         </div>
@@ -43,9 +43,9 @@
             translate}}</a>
     </a>
 
-    <!-- <a (click)="handleNavigation()" routerLink="my-data-access-requests" routerLinkActive="text-accent" disabled -->
-    <a matTooltip="Coming soon" matTooltipShowDelay="800" 
-        class="navigation-item text-muted" *ngIf="authService.hasPermission(authService.permissionEnum.ViewMyDataAccessRequestPage)">
+    <!-- <a matTooltip="Coming soon" matTooltipShowDelay="800"  -->
+    <a (click)="handleNavigation()" routerLink="my-data-access-requests" routerLinkActive="text-accent" disabled
+        class="navigation-item" *ngIf="authService.hasPermission(authService.permissionEnum.ViewMyDataAccessRequestPage)">
         <div>
             <mat-icon class="item-icon">card_travel</mat-icon>
         </div>

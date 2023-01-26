@@ -1,0 +1,417 @@
+<div class="col-12" *ngIf="formGroup">
+
+	<!--  TODO FIX SERIES ARRAY SHOULD BE REMOVED FROM MODEL IN CASE CONNECTION EXTRACTOR IS PRESENT -->
+	<ng-container *ngIf="seriesArray && !connectionExtractor">
+		<h6>
+			{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-MAPPING-EDITOR.SERIES' | translate}}
+		</h6>
+		<div *ngIf="!seriesArray?.controls?.length">
+			<small class="text-muted">
+				<i>
+					{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-MAPPING-EDITOR.NO-SERIES-YET' | translate}}
+				</i>
+			</small>
+		</div>
+	
+		<div class="row m-0 mb-3 card p-2 pr-3 pl-3" *ngFor="let serie of seriesArray.controls; let index = index" [formGroup]="serie">
+	
+			<div class="col-12 p-0 justify-content-end d-flex">
+				<button mat-icon-button (click)="deleteSerie(index)">
+					<mat-icon>delete</mat-icon>
+				</button>
+			</div>
+	
+			
+	
+			<section [formGroup]="serie?.get('label')" class="col-12 row">
+				<div class="col-12 p-0">
+					<i>
+						{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-MAPPING-EDITOR.EXTRACT-LABELS' | translate}}
+					</i>
+				</div>
+	
+				<mat-form-field appearance="legacy" class="col-md-6">
+					<mat-label>
+						{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-MAPPING-EDITOR.LABEL-KEY' | translate}}
+					</mat-label>
+					<input type="text" matInput formControlName="labelKey">
+				</mat-form-field>
+	
+				<mat-form-field appearance="legacy" class="col-md-6">
+					<mat-label>
+						{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-MAPPING-EDITOR.NAME' | translate}}
+					</mat-label>
+					<input type="text" matInput formControlName="name">
+				</mat-form-field>
+	
+				<mat-form-field appearance="legacy" class="col-md-6">
+					<mat-label>
+						{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-MAPPING-EDITOR.COLOR' | translate}}
+					</mat-label>
+					<input type="text" matInput formControlName="color">
+				</mat-form-field>
+	
+			</section>
+	
+			<section [formGroup]="serie?.get('nested')" class="col-12 row">
+				<div class="col-12 p-0">
+					<i>
+						{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-MAPPING-EDITOR.NESTED-SERIE' | translate}}
+					</i>
+				</div>
+	
+				<mat-form-field appearance="legacy" class="col-md-6">
+					<mat-label>
+						{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-MAPPING-EDITOR.NESTED-SERIE-TYPE' | translate}}
+					</mat-label>
+					<mat-select formControlName="type">
+						<mat-option [value]="null">-</mat-option>
+						<mat-option *ngFor="let type of availableNestingTypes" [value]="type">{{type}}</mat-option>
+					</mat-select>
+				</mat-form-field>
+			</section>
+	
+	
+			<section class="col-12 row">
+	
+				<i>
+					{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-MAPPING-EDITOR.SPLIT-SERIES' | translate}}
+				</i>
+				<mat-form-field appearance="legacy" class="col-12">
+					<mat-label>
+						{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-MAPPING-EDITOR.SPLIT-SERIES-KEYS' | translate}}
+					</mat-label>
+					<mat-chip-list #chipList multiple>
+					  <mat-chip
+						  *ngFor="let keyword of serie.get('splitSeries')['controls'] ; let i = index"
+						  (removed)="removeKeyword(serie, i)">
+						{{keyword.value.key}}
+						<button matChipRemove>
+							<mat-icon>cancel</mat-icon>
+						</button>
+					  </mat-chip>
+					  <input
+						placeholder="{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-MAPPING-EDITOR.NEW-KEYWORD' | translate}}"
+						[matChipInputFor]="chipList"
+						(matChipInputTokenEnd)="addKeywordFromInput($event, serie)">
+					</mat-chip-list>
+				  </mat-form-field>
+			</section>
+	
+			<section class="col-12 row" [formGroup]="serie.get('values')">
+	
+				<div class="col-12 p-0">
+					<i>
+						{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-MAPPING-EDITOR.EXTRACT-VALUES' | translate}}
+					</i>
+				</div>
+	
+				<mat-form-field class="col-md-6" appearance="legacy">
+					<mat-label>
+						{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-MAPPING-EDITOR.VALUE-KEY' | translate}}
+					</mat-label>
+					<input type="text" matInput formControlName="valueKey">
+				</mat-form-field>
+	
+				<div class="col-12">
+					<small>
+						<i>
+							{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-MAPPING-EDITOR.VALUE-OBJECT-MUST=HAVE' | translate}}
+						</i>
+					</small>
+				</div>
+				<div class="col-12">
+	
+					<ng-container *ngTemplateOutlet="testsTable; context:{
+						serie, 
+						tests: serie?.value.values.tests, 
+						editTest: editTest.bind(this), 
+						removeTest: removeTest.bind(this), 
+						addNewTest: addNewTest.bind(this)
+					}">
+	
+					</ng-container>
+					
+				</div>
+	
+				<div class="col-12 mt-4">
+					<small>
+						<i>
+							{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-MAPPING-EDITOR.GROUP-OBJECT-MUST-HAVE' | translate}}
+						</i>
+					</small>
+				</div>
+				<div class="col-12">
+	
+					<ng-container *ngTemplateOutlet="testsTable; context:{
+						serie, 
+						tests: serie?.value.values.groupTests, 
+						editTest: editGroupTest.bind(this), 
+						removeTest: removeGroupTest.bind(this), 
+						addNewTest: addNewGroupTest.bind(this)
+					}">
+	
+					</ng-container>
+					
+				</div>
+	
+				<div class="col-12">
+					<small>
+						<i>
+							{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-MAPPING-EDITOR.FORMATTING-VALUE' | translate}}
+						</i>
+					</small>
+				</div>
+				<!-- TODO NGIF HERE MAY BLOCK FUNCTIONALITY IF NO FORMMATTER PROVIDED IN JSON -->
+				<app-value-formatter-types class="col-12"  *ngIf="serie?.get('values')?.get('formatter')" [formGroup]="serie?.get('values')?.get('formatter')">
+				</app-value-formatter-types>
+	
+				
+			</section>
+	
+	
+	
+		</div>
+		<button mat-icon-button (click)="addSerie()">
+			<mat-icon>add</mat-icon>
+		</button>
+	</ng-container>
+
+
+
+	<ng-container *ngIf="connectionExtractor" [formGroup]="connectionExtractor">
+		<h6>
+			{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-MAPPING-EDITOR.CONNECTION-EXTRACTOR' | translate}}
+		</h6>
+
+
+		<mat-form-field class="col-md-6" appearance="legacy">
+			<mat-label>
+				{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-MAPPING-EDITOR.SOURCE-KEY-EXTRACTOR' | translate}}
+			</mat-label>
+			<input type="text" matInput formControlName="sourceKeyExtractor">
+		</mat-form-field>
+
+		<mat-form-field class="col-md-6" appearance="legacy">
+			<mat-label>
+				{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-MAPPING-EDITOR.TARGET-KEY-EXTRACTOR' | translate}}
+			</mat-label>
+			<input type="text" matInput formControlName="targetKeyExtractor">
+		</mat-form-field>
+
+		<mat-form-field class="col-md-6" appearance="legacy">
+			<mat-label>
+				{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-MAPPING-EDITOR.VALUE-KEY-EXTRACTOR' | translate}}
+			</mat-label>
+			<input type="text" matInput formControlName="valueKeyExtractor">
+		</mat-form-field>
+
+
+
+		<div>
+			<span class="text-muted">
+				<i>
+					{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-MAPPING-EDITOR.GROUP-TESTS' | translate}}
+				</i>
+			</span>
+		</div>
+		<ng-container *ngTemplateOutlet="connectionTestsTable; context:{
+			tests: connectionExtractor.value.groupTests, 
+			editTest: editConnectionGroupTest.bind(this), 
+			removeTest: removeConnectionGroupTest.bind(this), 
+			addNewTest: addNewConnectionGroupTest.bind(this)
+		}">
+		</ng-container>
+
+		<span class="text-muted">
+			<i>
+				{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-MAPPING-EDITOR.VALUE-TESTS' | translate}}
+			</i>
+		</span>
+		<ng-container *ngTemplateOutlet="connectionTestsTable; context:{
+			tests: connectionExtractor.value.valueTests, 
+			editTest: editConnectionValueTest.bind(this), 
+			removeTest: removeConnectionValueTest.bind(this), 
+			addNewTest: addNewConnectionValueTest.bind(this)
+		}">
+		</ng-container>
+
+
+		<mat-checkbox [checked]="!!connectionExtractorLimit" class="mb-3" (change)="onConnectionLimitChange($event)" >
+			{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-MAPPING-EDITOR.LIMIT' | translate}}
+		</mat-checkbox>
+
+		<ng-container *ngIf="connectionExtractorLimit"  [formGroup]="connectionExtractorLimit">
+
+			<section>
+				<span class="text-muted">
+					<i>
+						{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-MAPPING-EDITOR.LIMIT-PREVIEW-RESULTS' | translate}}
+					</i>
+				</span>
+			</section>
+
+			<mat-form-field class="col-md-6" appearance="legacy">
+				<mat-label>
+					{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-MAPPING-EDITOR.LIMIT-TYPE' | translate}}
+				</mat-label>
+				<mat-select formControlName="type">
+					<mat-option *ngFor="let type of avalableConnectionLimitTypes" [value]="type">{{type}}</mat-option>
+				</mat-select>
+			</mat-form-field>
+
+			<mat-form-field class="col-md-6" appearance="legacy">
+				<mat-label>
+					{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-MAPPING-EDITOR.LIMIT-ORDER' | translate}}
+				</mat-label>
+
+				<mat-select formControlName="order">
+					<mat-option *ngFor="let type of avalableConnectionOrderTypes" [value]="type">{{type}}</mat-option>
+				</mat-select>
+			</mat-form-field>
+
+			<mat-form-field class="col-md-6" appearance="legacy">
+				<mat-label>
+					{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-MAPPING-EDITOR.LIMIT-COUNT' | translate}}
+				</mat-label>
+				<input type="number" matInput formControlName="count">
+			</mat-form-field>
+	
+
+		</ng-container>
+	</ng-container>
+
+
+</div>
+
+
+
+
+<ng-template #testsTable let-tests="tests" let-editTest="editTest" let-removeTest="removeTest" let-addNewTest="addNewTest" let-serie="serie">
+	<table class="table">
+		<thead>
+			<tr>
+				<th>
+					{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-MAPPING-EDITOR.TESTING-FIELD' | translate}}
+				</th>
+				<th>
+					{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-MAPPING-EDITOR.MUST-HAVE-VALUE' | translate}}
+				</th>
+				<th>
+					<i>
+						{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-MAPPING-EDITOR.ACTIONS' | translate}}
+					</i>
+				</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr *ngFor="let test of tests; let i = index">
+				<td>
+					{{test | test: 'target'}}
+				</td>
+				<td>
+					{{
+						test | test: 'value'
+					}}
+				</td>
+				<td>
+					<button mat-icon-button (click)="editTest(serie, i)">
+						<mat-icon>edit</mat-icon>
+					</button>
+					<button mat-icon-button (click)="removeTest(serie, i)">
+						<mat-icon>delete</mat-icon>
+					</button>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<mat-form-field>
+						<mat-label>
+							{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-MAPPING-EDITOR.TARGET' | translate}}
+						</mat-label>
+						<input type="text" matInput #testtarget>
+					</mat-form-field>
+				</td>
+				<td>
+					<mat-form-field>
+						<mat-label>
+							{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-MAPPING-EDITOR.VALUE' | translate}}
+						</mat-label>
+						<input type="text" matInput #testvalue>
+					</mat-form-field>
+				</td>
+				<td>
+					<button mat-stroked-button (click)="addNewTest(serie, testtarget, testvalue)">
+						add
+					</button>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</ng-template>
+
+
+
+
+<ng-template #connectionTestsTable let-tests="tests" let-editTest="editTest" let-removeTest="removeTest" let-addNewTest="addNewTest">
+	<table class="table">
+		<thead>
+			<tr>
+				<th>
+					{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-MAPPING-EDITOR.TESTING-FIELD' | translate}}
+				</th>
+				<th>
+					{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-MAPPING-EDITOR.MUST-HAVE-VALUE' | translate}}
+				</th>
+				<th>
+					<i>
+						{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-MAPPING-EDITOR.ACTIONS' | translate}}
+					</i>
+				</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr *ngFor="let test of tests | connectionTest;">
+				<td>
+					{{test.target}}
+				</td>
+				<td>
+					{{
+						test.value
+					}}
+				</td>
+				<td>
+					<button mat-icon-button (click)="editTest(test.target)">
+						<mat-icon>edit</mat-icon>
+					</button>
+					<button mat-icon-button (click)="removeTest(test.target)">
+						<mat-icon>delete</mat-icon>
+					</button>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<mat-form-field>
+						<mat-label>
+							{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-MAPPING-EDITOR.TARGET' | translate}}
+						</mat-label>
+						<input type="text" matInput #testtarget>
+					</mat-form-field>
+				</td>
+				<td>
+					<mat-form-field>
+						<mat-label>
+							{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-MAPPING-EDITOR.VALUE' | translate}}
+						</mat-label>
+						<input type="text" matInput #testvalue>
+					</mat-form-field>
+				</td>
+				<td>
+					<button mat-stroked-button (click)="addNewTest(testtarget, testvalue)">
+						add
+					</button>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</ng-template>

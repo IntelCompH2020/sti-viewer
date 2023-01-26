@@ -12,6 +12,7 @@ public class DataTreeConfigEntity implements Serializable {
 	private String id;
 	private String name;
 	private int order;
+	private String indicatorGroupCode;
 	private String goTo;
 
 	private List<DataTreeLevelConfigEntity> levelConfigs;
@@ -54,5 +55,13 @@ public class DataTreeConfigEntity implements Serializable {
 
 	public void setGoTo(String goTo) {
 		this.goTo = goTo;
+	}
+
+	public String getIndicatorGroupCode() {
+		return indicatorGroupCode;
+	}
+
+	public void setIndicatorGroupCode(String indicatorGroupCode) {
+		this.indicatorGroupCode = indicatorGroupCode;
 	}
 }

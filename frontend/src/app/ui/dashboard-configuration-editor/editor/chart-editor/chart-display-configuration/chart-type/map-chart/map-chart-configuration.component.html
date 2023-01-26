@@ -1,0 +1,125 @@
+<ng-container *ngIf="formGroup" [formGroup]="formGroup">
+
+    <div class="row m-0 mb-3 justify-content-around">
+        <div class="card p-3 col-md-5" *ngIf="highConfig" [formGroup]="highConfig">
+            <div class="row m-0">
+                <small class="text-muted col-12 p-0">
+                    <i>
+                        {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.CHART-TYPE-EDITOR.MAP-CHART.HIGH-LEGEND-CONFIG' | translate}}
+                    </i>
+                </small>
+                <mat-form-field class="col-12" appearance="legacy">
+                    <mat-label>
+                        {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.CHART-TYPE-EDITOR.MAP-CHART.COLOR' | translate}}
+                    </mat-label>
+                    <input type="text" matInput formControlName="color">
+                </mat-form-field>
+        
+                <mat-form-field class="col-12" appearance="legacy">
+                    <mat-label>
+                        {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.CHART-TYPE-EDITOR.MAP-CHART.TEXT' | translate}}
+                    </mat-label>
+                    <input type="text" matInput formControlName="text">
+                </mat-form-field>
+            </div>
+    
+        </div>
+    
+        <div class="card p-3 col-md-5" *ngIf="lowConfig" [formGroup]="lowConfig">
+            <div class="row m-0">
+
+                <small class="text-muted col-12 p-0">
+                    <i>
+                        {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.CHART-TYPE-EDITOR.MAP-CHART.LOW-LEGEND-CONFIG' | translate}}
+                    </i>
+                </small>
+                <mat-form-field class="col-12" appearance="legacy">
+                    <mat-label>
+                        {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.CHART-TYPE-EDITOR.MAP-CHART.COLOR' | translate}}
+                    </mat-label>
+                    <input type="text" matInput formControlName="color">
+                </mat-form-field>
+        
+                <mat-form-field class="col-12" appearance="legacy">
+                    <mat-label>
+                        {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.CHART-TYPE-EDITOR.MAP-CHART.TEXT' | translate}}
+                    </mat-label>
+                    <input type="text" matInput formControlName="text">
+                </mat-form-field>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-12">
+        <small class="text-muted">
+            <i>
+                {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.CHART-TYPE-EDITOR.MAP-CHART.RESPONSE-VALUES-TO-MAP-VALUES' | translate}}
+            </i>
+        </small>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.CHART-TYPE-EDITOR.MAP-CHART.JSON-NAME' | translate}}
+                    </th>
+                    <th>
+                        {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.CHART-TYPE-EDITOR.MAP-CHART.MAP-NAME' | translate}}
+                    </th>
+                    <th>
+                        <i>
+                            {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.CHART-TYPE-EDITOR.MAP-CHART.ACTIONS' | translate}}
+                        </i>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let countryMapping of countryMappings; let index = index">
+                    <td>
+                        {{countryMapping.jsonName}}
+                    </td>
+                    <td>
+                        {{countryMapping.mapName}}
+                    </td>
+                    <td>
+                        <button mat-icon-button (click)="editMapping(index)">
+                            <mat-icon>edit</mat-icon>
+                        </button>
+                        <button mat-icon-button (click)="deleteMapping(index)">
+                            <mat-icon>delete</mat-icon>
+                        </button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <mat-form-field class="col-12" appearance="legacy">
+                            <mat-label>
+                                {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.CHART-TYPE-EDITOR.MAP-CHART.JSON-NAME' | translate}}
+                            </mat-label>
+                            <input type="text" matInput #jsonName>
+                        </mat-form-field>
+                    </td>   
+                    <td>
+                        <mat-form-field class="col-12" appearance="legacy">
+                            <mat-label>
+                                {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.CHART-TYPE-EDITOR.MAP-CHART.MAP-NAME' | translate}}
+                            </mat-label>
+                            <input type="text" matInput #mapName>
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <button mat-icon-button (click)="addMapping(jsonName, mapName)">
+                            <mat-icon>add</mat-icon>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+
+
+    </div>
+
+
+</ng-container>

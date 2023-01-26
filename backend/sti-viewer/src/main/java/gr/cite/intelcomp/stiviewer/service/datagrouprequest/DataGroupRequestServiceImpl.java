@@ -69,6 +69,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.RequestScope;
 
 import javax.management.InvalidApplicationException;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
@@ -260,11 +261,11 @@ public class DataGroupRequestServiceImpl implements DataGroupRequestService {
 		}
 	}
 
-	public boolean buildGroup(DataGroupRequestEntity request) throws InvalidApplicationException {
+	public boolean buildGroup(DataGroupRequestEntity request) throws InvalidApplicationException, IOException {
 		return this.buildGroupInternal(request); //TODO: Add logic for external build
 	}
 
-	private boolean buildGroupInternal(DataGroupRequestEntity request) throws InvalidApplicationException {
+	private boolean buildGroupInternal(DataGroupRequestEntity request) throws InvalidApplicationException, IOException {
 		DataGroupRequestConfigEntity config = this.jsonHandlingService.fromJsonSafe(DataGroupRequestConfigEntity.class, request.getConfig());
 		IndicatorGroupEntity indicatorGroupEntity = this.indicatorGroupService.getIndicatorGroups().stream().filter(x -> x.getId().equals(config.getIndicatorGroupId())).findFirst().orElse(null);
 		if (indicatorGroupEntity == null) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{config.getIndicatorGroupId(), IndicatorGroupEntity.class.getSimpleName()}, LocaleContextHolder.getLocale()));
@@ -297,7 +298,7 @@ public class DataGroupRequestServiceImpl implements DataGroupRequestService {
 		return true;
 	}
 
-	private void deleteOldGroupValues(DataGroupRequestEntity request, UUID indicatorId) throws InvalidApplicationException {
+	private void deleteOldGroupValues(DataGroupRequestEntity request, UUID indicatorId) throws InvalidApplicationException, IOException {
 		NativeSearchQueryBuilder nativeSearchQueryBuilder = new NativeSearchQueryBuilder();
 		ElasticField groupField = new ElasticField(IndicatorPointEntity.Fields.groupHash, IndicatorPointEntity.class);
 		nativeSearchQueryBuilder.withQuery(QueryBuilders.termQuery(groupField.getFieldNameWithPath(), request.getGroupHash()));

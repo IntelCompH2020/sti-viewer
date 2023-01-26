@@ -1,0 +1,151 @@
+<ng-container [formGroup]="formGroup" *ngIf="formGroup">
+
+
+	<section class="section-configuration">
+		<mat-icon color="primary">build</mat-icon>
+		<i class="text-muted">
+			{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.CHART-SPECIFIC-TYPE-CONFIGURATION' | translate}}
+		</i>
+	</section>
+
+	<app-dashboard-config-chart-type-editor class="w-100" [formGroup]="formGroup"></app-dashboard-config-chart-type-editor>
+	
+	<section class="section-configuration">
+		<mat-icon color="primary">auto_fix_high</mat-icon>
+		<i class="text-muted">
+			{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.CHART-ABILITIES' | translate}}
+		</i>
+	</section>
+
+
+	<mat-form-field appearance="legacy" class="col-md-auto">
+		<mat-label>
+			{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.LABEL-SORT-KEY' | translate}}
+		</mat-label>
+		<input type="text" matInput formControlName="labelSortKey">
+	</mat-form-field>
+
+	<div class="col-12">
+		<mat-checkbox formControlName="reverseValues">
+			{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.REVERSE-VALUES' | translate}}
+		</mat-checkbox>
+	</div>
+
+	
+
+	<div class="col-12">
+		<mat-checkbox [checked]="!!formGroup?.get('legend')?.value" (change)="onChange($event, ChangeField.Legend)">
+			{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.LEGEND' | translate}}
+		</mat-checkbox>
+	</div>
+
+	<div class="col-12">
+		<mat-checkbox [checked]="!!formGroup?.get('chartDownloadImage')?.value" (change)="onChange($event, ChangeField.ChartDownloadImage)">
+			{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.CHART-DOWNLOAD-IMAGE' | translate}}
+		</mat-checkbox>
+	</div>
+
+	<div class="col-12">
+		<mat-checkbox [checked]="!!formGroup?.get('chartDownloadData')?.value" (change)="onChange($event, ChangeField.ChartDownloadData)">
+			{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.CHART-DOWNLOAD-DATA' | translate}}
+		</mat-checkbox>
+	</div>
+
+	<div class="col-12 pb-2">
+		<mat-checkbox [checked]="!!formGroup?.get('labelsTransform')?.value" (change)="onChange($event, ChangeField.LabelsTransform)">
+			{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.LABEL-TRANSFORM' | translate}}
+		</mat-checkbox>
+	</div>
+	<div class="col-12" *ngIf="!!formGroup?.get('labelsTransform')">
+		<mat-form-field>
+			<mat-label>
+				{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.LABEL-TRANSFORM-TYPE' | translate}}
+			</mat-label>
+			<mat-select formCotrolName="labelsTransform">
+				<mat-option *ngFor="let type of FieldFormatterTypes" [value]="type">{{type}}</mat-option>
+			</mat-select>
+		</mat-form-field>
+	</div>
+
+	<div class="col-12 mb-2">
+		<mat-checkbox [checked]="!!filtersArray?.value" (change)="onChange($event, ChangeField.Filters)">
+			{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.FILTERS' | translate}}
+		</mat-checkbox>
+	</div>
+
+	<div class="col-12" *ngIf="!!filtersArray?.value">
+		<table class="table">
+			<thead>
+				<tr>
+					<th>
+						{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.CHART-FILTER-TYPE' | translate}}
+					</th>
+					<th>
+						{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.CHART-FILTER-INDICATOR-FILTER-TYPE' | translate}}
+					</th>
+					<th>
+						{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.CHART-FILTER-NAME' | translate}}
+					</th>
+					<th>
+						{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.CHART-FILTER-FIELDCODE' | translate}}
+					</th>
+					<th>
+						{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.CHART-FILTER-VALUES' | translate}}
+					</th>
+					<th>
+						<small>
+							<i>
+								{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.CHART-FILTER-ACTIONS' | translate}}
+							</i>
+						</small>
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr *ngFor="let filter of filtersArray?.value; let index = index">
+					<td>
+						{{filter.type}}
+					</td>
+					<td>
+						{{filter.indicatorFilterType}}
+					</td>
+					<td>
+						{{filter.name}}
+					</td>
+					<td>
+						{{filter.fieldCode}}
+					</td>
+					<td>
+						{{filter.values | json}}
+					</td>
+					<td>
+						<button mat-icon-button (click)="editFilter(index)">
+							<mat-icon>edit</mat-icon>
+						</button>
+						<button mat-icon-button (click)="deleteFilter(index)">
+							<mat-icon>delete</mat-icon>
+						</button>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<div class="row">
+			<div class="col-auto">
+				<button mat-raised-button (click)="addFilter()">
+					{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.CHART-FILTER-ADD-FILTER' | translate}}
+				</button>
+			</div>
+		</div>
+
+	</div>
+	
+	
+
+
+	
+
+
+
+	<!-- {{formGroup?.value | json}} -->
+</ng-container>

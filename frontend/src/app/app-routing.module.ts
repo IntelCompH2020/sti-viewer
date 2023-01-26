@@ -31,6 +31,16 @@ const appRoutes: Routes = [
 		loadChildren: () => import('@app/ui/search/search.module').then(m => m.SearchModule)
 	},
 	{
+		path: 'config-editor',
+		canLoad: [AuthGuard],
+		data: {
+			authContext: {
+				permissions: [AppPermission.EditUserSettings] // todo new permission
+			}
+		},
+		loadChildren: () => import('@app/ui/dashboard-configuration-editor/dashboard-configuration-editor.module').then(m => m.DashboardConfigurationModule)
+	},
+	{
 		path: 'datasets',
 		canLoad: [AuthGuard],
 		data: {

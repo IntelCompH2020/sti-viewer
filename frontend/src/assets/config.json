@@ -9,7 +9,7 @@
 	"userSettingsVersion": "1",
 	"idp_service": {
 		"enabled": true,
-		"address": "http://localhost:60201/auth",
+		"address": "http://dev03.local.cite.gr:60201/auth",
 		"realm": "sti-viewer",
 		"flow": "hybrid",
 		"clientId": "intelcomp-sti-viewer-dev",
@@ -18,7 +18,7 @@
 	},
 	"notification_service": {
 		"enabled": true,
-		"address": "http://localhost:50302/"
+		"address": "http://dev04.local.cite.gr:50302/"
 	},
 	"app_service": {
 		"enabled": true,
@@ -40,5 +40,7 @@
 	"globalErrorHandling": {
 		"transmitLogs": true,
 		"appName": "coreApp"
-	}
+	},
+	"portofolioConfigurationKey":"portofolio",
+	"dataTreeConfigurationKey":"myId"
 }

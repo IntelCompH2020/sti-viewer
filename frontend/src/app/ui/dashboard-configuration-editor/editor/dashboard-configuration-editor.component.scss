@@ -1,0 +1,41 @@
+.parent-root-container{
+
+    z-index: 1;
+	position: relative;
+	min-height: 80vh;
+	&::before{
+		position: fixed;
+		font-family: "Material Icons";
+    	content: "settings_input_component";
+        overflow: hidden;
+		font-size: 60rem;
+		width: 100vw;
+		height: 100vh;
+		z-index: -1;
+		bottom: 0;
+		right: 20px;
+		text-align: end;
+		opacity: .1;
+	}
+}
+
+.tabs-container{
+	position: sticky;
+	top: 2rem;
+}
+
+
+.nav-button{
+	.delete-btn{
+		opacity: 0;
+		transition: opacity 300ms ease;
+		position: absolute;
+		top: -1rem;
+		right: -1rem;
+	}
+	&:hover{
+		.delete-btn{
+			opacity: 1;
+		}
+	}
+}

@@ -2,12 +2,13 @@ package gr.cite.intelcomp.stiviewer.model.builder;
 
 import gr.cite.intelcomp.stiviewer.authorization.AuthorizationFlags;
 import gr.cite.intelcomp.stiviewer.common.JsonHandlingService;
-import gr.cite.intelcomp.stiviewer.common.types.accessrequestconfig.AccessRequestConfigEntity;
+import gr.cite.intelcomp.stiviewer.common.types.indicator.IndicatorConfigEntity;
 import gr.cite.intelcomp.stiviewer.convention.ConventionService;
 import gr.cite.intelcomp.stiviewer.data.IndicatorEntity;
 import gr.cite.intelcomp.stiviewer.model.Indicator;
 import gr.cite.intelcomp.stiviewer.model.IndicatorAccess;
-import gr.cite.intelcomp.stiviewer.model.builder.accessrequestconfig.AccessRequestConfigBuilder;
+import gr.cite.intelcomp.stiviewer.model.builder.indicator.AccessRequestConfigBuilder;
+import gr.cite.intelcomp.stiviewer.model.builder.indicator.IndicatorConfigBuilder;
 import gr.cite.intelcomp.stiviewer.query.IndicatorAccessQuery;
 import gr.cite.tools.data.builder.BuilderFactory;
 import gr.cite.tools.data.query.QueryFactory;
@@ -69,8 +70,8 @@ public class IndicatorBuilder extends BaseBuilder<Indicator, IndicatorEntity> {
 			if (fields.hasField(this.asIndexer(Indicator._name))) m.setName(d.getName());
 			if (fields.hasField(this.asIndexer(Indicator._description))) m.setDescription(d.getDescription());
 			if (!accessRequestConfigFields.isEmpty() && d.getConfig() != null) {
-				AccessRequestConfigEntity accessRequestConfigEntity = this.jsonHandlingService.fromJsonSafe(AccessRequestConfigEntity.class, d.getConfig());
-				if (accessRequestConfigEntity != null) m.setConfig(this.builderFactory.builder(AccessRequestConfigBuilder.class).authorize(this.authorize).build(accessRequestConfigFields, accessRequestConfigEntity));
+				IndicatorConfigEntity accessRequestConfigEntity = this.jsonHandlingService.fromJsonSafe(IndicatorConfigEntity.class, d.getConfig());
+				if (accessRequestConfigEntity != null) m.setConfig(this.builderFactory.builder(IndicatorConfigBuilder.class).authorize(this.authorize).build(accessRequestConfigFields, accessRequestConfigEntity));
 			}
 			if (fields.hasField(this.asIndexer(Indicator._createdAt))) m.setCreatedAt(d.getCreatedAt());
 			if (fields.hasField(this.asIndexer(Indicator._updatedAt))) m.setUpdatedAt(d.getUpdatedAt());

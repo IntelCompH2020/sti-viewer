@@ -6,7 +6,7 @@
 				<app-side-navigation [expanded]="expanded || (contentHover$ | async)"></app-side-navigation>
 			</div>
 		</div>
-		<div class="content col p-0" [class.content-shift]="expanded">
+		<div class="content col p-0" [class.content-shift]="expanded" [@routingAnimation]="getRouteAnimationData()">
 			<router-outlet></router-outlet>
 		</div>
 	</div>

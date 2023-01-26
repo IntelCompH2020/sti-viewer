@@ -6,7 +6,17 @@ export const GENERAL_ANIMATIONS = [
             style({
                 opacity:0
             }),
-            animate('800ms ease-out', style({opacity:1}))
+            animate('800ms ease', style({opacity:1}))
+        ])
+    ]),
+    trigger('fadeOut',[
+        transition(':leave',[
+            style({
+                opacity:1,
+                width: '100%',
+                position: 'absolute'
+            }),
+            animate('600ms ease', style({opacity:0}))
         ])
     ]),
     trigger('leftFlyIn',[
@@ -42,6 +52,22 @@ export const GENERAL_ANIMATIONS = [
             }),
             stagger(50, [
                 animate('800ms ease-out', style({opacity:1}))
+            ])
+          ], { optional: true})
+        ])
+    ]),
+    trigger('listAnimationSequentialScaleIn', [
+        transition('* => *', [ // each time the binding value changes
+          query(':enter', [
+            style({
+                opacity:0,
+                transform:'scale(0)'
+            }),
+            stagger(50, [
+                animate('600ms cubic-bezier(.41,.9,.36,1.44)', style({
+                    opacity:1,
+                    transform:'scale(1)'
+                }))
             ])
           ], { optional: true})
         ])

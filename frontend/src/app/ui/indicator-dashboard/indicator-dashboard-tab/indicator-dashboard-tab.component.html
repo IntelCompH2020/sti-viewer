@@ -1,9 +1,59 @@
 <div class="indicators-list">
-	<mat-card class="w-100" *ngFor="let chartGroup of tabConfig.chartGroups">
+
+	<ng-container *ngFor="let chartGroup of tabConfig | tabChartGroupFilter : activeChartTags">
+		<ng-container [ngSwitch]="chartGroup?.type">
+
+<!-- todo renaming of chartgroup find something more suitable -->
+
+
+			<!-- * GAUGE -->
+			<div *ngSwitchCase="TabBlockType.Gauge" class="col-12">
+
+				<h4>{{chartGroup?.name}}</h4>
+				<app-indicator-dashboard-gauge 
+					*ngFor="let gauge of chartGroup.gauges" 
+					[indicatorQueryParams]="indicatorQueryParams" 
+					[gaugeConfig]="gauge">
+				</app-indicator-dashboard-gauge>
+			</div>
+
+
+				<!-- * CHART -->
+
+			<mat-card class="w-100" *ngSwitchCase="TabBlockType.ChartGroup">
+
+				<mat-card-title>{{chartGroup.name}}</mat-card-title>
+				
+				<app-indicator-carousel>
+					<app-indicator-dashboard-chart 
+						*ngFor="let chart of chartGroup.charts" 
+						appIndicatorCarouselItem 
+						[indicatorQueryParams]="indicatorQueryParams" 
+						[chartConfig]="chart">
+					</app-indicator-dashboard-chart>
+				</app-indicator-carousel>
+
+			</mat-card>
+
+
+		</ng-container>
+	</ng-container>
+
+
+
+	<!-- *LEGACY -->
+
+	<!-- <mat-card class="w-100" *ngFor="let chartGroup of tabConfig | tabChartGroupFilter : activeChartTags">
+
 		<mat-card-title>{{chartGroup.name}}</mat-card-title>
 		
 		<app-indicator-carousel>
-			<app-indicator-dashboard-chart [dashboardConfig]="dashboardConfig" [indicatorQueryParams]="indicatorQueryParams" appIndicatorCarouselItem *ngFor="let chart of chartGroup.charts" [chartConfig]="chart"></app-indicator-dashboard-chart>
+			<app-indicator-dashboard-chart 
+				*ngFor="let chart of chartGroup.charts" 
+				appIndicatorCarouselItem 
+				[indicatorQueryParams]="indicatorQueryParams" 
+				[chartConfig]="chart">
+			</app-indicator-dashboard-chart>
 		</app-indicator-carousel>
-	</mat-card>
+	</mat-card> -->
 </div>

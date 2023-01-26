@@ -103,7 +103,7 @@ public class IndicatorPointController {
 
 		IndicatorPointQuery query = lookup.enrich(this.queryFactory).indicatorIds(lookup.getIndicatorIds());
 		if (!lookup.isViewNotApprovedValues()) {
-			query = query.authorize(AuthorizationFlags.OwnerOrPermissionOrIndicatorOrIndicatorAccess).useThisColumnForAccess(lookup.getField());
+			query = query.authorize(AuthorizationFlags.OwnerOrPermissionOrIndicatorOrIndicatorAccess);
 		}
 
 		DistinctValuesResponse<String> data = query.collectDistinct(lookup.getField(), lookup.getOrder(), (x) -> x, lookup.getAfterKey(), lookup.getBatchSize());
@@ -139,7 +139,7 @@ public class IndicatorPointController {
 
 	@PostMapping("{indicatorId}/persist")
 	@Transactional
-	public IndicatorPoint persist(@PathVariable("indicatorId") UUID indicatorId, @MyValidate @RequestBody IndicatorPointPersist model, FieldSet fieldSet) throws MyApplicationException, MyForbiddenException, MyNotFoundException, InvalidApplicationException {
+	public IndicatorPoint persist(@PathVariable("indicatorId") UUID indicatorId, @MyValidate @RequestBody IndicatorPointPersist model, FieldSet fieldSet) throws MyApplicationException, MyForbiddenException, MyNotFoundException, InvalidApplicationException, IOException {
 		logger.debug(new MapLogEntry("persisting" + IndicatorPoint.class.getSimpleName()).And("model", model).And("fieldSet", fieldSet));
 
 		IndicatorPoint persisted = this.indicatorPointService.persist(indicatorId, model, fieldSet);
@@ -185,7 +185,7 @@ public class IndicatorPointController {
 
 	@PostMapping("{indicatorId}/bulk-persist")
 	@Transactional
-	public void bulkPersist(@PathVariable("indicatorId") UUID indicatorId, @MyValidate @RequestBody List<IndicatorPointPersist> models) throws MyApplicationException, MyForbiddenException, MyNotFoundException, InvalidApplicationException {
+	public void bulkPersist(@PathVariable("indicatorId") UUID indicatorId, @MyValidate @RequestBody List<IndicatorPointPersist> models) throws MyApplicationException, MyForbiddenException, MyNotFoundException, InvalidApplicationException, IOException {
 		logger.debug(new MapLogEntry("persisting" + IndicatorPoint.class.getSimpleName()).And("model", models));
 
 		this.indicatorPointService.persist(indicatorId, models);

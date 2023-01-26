@@ -3,7 +3,6 @@ package gr.cite.intelcomp.stiviewer.service.user.settings;
 import gr.cite.commons.web.authz.service.AuthorizationService;
 import gr.cite.intelcomp.stiviewer.authorization.AuthorizationFlags;
 import gr.cite.intelcomp.stiviewer.authorization.Permission;
-import gr.cite.intelcomp.stiviewer.common.enums.UserSettingsEntityType;
 import gr.cite.intelcomp.stiviewer.common.scope.user.UserScope;
 import gr.cite.intelcomp.stiviewer.convention.ConventionService;
 import gr.cite.intelcomp.stiviewer.data.TenantEntityManager;
@@ -32,6 +31,7 @@ import org.springframework.web.context.annotation.RequestScope;
 
 import javax.management.InvalidApplicationException;
 import java.time.Instant;
+import java.util.UUID;
 
 @Service
 @RequestScope
@@ -74,7 +74,7 @@ public class UserSettingsServiceImpl implements UserSettingsService {
 
 		this.authorizationService.authorizeForce(Permission.EditUserSettings);
 
-		boolean isUpdate = this.conventionService.isValidGuid(model.getId()) != null;
+		boolean isUpdate = this.conventionService.isValidGuid(model.getId());
 
 		UserSettingsEntity data;
 		if (isUpdate) {
@@ -83,13 +83,16 @@ public class UserSettingsServiceImpl implements UserSettingsService {
 		} else {
 			data = new UserSettingsEntity();
 			data.setCreatedAt(Instant.now());
+			data.setId(UUID.randomUUID());
+
 		}
 
+        data.setName(model.getKey());
 		data.setType(model.getType());
 		data.setKey(model.getKey());
 		data.setValue(model.getValue());
-		data.setEntityId(userScope.getUserIdSafe());
-		data.setEntityType(UserSettingsEntityType.User);
+		data.setEntityId(model.getEntityId());
+		data.setEntityType(model.getEntityType());
 		data.setUpdatedAt(Instant.now());
 
 		if (isUpdate) this.entityManager.merge(data);

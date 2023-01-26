@@ -1,0 +1,23 @@
+.card{
+    height: 13rem;
+    width: 13rem;
+    display: flex;
+    flex-direction: column;
+
+
+    margin: 21px;
+
+    border: 1px solid rgba(0, 0, 0, .03);
+    box-shadow:  -15px -14px 17px rgb(255 255 255 / 60%), 15px 15px 20px rgb(0 0 0 / 7%);
+
+    .upper-card{
+        flex: 1;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+    }
+    .lower-card{
+        flex: 1;
+    }
+
+}

@@ -1,0 +1,152 @@
+<ng-container [formGroup]="formGroup" *ngIf="formGroup">
+    
+
+	<div class="col-12">
+		<mat-checkbox [checked]="!!sources" (change)="onRemovableFieldChange($event, CompositeBucketConfig.Sources)">
+			{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-FETCHING-EDITOR.BUCKET-EDITOR.COMPOSITE-BUCKET.HAS-SOURCES' | translate}}
+		</mat-checkbox>
+	</div>
+	<ng-container *ngIf="sources">
+		<small class="text-muted">
+			<i>
+				{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-FETCHING-EDITOR.BUCKET-EDITOR.COMPOSITE-BUCKET.SOURCES' | translate}}
+			</i>
+		</small>
+		<ng-container *ngFor="let source of sources?.controls; let index = index">
+			<div class="col-12">
+				<div class="row">
+					<div class="col" [formGroup]="source">
+	
+						<div class="row">
+							<mat-form-field appearance="legacy" class="col-md-6">
+								<mat-label>
+									{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-FETCHING-EDITOR.BUCKET-EDITOR.COMPOSITE-BUCKET.SOURCE-FIELD' | translate}}
+								</mat-label>
+								<input type="text" matInput formControlName="field">
+							</mat-form-field>
+	
+							<mat-form-field appearance="legacy" class="col-md-6">
+								<mat-label>
+									{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-FETCHING-EDITOR.BUCKET-EDITOR.COMPOSITE-BUCKET.SOURCE-TYPE' | translate}}
+								</mat-label>
+								<mat-select formControlName="order">
+									<mat-option [value]="null">-</mat-option>
+									<mat-option [value]="'ASC'">
+										{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-FETCHING-EDITOR.BUCKET-EDITOR.COMPOSITE-BUCKET.SOURCE-ASC' | translate}}
+									</mat-option>
+									<mat-option [value]="'DESC'">
+										{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-FETCHING-EDITOR.BUCKET-EDITOR.COMPOSITE-BUCKET.SOURCE-DESC' | translate}}
+									</mat-option>
+								</mat-select>
+							</mat-form-field>
+						</div>
+	
+					</div>
+					<div class="col-auto">
+						<button mat-icon-button (click)="removeSource(index)">
+							<mat-icon>delete</mat-icon>
+						</button>
+					</div>
+				</div>
+			</div>
+		</ng-container>
+		<div class="col-12">
+			<button mat-icon-button (click)="addSource()">
+				<mat-icon>add</mat-icon>
+			</button>
+		</div>
+	</ng-container>
+
+
+	<div class="col-12">
+		<mat-checkbox [checked]="!!histogramBucket" (change)="onRemovableFieldChange($event, CompositeBucketConfig.DateHistogramSource)">
+			{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-FETCHING-EDITOR.BUCKET-EDITOR.COMPOSITE-BUCKET.HAS-DATA-HISTOGRAM-SOURCE' | translate}}
+		</mat-checkbox>
+	</div>
+
+	<ng-container *ngIf="!!histogramBucket">
+		<small class="text-muted">
+			<i>
+				{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-FETCHING-EDITOR.BUCKET-EDITOR.COMPOSITE-BUCKET.DATA-HISTOGRAM-SOURCE' | translate}}
+			</i>
+		</small>
+		<data-histogram-bucket-config-editor [formGroup]="histogramBucket" ></data-histogram-bucket-config-editor>
+	</ng-container>
+
+	<div class="col-12">
+		<mat-checkbox [checked]="!!afterKeyControl" (change)="onRemovableFieldChange($event, CompositeBucketConfig.AfterKey)">
+			{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-FETCHING-EDITOR.BUCKET-EDITOR.COMPOSITE-BUCKET.HAS-AFTERKEYS' | translate}}
+		</mat-checkbox>
+	</div>
+
+	<ng-container *ngIf="!!afterKeyControl">
+		<small class="text-muted">
+			<i>
+				{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-FETCHING-EDITOR.BUCKET-EDITOR.COMPOSITE-BUCKET.AFTERKEYS' | translate}}
+			</i>
+		</small>
+		<div class="col-12" >
+			<table class="table">
+				<thead>
+					<tr>
+						<th>
+							{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-FETCHING-EDITOR.BUCKET-EDITOR.COMPOSITE-BUCKET.AFTERKEY-KEY' | translate}}
+						</th>
+						<th>
+							{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-FETCHING-EDITOR.BUCKET-EDITOR.COMPOSITE-BUCKET.AFTERKEY-VALUE' | translate}}
+						</th>
+						<th><i>
+							{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-FETCHING-EDITOR.BUCKET-EDITOR.COMPOSITE-BUCKET.AFTERKEY-ACTIONS' | translate}}
+						</i></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr *ngFor="let item of afterKeys; let index = index">
+						<td>
+							{{item.key}}
+						</td>
+						<td>
+							{{item.value}}
+						</td>
+						<td>
+							<button mat-icon-button (click)="removeAfterKey(index)">
+								<mat-icon>
+									delete
+								</mat-icon>
+							</button>
+							<button mat-icon-button (click)="editAfterKey(item)">
+								<mat-icon>
+									edit
+								</mat-icon>
+							</button>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<mat-form-field  appearance="legacy" class="col-12">
+								<mat-label>key</mat-label>
+								<input #keyInput type="text" matInput >
+							</mat-form-field>
+		
+						</td>
+						<td>
+							<mat-form-field  appearance="legacy" class="col-12">
+								<mat-label>value</mat-label>
+								<input #valueInput type="text" matInput >
+							</mat-form-field>
+						</td>
+						<td>
+							<button mat-icon-button (click)="addAfterKey(keyInput, valueInput)">
+								<mat-icon>
+									add
+								</mat-icon>
+							</button>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			
+		</div>
+	</ng-container>
+  
+</ng-container>

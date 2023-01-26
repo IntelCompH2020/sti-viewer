@@ -1,0 +1,80 @@
+<div class="col-12 parent-root-container">
+
+	<div class="row pt-2 pb-2 align-items-center">
+		<div class="col">
+			<h2>
+				{{'APP.DASHBOARD-CONFIGURATION.EDITOR.TITLE' | translate}}
+			</h2>
+		</div>
+
+		<ng-container *ngIf="formGroup">
+			<div class="col-auto">
+				<button mat-raised-button (click)="save()" [disabled]="pendingBlockingRequest">
+					{{'APP.DASHBOARD-CONFIGURATION.EDITOR.SAVE' | translate}}
+				</button>
+			</div>
+	
+			<div class="col-auto">
+				<button mat-raised-button (click)="downloadConfig()">
+					{{'APP.DASHBOARD-CONFIGURATION.EDITOR.DOWNLOAD-CONFIGURATION' | translate}}
+					<mat-icon>download</mat-icon>
+				</button>
+			</div>
+
+			<div class="col-auto">
+				<mat-slide-toggle [(ngModel)]="preview">Preview chart</mat-slide-toggle>
+			</div>
+
+		</ng-container>
+
+		<div class="col-12" [class.d-none]="!formGroup">
+
+			<mat-form-field appearance="legacy">
+				<mat-label>
+					{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CONFIGURATION-KEY' | translate}}
+				</mat-label>
+				<input type="text" matInput #configurationKey="ngModel" [(ngModel)]="loadedSettings.key" required >
+			</mat-form-field>
+		</div>
+		
+	</div>
+
+
+	<div class="row mt-4" *ngIf="formGroup">
+		<div class="col-12">
+			<div class="row m-0 tabs-container" >
+				<div class="col-12">
+					<h3>
+						{{'APP.DASHBOARD-CONFIGURATION.EDITOR.TABS' | translate}}
+					</h3>
+				</div>
+				<div class="col-auto" *ngFor="let tab of tabGroupsArray.controls; let idx = index" [formGroup]="tab">
+					<button mat-raised-button class="nav-button" [color]="(selectedTabFormGroup === tab) ? 'accent' :''  " (click)="selectedTabFormGroup = tab">
+						{{tab.value.name ? tab.value.name : 'APP.DASHBOARD-CONFIGURATION.EDITOR.UNTITLED' | translate}}
+						<button mat-mini-fab class="delete-btn" (click)="$event.stopPropagation(); removeTab(idx);">
+							<mat-icon>delete</mat-icon>
+						</button>
+					</button>
+				</div>
+				<div class="col-auto">
+					<button mat-raised-button (click)="addNewTab()">
+						<mat-icon>
+							add
+						</mat-icon>
+						{{'APP.DASHBOARD-CONFIGURATION.EDITOR.ADD-NEW-TAB' | translate}}
+					</button>
+				</div>
+			</div>
+		</div>
+
+		<app-dashboard-configuration-tab-editor *ngIf="selectedTabFormGroup" [formGroup]="selectedTabFormGroup" class="col-12">
+
+		</app-dashboard-configuration-tab-editor>
+	</div>
+
+
+
+	<app-chart-configuration-previewer [formGroup]="formGroup" [@fadeIn] *ngIf="preview" style="position: fixed; bottom: 0; right: 0; z-index: 99;">
+	</app-chart-configuration-previewer>
+</div>
+

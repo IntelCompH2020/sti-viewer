@@ -18,4 +18,5 @@ spring:
       optional:classpath:config/elastic.yml[.yml], optional:classpath:config/elastic-${spring.profiles.active}.yml[.yml], optional:file:../config/elastic-${spring.profiles.active}.yml[.yml],
       optional:classpath:config/indicator-groups.yml[.yml], optional:classpath:config/indicator-groups-${spring.profiles.active}.yml[.yml], optional:file:../config/indicator-groups-${spring.profiles.active}.yml[.yml],
       optional:classpath:config/event-scheduler.yml[.yml], optional:classpath:config/event-scheduler-${spring.profiles.active}.yml[.yml], optional:file:../config/event-scheduler-${spring.profiles.active}.yml[.yml],
-      optional:classpath:config/keycloak.yml[.yml], optional:classpath:config/keycloak-${spring.profiles.active}.yml[.yml], optional:file:../config/keycloak-${spring.profiles.active}.yml[.yml]
+      optional:classpath:config/keycloak.yml[.yml], optional:classpath:config/keycloak-${spring.profiles.active}.yml[.yml], optional:file:../config/keycloak-${spring.profiles.active}.yml[.yml],
+      optional:classpath:config/indicator-point.yml[.yml], optional:classpath:config/indicator-point-${spring.profiles.active}.yml[.yml], optional:file:../config/indicator-point-${spring.profiles.active}.yml[.yml]

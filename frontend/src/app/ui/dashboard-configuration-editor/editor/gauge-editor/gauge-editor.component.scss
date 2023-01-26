@@ -1,0 +1,27 @@
+.section-header{
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 1.5rem;
+    align-items: center;
+    gap: 1rem;
+    .section-title{
+        display: block;
+        flex: 1;
+        margin-bottom: 0px;
+        font-style: italic;
+    }
+    .section-icon{
+
+    }
+}
+
+.tab-item{
+    padding-top: 1rem;
+}
+
+.lock-icon{
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-size: 1.2rem;
+}

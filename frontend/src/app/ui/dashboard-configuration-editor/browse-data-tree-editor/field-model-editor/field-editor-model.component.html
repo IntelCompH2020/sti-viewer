@@ -1,0 +1,177 @@
+<ng-container *ngIf="formGroup" [formGroup]="formGroup">
+    
+    <!-- <mat-form-field class="col-12" appearance="legacy">
+        <mat-label>id</mat-label>
+        <input type="text" matInput formControlName="id">
+    </mat-form-field> -->
+
+    <mat-form-field class="col-md-6" appearance="legacy">
+        <mat-label>
+            {{'APP.BROWSE-DATA-TREE-CONFIGURATION-EDITOR.LEVEL-CONFIG-EDITOR.FIELDS.FIELD-CODE' | translate}}
+        </mat-label>
+        <input type="text" matInput formControlName="code">
+    </mat-form-field>
+
+    <mat-form-field class="col-md-6" appearance="legacy">
+        <mat-label>
+            {{'APP.BROWSE-DATA-TREE-CONFIGURATION-EDITOR.LEVEL-CONFIG-EDITOR.FIELDS.FIELD-NAME' | translate}}
+        </mat-label>
+        <input type="text" matInput formControlName="name">
+    </mat-form-field>
+    
+    <!-- <mat-form-field class="col-md-6" appearance="legacy">
+        <mat-label>label</mat-label>
+        <input type="text" matInput formControlName="label">
+    </mat-form-field>
+    
+    <mat-form-field class="col-12" appearance="outline">
+        <mat-label>description</mat-label>
+        <textarea rows="3" matInput formControlName="description"></textarea>
+    </mat-form-field>
+    
+    <mat-form-field class="col-md-6" appearance="legacy">
+        <mat-label>baseType</mat-label>
+        <mat-select formControlName="baseType">
+            <mat-option [value]="null">
+                -
+            </mat-option>
+            <mat-option *ngFor="let type of baseTypes" [value]="type">
+                {{type}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+
+
+    <mat-form-field class="col-md-6" appearance="legacy">
+        <mat-label>typeSemantics</mat-label>
+        <input type="text" matInput formControlName="typeSemantics">
+    </mat-form-field>
+    
+    <mat-form-field class="col-md-6" appearance="legacy">
+        <mat-label>typeId</mat-label>
+        <input type="text" matInput formControlName="typeId">
+    </mat-form-field>
+
+
+    <div class="col-12">
+        <small>
+            <i>
+                alt Labels
+            </i>
+        </small>
+
+        <div class="card col-12 mt-3 mb-1" *ngFor="let altLabel of altLabelsArray?.controls; let idx = index">
+            <button mat-mini-fab  class="delete-btn" (click)="removeAltLabel(idx)">
+                <mat-icon>delete</mat-icon>
+            </button>
+            <app-alt-text-editor [formGroup]="altLabel"></app-alt-text-editor>
+        </div>
+        <div *ngIf="!altLabelsArray?.length" class="row justify-content-center">
+            <div class="col-auto">
+                <small>
+                    <i>No alt labels yet</i>
+                </small>
+            </div>
+        </div>
+        <div class="row m-0 justify-content-end">
+            <button mat-icon-button class="col-auto" (click)="addAltLabel()">
+                <mat-icon>add</mat-icon>
+            </button>
+        </div>
+    </div>
+
+    <div class="col-12">
+        <small>
+            <i>
+                alt Descriptions
+            </i>
+        </small>
+
+        <div class="col-12 card mt-3 mb-1" *ngFor="let altDescription of altDescriptionsArray?.controls; let idx = index">
+            <button mat-mini-fab  class="delete-btn" (click)="removeAltDescription(idx)">
+                <mat-icon>delete</mat-icon>
+            </button>
+            <app-alt-text-editor [formGroup]="altDescription"></app-alt-text-editor>
+        </div>
+
+        <div *ngIf="!altDescriptionsArray?.length" class="row justify-content-center">
+            <div class="col-auto">
+                <small>
+                    <i>No alt descriptions yet</i>
+                </small>
+            </div>
+        </div>
+        <div class="row m-0 justify-content-end">
+            <button mat-icon-button class="col-auto" (click)="addAltDescription()">
+                <mat-icon>add</mat-icon>
+            </button>
+        </div>
+
+    </div>
+
+
+    <div class="col-12">
+        <div>
+            <small>
+                <i>
+                    value Range
+                </i>
+            </small>
+        </div>
+        <app-value-range-editor [formGroup]="valueRange"></app-value-range-editor>
+    </div>
+    
+    <mat-form-field class="col-md-6" appearance="legacy">
+        <mat-label>subfieldOf</mat-label>
+        <input type="text" matInput formControlName="subfieldOf">
+    </mat-form-field>
+
+    <mat-form-field class="col-md-6" appearance="legacy">
+        <mat-label>valueField</mat-label>
+        <input type="text" matInput formControlName="valueField">
+    </mat-form-field>
+
+    <mat-form-field class="col-md-6" appearance="legacy">
+        <mat-label>useAs</mat-label>
+        <input type="text" matInput formControlName="useAs">
+    </mat-form-field>
+
+
+    <div class="col-12">
+
+        <small>
+            <i>
+                operations
+            </i>
+        </small>
+
+        <div class="col-12 card mt-3 mb-1" *ngFor="let operation of operationsArray?.controls; let idx = index">
+            <button mat-mini-fab  class="delete-btn" (click)="removeOperation(idx)">
+                <mat-icon>delete</mat-icon>
+            </button>
+            <app-operation-editor [formGroup]="operation"></app-operation-editor>
+        </div>
+
+        <div *ngIf="!operationsArray?.length" class="row justify-content-center">
+            <div class="col-auto">
+                <small>
+                    <i>No alt operations yet</i>
+                </small>
+            </div>
+        </div>
+        <div class="row m-0 justify-content-end">
+            <button mat-icon-button class="col-auto" (click)="addOperation()">
+                <mat-icon>add</mat-icon>
+            </button>
+        </div>
+
+    </div>
+
+    <mat-form-field class="col-md-6" appearance="legacy">
+        <mat-label>validation</mat-label>
+        <input type="text" matInput formControlName="validation">
+    </mat-form-field> -->
+
+
+
+</ng-container>

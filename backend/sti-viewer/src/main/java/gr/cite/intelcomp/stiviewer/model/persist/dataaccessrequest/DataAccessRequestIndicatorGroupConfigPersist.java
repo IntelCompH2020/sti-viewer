@@ -29,4 +29,8 @@ public class DataAccessRequestIndicatorGroupConfigPersist {
 	public void setFilterColumns(List<FilterColumnConfigPersist> filterColumns) {
 		this.filterColumns = filterColumns;
 	}
+	
+	public boolean isSet() {
+		return this.filterColumns != null && !this.filterColumns.isEmpty();
+	}
 }

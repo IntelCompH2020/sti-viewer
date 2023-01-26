@@ -1,0 +1,16 @@
+<ng-container *ngIf="formGroup" [formGroup]="formGroup">
+
+    {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.CHART-TYPE-EDITOR.Y-AXIS.TITLE' | translate}}
+    <mat-form-field class="col-12" appearance="legacy">
+        <mat-label>
+            {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.CHART-TYPE-EDITOR.Y-AXIS.NAME' | translate}}
+        </mat-label>
+        <input type="text" matInput formControlName="name">
+    </mat-form-field>
+
+    <div class="col-12">
+        <mat-checkbox formControlName="boundaryGap">
+            {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.CHART-TYPE-EDITOR.Y-AXIS.BOUNDARY-GAP' | translate}}
+        </mat-checkbox>
+    </div>
+</ng-container>

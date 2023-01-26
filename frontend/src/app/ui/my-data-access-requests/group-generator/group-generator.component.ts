@@ -65,7 +65,7 @@ export class GroupGeneratorComponent extends BaseComponent implements OnInit{
         private indicatorPointService: IndicatorPointService,
         private dialogRef: MatDialogRef<GroupGeneratorComponent>,
         private formBuilder: FormBuilder,
-        @Inject(MAT_DIALOG_DATA) private data
+        @Inject(MAT_DIALOG_DATA) private data: GroupGeneratorComponentParams
     ){
         super();
         this.indicators = data.indicators;
@@ -205,4 +205,12 @@ export class GroupGeneratorComponent extends BaseComponent implements OnInit{
 
         return lookup;
     }
+}
+
+
+export interface GroupGeneratorComponentParams{
+    indicators: Indicator[];
+    column: string;
+    name?: string;
+    values?: string[];
 }

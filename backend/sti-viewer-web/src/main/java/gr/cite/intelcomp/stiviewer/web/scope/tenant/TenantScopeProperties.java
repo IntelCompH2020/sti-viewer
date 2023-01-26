@@ -40,4 +40,14 @@ public class TenantScopeProperties {
 	public void setEnforceTrustedTenant(Boolean enforceTrustedTenant) {
 		this.enforceTrustedTenant = enforceTrustedTenant;
 	}
+
+	private Boolean autoCreateTenantUser;
+
+	public Boolean getAutoCreateTenantUser() {
+		return autoCreateTenantUser;
+	}
+
+	public void setAutoCreateTenantUser(Boolean autoCreateTenantUser) {
+		this.autoCreateTenantUser = autoCreateTenantUser;
+	}
 }

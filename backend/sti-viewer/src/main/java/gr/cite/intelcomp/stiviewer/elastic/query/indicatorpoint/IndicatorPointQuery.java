@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gr.cite.commons.web.authz.service.AuthorizationService;
 import gr.cite.intelcomp.stiviewer.authorization.AuthorizationContentResolver;
 import gr.cite.intelcomp.stiviewer.authorization.AuthorizationFlags;
+import gr.cite.intelcomp.stiviewer.authorization.HierarchyIndicatorColumnAccess;
 import gr.cite.intelcomp.stiviewer.authorization.Permission;
-import gr.cite.intelcomp.stiviewer.authorization.indicatorpoint.IndicatorColumnAccess;
 import gr.cite.intelcomp.stiviewer.common.enums.IndicatorFieldBaseType;
 import gr.cite.intelcomp.stiviewer.common.scope.user.UserScope;
 import gr.cite.intelcomp.stiviewer.elastic.data.IndicatorDoubleMapEntity;
@@ -36,6 +36,7 @@ import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.management.InvalidApplicationException;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -45,13 +46,13 @@ public class IndicatorPointQuery extends ElasticQuery<IndicatorPointEntity, UUID
 	private Collection<UUID> ids;
 	private Collection<UUID> indicatorIds;
 	private Collection<IndicatorPointKeywordFilter> keywordFilters;
+	private Collection<IndicatorPointKeywordFilter> keywordExcludedFilters;
 	private Collection<IndicatorPointDateFilter> dateFilters;
 	private Collection<IndicatorPointIntegerFilter> integerFilters;
 	private Collection<IndicatorPointDoubleFilter> doubleFilters;
 	private Collection<IndicatorPointDateRangeFilter> dateRangeFilters;
 	private Collection<IndicatorPointIntegerRangeFilter> integerRangeFilters;
 	private Collection<IndicatorPointDoubleRangeFilter> doubleRangeFilters;
-	private Collection<String> useThisColumnForAccess; //TODO
 	private Collection<String> groupHashes;
 	private IndicatorPointLikeFilter fieldLikeFilter;
 	private List<IndicatorConfigItem> indicatorConfigItems;
@@ -131,21 +132,6 @@ public class IndicatorPointQuery extends ElasticQuery<IndicatorPointEntity, UUID
 		return this;
 	}
 
-	public IndicatorPointQuery useThisColumnForAccess(String value) {
-		this.useThisColumnForAccess = List.of(value);
-		return this;
-	}
-
-	public IndicatorPointQuery useThisColumnForAccess(String... value) {
-		this.useThisColumnForAccess = Arrays.asList(value);
-		return this;
-	}
-
-	public IndicatorPointQuery useThisColumnForAccess(Collection<String> values) {
-		this.useThisColumnForAccess = values;
-		return this;
-	}
-
 	public IndicatorPointQuery groupHashes(String value) {
 		this.groupHashes = List.of(value);
 		return this;
@@ -173,6 +159,21 @@ public class IndicatorPointQuery extends ElasticQuery<IndicatorPointEntity, UUID
 
 	public IndicatorPointQuery keywordFilters(Collection<IndicatorPointKeywordFilter> values) {
 		this.keywordFilters = values;
+		return this;
+	}
+
+	public IndicatorPointQuery keywordExcludedFilters(IndicatorPointKeywordFilter value) {
+		this.keywordExcludedFilters = List.of(value);
+		return this;
+	}
+
+	public IndicatorPointQuery keywordExcludedFilters(IndicatorPointKeywordFilter... value) {
+		this.keywordExcludedFilters = Arrays.asList(value);
+		return this;
+	}
+
+	public IndicatorPointQuery keywordExcludedFilters(Collection<IndicatorPointKeywordFilter> values) {
+		this.keywordExcludedFilters = values;
 		return this;
 	}
 
@@ -286,6 +287,8 @@ public class IndicatorPointQuery extends ElasticQuery<IndicatorPointEntity, UUID
 				return indexNames.toArray(new String[indexNames.size()]);
 			} catch (InvalidApplicationException e) {
 				throw new RuntimeException(e);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
 			}
 		} else {
 			return super.getIndex();
@@ -300,7 +303,9 @@ public class IndicatorPointQuery extends ElasticQuery<IndicatorPointEntity, UUID
 
 	@Override
 	protected Boolean isFalseQuery() {
-		return this.isEmpty(this.ids) || this.isEmpty(this.indicatorIds) || this.isEmpty(this.groupHashes);
+		return this.isEmpty(this.ids) || this.isEmpty(this.indicatorIds) || this.isEmpty(this.keywordExcludedFilters) || this.isEmpty(this.keywordFilters)
+				|| this.isEmpty(this.dateRangeFilters) || this.isEmpty(this.integerRangeFilters) || this.isEmpty(this.doubleRangeFilters) || this.isEmpty(this.dateFilters)
+				|| this.isEmpty(this.integerFilters) || this.isEmpty(this.doubleFilters) ||this.isEmpty(this.groupHashes);
 	}
 
 	@Override
@@ -308,10 +313,9 @@ public class IndicatorPointQuery extends ElasticQuery<IndicatorPointEntity, UUID
 		if (this.authorize.contains(AuthorizationFlags.None)) return null;
 		if (this.authorize.contains(AuthorizationFlags.Permission) && this.authService.authorize(Permission.BrowseIndicatorPoint)) return null;
 		List<UUID> allowedIndicatorIds = null;
-		List<IndicatorColumnAccess> indicatorColumnAccesses = null;
+		List<HierarchyIndicatorColumnAccess> indicatorColumnAccesses = null;
 		if (this.authorize.contains(AuthorizationFlags.Indicator)) allowedIndicatorIds = this.authorizationContentResolver.affiliatedIndicators(Permission.BrowseIndicatorPoint);
-		if (this.authorize.contains(AuthorizationFlags.IndicatorAccess)) indicatorColumnAccesses = this.authorizationContentResolver.indicatorAllowedKeywords(allowedIndicatorIds != null ? allowedIndicatorIds.toArray(new UUID[allowedIndicatorIds.size()]) : null);
-
+		
 		if (this.indicatorIds != null) {
 			if (allowedIndicatorIds == null) {
 				this.indicatorIds(new ArrayList<>());
@@ -322,34 +326,57 @@ public class IndicatorPointQuery extends ElasticQuery<IndicatorPointEntity, UUID
 		} else {
 			this.indicatorIds(allowedIndicatorIds);
 		}
-		List<QueryBuilder> predicates = new ArrayList<>();
 
+		if (this.authorize.contains(AuthorizationFlags.IndicatorAccess)) indicatorColumnAccesses = this.authorizationContentResolver.indicatorAllowedKeywords(this.indicatorIds != null ? indicatorIds.toArray(new UUID[this.indicatorIds.size()]) : null);
 		if (indicatorColumnAccesses != null && !indicatorColumnAccesses.isEmpty()) {
-			List<IndicatorPointKeywordFilter> filters = this.keywordFilters == null ? new ArrayList<>() : this.keywordFilters.stream().collect(Collectors.toList());
-			for (IndicatorColumnAccess indicatorColumnAccess : indicatorColumnAccesses) {
-				if (this.useThisColumnForAccess != null && !this.useThisColumnForAccess.contains(indicatorColumnAccess.getField())) {
-					continue;
-				}
-				FieldEntity fieldEntity = this.getOrDefaultFieldEntity(indicatorColumnAccess.getField(), null);
-				if (fieldEntity.getBaseType() == IndicatorFieldBaseType.IntegerMap) {
-					IndicatorIntegerMapQuery query = this.queryFactory.query(IndicatorIntegerMapQuery.class).nestedPath(fieldEntity.getCode());
-					query.keys(indicatorColumnAccess.getValues());
-					predicates.add(this.nestedQuery(query));
-				} else if (fieldEntity.getBaseType() == IndicatorFieldBaseType.DoubleMap) {
-					IndicatorDoubleMapQuery query = this.queryFactory.query(IndicatorDoubleMapQuery.class).nestedPath(fieldEntity.getCode());
-					query.keys(indicatorColumnAccess.getValues());
-					predicates.add(this.nestedQuery(query));
-				} else if (fieldEntity.getBaseType() == IndicatorFieldBaseType.Keyword) {
-					predicates.add(this.containsString(this.fieldNameOf(new FieldResolver(indicatorColumnAccess.getField())), indicatorColumnAccess.getValues()));
+			Map<String, List<HierarchyIndicatorColumnAccess>>  group = HierarchyIndicatorColumnAccess.groupByCode(indicatorColumnAccesses);
+			List<QueryBuilder> predicates =  this.buildHierarchyIndicatorColumnAccessQuery(indicatorColumnAccesses, new ArrayList<>(), new HashMap<>());
+			return this.or(predicates);
+		}
+		return null;
+	}
+	
+	private List<QueryBuilder> buildHierarchyIndicatorColumnAccessQuery(List<HierarchyIndicatorColumnAccess> indicatorColumnAccesses, List<QueryBuilder> orItems, Map<String, String> andItems){
+		Map<String, List<HierarchyIndicatorColumnAccess>>  group = HierarchyIndicatorColumnAccess.groupByCode(indicatorColumnAccesses);
+		for (String code : group.keySet()) {
+			List<HierarchyIndicatorColumnAccess> groupItems = group.get(code);
+			List<String> lastChildValues = new ArrayList<>();
+			for (HierarchyIndicatorColumnAccess groupItem : groupItems) {
+				if (groupItem.isLastChild()) {
+					lastChildValues.add(groupItem.getValue());
 				} else {
-					throw new MyApplicationException("invalid field " + indicatorColumnAccess.getField());
+					andItems.put(code, groupItem.getValue());
+					orItems = this.buildHierarchyIndicatorColumnAccessQuery(groupItem.getChildItems(), orItems, andItems);
 				}
 			}
+			if (!lastChildValues.isEmpty()){
+				List<QueryBuilder> queryBuilders = new ArrayList<>();
+				for (String key : andItems.keySet()) {
+					queryBuilders.add(this.getContainsQueryBuilderForHierarchyIndicatorColumnAccess(key, List.of(andItems.get(key))));
+				}
+				queryBuilders.add(this.getContainsQueryBuilderForHierarchyIndicatorColumnAccess(groupItems.get(0).getCode(), lastChildValues));
+				orItems.add(this.and(queryBuilders));
+			}
 		}
-		if (predicates.size() > 0) {
-			return this.and(predicates);
+		
+		return orItems;
+	}
+	
+	private QueryBuilder getContainsQueryBuilderForHierarchyIndicatorColumnAccess(String code, List<String> values) {
+		FieldEntity fieldEntity = this.getOrDefaultFieldEntity(code, null);
+		if (fieldEntity == null) throw new MyApplicationException("invalid field " + code);
+		if (fieldEntity.getBaseType() == IndicatorFieldBaseType.IntegerMap) {
+			IndicatorIntegerMapQuery query = this.queryFactory.query(IndicatorIntegerMapQuery.class).nestedPath(fieldEntity.getCode());
+			query.keys(values);
+			return this.nestedQuery(query);
+		} else if (fieldEntity.getBaseType() == IndicatorFieldBaseType.DoubleMap) {
+			IndicatorDoubleMapQuery query = this.queryFactory.query(IndicatorDoubleMapQuery.class).nestedPath(fieldEntity.getCode());
+			query.keys(values);
+			return this.nestedQuery(query);
+		} else if (fieldEntity.getBaseType() == IndicatorFieldBaseType.Keyword) {
+			return this.containsString(this.fieldNameOf(new FieldResolver(code)), values);
 		} else {
-			return null;
+			throw new MyApplicationException("invalid field " + code);
 		}
 	}
 
@@ -397,6 +424,27 @@ public class IndicatorPointQuery extends ElasticQuery<IndicatorPointEntity, UUID
 					predicates.add(this.nestedQuery(query));
 				} else if (fieldEntity.getBaseType() == IndicatorFieldBaseType.Keyword) {
 					predicates.add(this.containsString(this.fieldNameOf(new FieldResolver(keywordFilter.getField())), keywordFilter.getValues()));
+				} else {
+					throw new MyApplicationException("invalid field " + keywordFilter.getField());
+				}
+			}
+		}
+
+		if (keywordExcludedFilters != null) {
+			for (IndicatorPointKeywordFilter keywordFilter : keywordExcludedFilters) {
+				FieldEntity fieldEntity = this.getOrDefaultFieldEntity(keywordFilter.getField(), null);
+				if (fieldEntity == null) throw new MyApplicationException("invalid field " + keywordFilter.getField());
+
+				if (fieldEntity.getBaseType() == IndicatorFieldBaseType.IntegerMap) {
+					IndicatorIntegerMapQuery query = this.queryFactory.query(IndicatorIntegerMapQuery.class).nestedPath(fieldEntity.getCode());
+					query.keys(keywordFilter.getValues());
+					predicates.add(this.not(this.nestedQuery(query)));
+				} else if (fieldEntity.getBaseType() == IndicatorFieldBaseType.DoubleMap) {
+					IndicatorDoubleMapQuery query = this.queryFactory.query(IndicatorDoubleMapQuery.class).nestedPath(fieldEntity.getCode());
+					query.keys(keywordFilter.getValues());
+					predicates.add(this.not(this.nestedQuery(query)));
+				} else if (fieldEntity.getBaseType() == IndicatorFieldBaseType.Keyword) {
+					predicates.add(this.not(this.containsString(this.fieldNameOf(new FieldResolver(keywordFilter.getField())), keywordFilter.getValues())));
 				} else {
 					throw new MyApplicationException("invalid field " + keywordFilter.getField());
 				}

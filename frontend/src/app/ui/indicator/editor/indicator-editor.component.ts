@@ -82,7 +82,9 @@ export class IndicatorEditorComponent extends BaseEditor<IndicatorEditorModel, I
 		try {
 
 			this.editorModel = data ? new IndicatorEditorModel().fromModel(data) : new IndicatorEditorModel();
-			this.getElasticColumns();
+			if(this.editorModel?.id){
+				this.getElasticColumns();
+			}
 			this.isDeleted = data ? data.isActive === IsActive.Inactive : false;
 			this.buildForm();
 		} catch {
@@ -110,7 +112,9 @@ export class IndicatorEditorComponent extends BaseEditor<IndicatorEditorModel, I
 	}
 	createIndicatorElasticLookup(): IndicatorElasticLookup {
 		const lookup = new IndicatorElasticLookup();
-		lookup.ids = [this.editorModel.id];
+		if(this.editorModel.id){
+			lookup.ids = [this.editorModel.id];
+		}
 		lookup.metadata = { countAll: true };
 		//lookup.page = { offset: 0, size: 100 };
 		lookup.isActive = [IsActive.Active];

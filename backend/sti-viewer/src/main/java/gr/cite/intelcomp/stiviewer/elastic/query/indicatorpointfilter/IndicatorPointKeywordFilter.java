@@ -23,6 +23,14 @@ public class IndicatorPointKeywordFilter {
 		this.values = values;
 	}
 
+	public IndicatorPointKeywordFilter() {
+	}
+
+	public IndicatorPointKeywordFilter(String field, List<String> values) {
+		this.field = field;
+		this.values = values;
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;

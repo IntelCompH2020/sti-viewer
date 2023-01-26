@@ -13,8 +13,11 @@ import gr.cite.intelcomp.stiviewer.common.types.dataaccessrequest.DataAccessRequ
 import gr.cite.intelcomp.stiviewer.common.types.dataaccessrequest.DataAccessRequestFilterColumnEntity;
 import gr.cite.intelcomp.stiviewer.common.types.dataaccessrequest.DataAccessRequestIndicatorConfigEntity;
 import gr.cite.intelcomp.stiviewer.common.types.dataaccessrequest.DataAccessRequestIndicatorGroupConfigEntity;
-import gr.cite.intelcomp.stiviewer.common.types.indicatoraccessconfig.FilterColumnConfigEntity;
-import gr.cite.intelcomp.stiviewer.common.types.indicatoraccessconfig.IndicatorAccessConfigEntity;
+import gr.cite.intelcomp.stiviewer.common.types.indicatoraccess.FilterColumnConfigEntity;
+import gr.cite.intelcomp.stiviewer.common.types.indicatoraccess.IndicatorAccessConfigEntity;
+import gr.cite.intelcomp.stiviewer.common.types.indicatorgroup.IndicatorGroupAccessColumnConfigItemViewEntity;
+import gr.cite.intelcomp.stiviewer.common.types.indicatorgroup.IndicatorGroupAccessColumnConfigViewEntity;
+import gr.cite.intelcomp.stiviewer.common.types.indicatorgroup.IndicatorGroupAccessConfigViewEntity;
 import gr.cite.intelcomp.stiviewer.common.types.indicatorgroup.IndicatorGroupEntity;
 import gr.cite.intelcomp.stiviewer.convention.ConventionService;
 import gr.cite.intelcomp.stiviewer.data.DataAccessRequestEntity;
@@ -22,14 +25,14 @@ import gr.cite.intelcomp.stiviewer.data.IndicatorAccessEntity;
 import gr.cite.intelcomp.stiviewer.data.TenantEntity;
 import gr.cite.intelcomp.stiviewer.data.TenantEntityManager;
 import gr.cite.intelcomp.stiviewer.errorcode.ErrorThesaurusProperties;
+import gr.cite.intelcomp.stiviewer.model.IndicatorAccess;
 import gr.cite.intelcomp.stiviewer.model.builder.dataaccessrequest.DataAccessRequestBuilder;
 import gr.cite.intelcomp.stiviewer.model.dataaccessrequest.DataAccessRequest;
 import gr.cite.intelcomp.stiviewer.model.persist.IndicatorAccessPersist;
-import gr.cite.intelcomp.stiviewer.model.persist.dataaccessrequest.DataAccessRequestConfigPersist;
-import gr.cite.intelcomp.stiviewer.model.persist.dataaccessrequest.DataAccessRequestPersist;
-import gr.cite.intelcomp.stiviewer.model.persist.dataaccessrequest.DataAccessRequestStatusPersist;
-import gr.cite.intelcomp.stiviewer.model.persist.indicatoraccessconfig.FilterColumnConfigPersist;
-import gr.cite.intelcomp.stiviewer.model.persist.indicatoraccessconfig.IndicatorAccessConfigPersist;
+import gr.cite.intelcomp.stiviewer.model.persist.dataaccessrequest.*;
+import gr.cite.intelcomp.stiviewer.model.persist.indicatoraccess.FilterColumnConfigPersist;
+import gr.cite.intelcomp.stiviewer.model.persist.indicatoraccess.IndicatorAccessConfigPersist;
+import gr.cite.intelcomp.stiviewer.query.DataAccessRequestQuery;
 import gr.cite.intelcomp.stiviewer.query.IndicatorAccessQuery;
 import gr.cite.intelcomp.stiviewer.service.indicatoraccess.IndicatorAccessService;
 import gr.cite.intelcomp.stiviewer.service.indicatorgroup.IndicatorGroupService;
@@ -54,9 +57,7 @@ import org.springframework.web.context.annotation.RequestScope;
 
 import javax.management.InvalidApplicationException;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -165,44 +166,56 @@ public class DataAccessRequestServiceImpl implements DataAccessRequestService {
 
 		return this.builderFactory.builder(DataAccessRequestBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(BaseFieldSet.build(fields, DataAccessRequest._id, DataAccessRequest._hash), data);
 	}
-
 	private DataAccessRequestConfigEntity mapToDataAccessRequestConfig(DataAccessRequestConfigPersist config) {
 		if (config == null) return null;
 		DataAccessRequestConfigEntity persistConfig = new DataAccessRequestConfigEntity();
-		if (config.getIndicators() != null) {
+		if (config.getIndicators() != null && config.getIndicators().size() > 0) {
 			List<DataAccessRequestIndicatorConfigEntity> indicators = new ArrayList<>();
-			config.getIndicators().forEach(x -> {
-				DataAccessRequestIndicatorConfigEntity newConfig = new DataAccessRequestIndicatorConfigEntity();
-				newConfig.setId(x.getId());
-				newConfig.setFilterColumns(x.getFilterColumns().stream().map(column -> {
-					DataAccessRequestFilterColumnEntity columnConfig = new DataAccessRequestFilterColumnEntity();
-					columnConfig.setColumn(column.getColumn());
-					columnConfig.setValues(column.getValues());
-					return columnConfig;
-				}).collect(Collectors.toList()));
-				indicators.add(newConfig);
-			});
+			for (DataAccessRequestIndicatorConfigPersist dataAccessRequestIndicatorConfigPersist: config.getIndicators()) {
+				indicators.add(this.toEntityModel(dataAccessRequestIndicatorConfigPersist));
+			}
 			persistConfig.setIndicators(indicators);
 		}
 
-		if (config.getIndicatorGroups() != null) {
+		if (config.getIndicatorGroups() != null && config.getIndicatorGroups().size() > 0) {
 			List<DataAccessRequestIndicatorGroupConfigEntity> indicatorGroups = new ArrayList<>();
-			config.getIndicatorGroups().forEach(x -> {
-				DataAccessRequestIndicatorGroupConfigEntity newConfig = new DataAccessRequestIndicatorGroupConfigEntity();
-				newConfig.setGroupId(x.getGroupId());
-				newConfig.setFilterColumns(x.getFilterColumns().stream().map(column -> {
-					DataAccessRequestFilterColumnEntity columnConfig = new DataAccessRequestFilterColumnEntity();
-					columnConfig.setColumn(column.getColumn());
-					columnConfig.setValues(column.getValues());
-					return columnConfig;
-				}).collect(Collectors.toList()));
-				indicatorGroups.add(newConfig);
-			});
+			for (DataAccessRequestIndicatorGroupConfigPersist dataAccessRequestIndicatorGroupConfigPersist: config.getIndicatorGroups() ) {
+				if (dataAccessRequestIndicatorGroupConfigPersist.isSet()) indicatorGroups.add(this.toEntityModel(dataAccessRequestIndicatorGroupConfigPersist));
+			}
 			persistConfig.setIndicatorGroups(indicatorGroups);
 		}
 
 		return persistConfig;
 	}
+	private DataAccessRequestIndicatorGroupConfigEntity toEntityModel(DataAccessRequestIndicatorGroupConfigPersist dataAccessRequestIndicatorGroupConfigPersist){
+		DataAccessRequestIndicatorGroupConfigEntity newConfig = new DataAccessRequestIndicatorGroupConfigEntity();
+		newConfig.setGroupId(dataAccessRequestIndicatorGroupConfigPersist.getGroupId());
+		if (dataAccessRequestIndicatorGroupConfigPersist.getFilterColumns() != null && dataAccessRequestIndicatorGroupConfigPersist.getFilterColumns().size() > 0) {
+			newConfig.setFilterColumns(new ArrayList<>());
+			for (gr.cite.intelcomp.stiviewer.model.persist.dataaccessrequest.FilterColumnConfigPersist filterColumnConfigPersist: dataAccessRequestIndicatorGroupConfigPersist.getFilterColumns()) {
+				newConfig.getFilterColumns().add(this.toEntityModel(filterColumnConfigPersist));
+			}
+		}
+		return newConfig;
+	}
+	private DataAccessRequestIndicatorConfigEntity toEntityModel(DataAccessRequestIndicatorConfigPersist dataAccessRequestIndicatorConfigPersist){
+		DataAccessRequestIndicatorConfigEntity newConfig = new DataAccessRequestIndicatorConfigEntity();
+		newConfig.setId(dataAccessRequestIndicatorConfigPersist.getId());
+		if (dataAccessRequestIndicatorConfigPersist.getFilterColumns() != null && dataAccessRequestIndicatorConfigPersist.getFilterColumns().size() > 0){
+			newConfig.setFilterColumns(new ArrayList<>());
+			for (gr.cite.intelcomp.stiviewer.model.persist.dataaccessrequest.FilterColumnConfigPersist filterColumnConfigPersist: dataAccessRequestIndicatorConfigPersist.getFilterColumns()) {
+				newConfig.getFilterColumns().add(this.toEntityModel(filterColumnConfigPersist));
+			}
+		}
+		return newConfig;
+	}
+	private DataAccessRequestFilterColumnEntity toEntityModel(gr.cite.intelcomp.stiviewer.model.persist.dataaccessrequest.FilterColumnConfigPersist filterColumnConfigPersist){
+		DataAccessRequestFilterColumnEntity columnConfig = new DataAccessRequestFilterColumnEntity();
+		columnConfig.setColumn(filterColumnConfigPersist.getColumn());
+		columnConfig.setValues(filterColumnConfigPersist.getValues());
+		return columnConfig;
+	}
+	
 
 	@Override
 	public DataAccessRequest persist(DataAccessRequestStatusPersist model, FieldSet fields) throws MyForbiddenException, MyValidationException, MyApplicationException, MyNotFoundException, InvalidApplicationException {
@@ -278,100 +291,132 @@ public class DataAccessRequestServiceImpl implements DataAccessRequestService {
 	}
 
 	private void saveIndicatorAccessEntity(DataAccessRequestEntity request) {
-		DataAccessRequestConfigEntity configEntity = this.jsonHandlingService.fromJsonSafe(DataAccessRequestConfigEntity.class, request.getConfig());
-		if (configEntity == null) throw new MyValidationException(this.errors.getConfigRequired().getCode(), this.errors.getConfigRequired().getMessage());
-		if (configEntity.getIndicators() == null && configEntity.getIndicatorGroups() == null) throw new MyValidationException(this.errors.getConfigIndicatorsRequired().getCode(), this.errors.getConfigIndicatorsRequired().getMessage());
+		DataAccessRequestConfigEntity dataAccessRequestConfigEntity = this.jsonHandlingService.fromJsonSafe(DataAccessRequestConfigEntity.class, request.getConfig());
+		if (dataAccessRequestConfigEntity == null) throw new MyValidationException(this.errors.getConfigRequired().getCode(), this.errors.getConfigRequired().getMessage());
+		if ((dataAccessRequestConfigEntity.getIndicators() == null || dataAccessRequestConfigEntity.getIndicators().size() == 0) && (dataAccessRequestConfigEntity.getIndicatorGroups() == null || dataAccessRequestConfigEntity.getIndicatorGroups().size() == 0)) throw new MyValidationException(this.errors.getConfigIndicatorsRequired().getCode(), this.errors.getConfigIndicatorsRequired().getMessage());
 
-		if (configEntity.getIndicators() != null) {
-			for (DataAccessRequestIndicatorConfigEntity config : configEntity.getIndicators()) {
-				this.persistIndicatorAccessConfig(config.getId(), config.getFilterColumns());
+		if (dataAccessRequestConfigEntity.getIndicators() != null && dataAccessRequestConfigEntity.getIndicators().size() > 0) {
+			for (DataAccessRequestIndicatorConfigEntity config : dataAccessRequestConfigEntity.getIndicators()) {
+				this.persistIndicatorAccessConfig(config.getId(), null, config.getFilterColumns());
 			}
 		}
 
-		if (configEntity.getIndicatorGroups() != null) {
+		if (dataAccessRequestConfigEntity.getIndicatorGroups() != null && dataAccessRequestConfigEntity.getIndicatorGroups().size() > 0) {
 			List<IndicatorGroupEntity> indicatorGroupEntities = this.indicatorGroupService.getIndicatorGroups();
-			for (DataAccessRequestIndicatorGroupConfigEntity config : configEntity.getIndicatorGroups()) {
-				IndicatorGroupEntity indicatorGroupEntity = indicatorGroupEntities.stream().filter(x -> x.getId().equals(config.getGroupId())).findFirst().orElse(null);
-				if (indicatorGroupEntity == null) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{config.getGroupId(), IndicatorGroupEntity.class.getSimpleName()}, LocaleContextHolder.getLocale()));
-				if (indicatorGroupEntity.getIndicatorIds() != null) {
+			for (DataAccessRequestIndicatorGroupConfigEntity dataAccessRequestIndicatorGroupConfigEntity : dataAccessRequestConfigEntity.getIndicatorGroups()) {
+				IndicatorGroupEntity indicatorGroupEntity = indicatorGroupEntities.stream().filter(x -> x.getId().equals(dataAccessRequestIndicatorGroupConfigEntity.getGroupId())).findFirst().orElse(null);
+				if (indicatorGroupEntity == null) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{dataAccessRequestIndicatorGroupConfigEntity.getGroupId(), IndicatorGroupEntity.class.getSimpleName()}, LocaleContextHolder.getLocale()));
+				if (indicatorGroupEntity.getIndicatorIds() != null && indicatorGroupEntity.getIndicatorIds().size() > 0 ) {
 					for (UUID indicatorId : indicatorGroupEntity.getIndicatorIds()) {
-						this.persistIndicatorAccessConfig(indicatorId, config.getFilterColumns());
-
+						this.persistIndicatorAccessConfig(indicatorId, indicatorGroupEntity.getId(), dataAccessRequestIndicatorGroupConfigEntity.getFilterColumns());
 					}
 				}
 			}
 		}
 	}
 
-	private void persistIndicatorAccessConfig(UUID indicatorId, List<DataAccessRequestFilterColumnEntity> filterColumns) {
+	private void persistIndicatorAccessConfig(UUID indicatorId, UUID groupId, List<DataAccessRequestFilterColumnEntity> filterColumns) {
 		IndicatorAccessEntity indicatorAccessEntity = this.queryFactory.query(IndicatorAccessQuery.class).indicatorIds(indicatorId).isActive(IsActive.ACTIVE).hasUser(false).first();
 
-		IndicatorAccessPersist indicatorAccess = new IndicatorAccessPersist();
-		indicatorAccess.setIndicatorId(indicatorId);
-		IndicatorAccessConfigEntity indicatorAccessConfigEntity = null;
+		IndicatorAccessPersist persist = new IndicatorAccessPersist();
+		persist.setIndicatorId(indicatorId);
+		IndicatorAccessConfigEntity existingIndicatorAccessConfigEntity = null;
 		if (indicatorAccessEntity != null) {
-			indicatorAccess.setId(indicatorAccessEntity.getId());
-			indicatorAccess.setHash(this.conventionService.hashValue(indicatorAccessEntity.getUpdatedAt()));
-			indicatorAccessConfigEntity = this.jsonHandlingService.fromJsonSafe(IndicatorAccessConfigEntity.class, indicatorAccessEntity.getConfig());
-		}
-		if (indicatorAccessConfigEntity == null) {
-			indicatorAccessConfigEntity = new IndicatorAccessConfigEntity();
+			persist.setId(indicatorAccessEntity.getId());
+			persist.setHash(this.conventionService.hashValue(indicatorAccessEntity.getUpdatedAt()));
+			existingIndicatorAccessConfigEntity = this.jsonHandlingService.fromJsonSafe(IndicatorAccessConfigEntity.class, indicatorAccessEntity.getConfig());
 		}
 
-		indicatorAccessConfigEntity = this.mergeIndicatorAccessConfig(filterColumns, indicatorAccessConfigEntity);
-		indicatorAccess.setConfig(this.buildIndicatorAccessConfigPersist(indicatorAccessConfigEntity));
-		validation.validateForce(indicatorAccess);
+		existingIndicatorAccessConfigEntity = this.mergeIndicatorAccessConfig(filterColumns, groupId, existingIndicatorAccessConfigEntity);
+		persist.setConfig(this.buildIndicatorAccessConfigPersist(existingIndicatorAccessConfigEntity));
+		validation.validateForce(persist);
 		try {
-			this.indicatorAccessService.persist(indicatorAccess, null);
+			this.indicatorAccessService.persist(persist, null);
 		} catch (InvalidApplicationException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
 	private IndicatorAccessConfigPersist buildIndicatorAccessConfigPersist(IndicatorAccessConfigEntity indicatorAccessConfigEntity) {
-		if (indicatorAccessConfigEntity == null || indicatorAccessConfigEntity.getFilterColumns() == null || indicatorAccessConfigEntity.getFilterColumns().isEmpty()) return null;
+		if (indicatorAccessConfigEntity == null || indicatorAccessConfigEntity.getAllFilterColumns() == null || indicatorAccessConfigEntity.getAllFilterColumns().isEmpty()) return null;
 		IndicatorAccessConfigPersist indicatorAccessConfigPersist = new IndicatorAccessConfigPersist();
 
-		List<FilterColumnConfigPersist> filterColumnConfigPersists = new ArrayList<>();
-		for (FilterColumnConfigEntity columnConfig : indicatorAccessConfigEntity.getFilterColumns()) {
-			FilterColumnConfigPersist filterColumnConfigPersist = new FilterColumnConfigPersist();
-			filterColumnConfigPersist.setColumn(columnConfig.getColumn());
-			filterColumnConfigPersist.setValues(columnConfig.getValues());
-			filterColumnConfigPersists.add(filterColumnConfigPersist);
+		if (indicatorAccessConfigEntity.getGlobalFilterColumns() != null && !indicatorAccessConfigEntity.getGlobalFilterColumns().isEmpty()){
+			List<FilterColumnConfigPersist> filterColumnConfigPersists = new ArrayList<>();
+			for (FilterColumnConfigEntity columnConfig : indicatorAccessConfigEntity.getGlobalFilterColumns()) {
+				filterColumnConfigPersists.add(this.toPersistModel(columnConfig));
+			}
+			indicatorAccessConfigPersist.setGlobalFilterColumns(filterColumnConfigPersists);
+		} else {
+			indicatorAccessConfigPersist.setGlobalFilterColumns(null);
 		}
-		indicatorAccessConfigPersist.setFilterColumns(filterColumnConfigPersists);
+
+		if (indicatorAccessConfigEntity.getGroupFilterColumns() != null && !indicatorAccessConfigEntity.getGroupFilterColumns().isEmpty()){
+			Map<UUID, List<FilterColumnConfigPersist>> persistMap = new HashMap<>();
+			for (UUID groupId : indicatorAccessConfigEntity.getGroupFilterColumns().keySet()) {
+				List<FilterColumnConfigEntity> filterColumnConfigEntitiesToPersist = indicatorAccessConfigEntity.getGroupFilterColumns().get(groupId);
+				if (filterColumnConfigEntitiesToPersist != null && !filterColumnConfigEntitiesToPersist.isEmpty()){
+					List<FilterColumnConfigPersist> filterColumnConfigPersists = new ArrayList<>();
+					for (FilterColumnConfigEntity columnConfig : filterColumnConfigEntitiesToPersist) {
+						filterColumnConfigPersists.add(this.toPersistModel(columnConfig));
+					}
+					persistMap.put(groupId, filterColumnConfigPersists);
+				}
+			}
+			indicatorAccessConfigPersist.setGroupFilterColumns(persistMap);
+		} else {
+			indicatorAccessConfigPersist.setGroupFilterColumns(null);
+		}
 
 		return indicatorAccessConfigPersist;
 	}
+	
+	private FilterColumnConfigPersist toPersistModel(FilterColumnConfigEntity columnConfig){
+		FilterColumnConfigPersist filterColumnConfigPersist = new FilterColumnConfigPersist();
+		filterColumnConfigPersist.setColumn(columnConfig.getColumn());
+		filterColumnConfigPersist.setValues(columnConfig.getValues());
+		return filterColumnConfigPersist;
+	}
 
-	private IndicatorAccessConfigEntity mergeIndicatorAccessConfig(List<DataAccessRequestFilterColumnEntity> filterColumns, IndicatorAccessConfigEntity existingConfig) {
-
-
-		if (filterColumns == null || filterColumns.size() == 0) {
-			existingConfig.setFilterColumns(null);
-		} else {
-			if (existingConfig == null) existingConfig = new IndicatorAccessConfigEntity();
-			if (existingConfig.getFilterColumns() == null) existingConfig.setFilterColumns(new ArrayList<>());
-
-			for (DataAccessRequestFilterColumnEntity columnConfig : filterColumns) {
-				FilterColumnConfigEntity existingColumnConfig = existingConfig.getFilterColumns().stream().filter(x -> x.getColumn().equals(columnConfig.getColumn())).findFirst().orElse(null);
-				if (existingColumnConfig == null) {
-					existingColumnConfig = new FilterColumnConfigEntity();
-					existingColumnConfig.setColumn(columnConfig.getColumn());
-					existingColumnConfig.setValues(new ArrayList<>());
-					existingConfig.getFilterColumns().add(existingColumnConfig);
-				}
-				if (columnConfig.getValues() != null && !columnConfig.getValues().isEmpty()) {
-					existingColumnConfig.getValues().addAll(columnConfig.getValues());
-					existingColumnConfig.setValues(existingColumnConfig.getValues().stream().distinct().collect(Collectors.toList()));
-				} else {
-					existingColumnConfig.setValues(null);
-				}
-			}
-			existingConfig.setFilterColumns(existingConfig.getFilterColumns().stream().filter(x -> x.getValues() != null && !x.getValues().isEmpty()).collect(Collectors.toList()));
-			if (existingConfig.getFilterColumns().isEmpty()) existingConfig.setFilterColumns(null);
+	private IndicatorAccessConfigEntity mergeIndicatorAccessConfig(List<DataAccessRequestFilterColumnEntity> filterColumns, UUID groupId, IndicatorAccessConfigEntity existingConfig) {
+		if (filterColumns == null || filterColumns.isEmpty()) return  existingConfig;
+		Boolean isGlobalFilters = groupId == null;
+		if (existingConfig == null) existingConfig = new IndicatorAccessConfigEntity();
+		if (isGlobalFilters && existingConfig.getGlobalFilterColumns() == null) {
+			if (existingConfig.getGlobalFilterColumns() == null) existingConfig.setGlobalFilterColumns(new ArrayList<>());
+			List<FilterColumnConfigEntity> filterColumnConfigEntitiesToUse = existingConfig.getGlobalFilterColumns();
+			filterColumnConfigEntitiesToUse = this.mergeFilterColumns(filterColumns, filterColumnConfigEntitiesToUse);
+			existingConfig.setGlobalFilterColumns(filterColumnConfigEntitiesToUse != null && !filterColumnConfigEntitiesToUse.isEmpty() ? filterColumnConfigEntitiesToUse : null);
+		}
+		if (!isGlobalFilters) {
+			if (existingConfig.getGroupFilterColumns() == null) existingConfig.setGroupFilterColumns(new HashMap<>());
+			List<FilterColumnConfigEntity> filterColumnConfigEntitiesToUse = existingConfig.getGroupFilterColumns().getOrDefault(groupId, new ArrayList<>());
+			filterColumnConfigEntitiesToUse = this.mergeFilterColumns(filterColumns, filterColumnConfigEntitiesToUse);
+			existingConfig.getGroupFilterColumns().put(groupId, filterColumnConfigEntitiesToUse != null && !filterColumnConfigEntitiesToUse.isEmpty() ? filterColumnConfigEntitiesToUse : null);
 		}
 		return existingConfig;
+	}
+	
+	
+	private List<FilterColumnConfigEntity>  mergeFilterColumns(List<DataAccessRequestFilterColumnEntity> filterColumns, List<FilterColumnConfigEntity> filterColumnConfigEntitiesToUse){
+		for (DataAccessRequestFilterColumnEntity columnConfig : filterColumns) {
+			FilterColumnConfigEntity existingColumnConfig = filterColumnConfigEntitiesToUse.stream().filter(x -> x.getColumn().equals(columnConfig.getColumn())).findFirst().orElse(null);
+			if (existingColumnConfig != null  && existingColumnConfig.getValues() == null && existingColumnConfig.getValues().isEmpty()) continue;
+			if (existingColumnConfig == null) {
+				existingColumnConfig = new FilterColumnConfigEntity();
+				existingColumnConfig.setColumn(columnConfig.getColumn());
+				existingColumnConfig.setValues(new ArrayList<>());
+				filterColumnConfigEntitiesToUse.add(existingColumnConfig);
+			}
+			if (columnConfig.getValues() != null && !columnConfig.getValues().isEmpty()) {
+				existingColumnConfig.getValues().addAll(columnConfig.getValues());
+				existingColumnConfig.setValues(existingColumnConfig.getValues().stream().distinct().collect(Collectors.toList()));
+			} else {
+				existingColumnConfig.setValues(null);
+			}
+		}
+		filterColumnConfigEntitiesToUse.stream().filter(x -> x.getValues() != null && !x.getValues().isEmpty()).collect(Collectors.toList());
+		return filterColumnConfigEntitiesToUse;
 	}
 
 	private void canSetStatusForce(DataAccessRequestStatus status, DataAccessRequestEntity data) {
@@ -417,5 +462,88 @@ public class DataAccessRequestServiceImpl implements DataAccessRequestService {
 			default:
 				throw new MyApplicationException("invalid type " + data.getStatus());
 		}
+	}
+
+	@Override
+	public IndicatorGroupAccessConfigViewEntity getIndicatorGroupAccessConfigViewEntity(String code){
+		IndicatorGroupEntity indicatorGroupEntity = this.indicatorGroupService.getIndicatorGroups().stream().filter(x-> x.getCode().equalsIgnoreCase(code)).findFirst().orElse(null);
+		if (indicatorGroupEntity == null) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{code, IndicatorGroupEntity.class.getSimpleName()}, LocaleContextHolder.getLocale()));
+		IndicatorGroupAccessConfigViewEntity indicatorGroupAccessConfigViewEntity = new IndicatorGroupAccessConfigViewEntity();
+		indicatorGroupAccessConfigViewEntity.setId(indicatorGroupEntity.getId());
+		indicatorGroupAccessConfigViewEntity.setFilterColumns(new ArrayList<>());
+
+		indicatorGroupAccessConfigViewEntity = this.addColumnAccessFromIndicatorAccessEntity(indicatorGroupEntity, indicatorGroupAccessConfigViewEntity);
+		indicatorGroupAccessConfigViewEntity = this.addColumnAccessFromDataAccessRequestEntity(indicatorGroupEntity, indicatorGroupAccessConfigViewEntity);
+		
+		return indicatorGroupAccessConfigViewEntity;
+	}
+	
+	private IndicatorGroupAccessConfigViewEntity addColumnAccessFromIndicatorAccessEntity(IndicatorGroupEntity indicatorGroupEntity, IndicatorGroupAccessConfigViewEntity indicatorGroupAccessConfigViewEntity){
+		List<IndicatorAccessEntity> indicatorAccesses = this.queryFactory.query(IndicatorAccessQuery.class).isActive(IsActive.ACTIVE).indicatorIds(indicatorGroupEntity.getIndicatorIds())
+				.collectAs(new BaseFieldSet().ensure(IndicatorAccess._config).ensure(IndicatorAccess._indicator));
+		for (IndicatorAccessEntity indicatorAccess: indicatorAccesses) {
+			IndicatorAccessConfigEntity indicatorAccessConfig = this.jsonHandlingService.fromJsonSafe(IndicatorAccessConfigEntity.class, indicatorAccess.getConfig());
+			if (indicatorAccessConfig != null && indicatorAccessConfig.getGroupFilterColumns().containsKey(indicatorGroupEntity.getId())){
+				List<FilterColumnConfigEntity> filterColumnConfigEntities = indicatorAccessConfig.getGroupFilterColumns().get(indicatorGroupEntity.getId());
+				if (filterColumnConfigEntities != null && !filterColumnConfigEntities.isEmpty()){
+					for (FilterColumnConfigEntity filterColumnConfig : filterColumnConfigEntities){
+						IndicatorGroupAccessColumnConfigViewEntity portofolioColumnAccess = indicatorGroupAccessConfigViewEntity.getFilterColumns().stream().filter(x-> x.getCode().equalsIgnoreCase(filterColumnConfig.getColumn())).findFirst().orElse(null);
+						if (portofolioColumnAccess == null){
+							portofolioColumnAccess = new IndicatorGroupAccessColumnConfigViewEntity();
+							portofolioColumnAccess.setCode(filterColumnConfig.getColumn());
+							indicatorGroupAccessConfigViewEntity.getFilterColumns().add(portofolioColumnAccess);
+						}
+						if (filterColumnConfig.getValues() != null && !filterColumnConfig.getValues().isEmpty()){
+							if (portofolioColumnAccess.getItems() == null) portofolioColumnAccess.setItems(new ArrayList<>());
+							for (String value : filterColumnConfig.getValues()){
+								if (!this.conventionService.isNullOrEmpty(value) && portofolioColumnAccess.getItems().stream().filter(x-> x.getValue().equalsIgnoreCase(value)).count() == 0){
+									IndicatorGroupAccessColumnConfigItemViewEntity groupAccessColumnConfigItemViewEntity = new IndicatorGroupAccessColumnConfigItemViewEntity();
+									groupAccessColumnConfigItemViewEntity.setValue(value);
+									groupAccessColumnConfigItemViewEntity.setStatus(DataAccessRequestStatus.APPROVED);
+									portofolioColumnAccess.getItems().add(groupAccessColumnConfigItemViewEntity);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		return indicatorGroupAccessConfigViewEntity;
+	}
+
+	private IndicatorGroupAccessConfigViewEntity addColumnAccessFromDataAccessRequestEntity(IndicatorGroupEntity indicatorGroupEntity, IndicatorGroupAccessConfigViewEntity indicatorGroupAccessConfigViewEntity){
+		List<DataAccessRequestEntity> dataAccessRequestEntities = this.queryFactory.query(DataAccessRequestQuery.class).statuses(DataAccessRequestStatus.NEW, DataAccessRequestStatus.SUBMITTED, DataAccessRequestStatus.IN_PROCESS, DataAccessRequestStatus.REJECTED, DataAccessRequestStatus.WITHDRAWN)
+				.collectAs(new BaseFieldSet().ensure(DataAccessRequest._config).ensure(DataAccessRequest._updatedAt).ensure(DataAccessRequest._config).ensure(DataAccessRequest._status));
+		dataAccessRequestEntities = dataAccessRequestEntities.stream().sorted(Comparator.comparing(DataAccessRequestEntity::getUpdatedAt).reversed()).collect(Collectors.toList());
+		for (DataAccessRequestEntity dataAccessRequestEntity: dataAccessRequestEntities) {
+			DataAccessRequestConfigEntity dataAccessRequestConfigEntity = this.jsonHandlingService.fromJsonSafe(DataAccessRequestConfigEntity.class, dataAccessRequestEntity.getConfig());
+			List<DataAccessRequestIndicatorGroupConfigEntity> dataAccessRequestIndicatorGroupConfigEntities = dataAccessRequestConfigEntity.getIndicatorGroups().stream().filter(x-> x.getGroupId().equals(indicatorGroupEntity.getId())).collect(Collectors.toList());
+			if (dataAccessRequestIndicatorGroupConfigEntities == null || dataAccessRequestIndicatorGroupConfigEntities.isEmpty())  continue;
+			
+			for (DataAccessRequestIndicatorGroupConfigEntity dataAccessRequestIndicatorGroupConfigEntity : dataAccessRequestIndicatorGroupConfigEntities ) {
+				if (dataAccessRequestIndicatorGroupConfigEntity.getFilterColumns() != null && !dataAccessRequestIndicatorGroupConfigEntity.getFilterColumns().isEmpty()){
+					for (DataAccessRequestFilterColumnEntity filterColumnConfig : dataAccessRequestIndicatorGroupConfigEntity.getFilterColumns()){
+						IndicatorGroupAccessColumnConfigViewEntity portofolioColumnAccess = indicatorGroupAccessConfigViewEntity.getFilterColumns().stream().filter(x-> x.getCode().equalsIgnoreCase(filterColumnConfig.getColumn())).findFirst().orElse(null);
+						if (portofolioColumnAccess == null){
+							portofolioColumnAccess = new IndicatorGroupAccessColumnConfigViewEntity();
+							portofolioColumnAccess.setCode(filterColumnConfig.getColumn());
+							indicatorGroupAccessConfigViewEntity.getFilterColumns().add(portofolioColumnAccess);
+						}
+						if (filterColumnConfig.getValues() != null && !filterColumnConfig.getValues().isEmpty()){
+							if (portofolioColumnAccess.getItems() == null) portofolioColumnAccess.setItems(new ArrayList<>());
+							for (String value : filterColumnConfig.getValues()){
+								if (!this.conventionService.isNullOrEmpty(value) && portofolioColumnAccess.getItems().stream().filter(x-> x.getValue().equalsIgnoreCase(value)).count() == 0){
+									IndicatorGroupAccessColumnConfigItemViewEntity groupAccessColumnConfigItemViewEntity = new IndicatorGroupAccessColumnConfigItemViewEntity();
+									groupAccessColumnConfigItemViewEntity.setValue(value);
+									groupAccessColumnConfigItemViewEntity.setStatus(dataAccessRequestEntity.getStatus());
+									portofolioColumnAccess.getItems().add(groupAccessColumnConfigItemViewEntity);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		return indicatorGroupAccessConfigViewEntity;
 	}
 }

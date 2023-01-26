@@ -18,10 +18,10 @@
 * BROWSER POLYFILLS
 */
 
-import 'core-js/es7/array';  // Run `npm install --save classlist.js`.
+// import 'core-js/es7/array';  // Run `npm install --save classlist.js`.
 
 /** Evergreen browsers require these. **/
-import 'core-js/es6/reflect';  // Run `npm install --save web-animations-js`.
+// import 'core-js/es6/reflect';  // Run `npm install --save web-animations-js`.
 
 
 

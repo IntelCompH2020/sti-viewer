@@ -79,6 +79,7 @@
 	</dependencies>
 
 	<build>
+		<finalName>sti-viewer-web</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>

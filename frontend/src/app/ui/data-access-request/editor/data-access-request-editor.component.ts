@@ -23,9 +23,11 @@ import { DataAccessRequestEditorResolver } from './data-access-request-editor.re
 import { IsActive } from '@app/core/enum/is-active.enum';
 import { DataAccessRequestStatus } from '@app/core/enum/data-access-request-status.enum';
 import { IndicatorGroupService } from '@app/core/services/http/indicator-group.service';
-import { IndicatorGroup } from '@app/core/model/indicator-group/indicator-group.model';
+import { FilterColumn, IndicatorGroup } from '@app/core/model/indicator-group/indicator-group.model';
 import { nameof } from 'ts-simple-nameof';
 import { Indicator } from '@app/core/model/indicator/indicator.model';
+import { dependencies } from 'echarts';
+import { IndicatorPointKeywordFilter } from '@app/core/query/indicator-point.lookup';
 
 
 
@@ -62,7 +64,9 @@ export class DataAccessRequestEditorComponent extends BaseEditor<DataAccessReque
 
 
 	indicatorGroups: IndicatorGroup[];
-	selectedGroupIds: Guid[];
+	// selectedGroupIds: Guid[];
+
+	columnsDependeciesMap = new Map<string, string[]>();
 
 	constructor(
 		// BaseFormEditor injected dependencies
@@ -96,16 +100,30 @@ export class DataAccessRequestEditorComponent extends BaseEditor<DataAccessReque
 				[nameof<IndicatorGroup>(x => x.indicators), nameof<Indicator>(x => x.code)].join('.'),
 				[nameof<IndicatorGroup>(x => x.indicators), nameof<Indicator>(x => x.name)].join('.'),
 				[nameof<IndicatorGroup>(x => x.indicators), nameof<Indicator>(x => x.id)].join('.'),
-				nameof<IndicatorGroup>(x => x.filterColumns)
+				[nameof<IndicatorGroup>(x => x.filterColumns), nameof<FilterColumn>(x => x.code)].join('.'),
+				[nameof<IndicatorGroup>(x => x.filterColumns), nameof<FilterColumn>(x => x.dependsOnCode)].join('.')
 			])
 			.pipe(takeUntil(this._destroyed))
 			.subscribe((result) =>{
 				this.indicatorGroups = result;
-				if(result.length === 1){
-					this.selectedGroupIds = [result[0].id]
-					const fg = this._buildIndicatorGroup(result[0].id);
-					this.indicatorGroupsArray.push(fg);
-				}
+
+				result?.forEach(indicatorGroup =>{
+					const fg = this._buildIndicatorGroup(indicatorGroup.id);
+					this.indicatorGroupsArray.push(fg)
+				})
+
+				this.columnsDependeciesMap = new Map<string, string[]>();
+				
+				//keep dependencies
+				result?.forEach(item => {
+					item.filterColumns.forEach(filtercolumn => {
+						this.columnsDependeciesMap.set(
+							filtercolumn.code,
+							filtercolumn.dependsOnCode ? [filtercolumn.dependsOnCode]: null
+						)
+					})
+				})
+
 			})
 		}
 	}
@@ -127,7 +145,7 @@ export class DataAccessRequestEditorComponent extends BaseEditor<DataAccessReque
 			groupId: groupId,
 			indicatorIds: [indicatorIds],
 			filterColumns: this.formBuilder.array(
-				filterColumns.map(fc => this.formBuilder.group({column: fc, values:[[]]}))
+				filterColumns.map(fc => this.formBuilder.group({column: fc.code, values:[[]]}))
 			)
 		})
 
@@ -135,27 +153,46 @@ export class DataAccessRequestEditorComponent extends BaseEditor<DataAccessReque
 	}
 
 
-	onChangeGroup(selectedGroupIds: Guid[] | string[]): void{
+	protected getKeyworkdFiltersForColumn(columnName: string, filterColumnsArray: FormArray): IndicatorPointKeywordFilter[]{
+		
+		const filterColumns = filterColumnsArray.value as {column: string, values: []}[];
+		const dependencies = this.columnsDependeciesMap.get(columnName);
 
-		selectedGroupIds = selectedGroupIds.map(x => x.toString());
+		if(!dependencies?.length){
+			return [];
+		}
 
-		const toRemove: number[] = this.indicatorGroupsArray?.value?.reduce((aggr, current, index)=>{
-			if(selectedGroupIds.includes(current.groupId)){
-				return aggr;
-			}
-			return [...aggr, index]
-		}, [] as number[]);
-
-
-		toRemove?.reverse().forEach(index =>{
-			this.indicatorGroupsArray.removeAt(index);
-		});
-
-		selectedGroupIds.forEach(guid =>{
-			const fg = this._buildIndicatorGroup(Guid.parse(guid.toString()));
-			this.indicatorGroupsArray.push(fg);
-		})
+		return dependencies.map(
+			dependency => filterColumns.find(filtercolumn => filtercolumn.column === dependency)
+		)
+		.filter(x => !!x)
+		.map(filterColumn => ({
+			field: filterColumn.column,
+			values: filterColumn.values
+		}));
 	}
+
+	protected preconditionsMetForColumn(columnName: string, filterColumnsArray: FormArray):boolean{
+
+		const filterColumns = filterColumnsArray.value as {column: string, values: []}[];
+		const dependencies = this.columnsDependeciesMap.get(columnName);
+
+
+		if(!dependencies?.length){
+			return true;
+		}
+
+		return dependencies.every(dependecy => {
+
+			const dependencyValues = filterColumns.find(fc => fc.column === dependecy)?.values;
+
+			if(dependencyValues?.length){
+				return true;
+			}
+			return false;
+		})
+	}	
+
 	getItem(itemId: Guid, successFunction: (item: DataAccessRequest) => void): void {
 		this.dataAccessRequestService.getSingle(itemId, DataAccessRequestEditorResolver.lookupFields())
 			.pipe(map(data => {

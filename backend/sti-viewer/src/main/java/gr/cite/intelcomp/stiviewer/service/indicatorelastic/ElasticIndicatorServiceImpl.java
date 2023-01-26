@@ -49,8 +49,8 @@ import org.elasticsearch.client.indices.CreateIndexRequest;
 import org.elasticsearch.client.indices.CreateIndexResponse;
 import org.elasticsearch.client.indices.GetIndexRequest;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.xcontent.XContentBuilder;
-import org.elasticsearch.common.xcontent.XContentFactory;
+import org.elasticsearch.xcontent.XContentBuilder;
+import org.elasticsearch.xcontent.XContentFactory;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -159,7 +159,8 @@ public class ElasticIndicatorServiceImpl implements ElasticIndicatorService {
 
 	private Indicator createDbIndicator(IndicatorElasticPersist persist, UUID indicatorId) throws IOException, InvalidApplicationException {
 		IndicatorPersist data = new IndicatorPersist();
-		data.setCode(this.calculateIndexName(persist.getMetadata().getCode(), true));
+		this.calculateIndexName(persist.getMetadata().getCode(), true);
+		data.setCode(persist.getMetadata().getCode());
 		data.setDescription(persist.getMetadata().getDescription());
 		data.setName(persist.getMetadata().getLabel());
 		this.vindicatorService.validateForce(data);
@@ -307,13 +308,13 @@ public class ElasticIndicatorServiceImpl implements ElasticIndicatorService {
 		return index;
 	}
 
-	public String getIndexName(UUID indicatorId) throws InvalidApplicationException {
+	public String getIndexName(UUID indicatorId) throws InvalidApplicationException, IOException {
 		logger.debug(new MapLogEntry("get index name").And("indicatorId", indicatorId));
 		IndicatorIndexCacheService.IndicatorIndexCacheValue cacheValue = this.indicatorIndexCacheService.lookup(this.indicatorIndexCacheService.buildKey(indicatorId));
 		if (cacheValue == null) {
 			IndicatorEntity data = this.entityManager.find(IndicatorEntity.class, indicatorId);
 			if (data == null) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{indicatorId, Indicator.class.getSimpleName()}, LocaleContextHolder.getLocale()));
-			cacheValue = new IndicatorIndexCacheService.IndicatorIndexCacheValue(indicatorId, data.getCode());
+			cacheValue = new IndicatorIndexCacheService.IndicatorIndexCacheValue(indicatorId, this.calculateIndexName(data.getCode(), false));
 			this.indicatorIndexCacheService.put(cacheValue);
 		}
 		return cacheValue.getIndexName();
@@ -367,9 +368,15 @@ public class ElasticIndicatorServiceImpl implements ElasticIndicatorService {
 					.put("index.analysis.filter.english_stemmer.type", "stemmer")
 					.put("index.analysis.filter.english_stemmer.language", "english")
 					.put("index.analysis.filter.english_stop.type", "stop")
-					.put("index.analysis.filter.english_stop.language", "english")
-					.putList("index.analysis.analyzer.icu_analyzer_text.filter", "icu_folding", "english_stop", "english_stemmer")
-					.put("index.analysis.analyzer.icu_analyzer_text.tokenizer", "icu_tokenizer");
+					.put("index.analysis.filter.english_stop.language", "english");
+			if (this.appElasticProperties.isEnableIcuAnalysisPlugin()){
+				settingsBuilder.putList("index.analysis.analyzer.icu_analyzer_text.filter", "icu_folding", "english_stop", "english_stemmer")
+						.put("index.analysis.analyzer.icu_analyzer_text.tokenizer", "icu_tokenizer");
+			} else {
+				settingsBuilder.putList("index.analysis.analyzer.icu_analyzer_text.filter", "english_stop", "english_stemmer")
+						.put("index.analysis.analyzer.icu_analyzer_text.type", "standard");
+			}
+					
 			CreateIndexResponse createIndexResponse = restHighLevelClient.indices().create(new CreateIndexRequest(index).mapping(builder).settings(settingsBuilder), RequestOptions.DEFAULT);
 		}
 		return index;

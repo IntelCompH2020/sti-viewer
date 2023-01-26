@@ -1,0 +1,39 @@
+[
+	{
+		"id": "myId",
+		"name": "myconfig",
+		"order": 0,
+		"goTo": "myId_sub1",
+		"levelConfigs": [
+			{
+				"field": { "code": "domain", "name": "Domain" },
+				"order": 0,
+				"supportSubLevel": true
+			},
+			{
+				"field": { "code": "country", "name": "Geographic Coverage" },
+				"order": 0,
+				"supportSubLevel": false
+			}
+		]
+	},
+	{
+		"id": "myId_sub1",
+		"name": "myconfig sub 1",
+		"order": 1,
+		"levelConfigs": [
+			{
+				"field": { "code": "pv", "name": "Category" },
+				"order": 0,
+				"supportSubLevel": true,
+				"defaultDashboards": ["dg01_pv01_dashboard"],
+				"dashboardOverrides": [{}]
+			},
+			{
+				"field": { "code": "topic", "name": "Topic" },
+				"order": 0,
+				"supportSubLevel": false
+			}
+		]
+	}
+]

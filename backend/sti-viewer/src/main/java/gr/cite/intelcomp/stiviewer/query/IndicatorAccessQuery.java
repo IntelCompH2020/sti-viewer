@@ -218,6 +218,7 @@ public class IndicatorAccessQuery extends QueryBase<IndicatorAccessEntity> {
 		else if (item.match(IndicatorAccess._isActive)) return IndicatorAccessEntity._isActive;
 		else if (item.prefix(IndicatorAccess._user)) return IndicatorAccessEntity._userId;
 		else if (item.prefix(IndicatorAccess._indicator)) return IndicatorAccessEntity._indicatorId;
+		else if (item.match(IndicatorAccess._indicator)) return IndicatorAccessEntity._indicatorId;
 		else if (item.prefix(IndicatorAccess._tenant)) return IndicatorAccessEntity._tenantId;
 		else if (item.match(IndicatorAccess._createdAt)) return IndicatorAccessEntity._createdAt;
 		else if (item.match(IndicatorAccess._updatedAt)) return IndicatorAccessEntity._updatedAt;

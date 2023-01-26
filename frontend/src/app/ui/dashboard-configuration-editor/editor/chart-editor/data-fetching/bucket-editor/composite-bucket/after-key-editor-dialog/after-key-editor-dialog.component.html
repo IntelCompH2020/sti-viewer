@@ -1,0 +1,24 @@
+<ng-container *ngIf="formGroup" [formGroup]="formGroup">
+    <mat-form-field appearance="legacy" class="col-12">
+        <mat-label>
+            {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-FETCHING-EDITOR.BUCKET-EDITOR.COMPOSITE-BUCKET.AFTER-KEY-EDITOR-DIALOG.KEY' | translate}}
+        </mat-label>
+        <input type="text" matInput formControlName="key">
+    </mat-form-field>
+    <mat-form-field appearance="legacy" class="col-12">
+        <mat-label>
+            {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-FETCHING-EDITOR.BUCKET-EDITOR.COMPOSITE-BUCKET.AFTER-KEY-EDITOR-DIALOG.VALUE' | translate}}
+        </mat-label>
+        <input type="text" matInput formControlName="value">
+    </mat-form-field>
+</ng-container>
+
+
+<div class="row col-12 justify-content-end">
+    <button mat-raised-button (click)="close()">
+        {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-FETCHING-EDITOR.BUCKET-EDITOR.COMPOSITE-BUCKET.AFTER-KEY-EDITOR-DIALOG.CANCEL' | translate}}
+    </button>
+    <button mat-raised-button (click)="submit()">
+        {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-FETCHING-EDITOR.BUCKET-EDITOR.COMPOSITE-BUCKET.AFTER-KEY-EDITOR-DIALOG.SUBMIT' | translate}}
+    </button>
+</div>

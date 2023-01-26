@@ -1,6 +1,7 @@
 package gr.cite.intelcomp.stiviewer.elastic.query.lookup;
 
 import gr.cite.intelcomp.stiviewer.elastic.query.indicatorpoint.IndicatorPointQuery;
+import gr.cite.intelcomp.stiviewer.elastic.query.indicatorpointfilter.IndicatorPointKeywordFilter;
 import gr.cite.intelcomp.stiviewer.elastic.query.indicatorpointfilter.IndicatorPointLikeFilter;
 import gr.cite.tools.data.query.QueryFactory;
 import gr.cite.tools.exception.MyValidationException;
@@ -14,6 +15,7 @@ public class IndicatorPointDistinctLookup {
 
 	private IndicatorPointLookup indicatorPointQuery;
 	private String like;
+	private List<String> excludedValues;
 	private List<UUID> indicatorIds;
 	private String field;
 	private SortOrder order;
@@ -85,12 +87,21 @@ public class IndicatorPointDistinctLookup {
 		this.viewNotApprovedValues = viewNotApprovedValues;
 	}
 
+	public List<String> getExcludedValues() {
+		return excludedValues;
+	}
+
+	public void setExcludedValues(List<String> excludedValues) {
+		this.excludedValues = excludedValues;
+	}
+
 	public IndicatorPointQuery enrich(QueryFactory queryFactory) {
 		IndicatorPointQuery query = indicatorPointQuery == null ? queryFactory.query(IndicatorPointQuery.class) : indicatorPointQuery.enrich(queryFactory);
 		if (this.field == null || this.field.isBlank()) throw new MyValidationException("field required");
 		if (this.indicatorIds == null || this.indicatorIds.isEmpty()) throw new MyValidationException("indicatorIds required");
 
 		if (this.like != null) query.fieldLikeFilter(new IndicatorPointLikeFilter(List.of(this.field), this.like.replace("%", "*")));
+		if (this.excludedValues != null) query.keywordExcludedFilters(new IndicatorPointKeywordFilter(this.field, this.excludedValues));
 
 		return query;
 	}

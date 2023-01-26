@@ -21,8 +21,17 @@ public class IndicatorGroupsProperties {
 	public static class IndicatorGroup {
 		private UUID groupId;
 		private String name;
+		private String code;
 		private String dashboardKey;
 		private List<String> indicatorCodes;
+
+		public String getCode() {
+			return code;
+		}
+
+		public void setCode(String code) {
+			this.code = code;
+		}
 
 		public String getName() {
 			return name;

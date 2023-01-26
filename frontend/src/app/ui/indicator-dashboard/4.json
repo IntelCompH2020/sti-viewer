@@ -1,0 +1,90 @@
+{
+	"id": "dg01_pv01_dashboard",
+	"tabs": [
+		{
+			"name": "Science",
+			"chartGroups": [
+				{
+					"name": "Scientific Production Testing gauges",
+					"type": "gauge",
+					"charts": [
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "value_card",
+							"name": "",
+							"tags":{
+								"attachedTags":[
+									"some tag a",
+									"some tag b",
+									"some tag c"
+								]
+							},
+							"chartName": "Publications in Energy over time",
+							"description": "",
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv01"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv09"]
+									},
+									{
+										"field": "indid",
+										"value": ["i01"]
+									}
+								]
+							},
+							"rawDataRequest": {
+								"keyField": "key",
+								"valueField": "value",
+								"order": {
+									"items": ["-value"]
+								},
+								"page": {
+									"offset": 0,
+									"size": 4
+								}
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Publications by Country",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	]
+}

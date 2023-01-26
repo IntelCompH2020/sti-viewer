@@ -1,0 +1,136 @@
+<div class="col-12 parent-root-container" >
+    <div class="row m-0 justify-content-between">
+        <div class="col-auto">
+            <h2>
+                {{'APP.GLOBAL-SEARCH-CONFIGURATION-EDITOR.TITLE' | translate}}
+            </h2>
+        </div>
+        <div class="col-auto" *ngIf="formGroup">
+            <button mat-raised-button (click)="save()" class="mr-3 col-auto" [disabled]="pendingBlockingRequest">
+                {{'APP.GLOBAL-SEARCH-CONFIGURATION-EDITOR.SAVE' | translate}}
+            </button>
+            <button mat-raised-button (click)="downloadJSON()" class="col-auto">
+                {{'APP.GLOBAL-SEARCH-CONFIGURATION-EDITOR.DOWNLOAD-JSON' | translate}}
+            </button>
+        </div>
+    </div>
+
+    <div class="card p-3 mt-4" id="main-container" *ngIf="formGroup" [formGroup]="formGroup">
+        <div>
+            <mat-form-field appearance="legacy" class="col-auto">
+                <mat-label>
+                    {{'APP.GLOBAL-SEARCH-CONFIGURATION-EDITOR.CONFIGURATION-KEY' | translate}}
+                </mat-label>
+                <input type="text" matInput [(ngModel)]="loadedSettings.key" required #configurationKey="ngModel" [ngModelOptions]="{standalone: true}">
+                <mat-error>{{'COMMONS.VALIDATION.REQUIRED' | translate}}</mat-error>
+            </mat-form-field>
+        </div>
+        <div>
+            <mat-form-field class="col-md-6" appearance="legacy">
+                <mat-label>
+                    {{'APP.GLOBAL-SEARCH-CONFIGURATION-EDITOR.FIELDS.ID' | translate}}
+                </mat-label>
+                <input type="text" matInput formControlName="id">
+            </mat-form-field>
+           
+            <mat-form-field class="col-md-6" appearance="legacy">
+                <mat-label>
+                    {{'APP.GLOBAL-SEARCH-CONFIGURATION-EDITOR.FIELDS.DISTINCT-FIELD' | translate}}
+                </mat-label>
+                <input type="text" matInput formControlName="dictinctField">
+            </mat-form-field>
+           
+            <mat-form-field class="col-12" appearance="legacy">
+                 <mat-label>
+                    {{'APP.GLOBAL-SEARCH-CONFIGURATION-EDITOR.FIELDS.SEARCH-FIELDS' | translate}}
+                 </mat-label>
+                 <mat-chip-list #chipList>
+                     <mat-chip *ngFor="let searchField of searchFields.value; let index = index">
+                     {{searchField}}
+                     <button matChipRemove (click)="removeSearchField(index)" >
+                         <mat-icon>cancel</mat-icon>
+                     </button>
+                     </mat-chip>
+                     <input placeholder="{{'APP.GLOBAL-SEARCH-CONFIGURATION-EDITOR.FIELDS.NEW-SEARCH-FIELD' | translate}}"
+                         #searchFieldIdInput
+                             [matChipInputFor]="chipList"
+                             [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                             (keyup.enter)="addSearchField(searchFieldIdInput)"
+                             >
+                 </mat-chip-list>
+             </mat-form-field>
+           
+             <ng-container *ngIf="indicatorIds">
+                 <mat-form-field class="col-12" appearance="legacy">
+                     <mat-label>
+                        {{'APP.GLOBAL-SEARCH-CONFIGURATION-EDITOR.FIELDS.INDICATOR-IDS' | translate}}
+                     </mat-label>
+                     <mat-chip-list #chipList>
+                         <mat-chip *ngFor="let indId of indicatorIds.value; let index = index">
+                         {{indId}}
+                         <button matChipRemove (click)="removeIndicator(index)">
+                             <mat-icon>cancel</mat-icon>
+                         </button>
+                         </mat-chip>
+                         <input placeholder="{{'APP.GLOBAL-SEARCH-CONFIGURATION-EDITOR.FIELDS.NEW-INDICATOR' | translate}}"
+                             #indicatorIdInput
+                                 [matChipInputFor]="chipList"
+                                 [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                                 (keyup.enter)="addIndicator(indicatorIdInput)">
+                     </mat-chip-list>
+                 </mat-form-field>
+             </ng-container>
+     
+     
+             <section class="col-12">
+                 <i class="text-muted">
+                    {{'APP.GLOBAL-SEARCH-CONFIGURATION-EDITOR.STATIC-FILTERS' | translate}}
+                 </i>
+                 <app-search-configuration-static-filters-editor [formGroup]="staticFilters"></app-search-configuration-static-filters-editor>
+             </section>
+     
+     
+             <section class="col-12">
+                 <i class="text-muted">
+                    {{'APP.GLOBAL-SEARCH-CONFIGURATION-EDITOR.VIEW-CONFIG' | translate}}
+                 </i>
+                 <app-view-config-editor [formGroup]="viewConfig"></app-view-config-editor>
+             </section>
+     
+             
+             <!-- * SUPPORTED DASBHOARDS -->
+     
+             <section class="col-12">
+                 <ng-container *ngIf="supportedDashboards">
+                     <mat-form-field class="col-12" appearance="legacy">
+                         <mat-label>{{'APP.GLOBAL-SEARCH-CONFIGURATION-EDITOR.FIELDS.SUPPORTED-DASHBOARDS' | translate}}</mat-label>
+                         <mat-chip-list #chipList>
+                             <mat-chip *ngFor="let dashboard of supportedDashboards?.value; let index = index">
+                             {{dashboard}}
+                             <button matChipRemove (click)="removeSupportedDashboard(index)">
+                                 <mat-icon>cancel</mat-icon>
+                             </button>
+                             </mat-chip>
+                             <input placeholder="{{'APP.GLOBAL-SEARCH-CONFIGURATION-EDITOR.FIELDS.NEW-DASHBOARD' | translate}}"
+                                 #dashboardInput
+                                     [matChipInputFor]="chipList"
+                                     [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                                     (keyup.enter)="addSupportedDashbard(dashboardInput)"
+                                     >
+                         </mat-chip-list>
+                     </mat-form-field>
+                 </ng-container>
+             </section>
+     
+     
+             <section class="col-12">
+                 <div>
+                     <i class="text-muted">
+                        {{'APP.GLOBAL-SEARCH-CONFIGURATION-EDITOR.DASHBOARD-FILTERS' | translate}}
+                     </i>
+                 </div>
+                 <app-dashboard-configuration-static-filters-editor [formGroup]="dashboardFilters"></app-dashboard-configuration-static-filters-editor>
+             </section>
+        </div>
+    </div>
+</div>

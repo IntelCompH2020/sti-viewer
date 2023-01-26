@@ -1,0 +1,114 @@
+<ng-container [formGroup]="formGroup" *ngIf="formGroup">
+
+    <small class="text-muted">
+      <i>
+        {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-FETCHING-EDITOR.RAW-DATA-REQUEST-EDITOR.TARGET' | translate}}
+      </i>
+    </small>
+    <div class="row m-0">
+      <mat-form-field appearance="legacy" class="col-md-6">
+        <mat-label>
+          {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-FETCHING-EDITOR.RAW-DATA-REQUEST-EDITOR.KEYFIELD' | translate}}
+        </mat-label>
+        <input type="text" matInput formControlName="keyField">
+      </mat-form-field>
+  
+      <mat-form-field appearance="legacy" class="col-md-6">
+        <mat-label>
+          {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-FETCHING-EDITOR.RAW-DATA-REQUEST-EDITOR.VALUE-FIELD' | translate}}
+        </mat-label>
+        <input type="text" matInput formControlName="valueField">
+      </mat-form-field>
+    </div>
+
+
+    <ng-container *ngIf="page" [formGroup]="page">
+
+      <small class="text-muted">
+        <i>
+          {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-FETCHING-EDITOR.RAW-DATA-REQUEST-EDITOR.PAGE' | translate}}
+        </i>
+      </small>
+
+      <div class="row m-0">
+        <mat-form-field appearance="legacy" class="col-md-6">
+          <mat-label>
+            {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-FETCHING-EDITOR.RAW-DATA-REQUEST-EDITOR.OFFSET' | translate}}
+          </mat-label>
+          <input type="number" matInput formControlName="offset">
+        </mat-form-field>
+  
+        <mat-form-field appearance="legacy" class="col-md-6">
+          <mat-label>
+            {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-FETCHING-EDITOR.RAW-DATA-REQUEST-EDITOR.SIZE' | translate}}
+          </mat-label>
+          <input type="number" matInput formControlName="size">
+        </mat-form-field>
+      </div>
+      
+    </ng-container>
+
+    <ng-container *ngIf="orderingItems">
+      <small>
+        <i>
+          {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-FETCHING-EDITOR.RAW-DATA-REQUEST-EDITOR.ORDERING' | translate}}
+        </i>
+      </small>
+      
+      <mat-form-field appearance="legacy" class="col-12">
+        <mat-label>
+          {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-FETCHING-EDITOR.RAW-DATA-REQUEST-EDITOR.ORDERING' | translate}}
+        </mat-label>
+        <mat-chip-list #chipList multiple>
+          <mat-chip
+              *ngFor="let keyword of orderingItems.value; let index = index"
+              [selected]="keyword"
+              [value]="keyword">
+            {{keyword}}
+            <button matChipRemove (click)="removeOrderingValue(index)">
+              <mat-icon>cancel</mat-icon>
+            </button>
+          </mat-chip>
+          <input
+            placeholder="{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-FETCHING-EDITOR.RAW-DATA-REQUEST-EDITOR.NEW-VALUE' | translate}}"
+            [matChipInputFor]="chipList"
+            (matChipInputTokenEnd)="addOrderingValue($event)">
+        </mat-chip-list>
+      </mat-form-field>
+
+    </ng-container>
+    <!-- <div>
+        keyword filters
+
+
+        <ng-container *ngFor="let filter of keywordFilters?.controls; let filterIndex = index" [formGroup]="filter">
+            <mat-form-field appearance="legacy" class="col-12">
+                <mat-label>field</mat-label>
+                <input type="text" matInput formControlName="field">
+            </mat-form-field>
+
+
+            <mat-form-field appearance="legacy" class="col-12">
+                <mat-label>values</mat-label>
+                <mat-chip-list #chipList multiple>
+                  <mat-chip
+                      *ngFor="let keyword of filter.value.value; let valueIndex = index"
+                      [selected]="keyword"
+                      [value]="keyword">
+                    {{keyword}}
+                    <button matChipRemove (click)="removeFilterValue(valueIndex, filterIndex )">
+                      <mat-icon>cancel</mat-icon>
+                    </button>
+                  </mat-chip>
+                  <input
+                    placeholder="New value..."
+                    [matChipInputFor]="chipList"
+                    (matChipInputTokenEnd)="addFilterValue($event, filterIndex)">
+                </mat-chip-list>
+              </mat-form-field>
+
+        </ng-container>
+    </div> -->
+
+
+</ng-container>

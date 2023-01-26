@@ -182,8 +182,10 @@ export class ChartBuilderService {
 			} : null,
 			series: [
 			  {
+				id: 'treemap',
 				name: config.treeName ?? '',
 				type: 'treemap',
+				roam: 'move',
 				visibleMin: 300,
 				label: {
 				  show: true,
@@ -527,6 +529,7 @@ export class ChartBuilderService {
 				const end = config.dataZoom.areaZoom.end ?? 100;
 
 				const dataZ = {
+					id: 'areaZoom',
 					show: true,
 					start,
 					end,
@@ -541,7 +544,10 @@ export class ChartBuilderService {
 				dataZoom.push(dataZ);
 			}
 			if(config.dataZoom.inside){
-				const zoomItem = {type: 'inside'} as any;
+				const zoomItem = {
+					id: 'insideZoom',
+					type: 'inside'
+				} as any;
 				if((config as any).horizontal){
 					zoomItem.yAxisIndex = 0;
 				}
@@ -557,6 +563,61 @@ export class ChartBuilderService {
 			}
 		}
 		return dataZoom;
+	}
+
+
+	public buildLineChartZoomLock(
+		params:{
+			dataZoom: DataZoomComponentOption[] | DataZoomComponentOption ,
+			lock: boolean
+		}
+	): DataZoomComponentOption[]{
+		const { dataZoom, lock = true } = params;
+
+		if(!dataZoom){
+			return null;
+		}
+
+		const dz: DataZoomComponentOption[] = Array.isArray(dataZoom) ? dataZoom : [dataZoom];
+
+		const insideZoom = dz?.find(dzItem => dzItem.type ==='inside');
+
+		if(!insideZoom){
+			return null;
+		}
+
+		return[{
+			...insideZoom, 
+			zoomLock: lock
+		}]
+			
+	}
+
+
+	public buildGeoMapZoomLock(
+		params:{
+			series: SeriesOption | SeriesOption[],
+			lock: boolean
+		}
+	): SeriesOption[]{
+		const { series, lock } = params;
+
+		if(!series){
+			return null;
+		}
+
+		const seriesArray = Array.isArray(series) ? series : [series];
+
+		if(!seriesArray?.length){
+			return;
+		}
+
+		return seriesArray.map(
+			serie => ({
+				...serie,
+				roam: !lock
+			})
+		)
 	}
 
 
@@ -598,7 +659,7 @@ export class ChartBuilderService {
 		};
 
 		if(config.stack){
-			(serie as any).stack = config.stack;
+			(serie as any).stack = 'x';// todo configuration has it stack chart requires string
 		}
 
 		if(config.areaStyle){

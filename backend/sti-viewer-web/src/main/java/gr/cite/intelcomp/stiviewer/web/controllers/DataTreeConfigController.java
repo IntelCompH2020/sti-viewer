@@ -4,8 +4,10 @@ import gr.cite.intelcomp.stiviewer.audit.AuditableAction;
 import gr.cite.intelcomp.stiviewer.common.types.datatreeconfig.DataTreeLevelItemEntity;
 import gr.cite.intelcomp.stiviewer.model.censorship.datatreeconfig.BrowseDataTreeConfigCensor;
 import gr.cite.intelcomp.stiviewer.model.censorship.datatreeconfig.BrowseDataTreeLevelItemCensor;
+import gr.cite.intelcomp.stiviewer.model.censorship.portofolioconfig.PortofolioConfigCensor;
 import gr.cite.intelcomp.stiviewer.model.datatreeconfig.DataTreeConfig;
 import gr.cite.intelcomp.stiviewer.model.datatreeconfig.DataTreeLevel;
+import gr.cite.intelcomp.stiviewer.model.portofolioconfig.PortofolioConfig;
 import gr.cite.intelcomp.stiviewer.query.lookup.IndicatorReportLevelLookup;
 import gr.cite.intelcomp.stiviewer.service.datatreeconfig.DataTreeConfigService;
 import gr.cite.intelcomp.stiviewer.web.model.QueryResult;
@@ -21,7 +23,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
 import javax.management.InvalidApplicationException;
+import java.util.AbstractMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping(path = "api/data-tree-config")
@@ -53,6 +57,21 @@ public class DataTreeConfigController {
 
 		List<DataTreeConfig> models = dataTreeConfigService.getMyConfigs(fieldSet);
 		this.auditService.track(AuditableAction.DataTreeConfig_MyConfigs, "fieldSet", fieldSet);
+		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
+
+		return models;
+	}
+
+	@GetMapping("my-config/{key}")
+	public List<DataTreeConfig> getMyConfigByKey(@PathVariable("key") String key, FieldSet fieldSet) throws MyApplicationException, MyForbiddenException, InvalidApplicationException {
+		logger.debug(new MapLogEntry("get my config" + DataTreeConfig.class.getSimpleName()).And("key", key).And("fields", fieldSet));
+		this.censorFactory.censor(BrowseDataTreeConfigCensor.class).censor(fieldSet);
+
+		List<DataTreeConfig> models = this.dataTreeConfigService.getMyConfigByKey(key, fieldSet);
+		this.auditService.track(AuditableAction.DataTreeConfig_GetMyConfigByKey, Map.ofEntries(
+				new AbstractMap.SimpleEntry<String, Object>("key", key),
+				new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
+		));
 		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
 
 		return models;

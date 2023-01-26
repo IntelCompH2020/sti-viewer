@@ -1,0 +1,13 @@
+<ng-container *ngIf="formGroup" [formGroup]="formGroup">
+
+    <mat-form-field class="col-md-6" appearance="legacy">
+        <mat-label>lang</mat-label>
+        <input type="text" matInput formControlName="lang">
+    </mat-form-field>
+
+    <mat-form-field class="col-md-6" appearance="legacy">
+        <mat-label>text</mat-label>
+        <input type="text" matInput formControlName="text">
+    </mat-form-field>
+
+</ng-container>

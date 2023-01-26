@@ -14,19 +14,19 @@ export interface Bucket{
 
 
 export interface NestedBucket extends Bucket, Omit<Bucket, 'type'>{
-    type: BucketAggregateType.Nested;
+    // type: BucketAggregateType.Nested;
     bucket: Bucket;
 }
 
 export interface CompositeBucket extends Bucket, Omit<Bucket, 'type'>{
-    type: BucketAggregateType.Composite;
+    // type: BucketAggregateType.Composite;
     sources: CompositeSource[];
     dateHistogramSource: DataHistogramBucket;
     afterKey: Record<string, any>;
 }
 
 export interface DataHistogramBucket extends Bucket, Omit<Bucket, 'type'>{
-    type: BucketAggregateType.DateHistogram;
+    // type: BucketAggregateType.DateHistogram;
     order: BucketOrder;
     interval: DateInterval;
     timezone: Moment;// todo fix this
@@ -34,7 +34,7 @@ export interface DataHistogramBucket extends Bucket, Omit<Bucket, 'type'>{
 }
 
 export interface TermsBucket extends Bucket, Omit<Bucket, 'type'>{
-    type: BucketAggregateType.Terms;
+    // type: BucketAggregateType.Terms;
     order: BucketOrder;
 }
 

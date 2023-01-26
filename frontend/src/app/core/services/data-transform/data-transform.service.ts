@@ -4,7 +4,7 @@ import { BucketAggregateType } from "@app/core/enum/bucket-aggregate-type.enum";
 import { AggregateResponseModel } from "@app/core/model/aggregate-response/aggregate-reponse.model";
 import { Bucket, CompositeBucket, DataHistogramBucket, NestedBucket, TermsBucket } from "@app/core/model/bucket/bucket.model";
 import { Metric } from "@app/core/model/metic/metric.model";
-import { BaseIndicatorDashboardChartConfig, DateFieldFormatterConfig, FieldFormatterType, IndicatorConfigBucket, IndicatorConfigCompositeBucket, IndicatorConfigDataHistogramBucket, IndicatorConfigMetric, IndicatorConfigNestedBucket, IndicatorConfigTermsBucket, IndicatorDashboardSankeyChartConfig, SeriesValueFormatterType, SeriesValueNumberFormatter } from "@app/ui/indicator-dashboard/indicator-dashboard-config";
+import { DateFieldFormatterConfig, FieldFormatterType, IndicatorConfigBucket, IndicatorConfigCompositeBucket, IndicatorConfigDataHistogramBucket, IndicatorConfigMetric, IndicatorConfigNestedBucket, IndicatorConfigTermsBucket, IndicatorDashboardSankeyChartConfig, ConnectionLimitOrder, ConnectionLimitType, SeriesValueFormatterType, SeriesValueNumberFormatter, CommonDashboardItemConfiguration, BaseServerFetchConfiguration } from "@app/ui/indicator-dashboard/indicator-dashboard-config";
 
 @Injectable()
 export class DataTransformService {
@@ -86,7 +86,7 @@ export class DataTransformService {
 	}
 
 
-	public configurationToBucketsAndMetrics(chartConfiguration: BaseIndicatorDashboardChartConfig):{metrics: Metric[], bucket:Bucket}{
+	public configurationToBucketsAndMetrics(chartConfiguration: BaseServerFetchConfiguration):{metrics: Metric[], bucket:Bucket}{
 
 		const metrics: Metric[] = chartConfiguration.metrics?.map(configurationMetric => this._configurationMetricToLookupMetric(configurationMetric))
 		const bucket: Bucket = this._configurationBucketToLookupBucket(chartConfiguration.bucket);
@@ -112,7 +112,7 @@ export class DataTransformService {
 			throw 'No source key or target key extractor specified';
 		}
 
-		const connections: ChartConnection[] = [];
+		let connections: ChartConnection[] = [];
 
 
 		records.items?.forEach(record =>{
@@ -137,7 +137,7 @@ export class DataTransformService {
 			}
 
 
-			const value = valueRecord[valueKeyExtractor];
+			const value = valueRecord[valueKeyExtractor] ?? 0;
 
 			connections.push({
 				target,
@@ -147,6 +147,59 @@ export class DataTransformService {
 
 		});
 
+
+
+		applyLimit: if(config.connectionExtractor?.limit){
+			const {count, order, type} = config.connectionExtractor.limit;
+
+			if(
+				isNaN(count) ||
+				count <= 0 ||
+				[
+					count,
+					order,
+					type
+				].some(x => x === null || x === undefined)
+			){
+				console.warn('invalid limit configuration for sankey -- skipping limit')
+				break applyLimit;
+			}
+
+			if(type === ConnectionLimitType.Connection){
+				connections = connections.sort((a, b ) => order === ConnectionLimitOrder.DESCENDING ? b.value - a.value : a.value - b.value )
+								.splice(0, count);
+				break applyLimit;
+			}
+			
+			const reporter = connections.reduce((aggr, current) => {
+
+				const field = type === ConnectionLimitType.Target ? current.target : current.source;
+
+				const total = (aggr[field] ?? 0) + current.value;
+				
+				return {...aggr, [field]: total};
+			} , {});
+
+
+			const validNodes = Object.keys(reporter)
+						.map(key => ({target: key, value: reporter[key]}))
+						.sort((a, b) => {
+							if(order === ConnectionLimitOrder.DESCENDING){
+								return b.value - a.value
+							}
+							return a.value - b.value
+						})
+						.splice(0, count)
+						.map(x => x.target)
+
+			connections = connections.filter(
+					x => validNodes.includes(
+							type === ConnectionLimitType.Target ? x.target : x.source
+						)
+				).sort(
+					(a, b) => order === ConnectionLimitOrder.DESCENDING ? b.value - a.value : a.value - b.value
+				);
+		}
 
 
 		return connections;
@@ -161,10 +214,11 @@ export class DataTransformService {
 		return Object.keys(test).every(key => test[key] === value?.[key]);
 	} 
 
+	//!! BAD NAMING CHANGE IT TO SOMETHING MORE SUITABLE
 	public aggregateResponseModelToLineChartDataFromConfiguration(
 		records: AggregateResponseModel,
 		// configurationMetrics: ConfigurationMetrics,
-		config: BaseIndicatorDashboardChartConfig
+		config: CommonDashboardItemConfiguration
 	):LineChartData{
 
 		let seriesData: SeriesData[] = [];

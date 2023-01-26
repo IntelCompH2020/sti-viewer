@@ -1,0 +1,33 @@
+<ng-container [formGroup]="formGroup" *ngIf="formGroup">
+    
+
+	<div class="row m-0">
+		<mat-form-field appearance="legacy" class="col-md-6">
+			<mat-label>
+				{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-FETCHING-EDITOR.BUCKET-EDITOR.DATA-HISTOGRAM.ORDER' | translate}}
+			</mat-label>
+			<mat-select formControlName="order">
+				<mat-option [value]="null">-</mat-option>
+				<mat-option value="ASC">
+					{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-FETCHING-EDITOR.BUCKET-EDITOR.DATA-HISTOGRAM.ASC' | translate}}
+				</mat-option>
+				<mat-option value="DESC">
+					{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-FETCHING-EDITOR.BUCKET-EDITOR.DATA-HISTOGRAM.DESC' | translate}}
+				</mat-option>
+			</mat-select>
+		</mat-form-field>
+	
+	
+		<mat-form-field appearance="legacy" class="col-md-6">
+			<mat-label>
+				{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-FETCHING-EDITOR.BUCKET-EDITOR.DATA-HISTOGRAM.TYPE' | translate}}
+			</mat-label>
+			<mat-select formControlName="interval">
+				<mat-option *ngFor="let type of DateIntervals" [value]="type">{{type}}</mat-option>
+			</mat-select>
+		</mat-form-field>
+	
+		<!--  TODO TIMEZONE -->
+	</div>
+  
+</ng-container>

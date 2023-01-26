@@ -15,3 +15,7 @@ elastic:
   defaultScrollSize: 100
   defaultScrollSeconds: 120
   defaultCompositeAggregationResultSize: 1000
+
+app-elastic:
+  indicatorCodeKey: "{{code}}"
+  enableIcuAnalysisPlugin: true

@@ -1,0 +1,47 @@
+<div [formGroup]="formGroup" *ngIf="formGroup" class="card p-4 shadow">
+	<mat-form-field appearance="legacy" class="col-12">
+		<mat-label>
+			{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-GROUP-EDITOR.CHART-GROUP-NAME' | translate}}
+		</mat-label>
+		<input type="text" matInput formControlName="name">
+	</mat-form-field>
+
+	<div class="col-12">
+		<h4>
+			{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-GROUP-EDITOR.CHARTS-IN-CHART-GROUP' | translate}}
+		</h4>
+	</div>
+	<div class="col-12 charts-navigator mb-4">
+			<button
+				mat-raised-button
+				[color]="(index === selectedTabIndex) ? 'accent': ''"
+				(click)="selectTab(index)"
+				class="chart-navigator-item col-auto" 
+				*ngFor="let chart of chartsArray.controls; let index = index"
+				>
+				<div class="chart-description">
+					<mat-icon>{{chart.value?.type | chartIcon}}</mat-icon>
+					<small class="title">
+						{{chart.value?.chartName ? chart.value.chartName : ('APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-GROUP-EDITOR.UNTITLED' | translate)}}
+					</small>
+				</div>
+			</button>
+
+			<button
+				mat-raised-button
+				(click)="addChart()"
+				class="chart-navigator-item col-auto" 
+				>
+				<mat-icon>add</mat-icon>
+				{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-GROUP-EDITOR.ADD-CHART' | translate}}
+			</button>
+
+	</div>
+	<mat-tab-group color="accent" style='min-height:300px' class="card invisible-tabs" [selectedIndex]="selectedTabIndex" *ngIf="chartsArray?.length">
+		<mat-tab *ngFor="let chart of chartsArray.controls; let index = index">
+			<ng-template matTabContent>
+				<app-dashboard-configuration-chart-editor  [formGroup]="chart" (delete)="onDelete(index)"></app-dashboard-configuration-chart-editor>
+			  </ng-template>
+		</mat-tab>
+	</mat-tab-group>
+</div>

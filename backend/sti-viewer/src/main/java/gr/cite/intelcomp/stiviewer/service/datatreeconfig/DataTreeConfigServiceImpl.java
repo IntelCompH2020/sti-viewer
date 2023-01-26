@@ -11,6 +11,8 @@ import gr.cite.intelcomp.stiviewer.common.enums.UserSettingsEntityType;
 import gr.cite.intelcomp.stiviewer.common.enums.UserSettingsType;
 import gr.cite.intelcomp.stiviewer.common.scope.user.UserScope;
 import gr.cite.intelcomp.stiviewer.common.types.datatreeconfig.*;
+import gr.cite.intelcomp.stiviewer.common.types.indicatorgroup.IndicatorGroupEntity;
+import gr.cite.intelcomp.stiviewer.common.types.portofolioconfig.PortofolioConfigEntity;
 import gr.cite.intelcomp.stiviewer.convention.ConventionService;
 import gr.cite.intelcomp.stiviewer.data.IndicatorAccessEntity;
 import gr.cite.intelcomp.stiviewer.data.IndicatorEntity;
@@ -24,14 +26,17 @@ import gr.cite.intelcomp.stiviewer.model.IndicatorAccess;
 import gr.cite.intelcomp.stiviewer.model.UserSettings;
 import gr.cite.intelcomp.stiviewer.model.builder.datatreeconfig.BrowseDataTreeConfigBuilder;
 import gr.cite.intelcomp.stiviewer.model.builder.datatreeconfig.BrowseDataTreeLevelBuilder;
+import gr.cite.intelcomp.stiviewer.model.builder.portofolioconfig.PortofolioConfigBuilder;
 import gr.cite.intelcomp.stiviewer.model.datatreeconfig.DataTreeConfig;
 import gr.cite.intelcomp.stiviewer.model.datatreeconfig.DataTreeLevel;
+import gr.cite.intelcomp.stiviewer.model.portofolioconfig.PortofolioConfig;
 import gr.cite.intelcomp.stiviewer.query.IndicatorAccessQuery;
 import gr.cite.intelcomp.stiviewer.query.IndicatorQuery;
 import gr.cite.intelcomp.stiviewer.query.UserSettingsQuery;
 import gr.cite.intelcomp.stiviewer.query.lookup.IndicatorReportLevelLookup;
 import gr.cite.intelcomp.stiviewer.service.indicator.IndicatorConfigItem;
 import gr.cite.intelcomp.stiviewer.service.indicator.IndicatorConfigService;
+import gr.cite.intelcomp.stiviewer.service.indicatorgroup.IndicatorGroupService;
 import gr.cite.tools.data.builder.BuilderFactory;
 import gr.cite.tools.data.query.QueryFactory;
 import gr.cite.tools.elastic.query.DistinctValuesResponse;
@@ -63,6 +68,7 @@ public class DataTreeConfigServiceImpl implements DataTreeConfigService {
 	private final IndicatorConfigService indicatorConfigService;
 	private final JsonHandlingService jsonHandlingService;
 
+	private final IndicatorGroupService indicatorGroupService;
 	public DataTreeConfigServiceImpl(
 			TenantEntityManager entityManager,
 			QueryFactory queryFactory,
@@ -74,8 +80,8 @@ public class DataTreeConfigServiceImpl implements DataTreeConfigService {
 			ConventionService conventionService,
 			MessageSource messageSource,
 			IndicatorConfigService indicatorConfigService,
-			JsonHandlingService jsonHandlingService
-	) {
+			JsonHandlingService jsonHandlingService,
+			IndicatorGroupService indicatorGroupService) {
 		this.entityManager = entityManager;
 		this.queryFactory = queryFactory;
 		this.elasticsearchTemplate = elasticsearchTemplate;
@@ -87,12 +93,24 @@ public class DataTreeConfigServiceImpl implements DataTreeConfigService {
 		this.messageSource = messageSource;
 		this.indicatorConfigService = indicatorConfigService;
 		this.jsonHandlingService = jsonHandlingService;
+		this.indicatorGroupService = indicatorGroupService;
 	}
 
 	@Override
 	public List<DataTreeConfig> getMyConfigs(FieldSet fields) {
 		List<DataTreeConfigEntity> browseDataTreeConfigEntities = this.getMyConfigs();
 		return this.builderFactory.builder(BrowseDataTreeConfigBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(BaseFieldSet.build(fields, DataTreeConfig._id), browseDataTreeConfigEntities);
+	}
+
+	@Override
+	public List<DataTreeConfig> getMyConfigByKey(String key, FieldSet fields) {
+		if (this.conventionService.isNullOrEmpty(key)) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{key, UserSettingsEntity.class.getSimpleName()}, LocaleContextHolder.getLocale()));
+		UserSettingsEntity userSettingsEntity = this.queryFactory.query(UserSettingsQuery.class).types(UserSettingsType.BrowseDataTree).entityTypes(UserSettingsEntityType.Application).keys(key).firstAs(new BaseFieldSet().ensure(UserSettings._key).ensure(UserSettings._value));
+		if (userSettingsEntity == null) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{key, UserSettingsEntity.class.getSimpleName()}, LocaleContextHolder.getLocale()));
+		DataTreeConfigEntity[] dataTreeConfigs = this.jsonHandlingService.fromJsonSafe(DataTreeConfigEntity[].class, userSettingsEntity.getValue());
+		if (dataTreeConfigs == null) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{key, UserSettingsEntity.class.getSimpleName()}, LocaleContextHolder.getLocale()));
+
+		return this.builderFactory.builder(BrowseDataTreeConfigBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(BaseFieldSet.build(fields, DataTreeConfig._id), List.of(dataTreeConfigs));
 	}
 
 	private List<DataTreeConfigEntity> getMyConfigs() {
@@ -133,11 +151,12 @@ public class DataTreeConfigServiceImpl implements DataTreeConfigService {
 		browseDataTreeLevelType.setSupportSubLevel(nextLevelConfig.getSupportSubLevel());
 
 		List<UUID> indicatorIds = null;
+		IndicatorGroupEntity indicatorGroupEntity = this.conventionService.isNullOrEmpty(viewConfig.getIndicatorGroupCode()) ? null : this.indicatorGroupService.getIndicatorGroupByCode(viewConfig.getIndicatorGroupCode());
 		if (this.authorizationService.authorize(Permission.BrowseIndicatorPoint)) {
-			List<IndicatorEntity> indicators = this.queryFactory.query(IndicatorQuery.class).isActive(IsActive.ACTIVE).collectAs(new BaseFieldSet().ensure(Indicator._id));
+			List<IndicatorEntity> indicators = this.queryFactory.query(IndicatorQuery.class).isActive(IsActive.ACTIVE).ids(indicatorGroupEntity == null ? null :indicatorGroupEntity.getIndicatorIds()).collectAs(new BaseFieldSet().ensure(Indicator._id));
 			indicatorIds = indicators.stream().map(x -> x.getId()).distinct().collect(Collectors.toList());
 		} else {
-			List<IndicatorAccessEntity> indicatorAccesses = this.queryFactory.query(IndicatorAccessQuery.class).isActive(IsActive.ACTIVE).collectAs(new BaseFieldSet().ensure(this.conventionService.asIndexer(IndicatorAccess._indicator, Indicator._id), IndicatorAccess._id));
+			List<IndicatorAccessEntity> indicatorAccesses = this.queryFactory.query(IndicatorAccessQuery.class).isActive(IsActive.ACTIVE).indicatorIds(indicatorGroupEntity == null ? null :indicatorGroupEntity.getIndicatorIds()).collectAs(new BaseFieldSet().ensure(this.conventionService.asIndexer(IndicatorAccess._indicator, Indicator._id), IndicatorAccess._id));
 			indicatorIds = indicatorAccesses.stream().map(x -> x.getIndicatorId()).distinct().collect(Collectors.toList());
 		}
 
@@ -252,7 +271,7 @@ public class DataTreeConfigServiceImpl implements DataTreeConfigService {
 			IndicatorPointQuery query = lookup.getFilters() == null ? this.queryFactory.query(IndicatorPointQuery.class) : lookup.getFilters().enrich(this.queryFactory);
 			query.setPage(null);
 			query.setOrder(null);
-			items = query.indicatorIds(indicatorId).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicatorOrIndicatorAccess).useThisColumnForAccess(distinctKey).collectDistinct(distinctKey, SortOrder.ASC, (x) -> x, afterKey);
+			items = query.indicatorIds(indicatorId).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicatorOrIndicatorAccess).collectDistinct(distinctKey, SortOrder.ASC, (x) -> x, afterKey);
 
 			for (String item : items.getItems()) {
 				DataTreeLevelItemEntity levelConfigItem = new DataTreeLevelItemEntity();

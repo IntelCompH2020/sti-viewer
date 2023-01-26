@@ -607,8 +607,8 @@
 						{
 							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
 							"type": "sankey",
-							"chartName": "Top 50 Journals and Publishers",
-							"description": "The graph shows the number of publications by pubslisher and journal for the 50 journals with the most publications in Energy.",
+							"chartName": "Top 25 Journals and Publishers",
+							"description": "The graph shows the number of publications by publisher and journal for the 25 journals with the most publications in Energy.",
 							"chartDownloadData": {},
 							"chartDownloadImage": {},
                             "dataZoom": {
@@ -648,7 +648,12 @@
 							"connectionExtractor":{
                                 "sourceKeyExtractor": "publisher",
                                 "targetKeyExtractor": "key",
-                                "valueKeyExtractor": "value"
+                                "valueKeyExtractor": "value",
+								"limit":{
+									"type":"connection",
+									"order":"desc",
+									"count": 25
+								}
                             }
 						}
 					]

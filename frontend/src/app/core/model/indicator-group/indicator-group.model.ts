@@ -4,7 +4,12 @@ import { Indicator } from "../indicator/indicator.model";
 export interface IndicatorGroup{
     id: Guid;
     name: string;
-    dashboardKey: string;
+    code: string;
     indicators: Indicator[];
-    filterColumns: string[];
+    filterColumns: FilterColumn[];
+}
+
+export interface FilterColumn{
+    code: string;
+    dependsOnCode: string;
 }

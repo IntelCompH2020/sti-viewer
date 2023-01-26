@@ -2,10 +2,14 @@ package gr.cite.intelcomp.stiviewer.web.controllers;
 
 import gr.cite.intelcomp.stiviewer.audit.AuditableAction;
 import gr.cite.intelcomp.stiviewer.authorization.AuthorizationFlags;
+import gr.cite.intelcomp.stiviewer.common.types.indicatorgroup.IndicatorGroupAccessConfigViewEntity;
 import gr.cite.intelcomp.stiviewer.data.DataAccessRequestEntity;
 import gr.cite.intelcomp.stiviewer.model.builder.dataaccessrequest.DataAccessRequestBuilder;
+import gr.cite.intelcomp.stiviewer.model.builder.indicatorgroup.IndicatorGroupAccessConfigViewBuilder;
 import gr.cite.intelcomp.stiviewer.model.censorship.DataAccessRequestCensor;
+import gr.cite.intelcomp.stiviewer.model.censorship.indicatorgroup.IndicatorGroupAccessConfigViewCensor;
 import gr.cite.intelcomp.stiviewer.model.dataaccessrequest.DataAccessRequest;
+import gr.cite.intelcomp.stiviewer.model.indicatorgroup.IndicatorGroupAccessConfigView;
 import gr.cite.intelcomp.stiviewer.model.persist.dataaccessrequest.DataAccessRequestPersist;
 import gr.cite.intelcomp.stiviewer.model.persist.dataaccessrequest.DataAccessRequestStatusPersist;
 import gr.cite.intelcomp.stiviewer.query.DataAccessRequestQuery;
@@ -83,7 +87,6 @@ public class DataAccessRequestController {
 	}
 
 	@GetMapping("{id}")
-	@Transactional
 	public DataAccessRequest Get(@PathVariable("id") UUID id, FieldSet fieldSet) throws MyApplicationException, MyForbiddenException, MyNotFoundException {
 		logger.debug(new MapLogEntry("retrieving" + DataAccessRequest.class.getSimpleName()).And("id", id).And("fields", fieldSet));
 
@@ -131,5 +134,23 @@ public class DataAccessRequestController {
 		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
 		return persisted;
 	}
+	@GetMapping("indicator-group-access-config-view/{code}")
+	public IndicatorGroupAccessConfigView GetIndicatorGroupAccessConfigView(@PathVariable("code") String code, FieldSet fieldSet) throws MyApplicationException, MyForbiddenException, MyNotFoundException {
+		logger.debug(new MapLogEntry("retrieving" + DataAccessRequest.class.getSimpleName()).And("code", code).And("fields", fieldSet));
 
+		this.censorFactory.censor(IndicatorGroupAccessConfigViewCensor.class).censor(fieldSet, null);
+
+		IndicatorGroupAccessConfigViewEntity data = this.dataAccessRequestService.getIndicatorGroupAccessConfigViewEntity(code);
+
+		IndicatorGroupAccessConfigView model = this.builderFactory.builder(IndicatorGroupAccessConfigViewBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(fieldSet, data);
+		if (model == null) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{code, IndicatorGroupAccessConfigView.class.getSimpleName()}, LocaleContextHolder.getLocale()));
+
+		this.auditService.track(AuditableAction.Data_Access_Request_GetIndicatorGroupAccessConfigView, Map.ofEntries(
+				new AbstractMap.SimpleEntry<String, Object>("code", code),
+				new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
+		));
+		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
+
+		return model;
+	}
 }

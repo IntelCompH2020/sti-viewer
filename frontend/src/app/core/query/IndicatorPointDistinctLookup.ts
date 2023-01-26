@@ -7,6 +7,7 @@ export class IndicatorPointDistinctLookup {
 
     indicatorPointQuery: IndicatorPointLookup;
     like: string;
+    excludedValues: string[];
     field: string;
     indicatorIds: Guid[];
     order: ElasticOrderEnum;

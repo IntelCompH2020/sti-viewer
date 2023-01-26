@@ -1,0 +1,46 @@
+.parent-root-container{
+
+    z-index: 1;
+	position: relative;
+	min-height: 80vh;
+	&::before{
+		position: fixed;
+		font-family: "Material Icons";
+    	content: "settings_input_component";
+        overflow: hidden;
+		font-size: 60rem;
+		width: 100vw;
+		height: 100vh;
+		z-index: -1;
+		bottom: 0;
+		right: 20px;
+		text-align: end;
+		opacity: .1;
+	}
+	// max-width: 1024px;
+	// margin: auto;
+	margin-top: 1rem;
+}
+
+
+.config-navigation{
+    display: flex;
+    flex-direction: column;
+    gap: .7rem;
+    position: sticky;
+    top: 2rem;
+	.config-navigation-item{
+		.delete-btn{
+			opacity: 0;
+			position: absolute;
+			right: -1rem;
+			transition: opacity 400ms ease ;
+		}
+	}
+	.config-navigation-item:hover{
+		.delete-btn{
+			opacity: 1;
+		}
+	}
+}
+

@@ -3,4 +3,7 @@
 elastic:
   disableHostnameVerifier: true
   serverCertificatePaths:
-    - classpath:certificates/elasticsearch.crt
+    - classpath:certificates/elasticsearch_dev04.crt
+app-elastic:
+  indicatorIndexName: ic-sti-indicator-dev
+  indicatorPointIndexNamePattern: ic-sti-{{code}}-point-dev

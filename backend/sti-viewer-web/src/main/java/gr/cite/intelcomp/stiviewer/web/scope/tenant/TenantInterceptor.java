@@ -20,6 +20,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
@@ -33,8 +37,10 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
+import java.time.Instant;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 
 @Component
 public class TenantInterceptor implements WebRequestInterceptor {
@@ -48,6 +54,7 @@ public class TenantInterceptor implements WebRequestInterceptor {
 	private final ErrorThesaurusProperties errorThesaurusProperties;
 	private final TenantScopeProperties tenantScopeProperties;
 	private final UserAllowedTenantCacheService userAllowedTenantCacheService;
+	private final PlatformTransactionManager transactionManager;
 	private final ErrorThesaurusProperties errors;
 
 	@PersistenceContext
@@ -63,6 +70,7 @@ public class TenantInterceptor implements WebRequestInterceptor {
 			ErrorThesaurusProperties errorThesaurusProperties,
 			TenantScopeProperties tenantScopeProperties,
 			UserAllowedTenantCacheService userAllowedTenantCacheService,
+			PlatformTransactionManager transactionManager,
 			ErrorThesaurusProperties errors) {
 		this.tenantScope = tenantScope;
 		this.userScope = userScope;
@@ -72,6 +80,7 @@ public class TenantInterceptor implements WebRequestInterceptor {
 		this.errorThesaurusProperties = errorThesaurusProperties;
 		this.tenantScopeProperties = tenantScopeProperties;
 		this.userAllowedTenantCacheService = userAllowedTenantCacheService;
+		this.transactionManager = transactionManager;
 		this.errors = errors;
 	}
 
@@ -150,10 +159,41 @@ public class TenantInterceptor implements WebRequestInterceptor {
 			));
 			query.multiselect(root.get(UserEntity._id).alias(UserEntity._id));
 			List<Tuple> results = this.entityManager.createQuery(query).getResultList();
-			if (results.size() > 0) return true;
+			if (results.size() == 0 && this.tenantScopeProperties.getAutoCreateTenantUser()) {
+				return this.createTenantUser();
+			} else {
+				return results.size() > 0;
+			}
 		}
 
 		return false;
+	}
+
+	private boolean createTenantUser() throws InvalidApplicationException {
+		TenantUserEntity user = new TenantUserEntity();
+		user.setId(UUID.randomUUID());
+		user.setCreatedAt(Instant.now());
+		user.setUpdatedAt(Instant.now());
+		user.setIsActive(IsActive.ACTIVE);
+		user.setTenantId(this.tenantScope.getTenant());
+		user.setUserId(userScope.getUserId());
+
+		DefaultTransactionDefinition definition = new DefaultTransactionDefinition();
+		definition.setName(UUID.randomUUID().toString());
+		definition.setIsolationLevel(TransactionDefinition.ISOLATION_READ_COMMITTED);
+		definition.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
+		TransactionStatus status = null;
+		try {
+			status = transactionManager.getTransaction(definition);
+			this.entityManager.persist(user);
+
+			this.entityManager.flush();
+			transactionManager.commit(status);
+		} catch (Exception ex) {
+			if (status != null) transactionManager.rollback(status);
+			throw ex;
+		}
+		return true;
 	}
 
 	@Override

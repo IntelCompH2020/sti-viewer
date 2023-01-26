@@ -3,6 +3,7 @@ import { MatDialog } from "@angular/material/dialog";
 import { Router } from "@angular/router";
 import { ElasticOrderEnum } from "@app/core/enum/elastic-order.enum";
 import { Indicator } from "@app/core/model/indicator/indicator.model";
+import { PortofolioColumnConfig } from "@app/core/model/portofolio-config/portofolio-config.model";
 import { IndicatorPointDistinctLookup } from "@app/core/query/IndicatorPointDistinctLookup";
 import { IndicatorPointService } from "@app/core/services/http/indicator-point.service";
 import { QueryParamsService } from "@app/core/services/ui/query-params.service";
@@ -13,7 +14,7 @@ import { Guid } from "@common/types/guid";
 import { TranslateService } from "@ngx-translate/core";
 import { Subject } from "rxjs";
 import { debounceTime, filter, switchMap, takeUntil } from "rxjs/operators";
-import { GroupGeneratorComponent } from "../group-generator/group-generator.component";
+import { GroupGeneratorComponent, GroupGeneratorComponentParams } from "../group-generator/group-generator.component";
 import { ColumnGroup } from "../my-data-access-requests.component";
 
 @Component({
@@ -27,7 +28,10 @@ export class MyIndicatorColumnsEditorComponent extends BaseComponent implements 
 
 
     @Input()
-    column: string = '';
+    defaultDashboards: string[];
+
+    @Input()
+    column: PortofolioColumnConfig;
 
     @Input()
     indicators: Indicator[] = [];
@@ -92,10 +96,10 @@ export class MyIndicatorColumnsEditorComponent extends BaseComponent implements 
     }
 
     protected editGroup(dgroupInfo: DataGrouInfo): void{
-        this.dialog.open(GroupGeneratorComponent,{
+        this.dialog.open<GroupGeneratorComponent, GroupGeneratorComponentParams, NewGroupDefinition>(GroupGeneratorComponent,{
             data:{
                 indicators: this.indicators,
-                column: this.column,
+                column: this.column.field.code,
                 values: dgroupInfo.values,
                 name: dgroupInfo.name
             },
@@ -104,7 +108,7 @@ export class MyIndicatorColumnsEditorComponent extends BaseComponent implements 
         })
         .afterClosed()
         .pipe(
-            filter(x => x),
+            filter(x => !!x),
             takeUntil(
                 this._destroyed
             )
@@ -117,10 +121,10 @@ export class MyIndicatorColumnsEditorComponent extends BaseComponent implements 
     }
 
     protected createGroup(): void{
-        this.dialog.open(GroupGeneratorComponent,{
+        this.dialog.open<GroupGeneratorComponent, GroupGeneratorComponentParams, NewGroupDefinition>(GroupGeneratorComponent,{
             data:{
                 indicators: this.indicators,
-                column: this.column
+                column: this.column.field.code,
             },
             width: '30rem',
             disableClose: true
@@ -128,7 +132,7 @@ export class MyIndicatorColumnsEditorComponent extends BaseComponent implements 
         .afterClosed()
         .pipe(
             takeUntil(this._destroyed),
-            filter(x => x)
+            filter(x => !!x)
         )
         .subscribe(group =>{
             this.onGroupCreate.emit(group);
@@ -148,12 +152,11 @@ export class MyIndicatorColumnsEditorComponent extends BaseComponent implements 
     }
 
     protected navigateToGroupDashboard(groupHash: string, displayName):void{
-
         this.router.navigate(['indicator-report','dashboard'], { queryParams: {
             params: this.queryParamsService.serializeObject<IndicatorQueryParams>({
               keywordFilters: [],
               displayName :this.language.instant('APP.MY-DATA-ACCESS-REQUESTS.COLUMNS-EDITOR.GROUP') + displayName,
-              dashboard: this.dashboardKey,
+              dashboard: this.computeDashboard(null),
               groupHash
             })}
           });
@@ -177,6 +180,7 @@ export class MyIndicatorColumnsEditorComponent extends BaseComponent implements 
         })
     }
 
+
     protected navigateToDashboard(field: string): void{
         this.router.navigate(['indicator-report','dashboard'], { queryParams: {
 
@@ -187,17 +191,43 @@ export class MyIndicatorColumnsEditorComponent extends BaseComponent implements 
             //     value:field
             //   }],
             
-              displayName: `${this.column} : ${field}`, // TODO
-              dashboard: 'someDashboardId',
+              displayName: `${this.column.field.name} : ${field}`, // TODO
+              dashboard: this.computeDashboard(field),
               keywordFilters: [
                 {
-                    field: this.column, 
+                    field: this.column.field.code, 
                     values: [field]
                 }
               ]
             })}
           });
     }
+
+    
+    private computeDashboard(field: string): string{
+        let dashboard = this.defaultDashboards?.length ? this.defaultDashboards[0]: null;
+
+        if(this.column?.defaultDashboards?.length){
+            dashboard = this.column.defaultDashboards[0];
+        }
+
+        if(this.column?.dashboardOverrides?.length){
+            const override = this.column?.dashboardOverrides.find(
+                override => override?.requirements?.every(
+                    requirement => requirement.value === field
+                )
+            );
+
+            if(override?.supportedDashboards?.length){
+                dashboard = override.supportedDashboards[0];
+            }
+        }
+
+        
+
+        return dashboard;
+    }
+
 
     private _registerSearchTextSubject(): void{
         this._searchTextSubject$
@@ -246,7 +276,7 @@ export class MyIndicatorColumnsEditorComponent extends BaseComponent implements 
         const lookup = new IndicatorPointDistinctLookup();
 
         lookup.indicatorIds = this.indicators.map(indicator => indicator.id);
-        lookup.field = this.column;
+        lookup.field = this.column.field.code;
         lookup.order  = ElasticOrderEnum.ASC;
         lookup.batchSize = this._BATCH_SIZE;
 

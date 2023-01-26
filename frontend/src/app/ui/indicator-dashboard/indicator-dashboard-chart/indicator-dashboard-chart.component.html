@@ -3,11 +3,19 @@
 		<button (click)="openFilters()" [matTooltip]="'APP.INDICATOR-DASHBOARD.CHART.FILTERS' | translate" *ngIf="chartConfig?.filters?.length" [disabled]="!(chartOptions && (uiMinimumTimePased$ | async))" mat-icon-button><mat-icon>filter_alt</mat-icon></button>
 		<button (click)="downloadData()" [matTooltip]="'APP.INDICATOR-DASHBOARD.CHART.DOWNLOAD-DATA' | translate" [disabled]="!(chartOptions && (uiMinimumTimePased$ | async))" mat-icon-button><mat-icon>cloud_download</mat-icon></button>
 	</div> -->
-	<div echarts [options]="chartOptions" [@fadeIn]  class="col-12 chart" *ngIf="(chartOptions && (uiMinimumTimePased$ | async)) else loading"></div>
+	<div 
+		*ngIf="(chartOptions && (uiMinimumTimePased$ | async)) else loading"
+		[merge]="merge"
+		[options]="chartOptions"
+		echarts
+		@fadeIn
+		class="col-12 chart"
+		>
+	</div>
 	<ng-template #loading>
-		<div class="loading-container col-12" >
+		<div class="loading-container col-12" [@fadeOut]>
 			<ng-container *ngIf="!noDataFound else noDataFoundTemplate">
-				<mat-spinner *ngIf="!errorLoading else errorLoadingTemplate"></mat-spinner>
+				<mat-spinner *ngIf="!errorLoading else errorLoadingTemplate" ></mat-spinner>
 				<ng-template #errorLoadingTemplate>
 					{{'COMMONS.ERRORS.DEFAULT' | translate}}
 				</ng-template>
@@ -21,13 +29,52 @@
 
 	</ng-template>
 
-	<div class="col-12" *ngIf="chartConfig.description">	
+	<div class="col-12" *ngIf="chartConfig?.description">	
 		<p>
-			<b>Description/Source:</b>
+			<b>
+				{{'APP.INDICATOR-DASHBOARD.CHART.DESCRIPTION' | translate}}
+			</b>
 			<span [innerHtml]="chartConfig.description">
 			</span>
 		</p>
 	</div>
+
+
+	<div class="col-12 d-flex align-items-center text-muted" *ngIf="supportsZoom">
+		
+			<mat-icon>info_outline</mat-icon> 
+			<small>
+				
+				<i>
+					{{'APP.INDICATOR-DASHBOARD.CHART.SCROLL-HINT-PART-ONE' | translate}}
+					
+					<mat-icon style="font-size: 1rem; width: 1rem; height: 1rem;">mouse</mat-icon> 
+	
+					{{'APP.INDICATOR-DASHBOARD.CHART.SCROLL-HINT-PART-TWO' | translate}}
+				</i>
+			</small>
+		
+	</div>
+
+	<div class="col-12" *ngIf="chartConfig?.tags?.attachedTags?.length">	
+		<small>
+			{{'APP.INDICATOR-DASHBOARD.CHART.TAGS' | translate}}:
+		</small>
+
+		<mat-chip-list class="mt-2">
+			<mat-chip
+			(click)="selectTag(tag.name)"
+			[selected]="tag.selected"
+			color="accent"
+			*ngFor="let tag of tags$ | async"
+			>
+				{{
+				tag.name
+				}}
+			</mat-chip>
+		</mat-chip-list>
+	</div>
+
 </div>
 
 <!-- <button (click)="unauthenticate()">

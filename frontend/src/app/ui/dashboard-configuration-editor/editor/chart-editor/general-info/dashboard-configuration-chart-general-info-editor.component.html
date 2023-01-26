@@ -1,0 +1,52 @@
+<ng-container [formGroup]="formGroup" *ngIf="formGroup">
+
+	<mat-form-field appearance="legacy" class="col-12">
+		<mat-label>
+			{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.GENERAL-INFO-EDITOR.CHART-TITLE' | translate}}
+		</mat-label>
+		<input type="text" matInput formControlName="chartName">
+	</mat-form-field>
+	
+	<mat-form-field appearance="legacy" class="col-12">
+		<mat-label>
+			{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.GENERAL-INFO-EDITOR.CHART-SUBTITLE' | translate}}
+		</mat-label>
+		<input type="text" matInput formControlName="chartSubtitle">
+	</mat-form-field>
+
+	<mat-form-field appearance="legacy" class="col-12">
+		<mat-label>
+			{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.GENERAL-INFO-EDITOR.INDICATOR-ID' | translate}}
+		</mat-label>
+		<input type="text" matInput formControlName="indicatorId">
+	</mat-form-field>
+
+	<mat-form-field class="col-12">
+		<mat-label>
+			{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.GENERAL-INFO-EDITOR.DESCRIPTION' | translate}}
+		</mat-label>
+		<textarea rows="4" matInput formControlName="description"></textarea>
+	</mat-form-field>
+
+
+	<mat-form-field class="col-12" appearance="legacy">
+		<mat-label>
+			{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.GENERAL-INFO-EDITOR.TAGS' | translate}}
+		</mat-label>
+		<mat-chip-list #chipList multiple [formArray]="tags">
+		  <mat-chip
+			  *ngFor="let tag of tags?.controls; let index = index"
+			  (removed)="removeTag(index)">
+			{{tag.value}}
+			<button matChipRemove>
+				<mat-icon>cancel</mat-icon>
+			</button>
+		  </mat-chip>
+		  <input
+			placeholder="{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.GENERAL-INFO-EDITOR.NEW-TAG' | translate}}"
+			[matChipInputFor]="chipList"
+			(matChipInputTokenEnd)="addTag($event)">
+		</mat-chip-list>
+	  </mat-form-field>
+
+</ng-container>

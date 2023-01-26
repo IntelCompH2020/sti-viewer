@@ -17,7 +17,7 @@ public interface ElasticIndicatorService {
 
 	String ensureIndex(UUID indicatorId) throws IOException, InvalidApplicationException;
 
-	String getIndexName(UUID indicatorId) throws InvalidApplicationException;
+	String getIndexName(UUID indicatorId) throws InvalidApplicationException, IOException;
 
 	void deleteAndSave(UUID id) throws MyForbiddenException, InvalidApplicationException, IOException;
 }

@@ -19,6 +19,9 @@ import { IndicatorDashboardFiltersComponent } from './indicator-dashboard-chart/
 import { IndicatorDashboardService } from '@app/core/services/http/indicator-dashboard.service';
 import { NgxSliderModule } from '@angular-slider/ngx-slider';
 import { AutoCompleteModule } from '@common/modules/auto-complete/auto-complete.module';
+import { TabChartGroupFilterPipe } from './indicator-dashboard-tab/chart-group-tag-filter.pipe';
+import { ValueCardComponent } from './value-card/value-card.component';
+import { IndicatorDashboardGaugeComponent } from './indicator-dashboard-gauge/indicator-dashboard-gauge.component';
 @NgModule({
     imports: [
         CommonUiModule,
@@ -44,9 +47,20 @@ import { AutoCompleteModule } from '@common/modules/auto-complete/auto-complete.
         IndicatorCarouselComponent,
         IndicatorCarouselItemDirective,
         IndicatorDashboardFiltersComponent,
+        ValueCardComponent,
+        IndicatorDashboardGaugeComponent,
+
+
+        //pipes
+        TabChartGroupFilterPipe,
     ],
     providers: [
         IndicatorDashboardService
+    ],
+    exports:[
+        IndicatorDashboardChartComponent,
+        IndicatorDashboardGaugeComponent,
+        ValueCardComponent
     ]
 })
 export class IndicatorDashboardModule { }

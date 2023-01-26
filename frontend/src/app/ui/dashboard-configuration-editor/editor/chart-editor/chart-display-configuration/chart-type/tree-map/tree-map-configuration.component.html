@@ -1,0 +1,93 @@
+<ng-container *ngIf="formGroup" [formGroup]="formGroup">
+    <mat-form-field class="col-md-6" appearance="legacy">
+        <mat-label>
+            {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.CHART-TYPE-EDITOR.TREE-MAP.TREE-NAME' | translate}}
+        </mat-label>
+        <input type="text" matInput formControlName="treeName">
+    </mat-form-field>
+
+
+    <ng-container *ngIf="toolTip" [formGroup]="toolTip">
+
+        <div class="row m-0">
+            <mat-form-field class="col-md-6" appearance="legacy">
+                <mat-label>
+                    {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.CHART-TYPE-EDITOR.TREE-MAP.TOOLTIP-NAME' | translate}}
+                </mat-label>
+                <input type="text" matInput formControlName="name">
+            </mat-form-field>
+    
+            <mat-form-field class="col-md-6" appearance="legacy">
+                <mat-label>
+                    {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.CHART-TYPE-EDITOR.TREE-MAP.TOOLTIP-METRIC-NAME' | translate}}
+                </mat-label>
+                <input type="text" matInput formControlName="metricName">
+            </mat-form-field>
+        </div>
+
+    </ng-container>
+
+    <div class="col-12">
+        <span>
+            {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.CHART-TYPE-EDITOR.TREE-MAP.NAME-TO-COLOR-MAPPING' | translate}}
+        </span>
+    </div>
+    <div class="col-12">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.CHART-TYPE-EDITOR.TREE-MAP.NAME-TO-COLOR-MAPPING-NAME' | translate}}
+                    </th>
+                    <th>
+                        {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.CHART-TYPE-EDITOR.TREE-MAP.NAME-TO-COLOR-MAPPING-COLOR' | translate}}
+                    </th>
+                    <th>
+                        {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.CHART-TYPE-EDITOR.TREE-MAP.NAME-TO-COLOR-MAPPING-ACTIONS' | translate}}
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of treeColorsArray; let index = index">
+                    <td>{{item.name}}</td>
+                    <td>{{item.color}}</td>
+                    <td>
+                        <button mat-icon-button (click)="removeColorItem(index)">
+                            <mat-icon>
+                                delete
+                            </mat-icon>
+                        </button>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <mat-form-field class="col-12">
+                            <mat-label>
+                                {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.CHART-TYPE-EDITOR.TREE-MAP.NAME-TO-COLOR-MAPPING-NAME' | translate}}
+                            </mat-label>
+                            <input type="text" matInput #name>
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field class="col-12">
+                            <mat-label>
+                                {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.CHART-TYPE-EDITOR.TREE-MAP.NAME-TO-COLOR-MAPPING-COLOR' | translate}}
+                            </mat-label>
+                            <input type="text" matInput #color >
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <button mat-icon-button (click)="addColorItem(name, color)">
+                            <mat-icon>
+                                add
+                            </mat-icon>
+                        </button>
+                    </td>
+                </tr>
+                
+            </tbody>
+        </table>
+    </div>
+
+</ng-container>

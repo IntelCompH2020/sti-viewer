@@ -81,6 +81,356 @@
 				"NOT-FOUND": "Η εταιρία δεν βρέθηκε"
 			}
 		},
+		"DASHBOARD-CONFIGURATION":{
+			"TITLE":"Configuration editor",
+			"NEW":{
+				"DASHBOARD-CONFIG":"Dashboard configuration",
+				"SEARCH-CONFIG":"Search configuration",
+				"BROWSE-DATA-TREE-CONFIG":"Browse data tree configuration"
+			},
+			"LISTING-CONFIGURATION":{
+				"KEY":"Key",
+				"TYPE":"Type",
+				"ENTITY-TYPE":"Entity type"
+			},
+
+			"EDITOR":{
+				"TITLE":"Dashboard configuration editor",
+				"SAVE":"Save",
+				"DOWNLOAD-CONFIGURATION":"Download configuration",
+				"CONFIGURATION-KEY":"Configuration Key",
+				"TABS":"Tabs",
+				"ADD-NEW-TAB":"Add new tab",
+				"UNTITLED":"Untitled",
+				"EDIT-JSON":"Edit JSON",
+				"COULD-NOT-PARSE-JSON":"Could not parse JSON",
+				"JSON-EDITOR":{
+					"TITLE":"JSON editor",
+					"RAW-VALUE":"Raw JSON value",
+					"CONFIGURATIONS-INVALID":"The following configurations are invalid: ",
+					"CANCEL":"Cancel",
+					"SUBMIT":"Submit"
+				},
+				"TAB-EDITOR":{
+					"TAB-NAME":"Tab name",
+					"CHART-GROUPS":"Chart groups",
+					"ADD-CHARTGROUP":"Add chart group",
+					"ADD-GAUGEGROUP":"Add gauge group",
+					"ADD-GROUP":"Add group"
+				},
+				"CHART-GROUP-EDITOR":{
+					"CHART-GROUP-NAME":"Chart group name",
+					"CHARTS-IN-CHART-GROUP":"Charts is this chart group",
+					"UNTITLED":"Untitled",
+					"ADD-CHART":"Add chart"
+				},
+				"CHART-EDITOR":{
+					"GENERAL-CHART-INFO":"General chart info",
+					"DATA-FETCHING":"Data fetching",
+					"CHART-CONFIGURATION":"Chart configuration",
+					"DATA-MAPPING":"Data mapping",
+					"GENERAL-INFO-EDITOR":{
+						"CHART-TITLE":"Chart title",
+						"CHART-SUBTITLE":"Chart subtitle",
+						"INDICATOR-ID":"Indicator ID",
+						"DESCRIPTION":"Description",
+						"TAGS":"Tags",
+						"NEW-TAG":"New tag..."
+					},
+					"DATA-MAPPING-EDITOR":{
+						"SERIES":"Series",
+						"NO-SERIES-YET":"No series yet",
+						"EXTRACT-LABELS": "Exctract labels",
+						"LABEL-KEY":"Label key",
+						"NAME":"Name",
+						"COLOR":"Color",
+						"NESTED-SERIE":"Nested",
+						"NESTED-SERIE-TYPE":"Neste serie type",
+						"SPLIT-SERIES":"Split series",
+						"SPLIT-SERIES-KEYS":"Split series keys",
+						"NEW-KEYWORD":"New keyword",
+						"EXTRACT-VALUES":"Extract values",
+						"VALUE-KEY":"Value key",
+						"VALUE-OBJECT-MUST=HAVE":"Value object must have",
+						"GROUP-OBJECT-MUST-HAVE":"Group object must have",
+						"FORMATTING-VALUE":"Formatting value",
+						"CONNECTION-EXTRACTOR":"Connection extractor",
+						"SOURCE-KEY-EXTRACTOR":"Source key extractor",
+						"TARGET-KEY-EXTRACTOR":"Target key extractor",
+						"VALUE-KEY-EXTRACTOR":"Value key extractor",
+						"GROUP-TESTS":"Group tests",
+						"VALUE-TESTS":"Value tests",
+						"TESTING-FIELD":"Testing field",
+						"MUST-HAVE-VALUE":"Must have value",
+						"ACTIONS":"Actions",
+						"TARGET":"Target",
+						"VALUE":"Value",
+						"LIMIT":"Limit results",
+						"LIMIT-PREVIEW-RESULTS":"Limit preview results",
+						"LIMIT-TYPE":"Limit type",
+						"LIMIT-ORDER":"Limit order",
+						"LIMIT-COUNT":"Limit count",
+						"VALUE-FORMATTER":{
+							"FORMATTER-TYPE":"Formatter type",
+							"DECIMAL-FORMATTER":"Decimal formatter"
+
+						},
+						"VALUE-TEST-DIALOG":{
+							"TITLE":"Edit test",
+							"TARGET":"Target",
+							"VALUE":"Value",
+							"CANCEL":"Cancel",
+							"SUBMIT":"Submit"
+						}
+					},
+					"DATA-FETCHING-EDITOR":{
+						"HAS-METRICS":"Has metrics",
+						"METRIC-CONFIGURATION":"Metric configuration",
+						"HAS-BUCKET":"Has bucket",
+						"BUCKET-CONFIGURATION":"Bucket configuration",
+						"HAS-STATIC-FILTERS":"Has static filters",
+						"STATIC-FILTERS":"Static filters",
+						"HAS-RAW-DATA-REQUEST":"Has raw data request",
+						"RAW-DATA-REQUEST":"Raw data request",
+						"STATIC-FILTER-EDITOR":{
+							"KEYWORD-FILTERS":"Keyword filters",
+							"FIELD":"Field",
+							"VALUES":"Values",
+							"NEW-VALUE":"New value..."
+						},
+						"RAW-DATA-REQUEST-EDITOR":{
+							"TARGET":"Target",
+							"KEYFIELD":"Key field",
+							"VALUE-FIELD":"Value field",
+							"PAGE":"Page",
+							"OFFSET":"Offset",
+							"SIZE":"Size",
+							"ORDERING":"Ordering",
+							"NEW-VALUE":"New value..."
+						},
+						"METRIC-EDITOR":{
+							"TYPE":"Type",
+							"FIELD":"Field"
+						},
+						"BUCKET-EDITOR":{
+							"FIELD":"Field",
+							"TYPE":"Type",
+							"BUCKET-TYPE-ADDITIONAL-FIELDS":"Bucket type additional fields",
+							"NO-ADDITIONAL-FIELDS":"No additional fields",
+							"HAS-HAVING":"Has having",
+							"HAVING":"Having",
+							"HAVING-FIELD":"Field",
+							"HAVING-AGGREGATE-TYPE":"Metric aggregate type",
+							"HAVING-TYPE":"Type",
+							"HAVING-OPERATOR":"Operator",
+							"HAVING-VALUE":"Value",
+							"HAS-METRICS":"Has metrics",
+							"METRIC-CONFIGURATION":"Metric configuration",
+							"TERMS-BUCKET":{
+								"ORDER":"Order",
+								"ASC":"ASC",
+								"DESC":"DESC"
+							},
+							"DATA-HISTOGRAM":{
+								"ORDER":"Order",
+								"ASC":"ASC",
+								"DESC":"DESC",
+								"TYPE":"Type"
+							},
+							"COMPOSITE-BUCKET":{
+								"HAS-SOURCES":"Has sources",
+								"SOURCES":"Sources",
+								"SOURCE-FIELD":"Field",
+								"SOURCE-TYPE":"TYPE",
+								"SOURCE-ASC":"ASC",
+								"SORUCE-DESC":"DESC",
+								"HAS-DATA-HISTOGRAM-SOURCE":"Has data histogram source",
+								"DATA-HISTOGRAM-SOURCE":"Data histogram source",
+								"HAS-AFTERKEYS":"Has afterkeys",
+								"AFTERKEYS":"Afterkeys",
+								"AFTERKEY-KEY":"Key",
+								"AFTERKEY-VALUE":"Value",
+								"AFTERKEY-ACTIONS":"Actions",
+								"AFTER-KEY-EDITOR-DIALOG":{
+									"KEY":"Key",
+									"VALUE":"Value",
+									"CANCEL":"Cancel",
+									"SUBMIT":"Submit"
+								}
+							}
+						}
+					},
+					"CHART-DISPLAY-EDITOR":{
+						"LABEL-OVERRIDE":"Label override",
+						"CHART-SPECIFIC-TYPE-CONFIGURATION":"Chart specific type configuration",
+						"CHART-ABILITIES":"Chart abilities",
+						"LABEL-SORT-KEY":"Label sort key",
+						"REVERSE-VALUES":"Reverse values",
+						"LEGEND":"Legend",
+						"CHART-DOWNLOAD-IMAGE":"Can download image chart",
+						"CHART-DOWNLOAD-DATA":"Can download chart data",
+						"LABEL-TRANSFORM":"Labels transform (maybe not needed)",
+						"LABEL-TRANSFORM-TYPE":"Label transform type",
+						"FILTERS":"Chart may apply filters",
+						"CHART-FILTER-TYPE":"Chart filter type",
+						"CHART-FILTER-INDICATOR-FILTER-TYPE":"Indicator filter type",
+						"CHART-FILTER-NAME":"Name",
+						"CHART-FILTER-FIELDCODE":"Fieldcode",
+						"CHART-FILTER-VALUES":"Values",
+						"CHART-FILTER-ACTIONS":"Actions",
+						"CHART-FILTER-ADD-FILTER":"Add filter",
+						"FILTER-DIALOG":{
+							"TITLE":"Filter editor",
+							"TYPE":"Chart filter type",
+							"INDICATOR-FILTER-TYPE":"Indicator filter type",
+							"NAME":"Name",
+							"FIELDCODE":"Field code",
+							"VALUE-NAME":"Name",
+							"VALUE-VALUE":"Value",
+							"VALUE-ACTIONS":"Actions",
+							"CANCEL":"Cancel",
+							"SUBMIT":"Submit",
+							"ADD-VALUES":"Add values"
+						},
+						"CHART-TYPE-EDITOR":{
+							"TYPE":"Type",
+							"Y-AXIS":{
+								"TITLE":"yAxis",
+								"NAME":"Name",
+								"BOUNDARY-GAP":"Boundary gap"
+							},
+							"X-AXIS":{
+								"TITLE":"xAxis",
+								"NAME":"Name",
+								"BOUNDARY-GAP":"Boundary gap",
+								"AXIS-LABEL":"Axis label",
+								"ROTATE":"Rotate",
+								"WIDTH":"Width"
+							},
+							"TREE-MAP":{
+								"TREE-NAME":"Tree name",
+								"TOOLTIP-NAME":"Tooltip name",
+								"TOOLTIP-METRIC-NAME":"Tooltip metric name",
+								"NAME-TO-COLOR-MAPPING":"Name to color mapping",
+								"NAME-TO-COLOR-MAPPING-NAME":"Name",
+								"NAME-TO-COLOR-MAPPING-COLOR":"Color",
+								"NAME-TO-COLOR-MAPPING-ACTIONS":"Actions"
+							},
+							"POLAR-BAR":{
+								"RADIUS-AXIS-NAME":"Radius axis name"
+							},
+							"PIE-CHART":{
+								"ROSE-TYPE":"Rose type"
+							},
+							"MAP-CHART":{
+								"HIGH-LEGEND-CONFIG":"High legend config",
+								"COLOR":"Color",
+								"TEXT":"Text",
+								"LOW-LEGEND-CONFIG":"Low legend config",
+								"RESPONSE-VALUES-TO-MAP-VALUES":"Response values to map values",
+								"JSON-NAME":"JSON name",
+								"MAP-NAME":"Map name",
+								"ACTIONS":"Actions",
+								"MAPPING-DIALOG":{
+									"TITLE":"Edit mapping",
+									"JSON-NAME":"JSON name",
+									"MAP-NAME":"Map name",
+									"CANCEL":"Cancel",
+									"SUBMIT":"Submit"
+								}
+							},
+							"LINE-CHART":{
+								"STACK":"Stack",
+								"HORIZONTAL":"Horizontal",
+								"AREASTYLE":"Area Chart"								
+							},
+							"DATA-ZOOM":{
+								"INSIDE-ZOOM":"Inside zoom",
+								"SLIDER":"Slider",
+								"FROM":"From",
+								"TO":"To",
+								"AREA-ZOOM":"Area zoom"
+							},
+							"BAR-CHART":{
+								"STACK":"Stack",
+								"HORIZONTAL":"Horizontal",
+								"AREASTYLE":"Area Chart"
+							}
+						}
+					}
+				}
+			}
+		},
+		"BROWSE-DATA-TREE-CONFIGURATION-EDITOR":{
+			"TITLE":"Browse data tree configuration editor",
+			"CONFIGURATION-KEY":"Configuration Key",
+			"SAVE":"Save",
+			"DOWNLOAD-JSON":"Download JSON",
+			"ADD-CONFIGURATION": "Add configuration",
+			"CONFIGURATION-UNTITLED": "Untitled",
+			"LEVEL-CONFIGS":"Level Configs",
+			"FIELDS":{
+				"ID":"Id",
+				"NAME":"Name",
+				"ORDER":"Order",
+				"GOTO":"Go to"
+			},
+			"LEVEL-CONFIG-EDITOR":{
+				"FIELDS":{
+					"ORDER":"Order",
+					"SUPPORT-SUB-LEVEL":"Supports sub level",
+					"DEFAULT-DASHBOARDS":"Default dashboards",
+					"NEW-DASHBOARD":"New dashboard",
+					"DASHBOARD-OVERRIDES":"Dashboard overrides",
+					"SUPPORTS-SUBLEVEL":"Supports sublevel",
+					"SUPPORTED-DASHBOARDS":"Supported dashboards",
+					"REQUIREMENTS":"Requirements",
+					"REQUIREMENTS-FIELD":"Field",
+					"REQUIREMENTS-VALUE": "Value",
+					"FIELD":"Field",
+					"FIELD-CODE":"Code",
+					"FIELD-NAME":"Name"
+				}
+			}
+		},
+		"GLOBAL-SEARCH-CONFIGURATION-EDITOR":{
+			"CONFIGURATION-KEY":"Configuration Key",
+			"SAVE": "Save",
+			"DOWNLOAD-JSON":"Download JSON",
+			"TITLE":"Search configuration editor",
+			"STATIC-FILTERS":"Static filters",
+			"VIEW-CONFIG":"View config",
+			"DASHBOARD-FILTERS":"Dashboard filters",
+			"DASHBOARD-FILTERS-FIELDS":{
+				"KEYWORDS-FILTERS":"Keywords filters",
+				"FIELD":"Field",
+				"VALUE":"Value",
+				"NEW-VALUE":"New value..."
+			},
+			"STATIC-FILTERS-EDITOR":{
+				"KEYWORDS-FILTERS":"Keywords filters",
+				"FIELD":"Field",
+				"VALUE":"Value",
+				"NEW-VALUE":"New value..."
+			},
+			"VIEW-CONFIG-EDITOR":{
+				"FIELDS":"Fields",
+				"TITLE":"Title",
+				"CODE":"Code",
+				"TYPE":"Type",
+				"DASHBOARD-FILTER-CODE":"Dashboard filter code"
+			},
+			"FIELDS":{
+				"ID":"Id",
+				"DISTINCT-FIELD":"Distinct field",
+				"SEARCH-FIELDS":"Search fields",
+				"NEW-SEARCH-FIELD":"New search field",
+				"INDICATOR-IDS":"Indicator IDs",
+				"NEW-INDICATOR":"New indicator",
+				"SUPPORTED-DASHBOARDS":"Supported dashboards",
+				"NEW-DASHBOARD":"New dashboard"
+			}
+		},
 		"TENANT-CONFIGURATION": {
 			"TITLE": "Tenant Configuration",
 			"ITEMS": {
@@ -273,6 +623,8 @@
 			}
 		},
 		"MY-DATA-ACCESS-REQUESTS":{
+			"TITLE":"My portofolio",
+			"EDIT":"Edit",
 			"COLUMNS-EDITOR":{
 				"GROUPS":"Groups",
 				"CREATE-GROUP":"Create group",
@@ -294,6 +646,18 @@
 				"SUBMIT":"OK",
 				"SELECTED":"Selected",
 				"GROUP-NAME":"Group name"
+			},
+			"EDIT-PORTOFOLIO":{
+				"TITLE":"Edit portofolio",
+				"BACK":"Back",
+				"SAVE-PORTOFOLIO":"Save portofolio",
+				"NO-RESULTS-WERE-FOUND":"No results were found",
+				"CANCEL":"Cancel",
+				"CONFIRM":"Confirm",
+				"SEARCH": "Search",
+				"ADDITIONS":"additions",
+				"NO-CHANGES-WERE-MADE":"No changes were made",
+				"CHANGES-WERE-MADE-SUCCESSFULLY":"Changes were made successfully"
 			}
 		},
 		"TENANT-LISTING": {
@@ -469,14 +833,19 @@
 		"INDICATOR-DASHBOARD": {
 			"BOOKMARK": "Προσθήκη σελιδοδείκτη",
 			"UNBOOKMARK": "Αφαίρεση σελιδοδείκτη",
+			"AVAILABLE-TAGS":"Available tags",
 			"CHART": {
 				"DOWNLOAD-DATA": "Λήψη δεδομένων",
 				"FILTERS": "Εφαρμογή φίλτρων",
+				"TAGS":"Tags",
 				"FILTERS-DIALOG": {
 					"TITLE": "Φίλτρα για ",
 					"SUBMIT": "Εφαρμογή",
 					"CANCEL": "Άκυρο"
-				}
+				},
+				"DESCRIPTION":"Description/Source: ",
+				"SCROLL-HINT-PART-ONE":"Χρησιμοποιήστε τον συνδιασμό Shift + scroll ",
+				"SCROLL-HINT-PART-TWO":"για να μεγεθύνετε το γράφημα."
 			}
 		}
 	},
@@ -1437,6 +1806,11 @@
 		},
 		"ERRORS": {
 			"DEFAULT": "Παρουσιάστηκε απροσδόκητο σφάλμα"
+		},
+		"DELETE-ITEM-DIALOG":{
+			"MESSAGE": "Θέλετε να διαγράψετε το στοιχείο;",
+			"CONFIRM-MESSAGE":"Ναι, διαγαρφή",
+			"CANCEL":"Άκυρο"
 		}
 	}
 }

@@ -1,0 +1,42 @@
+.card{
+    border-radius: 8px;
+    padding: .2rem;
+}
+
+.shadow{
+    box-shadow: 3px 5px 4px 1px #c7c6c682; // todo apply on theme
+}
+
+
+.charts-navigator{
+    min-height: 7rem;
+    display: flex;
+    overflow-y: auto;
+    padding: .8rem;
+    gap: 1rem;
+
+
+    .chart-navigator-item{
+        width: 10rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        line-height: unset !important;
+    }
+}
+:host::ng-deep .invisible-tabs {
+    >.mat-tab-header {
+      display: none;
+    }
+}
+.chart-description{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-top: .2rem;
+    padding-bottom: .2rem;
+    .title{
+        white-space: pre-wrap;
+    }
+}

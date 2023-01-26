@@ -1,0 +1,29 @@
+.parent-root-container{
+
+    z-index: 1;
+	position: relative;
+	min-height: 80vh;
+	&::before{
+		position: fixed;
+		font-family: "Material Icons";
+    	content: "settings_input_component";
+        overflow: hidden;
+		font-size: 60rem;
+		width: 100vw;
+		height: 100vh;
+		z-index: -1;
+		bottom: 0;
+		right: 20px;
+		text-align: end;
+		opacity: .1;
+	}
+	// max-width: 1024px;
+	// margin: auto;
+	margin-top: 1rem;
+}
+
+#main-container{
+    max-width: 1200px;
+    margin: auto;
+	// flex-direction: unset;
+}

@@ -1,12 +1,11 @@
 import { OverlayContainer } from '@angular/cdk/overlay';
 import { AfterViewInit, Component, HostBinding, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { ChildrenOutletContexts } from '@angular/router';
 import { ThemeType } from '@app/core/enum/theme-type.enum';
 import { AuthService, LoginStatus } from '@app/core/services/ui/auth.service';
 import { ThemingService } from '@app/core/services/ui/theming.service';
 import { BaseComponent } from '@common/base/base.component';
-import { BaseHttpParams } from '@common/http/base-http-params';
-import { InterceptorType } from '@common/http/interceptors/interceptor-type';
 import { InstallationConfigurationService } from '@common/installation-configuration/installation-configuration.service';
 import { LoggingService } from '@common/logging/logging-service';
 import { TranslateService } from '@ngx-translate/core';
@@ -17,21 +16,27 @@ import { CookieService } from 'ngx-cookie-service';
 import { BehaviorSubject } from 'rxjs';
 import { debounceTime, takeUntil } from 'rxjs/operators';
 import { PrincipalService } from './core/services/http/principal.service';
-import { TenantChooseDialogComponent } from './ui/tenant/choose-dialog/tenant-choose-dialog.component';
+import { ROUTING_ANIMATIONS } from './routing-animation';
 
 @Component({
 	selector: 'app-root',
 	templateUrl: './app.component.html',
-	styleUrls: ['./app.component.scss']
+	styleUrls: ['./app.component.scss'],
+	animations: [ROUTING_ANIMATIONS]
 })
 export class AppComponent extends BaseComponent implements OnInit, AfterViewInit {
 	@HostBinding('class') componentCssClass;
 
-	expanded = true;
+
+	private EXPANDED_LOCAL_STORAGE_KEY = 'expand_panel';
+	expanded = localStorage.getItem(this.EXPANDED_LOCAL_STORAGE_KEY)=== 'false' ? false : true;
 
 	_contentHover$ = new BehaviorSubject<boolean>(false);
 	contentHover$ = this._contentHover$.asObservable().pipe(debounceTime(600), takeUntil(this._destroyed));
 
+	getRouteAnimationData() {
+		return this.contexts.getContext('primary')?.route?.url;
+	}
 	constructor(
 		private installationConfiguration: InstallationConfigurationService,
 		private authService: AuthService,
@@ -43,8 +48,7 @@ export class AppComponent extends BaseComponent implements OnInit, AfterViewInit
 		private cultureService: CultureService,
 		private timezoneService: TimezoneService,
 		private logger: LoggingService,
-		private dialog: MatDialog,
-		private principalService: PrincipalService
+		private contexts: ChildrenOutletContexts
 	) {
 		super();
 
@@ -145,14 +149,16 @@ export class AppComponent extends BaseComponent implements OnInit, AfterViewInit
 		return this.authService.currentAccountIsAuthenticated();
 	}
 	toggleExpanded(val: boolean): void{
-		this.expanded = val;
+		this._setExpanded(val);
 	}
 	
 	expandItems(): void{
-		this.expanded = true;
+		// this.expanded = true;
+		this._setExpanded(true);
 	}
 	collapseItems(): void{
-		this.expanded = false;
+		// this.expanded = false;
+		this._setExpanded(false);
 	}
 
 	onNavigationMouseEnter():void{
@@ -160,5 +166,11 @@ export class AppComponent extends BaseComponent implements OnInit, AfterViewInit
 	}
 	onNavigationMouseLeave(): void{
 		this._contentHover$.next(false);
+	}
+
+
+	private _setExpanded(value: boolean):void{
+		this.expanded = !!value;
+		localStorage.setItem(this.EXPANDED_LOCAL_STORAGE_KEY, `${value}`);
 	}
 }

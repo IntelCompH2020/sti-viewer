@@ -1,0 +1,46 @@
+
+<h2>
+    {{column}}
+</h2>
+
+<mat-form-field appearance="legacy">
+    <mat-label>{{'APP.MY-DATA-ACCESS-REQUESTS.EDIT-PORTOFOLIO.SEARCH' | translate}}</mat-label>
+    <input type="text" matInput [(ngModel)]="searchTerm" (ngModelChange)="onSearchTermChange()">
+</mat-form-field>
+
+
+
+<div class="results-container">
+    <ul class="list-unstyled" *ngIf="results?.length else noresults">
+        <li *ngFor="let item of results">
+            <mat-checkbox 
+                [checked]="isItemSelected(item)"
+                (change)="onSelectionChange($event, item)">
+            {{item}} 
+            </mat-checkbox>
+        </li>
+    
+    </ul>
+</div>
+
+
+<div class="row m-0 justify-content-end mt-3">
+    <div class="col-auto" (click)="cancel()">
+        <button mat-raised-button>
+            {{'APP.MY-DATA-ACCESS-REQUESTS.EDIT-PORTOFOLIO.CANCEL' | translate}}
+        </button>
+    </div>
+    <div class="col-auto">
+        <button mat-raised-button color="primary" (click)="submit()">
+            {{'APP.MY-DATA-ACCESS-REQUESTS.EDIT-PORTOFOLIO.CONFIRM' | translate}}
+        </button>
+    </div>
+</div>
+
+
+<ng-template #noresults>
+    <!-- * empty results . results are only undefined when component is initialized -->
+    <p *ngIf="results">
+        {{'APP.MY-DATA-ACCESS-REQUESTS.EDIT-PORTOFOLIO.NO-RESULTS-WERE-FOUND' | translate}}
+    </p>
+</ng-template>

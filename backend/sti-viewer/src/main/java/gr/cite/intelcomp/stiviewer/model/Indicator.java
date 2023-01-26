@@ -1,7 +1,8 @@
 package gr.cite.intelcomp.stiviewer.model;
 
 import gr.cite.intelcomp.stiviewer.common.enums.IsActive;
-import gr.cite.intelcomp.stiviewer.model.accessrequestconfig.AccessRequestConfig;
+import gr.cite.intelcomp.stiviewer.model.indicator.AccessRequestConfig;
+import gr.cite.intelcomp.stiviewer.model.indicator.IndicatorConfig;
 
 import java.time.Instant;
 import java.util.List;
@@ -37,7 +38,7 @@ public class Indicator {
 	private List<IndicatorAccess> indicatorAccesses;
 
 	public final static String _config = "config";
-	private AccessRequestConfig config;
+	private IndicatorConfig config;
 
 	public UUID getId() {
 		return id;
@@ -111,11 +112,11 @@ public class Indicator {
 		this.indicatorAccesses = indicatorAccesses;
 	}
 
-	public AccessRequestConfig getConfig() {
+	public IndicatorConfig getConfig() {
 		return config;
 	}
 
-	public void setConfig(AccessRequestConfig config) {
+	public void setConfig(IndicatorConfig config) {
 		this.config = config;
 	}
 }

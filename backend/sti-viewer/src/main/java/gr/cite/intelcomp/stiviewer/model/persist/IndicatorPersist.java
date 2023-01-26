@@ -2,8 +2,10 @@ package gr.cite.intelcomp.stiviewer.model.persist;
 
 import gr.cite.intelcomp.stiviewer.common.validation.FieldNotNullIfOtherSet;
 import gr.cite.intelcomp.stiviewer.common.validation.ValidId;
-import gr.cite.intelcomp.stiviewer.model.persist.accessrequestconfig.AccessRequestConfigPersist;
+import gr.cite.intelcomp.stiviewer.model.persist.indicator.AccessRequestConfigPersist;
+import gr.cite.intelcomp.stiviewer.model.persist.indicator.IndicatorConfigPersist;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -27,7 +29,8 @@ public class IndicatorPersist {
 
     private String description;
 
-    private AccessRequestConfigPersist config;
+    @Valid
+    private IndicatorConfigPersist config;
 
     private String hash;
 
@@ -71,11 +74,11 @@ public class IndicatorPersist {
         this.hash = hash;
     }
 
-    public AccessRequestConfigPersist getConfig() {
+    public IndicatorConfigPersist getConfig() {
         return config;
     }
 
-    public void setAccessRequestConfigPersist(AccessRequestConfigPersist config) {
+    public void setAccessRequestConfigPersist(IndicatorConfigPersist config) {
         this.config = config;
     }
 }

@@ -1,0 +1,31 @@
+<ng-container *ngIf="formGroup" [formGroup]="formGroup">
+    <h3>
+        {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-MAPPING-EDITOR.VALUE-TEST-DIALOG.TITLE' | translate}}
+    </h3>
+
+    <mat-form-field>
+        <mat-label>
+            {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-MAPPING-EDITOR.VALUE-TEST-DIALOG.TARGET' | translate}}
+        </mat-label>
+        <input type="text" matInput formControlName="target">
+    </mat-form-field>
+    <mat-form-field>
+        <mat-label>
+            {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-MAPPING-EDITOR.VALUE-TEST-DIALOG.VALUE' | translate}}
+        </mat-label>
+        <input type="text" matInput formControlName="value">
+    </mat-form-field>
+
+
+    <div class="row m-0 justify-content-end">
+        <button mat-raised-button (click)="cancel()">
+            {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-MAPPING-EDITOR.VALUE-TEST-DIALOG.CANCEL' | translate}}
+        </button>
+        <button mat-raised-button (click)="submit()">
+            {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-MAPPING-EDITOR.VALUE-TEST-DIALOG.SUBMIT' | translate}}
+        </button>
+    </div>
+
+</ng-container>
+
+

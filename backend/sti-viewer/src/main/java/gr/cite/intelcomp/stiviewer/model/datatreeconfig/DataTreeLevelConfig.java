@@ -5,7 +5,7 @@ import java.util.List;
 public class DataTreeLevelConfig {
 	private DataTreeDataField field;
 	public static final String _field = "field";
-	private int order;
+	private Integer order;
 	public static final String _order = "order";
 
 	private Boolean supportSubLevel;
@@ -41,11 +41,11 @@ public class DataTreeLevelConfig {
 		this.defaultDashboards = defaultDashboards;
 	}
 
-	public int getOrder() {
+	public Integer getOrder() {
 		return order;
 	}
 
-	public void setOrder(int order) {
+	public void setOrder(Integer order) {
 		this.order = order;
 	}
 

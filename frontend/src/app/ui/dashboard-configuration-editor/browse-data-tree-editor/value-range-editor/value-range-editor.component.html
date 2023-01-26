@@ -1,0 +1,13 @@
+<ng-container *ngIf="formGroup" [formGroup]="formGroup">
+
+    <mat-form-field class="col-md-6" appearance="legacy">
+        <mat-label>min</mat-label>
+        <input type="number" matInput formControlName="min">
+    </mat-form-field>
+
+    <mat-form-field class="col-md-6" appearance="legacy">
+        <mat-label>max</mat-label>
+        <input type="number" matInput formControlName="max">
+    </mat-form-field>
+
+</ng-container>

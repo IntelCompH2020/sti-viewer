@@ -1,0 +1,89 @@
+<div [formGroup]="formGroup" *ngIf="formGroup" class="row m-0 pt-3">
+
+	<div class="col-12 d-flex justify-content-end">
+		<button mat-icon-button color="primary" (click)="hookChart()">
+			<mat-icon [color]="formChangeSubscription ? 'accent' : ''">
+				phishing
+			</mat-icon>
+		</button>
+		<button mat-icon-button color="primary" (click)="onDelete()">
+			<mat-icon>
+				delete
+			</mat-icon>
+		</button>
+	</div>
+
+
+	<mat-tab-group color="accent" class="col-12">
+		<!-- * GENERAL -->
+		<mat-tab>
+			<ng-template mat-tab-label>
+				<mat-icon color="primary" class="mr-2">info</mat-icon>
+				<span>
+					{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.GENERAL-CHART-INFO' | translate}}
+				</span>
+			</ng-template>
+			<ng-template matTabContent>
+				<div class="tab-item">
+					<!-- <app-dashboard-configuration-chart-general-info-editor class="w-100" [formGroup]="formGroup"></app-dashboard-configuration-chart-general-info-editor> -->
+					<app-gauge-general-info-editor
+                        class="w-100" 
+                        [formGroup]="formGroup"
+                    >
+                    </app-gauge-general-info-editor>
+				</div>
+			</ng-template>
+		</mat-tab>
+
+		<!-- * DATA FECHING -->
+		<mat-tab>
+			<ng-template mat-tab-label>
+				<mat-icon color="primary" class="mr-2">settings_input_component</mat-icon>
+				<span>
+					{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-FETCHING' | translate}}
+				</span>
+			</ng-template>
+			<ng-template matTabContent>
+				<div class="tab-item">
+					<app-dashboard-configuration-data-fetching-editor class="w-100" [formGroup]="formGroup">
+                    </app-dashboard-configuration-data-fetching-editor>
+				</div>
+			</ng-template>
+		</mat-tab>
+
+		<!-- *CHART SPECIFIC -->
+		<mat-tab>
+			<ng-template mat-tab-label>
+				<mat-icon color="primary" class="mr-2">bar_chart</mat-icon>
+				<span>
+					{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-CONFIGURATION' | translate}}
+				</span>
+			</ng-template>
+			<ng-template matTabContent>
+				<div class="tab-item">
+					<!-- <app-dashboard-configuration-chart-display-editor class="w-100" [formGroup]="formGroup"></app-dashboard-configuration-chart-display-editor> -->
+					<app-gauge-display-editor class="w-100" [formGroup]="formGroup"></app-gauge-display-editor>
+				</div>
+			</ng-template>
+		</mat-tab>
+
+		<!--* DATA MAPPING -->
+		<mat-tab [disabled]="!typeControl?.value">
+			<ng-template mat-tab-label>
+				<mat-icon color="primary" class="mr-2">route</mat-icon>
+				<span>
+					{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-MAPPING' | translate}}
+				</span>
+				<mat-icon class="lock-icon text-muted" *ngIf="!typeControl?.value" [matTooltip]="!typeControl?.value? 'Please select chart type first' : ''">
+					lock
+				</mat-icon>
+			</ng-template>
+			<ng-template matTabContent>
+				<div class="tab-item">
+					<app-dashboard-configuration-data-mapping-editor class="w-100" [formGroup]="formGroup"></app-dashboard-configuration-data-mapping-editor>
+				</div>
+			</ng-template>
+		</mat-tab>
+
+		
+	</mat-tab-group>

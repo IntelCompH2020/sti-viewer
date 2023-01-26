@@ -1,0 +1,8 @@
+<ng-container *ngIf="formGroup" [formGroup]="formGroup">
+    <mat-form-field appearance="legacy" class="col-12" >
+        <mat-label>
+            {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-MAPPING-EDITOR.VALUE-FORMATTER.DECIMAL-FORMATTER' | translate}}
+        </mat-label>
+        <input type="number" matInput formControlName="decimalAccuracy">
+    </mat-form-field>
+</ng-container>

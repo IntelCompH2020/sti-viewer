@@ -1,0 +1,20 @@
+<ng-container [formGroup]="formGroup" *ngIf="formGroup">
+    <div class="row m-0">
+        <mat-form-field appearance="legacy" class="col-md-6">
+            <mat-label>
+                {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-FETCHING-EDITOR.METRIC-EDITOR.TYPE' | translate}}
+            </mat-label>
+            <mat-select formControlName="type">
+                <mat-option *ngFor="let type of MetricAggregateTypes" [value]="type">{{type}}</mat-option>
+            </mat-select>
+        </mat-form-field>
+    
+        <!--* FIELD -->
+        <mat-form-field appearance="legacy" class="col-md-6">
+            <mat-label>
+                {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-FETCHING-EDITOR.METRIC-EDITOR.FIELD' | translate}}
+            </mat-label>
+            <input type="text" matInput formControlName="field">
+        </mat-form-field>
+    </div>
+</ng-container>

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BrowseDataTreeConfigModel, BrowseDataTreeLevelConfigModel, BrowseDataTreeLevelDashboardOverrideModel } from '@app/core/model/data-tree/browse-data-tree-config.model';
+import { BrowseDataTreeConfigModel, BrowseDataTreeLevelConfigModel, BrowseDataTreeLevelDashboardOverrideModel, DataTreeLevelDashboardOverrideFieldRequirement } from '@app/core/model/data-tree/browse-data-tree-config.model';
 import { BrowseDataTreeLevelModel } from '@app/core/model/data-tree/browse-data-tree-level.model';
 import { FieldModel } from '@app/core/model/indicator-config/indicator-report-level-config';
 import { IndicatorReportLevelLookup } from '@app/core/query/indicator-report-level-lookup';
@@ -31,8 +31,12 @@ export class DataTreeService {
 		[nameof<BrowseDataTreeConfigModel>(x => x.levelConfigs), nameof<BrowseDataTreeLevelConfigModel>(x => x.field), nameof<FieldModel>(x => x.name)].join('.'),
 		[nameof<BrowseDataTreeConfigModel>(x => x.levelConfigs), nameof<BrowseDataTreeLevelConfigModel>(x => x.supportSubLevel)].join('.'),
 		[nameof<BrowseDataTreeConfigModel>(x => x.levelConfigs), nameof<BrowseDataTreeLevelConfigModel>(x => x.defaultDashboards)].join('.'),
-		[nameof<BrowseDataTreeConfigModel>(x => x.levelConfigs), nameof<BrowseDataTreeLevelConfigModel>(x => x.dashboardOverrides), nameof<BrowseDataTreeLevelDashboardOverrideModel>(x => x.code)].join('.'),
-		[nameof<BrowseDataTreeConfigModel>(x => x.levelConfigs), nameof<BrowseDataTreeLevelConfigModel>(x => x.dashboardOverrides), nameof<BrowseDataTreeLevelDashboardOverrideModel>(x => x.defaultDashboards)].join('.'),
+		[nameof<BrowseDataTreeConfigModel>(x => x.levelConfigs), nameof<BrowseDataTreeLevelConfigModel>(x => x.dashboardOverrides), nameof<BrowseDataTreeLevelDashboardOverrideModel>(x => x.requirements)].join('.'),
+		[nameof<BrowseDataTreeConfigModel>(x => x.levelConfigs), nameof<BrowseDataTreeLevelConfigModel>(x => x.dashboardOverrides), nameof<BrowseDataTreeLevelDashboardOverrideModel>(x => x.requirements), nameof<DataTreeLevelDashboardOverrideFieldRequirement>(x => x.field)].join('.'),
+		[nameof<BrowseDataTreeConfigModel>(x => x.levelConfigs), nameof<BrowseDataTreeLevelConfigModel>(x => x.dashboardOverrides), nameof<BrowseDataTreeLevelDashboardOverrideModel>(x => x.requirements), nameof<DataTreeLevelDashboardOverrideFieldRequirement>(x => x.value)].join('.'),
+		[nameof<BrowseDataTreeConfigModel>(x => x.levelConfigs), nameof<BrowseDataTreeLevelConfigModel>(x => x.dashboardOverrides), nameof<BrowseDataTreeLevelDashboardOverrideModel>(x => x.supportSubLevel)].join('.'),
+		[nameof<BrowseDataTreeConfigModel>(x => x.levelConfigs), nameof<BrowseDataTreeLevelConfigModel>(x => x.dashboardOverrides), nameof<BrowseDataTreeLevelDashboardOverrideModel>(x => x.supportedDashboards)].join('.'),
+
 	];
 	return this.http.get(url, {params: {
 		f

@@ -1,0 +1,56 @@
+<ng-container [formGroup]="formGroup" *ngIf="formGroup">
+    <div>
+      <small class="text-muted">
+        <i>
+          {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-FETCHING-EDITOR.STATIC-FILTER-EDITOR.KEYWORD-FILTERS' | translate}}
+        </i>
+      </small>
+    </div>
+
+
+      <div class="row m-0" *ngFor="let filter of keywordFilters?.controls; let filterIndex = index; let last = last" [formGroup]="filter">
+          <mat-form-field appearance="legacy" class="col-md-6">
+              <mat-label>
+                {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-FETCHING-EDITOR.STATIC-FILTER-EDITOR.FIELD' | translate}}
+              </mat-label>
+              <input type="text" matInput formControlName="field">
+          </mat-form-field>
+
+          <div class="col d-flex justify-content-end">
+            <button mat-icon-button (click)="removeKeywordFilter(filterIndex)"><mat-icon>delete</mat-icon></button>
+          </div>
+
+
+          <mat-form-field appearance="legacy" class="col-12">
+              <mat-label>
+                {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-FETCHING-EDITOR.STATIC-FILTER-EDITOR.VALUES' | translate}}
+              </mat-label>
+              <mat-chip-list #chipList multiple>
+                <mat-chip
+                    *ngFor="let keyword of filter.value.value; let valueIndex = index"
+                    [selected]="keyword"
+                    [value]="keyword">
+                  {{keyword}}
+                  <button matChipRemove (click)="removeFilterValue(valueIndex, filterIndex )">
+                    <mat-icon>cancel</mat-icon>
+                  </button>
+                </mat-chip>
+                <input
+                  placeholder="{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-FETCHING-EDITOR.STATIC-FILTER-EDITOR.NEW-VALUE' | translate}}"
+                  [matChipInputFor]="chipList"
+                  (matChipInputTokenEnd)="addFilterValue($event, filterIndex)">
+              </mat-chip-list>
+            </mat-form-field>
+
+            <div class="col-12 mb-3" *ngIf="!last">
+              <mat-divider></mat-divider>
+            </div>
+      </div>
+      <div class="col-12">
+        <button mat-icon-button (click)="addKeywordFilter()">
+          <mat-icon>add</mat-icon>
+        </button>
+      </div>
+
+
+</ng-container>

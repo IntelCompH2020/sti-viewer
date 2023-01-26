@@ -1,0 +1,110 @@
+<ng-container [formGroup]="formGroup" *ngIf="formGroup">
+	<!-- <mat-form-field appearance="legacy" class="col-12">
+		<mat-label>metrics</mat-label>
+		<textarea type="text" matInput formControlName="metrics"></textarea>
+	</mat-form-field> -->
+
+	<div class="col-12 d-flex justify-content-end p-0">
+		<button mat-stroked-button (click)="openRawEditor()">
+			{{'APP.DASHBOARD-CONFIGURATION.EDITOR.EDIT-JSON' | translate}}
+			<mat-icon>edit</mat-icon>
+		</button>
+	</div>
+
+
+	<!-- * METRICS -->
+	<div class="col-12">
+		<mat-checkbox [checked]="!!metricsArray" (change)="onRemovableFieldChange($event, FetchingConfig.Metrics)">
+			{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-FETCHING-EDITOR.HAS-METRICS' | translate}}
+		</mat-checkbox>
+	</div>
+	<section class="configuration-section" *ngIf="metricsArray">
+		<div class="configuration-header">
+			<mat-icon color="primary">insert_chart</mat-icon>
+			<span class="text-muted configuration-title">
+				{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-FETCHING-EDITOR.METRIC-CONFIGURATION' | translate}}
+			</span>
+		</div>
+
+		<ng-container *ngFor="let metric of metricsArray.controls; let index = index; let last = last">
+			<div class="col-12 d-flex justify-content-end">
+				<button mat-icon-button (click)="removeMetric(index)">
+					<mat-icon>delete</mat-icon>
+				</button>
+			</div>
+			<metric-config-editor [formGroup]="metric"></metric-config-editor>
+
+			<div class="col-12" *ngIf="!last">
+				<mat-divider></mat-divider>
+			</div>
+
+		</ng-container>
+		<div class="col-12">
+			<button mat-icon-button (click)="addMetric()">
+				<mat-icon>add</mat-icon>
+			</button>
+		</div>
+	</section>
+
+
+	<!--* BUCKETS -->
+	<div class="col-12">
+		<mat-checkbox [checked]="!!bucket" (change)="onRemovableFieldChange($event, FetchingConfig.Bucket)">
+			{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-FETCHING-EDITOR.HAS-BUCKET' | translate}}
+		</mat-checkbox>
+	</div>
+	<section class="configuration-section" *ngIf="!!bucket">
+		<div class="configuration-header">
+			<mat-icon color="primary">inventory_2</mat-icon>
+			<span class="text-muted configuration-title">
+				{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-FETCHING-EDITOR.BUCKET-CONFIGURATION' | translate}}
+			</span>
+		</div>
+		<bucket-config-editor [formGroup]="bucket"></bucket-config-editor>
+	</section>
+	<!-- <mat-form-field appearance="legacy" class="col-12">
+		<mat-label>staticFilters</mat-label>
+		<textarea type="text" matInput formControlName="staticFilters"></textarea>
+	</mat-form-field> -->
+	
+
+	<!--* STATIC FILTERS  -->
+	<div class="col-12">
+		<mat-checkbox [checked]="!!staticFilters" (change)="onRemovableFieldChange($event, FetchingConfig.StaticFilters)">
+			{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-FETCHING-EDITOR.HAS-STATIC-FILTERS' | translate}}
+		</mat-checkbox>
+	</div>
+	<section class="configuration-section" *ngIf="staticFilters">
+		<div class="configuration-header">
+			<mat-icon color="primary">filter_alt</mat-icon>
+			<span class="text-muted configuration-title">
+				{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-FETCHING-EDITOR.STATIC-FILTERS' | translate}}
+			</span>
+		</div>
+		<static-filters-config-editor [formGroup]="staticFilters"></static-filters-config-editor>
+	</section>
+
+
+<!-- 
+	<mat-form-field appearance="legacy" class="col-12">
+		<mat-label>rawDataRequest</mat-label>
+		<textarea type="text" matInput formControlName="rawDataRequest"></textarea>
+	</mat-form-field> -->
+
+	<!-- * RAW DATA REQUEST -->
+	<div class="col-12 mb-2">
+		<mat-checkbox [checked]="!!rawDataRequest" (change)="onRemovableFieldChange($event, FetchingConfig.RawDataRequest)">
+			{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-FETCHING-EDITOR.HAS-RAW-DATA-REQUEST' | translate}}
+		</mat-checkbox>
+	</div>
+	<section class="configuration-section" *ngIf="rawDataRequest">
+		<div class="configuration-header">
+			<mat-icon color="primary">description</mat-icon>
+			<span class="text-muted configuration-title">
+				{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-FETCHING-EDITOR.RAW-DATA-REQUEST' | translate}}
+			</span>
+		</div>
+		<raw-data-request-config-editor  [formGroup]="rawDataRequest"></raw-data-request-config-editor>
+	</section>
+
+</ng-container>

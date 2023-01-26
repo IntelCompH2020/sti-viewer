@@ -27,6 +27,7 @@ import java.util.*;
 public class DataAccessRequestQuery extends QueryBase<DataAccessRequestEntity> {
 
 	private Collection<UUID> ids;
+	private Collection<DataAccessRequestStatus> statuses;
 	private EnumSet<AuthorizationFlags> authorize = EnumSet.of(AuthorizationFlags.None);
 
 
@@ -42,6 +43,21 @@ public class DataAccessRequestQuery extends QueryBase<DataAccessRequestEntity> {
 
 	public DataAccessRequestQuery ids(Collection<UUID> values) {
 		this.ids = values;
+		return this;
+	}
+
+	public DataAccessRequestQuery statuses(DataAccessRequestStatus value) {
+		this.statuses = List.of(value);
+		return this;
+	}
+
+	public DataAccessRequestQuery statuses(DataAccessRequestStatus... value) {
+		this.statuses = Arrays.asList(value);
+		return this;
+	}
+
+	public DataAccessRequestQuery statuses(Collection<DataAccessRequestStatus> values) {
+		this.statuses = values;
 		return this;
 	}
 
@@ -68,7 +84,7 @@ public class DataAccessRequestQuery extends QueryBase<DataAccessRequestEntity> {
 
 	@Override
 	protected Boolean isFalseQuery() {
-		return this.isEmpty(this.ids);
+		return this.isEmpty(this.ids) || this.isEmpty(this.statuses) ;
 	}
 
 	@Override
@@ -96,6 +112,11 @@ public class DataAccessRequestQuery extends QueryBase<DataAccessRequestEntity> {
 		if (this.ids != null) {
 			CriteriaBuilder.In<UUID> inClause = queryContext.CriteriaBuilder.in(queryContext.Root.get(DataAccessRequestEntity._id));
 			for (UUID item : this.ids) inClause.value(item);
+			predicates.add(inClause);
+		}
+		if (this.statuses != null) {
+			CriteriaBuilder.In<DataAccessRequestStatus> inClause = queryContext.CriteriaBuilder.in(queryContext.Root.get(DataAccessRequestEntity._status));
+			for (DataAccessRequestStatus item : this.statuses) inClause.value(item);
 			predicates.add(inClause);
 		}
 		if (predicates.size() > 0) {

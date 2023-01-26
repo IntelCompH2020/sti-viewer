@@ -1,18 +1,20 @@
 import { Component, OnInit } from "@angular/core";
+import { ActivatedRoute } from "@angular/router";
 import { DataGroupRequestStatus } from "@app/core/enum/data-group-request-status.enum";
 import { IsActive } from "@app/core/enum/is-active.enum";
 import { DataGroupColumn, DataGroupRequest, DataGroupRequestConfig } from "@app/core/model/data-group-request/data-group-request.model";
-import { IndicatorGroup } from "@app/core/model/indicator-group/indicator-group.model";
+import {  IndicatorGroup } from "@app/core/model/indicator-group/indicator-group.model";
 import { Indicator } from "@app/core/model/indicator/indicator.model";
+import { PortofolioConfig } from "@app/core/model/portofolio-config/portofolio-config.model";
 import { DataGroupRequestLookup } from "@app/core/query/data-group-request.lookup";
 import { DataGroupRequestService } from "@app/core/services/http/data-group-request.service";
-import { IndicatorGroupService } from "@app/core/services/http/indicator-group.service";
 import { BaseComponent } from "@common/base/base.component";
 import { SnackBarNotificationLevel, UiNotificationService } from "@common/modules/notification/ui-notification-service";
 import { Guid } from "@common/types/guid";
 import { TranslateService } from "@ngx-translate/core";
 import { takeUntil } from "rxjs/operators";
 import { nameof } from "ts-simple-nameof";
+import { MyDataAccessRequestResolver } from "./my-data-access-request.resolver";
 import { GroupUpdateDefinition, NewGroupDefinition } from "./my-indicator-columns-editor/my-indicator-columns-editor.component";
 
 @Component({
@@ -20,6 +22,7 @@ import { GroupUpdateDefinition, NewGroupDefinition } from "./my-indicator-column
     styleUrls:[
         './my-data-access-requests.component.scss',
     ],
+    selector:'app-my-data-access-request'
 })
 export class MyDataAccessRequestComponent extends BaseComponent implements OnInit{
 
@@ -28,7 +31,7 @@ export class MyDataAccessRequestComponent extends BaseComponent implements OnIni
 
 
 
-    protected indicatorGroups: IndicatorGroup[];
+    // protected indicatorGroup: IndicatorGroup;
 
     /* groupsAggregated schema
         <IndicatorGroupId> : {
@@ -43,31 +46,21 @@ export class MyDataAccessRequestComponent extends BaseComponent implements OnIni
     protected groupsAggregated: Record<string, Record<string, ColumnGroup[]>> = {};
 
 
+    protected readonly config: PortofolioConfig = this.route.snapshot.data[MyDataAccessRequestResolver.RESOLVER_KEY];
+
+
     constructor(
-            private indicatorGroupService: IndicatorGroupService ,
             private dataGroupRequestService : DataGroupRequestService,
             private uiNotificationService: UiNotificationService,
-            private language: TranslateService
+            private language: TranslateService,
+            private route: ActivatedRoute,
         ){
         super();
     }
 
 
     ngOnInit(): void {
-        this.indicatorGroupService.getAll([
-            nameof<IndicatorGroup>(x => x.id),
-            nameof<IndicatorGroup>(x => x.name),
-            nameof<IndicatorGroup>(x => x.dashboardKey),
-            [nameof<IndicatorGroup>(x => x.indicators), nameof<Indicator>(x => x.code)].join('.'),
-            [nameof<IndicatorGroup>(x => x.indicators), nameof<Indicator>(x => x.name)].join('.'),
-            [nameof<IndicatorGroup>(x => x.indicators), nameof<Indicator>(x => x.id)].join('.'),
-            nameof<IndicatorGroup>(x => x.filterColumns)
-        ])
-        .pipe(takeUntil(this._destroyed))
-        .subscribe((result) =>{
-            this.indicatorGroups = result;
-            this._getGroupRequests();
-        })
+        this._getGroupRequests();
 
     }
 
@@ -132,8 +125,8 @@ export class MyDataAccessRequestComponent extends BaseComponent implements OnIni
         lookup.isActive = [IsActive.Active];
 
 
-        if(!this.indicatorGroups?.length){
-            console.log('!!!no indicator groups yet');
+        if(!this.config?.indicatorGroup){
+            console.warn('!!!no indicator group yet');
             return;
         }
 
@@ -156,7 +149,6 @@ export class MyDataAccessRequestComponent extends BaseComponent implements OnIni
                 [nameof<DataGroupRequest>(x => x.config), nameof<DataGroupRequestConfig>(x => x.groupColumns), nameof<DataGroupColumn>(x => x.fieldCode)].join('.'),
                 [nameof<DataGroupRequest>(x => x.config), nameof<DataGroupRequestConfig>(x => x.groupColumns), nameof<DataGroupColumn>(x => x.values)].join('.'),
                 [nameof<DataGroupRequest>(x => x.config), nameof<DataGroupRequestConfig>(x => x.indicatorGroup), nameof<IndicatorGroup>(x => x.id)].join('.'),
-                [nameof<DataGroupRequest>(x => x.config), nameof<DataGroupRequestConfig>(x => x.indicatorGroup), nameof<IndicatorGroup>(x => x.dashboardKey)].join('.'),
                 nameof<DataGroupRequest>(x => x.status),
                 nameof<DataGroupRequest>(x => x.name),
                 nameof<DataGroupRequest>(x => x.hash),
@@ -211,4 +203,14 @@ export interface ColumnGroup{
     groupHash: string;
     hash: string;
     name: string;
+}
+
+
+export interface ColumnCard{
+    indicators: Indicator[];
+    code: string;
+    name: string;
+    indicatorGroupId: Guid;
+    groups: ColumnGroup[],
+    order: number;
 }

@@ -1,0 +1,58 @@
+<div class="col-12" *ngIf="formGroup" [formGroup]="formGroup">
+    <div class="row m-0 card p-3 mb-4">
+
+        <mat-form-field class="col-12" appearance="legacy">
+            <mat-label>
+                {{'APP.BROWSE-DATA-TREE-CONFIGURATION-EDITOR.FIELDS.ID' | translate}}
+            </mat-label>
+            <input type="text" matInput formControlName="id">
+        </mat-form-field>
+
+        <mat-form-field class="col-12" appearance="legacy">
+            <mat-label>
+                {{'APP.BROWSE-DATA-TREE-CONFIGURATION-EDITOR.FIELDS.NAME' | translate}}
+            </mat-label>
+            <input type="text" matInput formControlName="name">
+        </mat-form-field>
+        <mat-form-field class="col-md-6" appearance="legacy">
+            <mat-label>
+                {{'APP.BROWSE-DATA-TREE-CONFIGURATION-EDITOR.FIELDS.ORDER' | translate}}
+            </mat-label>
+            <input type="number" matInput formControlName="order">
+        </mat-form-field>
+        <mat-form-field class="col-md-6" appearance="legacy">
+            <mat-label>
+                {{'APP.BROWSE-DATA-TREE-CONFIGURATION-EDITOR.FIELDS.GOTO' | translate}}
+            </mat-label>
+            <input type="text" matInput formControlName="goTo">
+        </mat-form-field>
+    </div>
+
+    <mat-card>
+        <mat-card-content>
+            <div class="col-12 d-flex justify-content-between">
+                <div>
+                    {{'APP.BROWSE-DATA-TREE-CONFIGURATION-EDITOR.LEVEL-CONFIGS' | translate}}
+                </div>
+                    <button mat-icon-button (click)="addLevelConfig()">
+                        <mat-icon>
+                            add
+                        </mat-icon>
+                    </button>
+            </div>
+            <mat-tab-group color=accent>
+                <mat-tab *ngFor="let levelConfig of levelConfigs?.controls; let index = index" [label]="index">
+                    <div class="d-flex justify-content-end">
+                        <button class="col-auto" mat-icon-button (click)="removeLevelConfig(index)">
+                            <mat-icon>
+                                delete
+                            </mat-icon>
+                        </button>
+                    </div>
+                    <app-level-config-editor [formGroup]="levelConfig"></app-level-config-editor>
+                </mat-tab>
+            </mat-tab-group>
+        </mat-card-content>
+    </mat-card>
+</div>
+

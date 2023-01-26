@@ -33,9 +33,9 @@ export class DataAccessRequestEditorModel extends BaseEditorModel implements Dat
 		if (item) {
 			super.fromModel(item);
 
-			this.indicatorsConfigArray = item?.config?.indicators.map(config => {
+			this.indicatorsConfigArray = item?.config?.indicators?.map(config => {
 				return new DataAccessRequestIndicatorConfigEditorModel().fromModel(config);
-			})
+			}) ?? []
 
 
 			if(item.config?.indicatorGroups?.length){
@@ -72,13 +72,13 @@ export class DataAccessRequestEditorModel extends BaseEditorModel implements Dat
 			status: [{ value: this.status, disabled: disabled }, context.getValidation('status').validators],
 			indicatorsConfigArray: this.formBuilder.array(tmp),
 			indicatorGroupConfigs: this.formBuilder.array(
-				this.indicatorGroupConfigs.map(groupConfig => this.formBuilder.group({
+				this.indicatorGroupConfigs?.map(groupConfig => this.formBuilder.group({
 					groupId: [{value:groupConfig.groupId, disabled}],
 					indicatorIds: [{value: this._groupIdToIndicatorIds[groupConfig.groupId.toString()], disabled}],
 					filterColumns: this.formBuilder.array(
-						groupConfig.filterColumns.map(fc => this.formBuilder.group({column: [{value:fc.column, disabled}], values: [{value: fc.values, disabled}]}))
+						groupConfig?.filterColumns?.map(fc => this.formBuilder.group({column: [{value:fc.column, disabled}], values: [{value: fc.values, disabled}]})) ?? []
 					)
-				}))
+				}))?? []
 			)
 		});
 	}

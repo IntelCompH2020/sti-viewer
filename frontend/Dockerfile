@@ -6,7 +6,7 @@ COPY package.json ./
 COPY package-lock.json ./
 
 # Install the dependencies and make the folder
-RUN npm install --legacy-peer-deps  && mkdir /src && mv ./node_modules ./src
+RUN npm install && mkdir /src && mv ./node_modules ./src
 
 WORKDIR /src
 

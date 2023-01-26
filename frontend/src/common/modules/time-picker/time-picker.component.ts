@@ -37,7 +37,7 @@ export class TimePickerComponent extends BaseComponent implements OnInit, OnChan
 		this.displayCulture = this.cultureService.getCurrentCulture().name;
 
 		this.datePickerConfig = {
-			locale: this.displayCulture,
+			// locale: this.displayCulture,
 			showSeconds: false,
 			format: this.displayFormat, // here we can set any format that Moment.js supports
 		};

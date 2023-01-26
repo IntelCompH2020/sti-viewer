@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface IndicatorGroupService {
 	List<IndicatorGroupEntity> getIndicatorGroups();
+	IndicatorGroupEntity getIndicatorGroupByCode(String code);
 }

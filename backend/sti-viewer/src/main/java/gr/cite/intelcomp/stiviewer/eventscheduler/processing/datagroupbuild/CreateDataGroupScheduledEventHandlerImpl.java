@@ -31,6 +31,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.OptimisticLockException;
+import java.io.IOException;
 import java.time.Instant;
 import java.util.AbstractMap;
 import java.util.List;
@@ -142,7 +143,7 @@ public class CreateDataGroupScheduledEventHandlerImpl implements CreateDataGroup
 		return status;
 	}
 
-	private void run(DataGroupRequestEntity dataGroupRequest, EntityManager entityManager, QueryFactory queryFactory, TenantScope scope) throws InvalidApplicationException {
+	private void run(DataGroupRequestEntity dataGroupRequest, EntityManager entityManager, QueryFactory queryFactory, TenantScope scope) throws InvalidApplicationException, IOException {
 		DataGroupRequestService dataGroupRequestService = this.applicationContext.getBean(DataGroupRequestService.class);
 		boolean success = dataGroupRequestService.buildGroup(dataGroupRequest);
 

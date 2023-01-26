@@ -1,0 +1,38 @@
+<ng-container *ngIf="formGroup" [formGroup]="formGroup">
+
+    {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.CHART-TYPE-EDITOR.X-AXIS.TITLE' | translate}}
+    <mat-form-field class="col-12" appearance="legacy">
+        <mat-label>
+            {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.CHART-TYPE-EDITOR.X-AXIS.NAME' | translate}}
+        </mat-label>
+        <input type="text" matInput formControlName="name">
+    </mat-form-field>
+
+    <div class="col-12">
+        <mat-checkbox formControlName="boundaryGap">
+            {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.CHART-TYPE-EDITOR.X-AXIS.BOUNDARY-GAP' | translate}}
+        </mat-checkbox>
+    </div>
+
+    <div class="col-12">
+        <mat-checkbox [checked]="!!axisLabel" (change)="onAxisLabelChange($event)">
+            {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.CHART-TYPE-EDITOR.X-AXIS.AXIS-LABEL' | translate}}
+        </mat-checkbox>
+    </div>
+
+    <ng-container *ngIf="axisLabel" [formGroup]="axisLabel">
+        <mat-form-field class="col-12" appearance="legacy">
+            <mat-label>
+                {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.CHART-TYPE-EDITOR.X-AXIS.ROTATE' | translate}}
+            </mat-label>
+            <input type="number" matInput formControlName="rotate">
+        </mat-form-field>
+
+        <mat-form-field class="col-12" appearance="legacy">
+            <mat-label>
+                {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.CHART-TYPE-EDITOR.X-AXIS.WIDTH' | translate}}
+            </mat-label>
+            <input type="number" matInput formControlName="width">
+        </mat-form-field>
+    </ng-container>
+</ng-container>

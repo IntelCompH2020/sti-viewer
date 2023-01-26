@@ -5,8 +5,9 @@ import gr.cite.intelcomp.stiviewer.authorization.AuthorizationFlags;
 import gr.cite.intelcomp.stiviewer.authorization.Permission;
 import gr.cite.intelcomp.stiviewer.common.JsonHandlingService;
 import gr.cite.intelcomp.stiviewer.common.enums.IsActive;
-import gr.cite.intelcomp.stiviewer.common.types.accessrequestconfig.AccessRequestConfigEntity;
-import gr.cite.intelcomp.stiviewer.common.types.accessrequestconfig.FilterColumnConfigEntity;
+import gr.cite.intelcomp.stiviewer.common.types.indicator.AccessRequestConfigEntity;
+import gr.cite.intelcomp.stiviewer.common.types.indicator.FilterColumnConfigEntity;
+import gr.cite.intelcomp.stiviewer.common.types.indicator.IndicatorConfigEntity;
 import gr.cite.intelcomp.stiviewer.convention.ConventionService;
 import gr.cite.intelcomp.stiviewer.data.IndicatorEntity;
 import gr.cite.intelcomp.stiviewer.data.TenantEntityManager;
@@ -17,7 +18,8 @@ import gr.cite.intelcomp.stiviewer.model.Indicator;
 import gr.cite.intelcomp.stiviewer.model.builder.IndicatorBuilder;
 import gr.cite.intelcomp.stiviewer.model.deleter.IndicatorDeleter;
 import gr.cite.intelcomp.stiviewer.model.persist.IndicatorPersist;
-import gr.cite.intelcomp.stiviewer.model.persist.accessrequestconfig.AccessRequestConfigPersist;
+import gr.cite.intelcomp.stiviewer.model.persist.indicator.AccessRequestConfigPersist;
+import gr.cite.intelcomp.stiviewer.model.persist.indicator.IndicatorConfigPersist;
 import gr.cite.intelcomp.stiviewer.query.IndicatorQuery;
 import gr.cite.intelcomp.stiviewer.service.dataset.DatasetServiceImpl;
 import gr.cite.tools.data.builder.BuilderFactory;
@@ -41,6 +43,7 @@ import org.springframework.web.context.annotation.RequestScope;
 import javax.management.InvalidApplicationException;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
@@ -123,17 +126,20 @@ public class IndicatorServiceImpl implements IndicatorService {
 		return this.builderFactory.builder(IndicatorBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(BaseFieldSet.build(fields, Indicator._id), data);
 	}
 
-	private AccessRequestConfigEntity mapToAccessRequestConfig(AccessRequestConfigPersist config) {
+	private IndicatorConfigEntity mapToAccessRequestConfig(IndicatorConfigPersist config) {
 		if (config == null) return null;
-		AccessRequestConfigEntity persistConfig = new AccessRequestConfigEntity();
-		if (config.getFilterColumns() != null) {
+		IndicatorConfigEntity persistConfig = new IndicatorConfigEntity();
+		if (config.getAccessRequestConfig() != null && config.getAccessRequestConfig().getFilterColumns() != null) {
 			List<FilterColumnConfigEntity> filterColumns = new ArrayList<>();
-			config.getFilterColumns().forEach(x -> {
+			AccessRequestConfigEntity accessRequestConfig = new AccessRequestConfigEntity();
+			config.getAccessRequestConfig().getFilterColumns().forEach(x -> {
 				FilterColumnConfigEntity newConfig = new FilterColumnConfigEntity();
 				newConfig.setCode(x.getCode());
+				newConfig.setDependsOnCode(x.getDependsOnCode());
 				filterColumns.add(newConfig);
 			});
-			persistConfig.setFilterColumns(filterColumns);
+			accessRequestConfig.setFilterColumns(filterColumns);
+			persistConfig.setAccessRequestConfig(accessRequestConfig);
 		}
 
 		return persistConfig;

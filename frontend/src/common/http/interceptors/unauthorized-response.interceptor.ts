@@ -5,8 +5,8 @@ import { AuthService } from '@app/core/services/ui/auth.service';
 import { BaseInterceptor } from '@common/http/interceptors/base.interceptor';
 import { InterceptorType } from '@common/http/interceptors/interceptor-type';
 import { InstallationConfigurationService } from '@common/installation-configuration/installation-configuration.service';
-import { from, Observable, throwError } from 'rxjs';
-import { catchError, mergeMap } from 'rxjs/operators';
+import { from, Observable, of, pipe, throwError } from 'rxjs';
+import { catchError, filter, mergeMap, switchMap } from 'rxjs/operators';
 
 @Injectable()
 export class UnauthorizedResponseInterceptor extends BaseInterceptor {
@@ -19,6 +19,7 @@ export class UnauthorizedResponseInterceptor extends BaseInterceptor {
 	get type(): InterceptorType { return InterceptorType.UnauthorizedResponse; }
 
 	private accountRefresh$: Observable<boolean> = null;
+	private isRefreshingToken: boolean = false;
 
 	interceptRequest(req: HttpRequest<any>, next: HttpHandler): Observable<HttpSentEvent | HttpHeaderResponse | HttpProgressEvent | HttpResponse<any> | HttpUserEvent<any>> {
 		return next.handle(req).pipe(
@@ -37,15 +38,31 @@ export class UnauthorizedResponseInterceptor extends BaseInterceptor {
 	}
 
 	private handle401Error(req: HttpRequest<any>, next: HttpHandler) {
-		if (!this.accountRefresh$) {
-			this.accountRefresh$ = from(this.authService.refreshToken().then(isRefreshed => {
-				if (!isRefreshed) {
-					this.logoutUser();
-					return false;
+		return of({})
+		.pipe(
+			switchMap(() =>{
+
+				//token refresh is in progress
+				if(this.isRefreshingToken){ // wait for it to complete
+					return this.accountRefresh$;
 				}
-			}));
-		}
-		return this.accountRefresh$.pipe(mergeMap(account => this.repeatRequest(req, next)));
+				// begin refreshing
+				this.isRefreshingToken = true;
+				return 	this.accountRefresh$ = from(this.authService.refreshToken().then(isRefreshed => {
+					this.isRefreshingToken = false;
+					if (!isRefreshed) {
+						this.logoutUser();
+						return false;
+					}
+
+					return true;
+				}))
+				.pipe(filter(x => x));
+			})
+			,
+			mergeMap(account => this.repeatRequest(req, next))
+
+		)
 	}
 
 	private repeatRequest(originalRequest: HttpRequest<any>, next: HttpHandler) {

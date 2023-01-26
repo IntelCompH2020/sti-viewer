@@ -1,0 +1,63 @@
+<div class="row">
+
+
+	<div class="col-12" *ngIf="gaugeConfig?.name">
+		<h5>
+			{{gaugeConfig?.name}}
+		</h5>
+	</div>
+
+
+	<div class="col-12" *ngIf="(valueCards?.length && (uiMinimumTimePased$ | async)) else loading" [@listAnimationSequentialScaleIn]="valueCards?.length">
+		<app-value-card 
+			class="d-inline-block"
+			*ngFor="let card of valueCards"
+			[value]="card.value"
+			[description]="card.title"
+		>
+		</app-value-card>
+	</div>
+
+	<div class="col-12" *ngIf="gaugeConfig?.description">
+		<p>
+			{{gaugeConfig?.description}}
+		</p>
+	</div>
+	<!-- <div class="col-12" *ngIf="gaugeConfig?.tags?.attachedTags?.length">	
+		<small>
+			{{'APP.INDICATOR-DASHBOARD.CHART.TAGS' | translate}}:
+		</small>
+		<mat-chip-list class="mt-2">
+			<mat-chip
+			(click)="selectTag(tag.name)"
+			[selected]="tag.selected"
+			color="accent"
+			*ngFor="let tag of tags$ | async"
+			>
+				{{
+				    tag.name
+				}}
+			</mat-chip>
+		</mat-chip-list>
+	</div> -->
+
+</div>
+
+
+<!-- * TEMPLATES -->
+
+<ng-template #loading>
+	<div class="loading-container col-12" [@fadeOut]>
+		<ng-container *ngIf="!noDataFound else noDataFoundTemplate">
+			<mat-spinner *ngIf="!errorLoading else errorLoadingTemplate" ></mat-spinner>
+			<ng-template #errorLoadingTemplate>
+				{{'COMMONS.ERRORS.DEFAULT' | translate}}
+			</ng-template>
+		</ng-container>
+		<ng-template #noDataFoundTemplate>
+			{{
+				'COMMONS.LISTING-COMPONENT.MESSAGE.EMPTY' | translate
+			}}
+		</ng-template>
+	</div>
+</ng-template>

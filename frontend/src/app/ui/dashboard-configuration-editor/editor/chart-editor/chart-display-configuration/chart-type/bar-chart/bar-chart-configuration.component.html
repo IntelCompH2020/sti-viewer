@@ -1,0 +1,34 @@
+<ng-container *ngIf="formGroup" [formGroup]="formGroup">
+
+    <div class="col-12">
+        <mat-checkbox formControlName="stack">
+            {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.CHART-TYPE-EDITOR.BAR-CHART.STACK' | translate}}
+        </mat-checkbox>
+    </div>
+    <div class="col-12">
+        <mat-checkbox formControlName="horizontal">
+            {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.CHART-TYPE-EDITOR.BAR-CHART.HORIZONTAL' | translate}}
+        </mat-checkbox>
+    </div>
+
+    <div class="col-12">
+		<mat-checkbox [checked]="!!formGroup?.get('areaStyle')?.value" (change)="onAreaStyleChange($event)">
+            {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.CHART-TYPE-EDITOR.BAR-CHART.AREASTYLE' | translate}}
+        </mat-checkbox>
+	</div>
+    <!-- <mat-form-field class="col-12" appearance="legacy">
+        <mat-label>areastyle</mat-label>
+        <input type="text" matInput formControlName="areaStyle">
+    </mat-form-field> -->
+
+    <div class="row col-12 justify-content-around">
+        <div class="col-md-5 card pt-3 pb-3">
+            <app-x-axis-editor [formGroup]="formGroup.get('xAxis')" *ngIf="formGroup.get('xAxis')" class="w-100"></app-x-axis-editor>
+        </div>
+        <div class="col-md-5 card pt-3 pb-3">
+            <app-y-axis-editor [formGroup]="formGroup.get('yAxis')" *ngIf="formGroup.get('yAxis')" class="w-100"></app-y-axis-editor>
+        </div>
+    </div>
+    <!-- <app-x-axis-editor [formGroup]="formGroup.get('xAxis')" *ngIf="formGroup.get('xAxis')" class="w-100"></app-x-axis-editor>
+    <app-y-axis-editor [formGroup]="formGroup.get('xAxis')" *ngIf="formGroup.get('yAxis')" class="w-100"></app-y-axis-editor> -->
+</ng-container>

@@ -1,5 +1,7 @@
 package gr.cite.intelcomp.stiviewer.model;
 
+import gr.cite.intelcomp.stiviewer.model.indicatorgroup.FilterColumn;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -8,14 +10,23 @@ public class IndicatorGroup {
 	public static final String _id = "id";
 	private String name;
 	public static final String _name = "name";
-	private String dashboardKey;
-	public static final String _dashboardKey = "dashboardKey";
+	
+	private String code;
+	public static final String _code = "code";
 
 	private List<Indicator> indicators;
 	public static final String _indicators = "indicators";
 
-	private List<String> filterColumns;
+	private List<FilterColumn> filterColumns;
 	public static final String _filterColumns = "filterColumns";
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
 
 	public String getName() {
 		return name;
@@ -33,11 +44,11 @@ public class IndicatorGroup {
 		this.indicators = indicators;
 	}
 
-	public List<String> getFilterColumns() {
+	public List<FilterColumn> getFilterColumns() {
 		return filterColumns;
 	}
 
-	public void setFilterColumns(List<String> filterColumns) {
+	public void setFilterColumns(List<FilterColumn> filterColumns) {
 		this.filterColumns = filterColumns;
 	}
 
@@ -47,13 +58,5 @@ public class IndicatorGroup {
 
 	public void setId(UUID id) {
 		this.id = id;
-	}
-
-	public String getDashboardKey() {
-		return dashboardKey;
-	}
-
-	public void setDashboardKey(String dashboardKey) {
-		this.dashboardKey = dashboardKey;
 	}
 }

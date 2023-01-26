@@ -1,0 +1,33 @@
+
+<div style="width: 10px; height: 10px; position: relative; transition: .3s ease transform;" (transitionend)="onAnimationEnd($event)" [class.minified]="isScaled">
+    <div cdkDrag class="card p-4 mat-elevation-z4" style="width: 1000px; position: absolute; left: -1200px; top: -600px;" >
+        <button (click)="scale()">scale</button>
+        <ng-container *ngIf="!!chart else noChartHooked ">
+            Drag me around
+        
+            <!-- <div echarts [options]="options" 
+            style="min-height: 200px; width: 300px;"
+            >
+            </div> -->
+        
+
+
+            <ng-container [ngSwitch]="chart?.type">
+                <app-indicator-dashboard-chart *ngSwitchCase="ChartPreviewType.Chart"  [chartConfig]="chart.data">
+                </app-indicator-dashboard-chart>
+
+                <app-indicator-dashboard-gauge *ngSwitchCase="ChartPreviewType.Gauge" [gaugeConfig]="chart.data">
+                </app-indicator-dashboard-gauge>
+            </ng-container>
+        </ng-container>
+    </div>
+</div>
+
+
+
+
+<ng-template #noChartHooked>
+    <div class="col-12 d-flex justify-content-center">
+        Nothing hooked yet. You may hook a chart by picking <mat-icon>phishing</mat-icon>
+    </div>
+</ng-template>

@@ -1,5 +1,3 @@
-import { FieldModel } from '../indicator-config/indicator-report-level-config';
-
 export interface BrowseDataTreeConfigModel {
 	id: string;
 	name: string;
@@ -10,7 +8,7 @@ export interface BrowseDataTreeConfigModel {
 
 
 export interface BrowseDataTreeLevelConfigModel {
-	field: FieldModel;
+	field: BrowseDataFieldModel;
 	order: number;
 	supportSubLevel?: boolean;
 	defaultDashboards: string[];
@@ -18,6 +16,20 @@ export interface BrowseDataTreeLevelConfigModel {
 }
 
 export interface BrowseDataTreeLevelDashboardOverrideModel {
+	// code: string;
+	// defaultDashboards: string[];
+	requirements: DataTreeLevelDashboardOverrideFieldRequirement[];
+	supportedDashboards:string[];
+	supportSubLevel: boolean;
+
+}
+
+
+export interface BrowseDataFieldModel{
 	code: string;
-	defaultDashboards: string[];
+	name: string;
+}
+export interface DataTreeLevelDashboardOverrideFieldRequirement{
+	field: string;
+	value: string;
 }

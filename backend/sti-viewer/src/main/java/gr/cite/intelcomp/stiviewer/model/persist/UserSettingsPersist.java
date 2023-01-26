@@ -24,14 +24,12 @@ public class UserSettingsPersist {
 	private String value;
 
 	@NotNull(message = "{validation.empty}")
-	@NotEmpty(message = "{validation.empty}")
 	private UserSettingsEntityType entityType;
 
 	@ValidId(message = "{validation.invalidid}")
 	private UUID entityId;
 
 	@NotNull(message = "{validation.empty}")
-	@NotEmpty(message = "{validation.empty}")
 	private UserSettingsType type;
 
 	private String hash;

@@ -1,0 +1,137 @@
+<div [formGroup]="formGroup" *ngIf="formGroup" class="row m-0 pt-3">
+
+	<div class="col-12 d-flex justify-content-end">
+		<button mat-icon-button color="primary" (click)="hookChart()">
+			<mat-icon [color]="formChangeSubscription ? 'accent' : ''">
+				phishing
+			</mat-icon>
+		</button>
+		<button mat-icon-button color="primary" (click)="onDelete()">
+			<mat-icon>
+				delete
+			</mat-icon>
+		</button>
+	</div>
+
+
+	<mat-tab-group color="accent" class="col-12">
+		<!-- * GENERAL -->
+		<mat-tab>
+			<ng-template mat-tab-label>
+				<mat-icon color="primary" class="mr-2">info</mat-icon>
+				<span>
+					{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.GENERAL-CHART-INFO' | translate}}
+				</span>
+			</ng-template>
+			<ng-template matTabContent>
+				<div class="tab-item">
+					<app-dashboard-configuration-chart-general-info-editor class="w-100" [formGroup]="formGroup"></app-dashboard-configuration-chart-general-info-editor>
+				</div>
+			</ng-template>
+		</mat-tab>
+
+		<!-- * DATA FECHING -->
+		<mat-tab>
+			<ng-template mat-tab-label>
+				<mat-icon color="primary" class="mr-2">settings_input_component</mat-icon>
+				<span>
+					{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-FETCHING' | translate}}
+				</span>
+			</ng-template>
+			<ng-template matTabContent>
+				<div class="tab-item">
+					<app-dashboard-configuration-data-fetching-editor class="w-100" [formGroup]="formGroup"></app-dashboard-configuration-data-fetching-editor>
+				</div>
+			</ng-template>
+		</mat-tab>
+
+		<!-- *CHART SPECIFIC -->
+		<mat-tab>
+			<ng-template mat-tab-label>
+				<mat-icon color="primary" class="mr-2">bar_chart</mat-icon>
+				<span>
+					{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-CONFIGURATION' | translate}}
+				</span>
+			</ng-template>
+			<ng-template matTabContent>
+				<div class="tab-item">
+					<app-dashboard-configuration-chart-display-editor class="w-100" [formGroup]="formGroup"></app-dashboard-configuration-chart-display-editor>
+				</div>
+			</ng-template>
+		</mat-tab>
+
+		<!--* DATA MAPPING -->
+		<mat-tab [disabled]="!typeControl?.value">
+			<ng-template mat-tab-label>
+				<mat-icon color="primary" class="mr-2">route</mat-icon>
+				<span>
+					{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.DATA-MAPPING' | translate}}
+				</span>
+				<mat-icon class="lock-icon text-muted" *ngIf="!typeControl?.value" [matTooltip]="!typeControl?.value? 'Please select chart type first' : ''">
+					lock
+				</mat-icon>
+			</ng-template>
+			<ng-template matTabContent>
+				<div class="tab-item">
+					<app-dashboard-configuration-data-mapping-editor class="w-100" [formGroup]="formGroup"></app-dashboard-configuration-data-mapping-editor>
+				</div>
+			</ng-template>
+		</mat-tab>
+
+		
+	</mat-tab-group>
+
+
+
+	<!-- <section class="section-header col-12 text-muted">
+		<mat-icon class="section-icon" color="primary">info</mat-icon>
+		<h6 class="section-title">General Charts info</h6>
+	</section> -->
+
+
+	
+
+	<!-- <div class="col-12 mb-4 mt-4">
+		<mat-divider></mat-divider>
+	</div> -->
+
+
+
+	<!-- * DATA REQUEST  -->
+<!-- 
+	<section class="section-header col-12 text-muted">
+		<mat-icon class="section-icon" color="primary">settings_input_component</mat-icon>
+		<h6 class="section-title">Data fetching</h6>
+	</section> -->
+
+	<!-- <app-dashboard-configuration-data-fetching-editor class="col-12" [formGroup]="formGroup"></app-dashboard-configuration-data-fetching-editor> -->
+
+	<!-- <div class="col-12 mb-4 mt-4">
+		<mat-divider></mat-divider>
+	</div> -->
+
+	<!-- * DATA MAPPING -->
+
+	<!-- <section class="section-header col-12 text-muted">
+		<mat-icon class="section-icon" color="primary">route</mat-icon>
+		<h6 class="section-title">Data Mapping</h6>
+	</section> -->
+
+
+	<!-- <app-dashboard-configuration-data-mapping-editor class="col-12" [formGroup]="formGroup"></app-dashboard-configuration-data-mapping-editor> -->
+
+	
+	<!-- <div class="col-12 mb-4 mt-4">
+		<mat-divider></mat-divider>
+	</div>
+	 -->
+	<!-- * CHART CONFIGURATION -->
+	
+	<!-- <section class="section-header col-12 text-muted">
+		<mat-icon class="section-icon" color="primary">bar_chart</mat-icon>
+		<h6 class="section-title">Chart configuration</h6>
+	</section> -->
+	
+	<!-- <app-dashboard-configuration-chart-display-editor class="col-12" [formGroup]="formGroup"></app-dashboard-configuration-chart-display-editor> -->
+
+</div>

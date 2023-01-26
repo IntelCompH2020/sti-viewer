@@ -238,12 +238,24 @@ export class AuthService extends BaseService {
 
 	public refreshToken(httpParams?: Object): Promise<boolean> {
 		return this.keycloakService.updateToken(60).then(isRefreshed => {
-				if (isRefreshed) {
-					this.prepareAuthRequest(from(this.keycloakService.getToken()), httpParams).pipe(takeUntil(this._destroyed)).subscribe(() => {}, (error) => this.onAuthenticateError(error));
-					return true;
-				}
+
+			if(!isRefreshed){
 				return false;
-			});
+			}
+			
+			return this.prepareAuthRequest(from(this.keycloakService.getToken()), httpParams).pipe(takeUntil(this._destroyed))
+			.pipe(
+				map(
+						() =>{
+							return true;
+						},
+						error =>{
+							this.onAuthenticateError(error);
+							return false
+						}
+					)
+			).toPromise()
+		});
 	}
 
 	onAuthenticateSuccess(returnUrl: string): void {

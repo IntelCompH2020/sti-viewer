@@ -11,6 +11,7 @@ import gr.cite.tools.exception.MyValidationException;
 import gr.cite.tools.fieldset.FieldSet;
 
 import javax.management.InvalidApplicationException;
+import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 
@@ -21,5 +22,5 @@ public interface DataGroupRequestService {
 	
 	void deleteAndSave(UUID id) throws MyForbiddenException, InvalidApplicationException;
 
-	boolean buildGroup(DataGroupRequestEntity request) throws InvalidApplicationException;
+	boolean buildGroup(DataGroupRequestEntity request) throws InvalidApplicationException, IOException;
 }

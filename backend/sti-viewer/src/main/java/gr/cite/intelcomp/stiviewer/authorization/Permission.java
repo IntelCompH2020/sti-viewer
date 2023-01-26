@@ -49,6 +49,9 @@ public final class Permission {
 	public static String BrowseBrowseDataTreeConfig = "BrowseBrowseDataTreeConfig";
 	public static String BrowseBrowseDataTree = "BrowseBrowseDataTree";
 
+	//PortofolioConfig
+	public static String BrowsePortofolioConfig = "BrowsePortofolioConfig";
+
 	//Dashboard
 	public static String GetDashboard = "GetDashboard";
 

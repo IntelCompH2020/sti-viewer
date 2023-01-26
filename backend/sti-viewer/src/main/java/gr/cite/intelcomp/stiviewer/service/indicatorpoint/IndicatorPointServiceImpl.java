@@ -85,8 +85,9 @@ public class IndicatorPointServiceImpl implements IndicatorPointService {
 	private final ElasticIndicatorService elasticIndicatorService;
 	private final QueryFactory queryFactory;
 	private final IndicatorPointValidationService validationService;
+	private final IndicatorPointProperties indicatorPointProperties;
 
-
+	
 	@Autowired
 	public IndicatorPointServiceImpl(
 			TenantEntityManager entityManager,
@@ -102,7 +103,8 @@ public class IndicatorPointServiceImpl implements IndicatorPointService {
 			AuthorizationContentResolver authorizationContentResolver,
 			ElasticIndicatorService elasticIndicatorService,
 			QueryFactory queryFactory,
-			IndicatorPointValidationServiceImpl validationService) {
+			IndicatorPointValidationServiceImpl validationService, 
+			IndicatorPointProperties indicatorPointProperties) {
 		this.entityManager = entityManager;
 		this.authorizationService = authorizationService;
 		this.deleterFactory = deleterFactory;
@@ -117,9 +119,10 @@ public class IndicatorPointServiceImpl implements IndicatorPointService {
 		this.elasticIndicatorService = elasticIndicatorService;
 		this.queryFactory = queryFactory;
 		this.validationService = validationService;
+		this.indicatorPointProperties = indicatorPointProperties;
 	}
 
-	public IndicatorPoint persist(UUID indicatorId, IndicatorPointPersist model, FieldSet fields) throws MyForbiddenException, MyValidationException, MyApplicationException, MyNotFoundException, InvalidApplicationException {
+	public IndicatorPoint persist(UUID indicatorId, IndicatorPointPersist model, FieldSet fields) throws MyForbiddenException, MyValidationException, MyApplicationException, MyNotFoundException, InvalidApplicationException, IOException {
 		logger.debug(new MapLogEntry("persisting dataset").And("model", model).And("fields", fields));
 
 		this.authorizationService.authorizeAtLeastOneForce(List.of(this.authorizationContentResolver.indicatorAffiliation(indicatorId)), Permission.EditIndicatorPoint);
@@ -132,7 +135,7 @@ public class IndicatorPointServiceImpl implements IndicatorPointService {
 		return persisted;
 	}
 
-	public void persist(UUID indicatorId, List<IndicatorPointPersist> models) throws MyForbiddenException, MyValidationException, MyApplicationException, MyNotFoundException, InvalidApplicationException {
+	public void persist(UUID indicatorId, List<IndicatorPointPersist> models) throws MyForbiddenException, MyValidationException, MyApplicationException, MyNotFoundException, InvalidApplicationException, IOException {
 		logger.debug(new MapLogEntry("persisting dataset").And("models", models));
 		this.authorizationService.authorizeAtLeastOneForce(List.of(this.authorizationContentResolver.indicatorAffiliation(indicatorId)), Permission.EditIndicatorPoint);
 
@@ -146,7 +149,7 @@ public class IndicatorPointServiceImpl implements IndicatorPointService {
 	}
 
 	private void saveToElasticInBatches(List<IndicatorPointEntity> items, IndexCoordinates indexCoordinates) {
-		int batchingFactor = 100; //TODO config
+		int batchingFactor = this.indicatorPointProperties.getIndicatorPointImportBatchSize();
 		int batch = (int) (items.size() / batchingFactor);
 		int remaining = items.size() - (batch * batchingFactor);
 		for (int i = 0; i < batch; i += 1) {
@@ -310,7 +313,6 @@ public class IndicatorPointServiceImpl implements IndicatorPointService {
 		if (indicatorEntity == null) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{indicatorId, Indicator.class.getSimpleName()}, LocaleContextHolder.getLocale()));
 
 		IndicatorConfigItem indicatorConfigItem = this.getIndicatorConfigItem(indicatorId);
-		if (indicatorConfigItem == null) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{indicatorId, IndicatorConfigItem.class.getSimpleName()}, LocaleContextHolder.getLocale()));
 
 		boolean isRawData = lookup.getIsRawData() != null && lookup.getIsRawData();
 

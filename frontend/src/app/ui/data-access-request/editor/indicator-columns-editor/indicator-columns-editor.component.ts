@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { FormControl} from "@angular/forms";
 import { ElasticOrderEnum } from "@app/core/enum/elastic-order.enum";
+import { IndicatorPointKeywordFilter, IndicatorPointLookup } from "@app/core/query/indicator-point.lookup";
 import { IndicatorPointDistinctLookup } from "@app/core/query/IndicatorPointDistinctLookup";
 import { IndicatorPointService } from "@app/core/services/http/indicator-point.service";
 import { MultipleAutoCompleteConfiguration } from "@common/modules/auto-complete/multiple/multiple-auto-complete-configuration";
@@ -31,6 +32,10 @@ export class IndicatorColumnsEditorComponent implements OnInit{
     disabled: boolean = false;
 
 
+    @Input()
+    keywordFilters: IndicatorPointKeywordFilter[] ;
+
+
     constructor(
         private indicatorPointService: IndicatorPointService
         ){
@@ -59,6 +64,13 @@ export class IndicatorColumnsEditorComponent implements OnInit{
         lookup.order  = ElasticOrderEnum.ASC;
         lookup.viewNotApprovedValues = true;
         lookup.batchSize = 20
+
+
+        if(this.keywordFilters?.length){
+            const indicatorPointLookup = new IndicatorPointLookup();
+            indicatorPointLookup.keywordFilters = this.keywordFilters;
+            lookup.indicatorPointQuery = indicatorPointLookup;
+        }
 
 
         if(searchQuery){

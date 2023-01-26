@@ -22,9 +22,6 @@ RUN mvn -Dserver.username=${CITE_MAVEN_ACCOUNT_USR} -Dserver.password=${CITE_MAV
 ######################################## Run Stage ########################################
 FROM adoptopenjdk:11.0.8_10-jre-hotspot-bionic
 
-ENV SERVER_PORT=8080
-EXPOSE ${SERVER_PORT}
-
 COPY --from=build-stage /build/notification-web/target/sti-viewer-notification-web.jar /app/sti-viewer-notification-web.jar
 
 ENTRYPOINT ["java","-Dspring.config.additional-location=file:/config/","-Dspring.profiles.active=${PROFILE}","-Djava.security.egd=file:/dev/./urandom","-jar","/app/sti-viewer-notification-web.jar"]

@@ -1,0 +1,145 @@
+<ng-container *ngIf="formGroup" [formGroup]="formGroup">
+
+    <mat-form-field class="col-auto mt-2" appearance="legacy">
+        <mat-label>
+            {{'APP.BROWSE-DATA-TREE-CONFIGURATION-EDITOR.LEVEL-CONFIG-EDITOR.FIELDS.ORDER' | translate}}
+        </mat-label>
+        <input type="number" matInput formControlName="order">
+    </mat-form-field>
+
+    <div class="col-12">
+        <mat-checkbox formControlName="supportSubLevel">
+            {{'APP.BROWSE-DATA-TREE-CONFIGURATION-EDITOR.LEVEL-CONFIG-EDITOR.FIELDS.SUPPORT-SUB-LEVEL' | translate}}
+        </mat-checkbox>
+    </div>
+
+    <div class="col-12">
+        <mat-checkbox [checked]="!!formGroup.value?.defaultDashboards" (change)="onDefaultDashboardChange($event)">
+            {{'APP.BROWSE-DATA-TREE-CONFIGURATION-EDITOR.LEVEL-CONFIG-EDITOR.FIELDS.DEFAULT-DASHBOARDS' | translate}}
+        </mat-checkbox>
+    </div>
+
+
+    
+    <mat-form-field class="col-12" appearance="legacy" *ngIf="!!formGroup.value?.defaultDashboards">
+        <mat-label>
+            {{'APP.BROWSE-DATA-TREE-CONFIGURATION-EDITOR.LEVEL-CONFIG-EDITOR.FIELDS.DEFAULT-DASHBOARDS' | translate}}
+        </mat-label>
+        <mat-chip-list #chipList>
+          <mat-chip *ngFor="let dashboard of formGroup.value?.defaultDashboards; let index = index">
+            {{dashboard}}
+            <button matChipRemove (click)="removeItemFromArray(index, formGroup.get('defaultDashboards'))">
+              <mat-icon>cancel</mat-icon>
+            </button>
+          </mat-chip>
+          <input placeholder="{{'APP.BROWSE-DATA-TREE-CONFIGURATION-EDITOR.LEVEL-CONFIG-EDITOR.FIELDS.NEW-DASHBOARD' | translate}}"
+                #dashboardInput
+                 [matChipInputFor]="chipList"
+                 [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                 (keyup.enter)="addItemInArray(dashboardInput, formGroup.get('defaultDashboards'))">
+        </mat-chip-list>
+    </mat-form-field>
+
+
+    <div class="col-12">
+        <mat-checkbox [checked]="!!formGroup.value?.dashboardOverrides" (change)="onDashboardOverrideChange($event)">
+            {{'APP.BROWSE-DATA-TREE-CONFIGURATION-EDITOR.LEVEL-CONFIG-EDITOR.FIELDS.DASHBOARD-OVERRIDES' | translate}}
+        </mat-checkbox>
+    </div>
+
+    <div class="col-12" *ngIf="!!formGroup.value?.dashboardOverrides">
+        
+        <i class="text-muted">
+            {{'APP.BROWSE-DATA-TREE-CONFIGURATION-EDITOR.LEVEL-CONFIG-EDITOR.FIELDS.DASHBOARD-OVERRIDES' | translate}}
+        </i>
+        
+        <div [formGroup]="dashboardOverride" class="col-12 p-0 pt-3 card mt-3 mb-1" *ngFor="let dashboardOverride of dashboardOverrides?.controls; let idx = index">
+        
+            <button mat-mini-fab  class="delete-btn" (click)="removeDashboardOverride(idx)">
+                <mat-icon>delete</mat-icon>
+            </button>
+
+            <div class="col-12">
+                <mat-checkbox formControlName="supportSubLevel">
+                    {{'APP.BROWSE-DATA-TREE-CONFIGURATION-EDITOR.LEVEL-CONFIG-EDITOR.FIELDS.SUPPORTS-SUBLEVEL' | translate}}
+                </mat-checkbox>
+            </div>
+            <!-- <mat-form-field class="col-12" appearance="legacy">
+                <mat-label>code</mat-label>
+                <input type="text" matInput formControlName="code">
+            </mat-form-field>
+
+             -->
+            <mat-form-field class="col-12" appearance="legacy">
+                <mat-label>
+                    {{'APP.BROWSE-DATA-TREE-CONFIGURATION-EDITOR.LEVEL-CONFIG-EDITOR.FIELDS.SUPPORTED-DASHBOARDS' | translate}}
+                </mat-label>
+                <mat-chip-list #chipList>
+                    <mat-chip *ngFor="let dashboard of dashboardOverride.value?.supportedDashboards; let index = index">
+                    {{dashboard}}
+                    <button matChipRemove (click)="removeItemFromArray(index, dashboardOverride.get('supportedDashboards'))">
+                        <mat-icon>cancel</mat-icon>
+                    </button>
+                    </mat-chip>
+                    <input placeholder="{{'APP.BROWSE-DATA-TREE-CONFIGURATION-EDITOR.LEVEL-CONFIG-EDITOR.FIELDS.NEW-DASHBOARD' | translate}}"
+                        #dashboardInput
+                            [matChipInputFor]="chipList"
+                            [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                            (keyup.enter)="addItemInArray(dashboardInput, dashboardOverride.get('supportedDashboards'))">
+                </mat-chip-list>
+            </mat-form-field>
+
+
+            
+            <div class="col-12">
+                <mat-divider>
+    
+                </mat-divider>
+                {{'APP.BROWSE-DATA-TREE-CONFIGURATION-EDITOR.LEVEL-CONFIG-EDITOR.FIELDS.REQUIREMENTS' | translate}}
+                <div class="card p-3 mb-3" *ngFor="let requirement of dashboardOverride.get('requirements')?.controls; let requirementIndex = index" [formGroup]="requirement">
+                    <button mat-mini-fab  class="delete-btn" (click)="removeRequirement(dashboardOverride, requirementIndex)">
+                        <mat-icon>delete</mat-icon>
+                    </button>
+                    <div>
+                        <mat-form-field class="col-md-6" appearance="legacy">
+                            <mat-label>
+                                {{'APP.BROWSE-DATA-TREE-CONFIGURATION-EDITOR.LEVEL-CONFIG-EDITOR.FIELDS.REQUIREMENTS-FIELD' | translate}}
+                            </mat-label>
+                            <input type="text" matInput formControlName="field">
+                        </mat-form-field>
+        
+                        <mat-form-field class="col-md-6" appearance="legacy">
+                            <mat-label>
+                                {{'APP.BROWSE-DATA-TREE-CONFIGURATION-EDITOR.LEVEL-CONFIG-EDITOR.FIELDS.REQUIREMENTS-VALUE' | translate}}
+                            </mat-label>
+                            <input type="text" matInput formControlName="value">
+                        </mat-form-field>
+                    </div>
+                </div>
+
+                <div class="row m-0 justify-content-end">
+                    <button mat-icon-button class="col-auto" (click)="addRequirement(dashboardOverride)">
+                        <mat-icon>add</mat-icon>
+                    </button>
+                </div>
+            </div>
+
+
+
+        </div>
+        <div class="row m-0 justify-content-end">
+            <button mat-icon-button class="col-auto" (click)="addDashboardOverride()">
+                <mat-icon>add</mat-icon>
+            </button>
+        </div>
+    </div>
+
+    <div class="col-12">
+        <i class="text-muted">
+            {{'APP.BROWSE-DATA-TREE-CONFIGURATION-EDITOR.LEVEL-CONFIG-EDITOR.FIELDS.FIELD' | translate}}
+        </i>
+        <div class="card mt-2">
+            <app-field-model-editor [formGroup]="formGroup?.get('field')"></app-field-model-editor>
+        </div>
+    </div>
+</ng-container>

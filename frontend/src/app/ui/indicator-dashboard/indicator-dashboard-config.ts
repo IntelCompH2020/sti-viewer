@@ -9,22 +9,58 @@ export interface IndicatorDashboardConfig {
 
 export interface IndicatorDashboardTabConfig {
 	name: string;
-	chartGroups: IndicatorDashboardChartGroupConfig[];
+	chartGroups: TabBlockConfig[];
 }
 
-export interface IndicatorDashboardChartGroupConfig {
+
+export type TabBlockConfig = IndicatorDashboardChartGroupConfig | GaugesBlock;
+
+
+export type BaseTabBlock = {
 	name: string;
+	type?: TabBlockType;
+}
+
+export type IndicatorDashboardChartGroupConfig = BaseTabBlock &  {
+	type?: TabBlockType.ChartGroup;
 	charts: IndicatorDashboardChart [];
+}
+
+export enum TabBlockType {
+	ChartGroup = 'chartgroup',
+	Gauge = 'gauge'
+}
+
+
+export type GaugesBlock = BaseTabBlock & {
+	type?: TabBlockType.Gauge;
+	gauges: BaseIndicatorDashboardGaugeConfig [];
 }
 
 export type IndicatorDashboardChart = IndicatorDashboardLineChartConfig | IndicatorDashboardBarChartConfig | IndicatorDashboardScatterChartConfig | IndicatorDashboardPieChartConfig | IndicatorDashboardPolarBarChartConfig | IndicatorDashboardMapChartConfig | IndicatorDashboardSankeyChartConfig;
 
 
-//TODO LINECHART BARCHART ETC UI MORE PRESENTATION CONFIGURATION
 export interface IndicatorDashboardSankeyChartConfig extends BaseIndicatorDashboardChartConfig {
 	connectionExtractor: ConnectionExtractor;
 }
 
+
+export interface ConnectionLimit{
+	type: ConnectionLimitType;
+	order: ConnectionLimitOrder;
+	count: number;
+}
+
+export enum ConnectionLimitType{
+	Source = 'source',
+	Target = 'target',
+	Connection = 'connection'
+}
+
+export enum ConnectionLimitOrder{
+	ASCENDING = 'asc',
+	DESCENDING = 'desc'
+}
 
 export interface ConnectionExtractor{
 	sourceKeyExtractor: string;//* search  source from group items
@@ -33,6 +69,8 @@ export interface ConnectionExtractor{
 
 	valueTests?: Record<string, string>;
 	groupTests?: Record<string, string>;
+
+	limit?: ConnectionLimit;
 }
 export interface IndicatorDashboardLineChartConfig extends BaseIndicatorDashboardChartConfig {
 	xAxis:IndicatorDashboardChartXAxisConfig;
@@ -55,94 +93,159 @@ export interface IndicatorDashboardGraphChartConfig extends BaseIndicatorDashboa
 	
 }
 export interface IndicatorDashboardPieChartConfig extends BaseIndicatorDashboardChartConfig, Omit <BaseIndicatorDashboardChartConfig, 'type'>{
-	type: IndicatorDashboardChartType.Pie;
+	// type: IndicatorDashboardChartType.Pie;
 	roseType?:string;
 }
 export interface IndicatorDashboardPolarBarChartConfig extends BaseIndicatorDashboardChartConfig, Omit <BaseIndicatorDashboardChartConfig, 'type'>{
-	type: IndicatorDashboardChartType.PolarBar;
+	// type: IndicatorDashboardChartType.PolarBar;
 	dataZoom?: DataZoom;
 	radiusAxis: PolarBarRadiusAxis;
 }
 export interface IndicatorDashboardMapChartConfig extends BaseIndicatorDashboardChartConfig, Omit <BaseIndicatorDashboardChartConfig, 'type'>{
-	type: IndicatorDashboardChartType.Map;
+	// type: IndicatorDashboardChartType.Map;
 	mapChartConfig: MapConfig;
 
 	// * <Backend Name (backend response), JSON map config name>
 	countryNameMapping?: Record<string, string>;
 }
 export interface IndicatorDashboardTreeMapChartConfig extends BaseIndicatorDashboardChartConfig, Omit <BaseIndicatorDashboardChartConfig, 'type'>{
-	type: IndicatorDashboardChartType.TreeMap;
+	// type: IndicatorDashboardChartType.TreeMap;
 	treeName?: string;
-	toolTip?:{
-		name?: string;
-		metricName?: string;
-	},
+	toolTip?: TreeMapToolTip;
 	treeColors?: Record<string, string>;
 }
+
+export interface TreeMapToolTip{
+	name?: string;
+	metricName?: string;
+}
 export interface MapConfig{
-	high?:{
-		color?: string
-		text?:string
-	}
-	low?:{
-		color?: string
-		text?:string
-	}
+	high?:MapConfigLegentItem;
+	low?:MapConfigLegentItem;
+}
+
+export interface MapConfigLegentItem{
+	color?: string;
+	text?:string;
 }
 
 export interface PolarBarRadiusAxis{
 	name: string;
 }
 
-export interface BaseIndicatorDashboardChartConfig{
+
+export interface ChartDownloadImageConfig{
+
+}
+export interface ChartDownloadDataConfig{
+
+}
+
+export interface DashboardChartTagConfig{
+	attachedTags?: string[];
+}
+
+
+export interface BaseTagConfiguration{
+	tags?: DashboardChartTagConfig;
+}
+
+export interface BaseServerFetchConfiguration{
 	indicatorId: string | 'inherited';
-	type: IndicatorDashboardChartType;
-	name?: string;
-	chartName?: string;
-	chartSubtitle?: string;
-	reverseValues?: boolean;
-	description: string;
 	metrics?: IndicatorConfigMetric[];
 	bucket?: IndicatorConfigBucket;
-	legend?: LegendConfig;
-	filters?: ChartFilter[];
-	chartDownloadImage?:{};
-	chartDownloadData?:{};
-	staticFilters?:{
-		keywordsFilters?:{
-			field: string;
-			value:  string[];
-		}[];
-	}
+	staticFilters?:IndicatorDashboardStaticFilters;
 	rawDataRequest?:RawDataRequest;
+}
 
+export interface BaseSeriesConfiguration{
+	//* describe how to extract series from results
+	series?: DashBoardSerieConfiguration[];
+}
+
+export interface BaseTransformConfiguration{
 	// * extract data from response
-
 	labelSortKey:string; //* sort results based on a value found in group.items (picked by labelSorkKey) !!required
 	labelsTransform?: FieldFormatterConfig; //*  provide transformation configuration for label axis (x axis) if needed
-	//* describe how to extract series from results
-	series?: {
-		nested?:{
-			type?: 'line' | 'bar';
-		};
-		splitSeries?: {key: string}[]
+	reverseValues?: boolean;
+}
 
-		// * describe where to find x axis data (labels) 
-		label:{
-			color?:string; //* color for the serie produced (not taken into account if there are split series)
-			name: string; // * name of serie produced (not taken into account if there is splitseries defined)
-			labelKey: string; //* key with which we are extracting label from group.items
-		}
+export interface CommonDashboardItemConfiguration extends 
+	BaseSeriesConfiguration,
+	BaseServerFetchConfiguration,
+	BaseTagConfiguration,
+	BaseTransformConfiguration 
+{
 
-		// * describe how to extract value from values
-		values:{
-			formatter?: SeriesValueFormatter;
-			valueKey: string; //* which field we consider as a value from values[x] object
-			tests?:Record<string, string>[] //* a list of tests that need to be validated (AND LOGIC only). the perfect match object which we exctract the value must have key-value pair that matches extact with the tests
-			groupTests?:Record<string, string>[]// * Testing group values (provided in labels object)
-		}
-	}[];
+}
 
+export interface BaseIndicatorDashboardChartConfig extends CommonDashboardItemConfiguration{
+	type: IndicatorDashboardChartType;
+	chartName?: string;
+	chartSubtitle?: string;
+	
+	description: string;
+	legend?: LegendConfig;
+	filters?: ChartFilter[];
+	chartDownloadImage?:ChartDownloadImageConfig;
+	chartDownloadData?:ChartDownloadDataConfig;
+}
+
+
+
+export enum GaugeType{
+	ValueCard = 'value_card'
+}
+export interface BaseIndicatorDashboardGaugeConfig extends CommonDashboardItemConfiguration{
+	type: GaugeType,
+	name: string,
+	labelOverride?: string,
+	description: string,
+}
+
+export interface IndicatorDashboardStaticFilters{
+	keywordsFilters?:IndicatorKeywordFilter[];
+}
+
+export interface IndicatorKeywordFilter{
+	field: string;
+	value:  string[];
+}
+
+
+export enum DashBoardSerieConfigurationNestedType{
+	Line = 'line',
+	Bar = 'bar'
+}
+export interface DashBoardSerieConfigurationNested{
+	type?: DashBoardSerieConfigurationNestedType
+}
+
+export interface DashBoardSerieConfiguration{
+	nested?:DashBoardSerieConfigurationNested;
+	splitSeries?: DashBoardSerieSplitSerie[];
+
+	// * describe where to find x axis data (labels) 
+	label:DashBoardSerieLabel;
+
+	// * describe how to extract value from values
+	values:DashBoardSerieValues
+}
+
+export interface DashBoardSerieSplitSerie{
+	key: string
+}
+export interface DashBoardSerieLabel{
+	color?:string; //* color for the serie produced (not taken into account if there are split series)
+	name: string; // * name of serie produced (not taken into account if there is splitseries defined)
+	labelKey: string; //* key with which we are extracting label from group.items
+}
+
+export interface DashBoardSerieValues{
+	formatter?: SeriesValueFormatter;
+	valueKey: string; //* which field we consider as a value from values[x] object
+	tests?:Record<string, string>[] //* a list of tests that need to be validated (AND LOGIC only). the perfect match object which we exctract the value must have key-value pair that matches extact with the tests
+	groupTests?:Record<string, string>[]// * Testing group values (provided in labels object)
 }
 
 
@@ -239,13 +342,14 @@ export enum IndicatorDashboardChartType {
 	Sankey='sankey'
 }
 
-interface DataZoom{
+export interface DataZoom{
 	inside?: boolean;
 	slider?: boolean;
-	areaZoom?:{
-		start :number; //percentage
-		end: number; //percentage
-	}
+	areaZoom?: AreaZoom;
+}
+export interface AreaZoom{
+	start :number; //percentage
+	end: number; //percentage
 }
 
 export interface BaseIndicatorDashboardChartAxisConfig{
@@ -256,12 +360,12 @@ export interface IndicatorDashboardChartYAxisConfig extends BaseIndicatorDashboa
 
 }
 export interface IndicatorDashboardChartXAxisConfig extends BaseIndicatorDashboardChartAxisConfig {
-	axisLabel?:{
-		rotate?: number;
-		width?: number;
-	}
+	axisLabel?: AxisLabel;
 }
-
+export interface AxisLabel{
+	rotate?: number;
+	width?: number;
+}
 
 export interface IndicatorConfigMetric extends Metric{
 }

@@ -1,0 +1,40 @@
+<ng-container *ngIf="formGroup" [formGroup]="formGroup">
+    <div class="col-12">
+        <mat-checkbox formControlName="inside">
+            {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.CHART-TYPE-EDITOR.DATA-ZOOM.INSIDE-ZOOM' | translate}}
+        </mat-checkbox>
+    </div>
+    <div class="col-12">
+        <mat-checkbox formControlName="slider">
+            {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.CHART-TYPE-EDITOR.DATA-ZOOM.SLIDER' | translate}}
+        </mat-checkbox>
+    </div>
+
+    <div class="col-12">
+        <mat-checkbox [checked]="!!areaZoom" (change)="onAreaZoomChange($event)">
+            {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.CHART-TYPE-EDITOR.DATA-ZOOM.AREA-ZOOM' | translate}}
+        </mat-checkbox>
+    </div>
+    
+    <ng-container *ngIf="areaZoom" [formGroup]="areaZoom">
+        <!-- START -->
+        <mat-form-field class="col-md-6" appearance="legacy">
+            <mat-label>
+                {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.CHART-TYPE-EDITOR.DATA-ZOOM.FROM' | translate}}
+            </mat-label>
+            <input type="number" matInput formControlName="start">
+        </mat-form-field>
+
+        <!-- TO -->
+        <mat-form-field class="col-md-6" appearance="legacy">
+            <mat-label>
+                {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.CHART-TYPE-EDITOR.DATA-ZOOM.TO' | translate}}
+            </mat-label>
+            <input type="number" matInput formControlName="end">
+        </mat-form-field>
+
+    </ng-container>
+
+
+
+</ng-container>

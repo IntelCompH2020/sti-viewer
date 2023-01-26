@@ -1,0 +1,2 @@
+indicator-point:
+  indicator-point-import-batch-size: 1000

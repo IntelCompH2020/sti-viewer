@@ -1,0 +1,43 @@
+<h2>
+    {{'APP.DASHBOARD-CONFIGURATION.EDITOR.JSON-EDITOR.TITLE' | translate}}
+</h2>
+
+<mat-tab-group color="accent" appearance="legacy">
+    <mat-tab [label]="config.name" *ngFor="let config of jsonConfigs">
+        <mat-form-field appearance="outline" style="width: 900px;" class="mt-3">
+            <mat-label>
+                {{'APP.DASHBOARD-CONFIGURATION.EDITOR.JSON-EDITOR.RAW-VALUE' | translate}}
+            </mat-label>
+            <textarea rows="30" [(ngModel)]="config.value" matInput></textarea>
+        </mat-form-field>
+    </mat-tab>
+</mat-tab-group>
+
+
+
+
+<div class="d-flex justify-content-end align-items-end">
+    <div class="col">
+        <div class="alert alert-warning mb-0 d-flex align-items-center" *ngIf="invalidConfigs">
+            <div class="col-auto">
+                <mat-icon>warning</mat-icon>
+            </div>
+            <div class="col">
+                {{'APP.DASHBOARD-CONFIGURATION.EDITOR.JSON-EDITOR.CONFIGURATIONS-INVALID' | translate}}
+                 <i>
+                     {{invalidConfigs}}
+                 </i> 
+            </div>
+        </div>
+    </div>
+    <div class="col-auto">
+        <button (click)="close()" mat-raised-button>
+            {{'APP.DASHBOARD-CONFIGURATION.EDITOR.JSON-EDITOR.CANCEL' | translate}}
+        </button>
+    </div>
+    <div class="col-auto">
+        <button (click)="submit()" mat-raised-button color="accent">
+            {{'APP.DASHBOARD-CONFIGURATION.EDITOR.JSON-EDITOR.SUBMIT' | translate}}
+        </button>
+    </div>
+</div>

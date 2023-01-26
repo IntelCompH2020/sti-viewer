@@ -9,6 +9,7 @@ public class AppElasticProperties {
 	private String indicatorIndexName;
 	private String indicatorPointIndexNamePattern;
 	private String indicatorCodeKey;
+	private boolean enableIcuAnalysisPlugin;
 
 	public String getIndicatorIndexName() {
 		return indicatorIndexName;
@@ -32,5 +33,13 @@ public class AppElasticProperties {
 
 	public void setIndicatorCodeKey(String indicatorCodeKey) {
 		this.indicatorCodeKey = indicatorCodeKey;
+	}
+
+	public boolean isEnableIcuAnalysisPlugin() {
+		return enableIcuAnalysisPlugin;
+	}
+
+	public void setEnableIcuAnalysisPlugin(boolean enableIcuAnalysisPlugin) {
+		this.enableIcuAnalysisPlugin = enableIcuAnalysisPlugin;
 	}
 }

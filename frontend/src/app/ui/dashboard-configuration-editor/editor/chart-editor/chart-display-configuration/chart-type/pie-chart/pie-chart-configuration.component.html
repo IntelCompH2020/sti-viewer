@@ -1,0 +1,8 @@
+<ng-container *ngIf="formGroup" [formGroup]="formGroup">
+    <mat-form-field appearance="legacy" class="col-auto">
+        <mat-label>
+            {{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.CHART-TYPE-EDITOR.PIE-CHART.ROSE-TYPE' | translate}}
+        </mat-label>
+        <input type="text" formControlName="roseType" matInput>
+    </mat-form-field>
+</ng-container>

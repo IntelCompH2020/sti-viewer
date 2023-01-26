@@ -1,0 +1,95 @@
+
+
+
+
+<div class="row m-0 mt-4">
+    <div class="col-12">
+        <h2>
+            {{'APP.MY-DATA-ACCESS-REQUESTS.EDIT-PORTOFOLIO.TITLE' | translate}}
+        </h2>
+    </div>
+</div>
+
+<div class="row m-0 p-2 justify-content-between mt-4">
+
+    <div class="col-auto">
+        <button mat-raised-button routerLink="./..">
+            <mat-icon>arrow_left</mat-icon>
+            {{'APP.MY-DATA-ACCESS-REQUESTS.EDIT-PORTOFOLIO.BACK' | translate}}
+        </button>
+    </div>
+
+    <div class="col-auto">
+        <button mat-raised-button color="primary" (click)="submitChanges()">
+            {{'APP.MY-DATA-ACCESS-REQUESTS.EDIT-PORTOFOLIO.SAVE-PORTOFOLIO' | translate}}
+        </button>
+    </div>
+
+</div>
+
+<div class="row m-0 p-2">
+
+    
+
+    <div class="col-12 row p-0 m-0 mt-3">
+        <div class="col-12 col-lg-4 p-2" [class.col-lg-12]="column.major" *ngFor="let column of filterColumns | columsOrdered">
+
+            <div class="card p-4">
+                <div class="row align-items-center justify-content-between">
+                    <div class="col-auto">
+                        <b>
+                            <h3 class="mb-0">
+                                {{column?.label}}
+                            </h3>
+                        </b>
+                    </div>
+                    <div class="col-auto">              
+                        <button mat-icon-button class="ml-auto" color="accent" (click)="addColumn(column)">
+                            <mat-icon>add</mat-icon>
+                        </button>
+                    </div>
+                </div>
+        
+        
+                <!-- * CURRENT STATUS -->
+                <ul class="mt-3 list-unstyled">
+                    <li 
+                    *ngFor="let item of column?.items"
+                    [ngClass]="{
+                        'text-primary': item.status === DataAccessRequestStatus.APPROVED,
+                        'text-danger': item.status === DataAccessRequestStatus.REJECTED,
+                        'text-warning': item.status === DataAccessRequestStatus.SUBMITTED || item.status === DataAccessRequestStatus.IN_PROCESS
+                    }"
+                    >
+                        {{item.value}} : 
+                        <small>
+                            <small>
+                                <i>
+                                    {{item.status}}
+                                </i>
+                            </small>
+                        </small>
+                    </li>
+                </ul>
+    
+                <!-- * ADDITIONS -->
+                <ng-container *ngIf="column?.additions?.length">
+                    <span>
+                        {{'APP.MY-DATA-ACCESS-REQUESTS.EDIT-PORTOFOLIO.ADDITIONS' | translate}}
+                    </span>
+                    <ul class="list-unstyled"> 
+                        <li *ngFor="let item of column?.additions; let index = index">
+                            {{item}}
+                            <button mat-icon-button (click)="removeAdditionForColumn(column ,index)">
+                                <mat-icon>delete</mat-icon>
+                            </button>
+                        </li>
+                    </ul>
+                </ng-container>
+            </div>
+        </div>
+    </div>
+
+    
+</div>
+
