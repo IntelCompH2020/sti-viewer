@@ -15,6 +15,8 @@ idpclient:
         - type: auth_time
       ExpiresAt:
         - type: exp
+      Email:
+        - type: email
       Roles:
         - type: resource_access
           path: intelcomp-sti-viewer-dev.roles

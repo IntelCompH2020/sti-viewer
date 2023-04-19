@@ -42,6 +42,26 @@ permissions:
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false
+    #DynamicPages
+    BrowseDynamicPage:
+      roles:
+        - ic-sti-superuser
+      clients: [ ]
+      allowAnonymous: true
+      allowAuthenticated: false
+    EditDynamicPage:
+      roles:
+        - ic-sti-superuser
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    DeleteDynamicPage:
+      roles:
+        - ic-sti-superuser
+      claims: [ ]
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
 
     # Indicators
     BrowseIndicator:
@@ -53,6 +73,12 @@ permissions:
       allowAnonymous: true
       allowAuthenticated: false
     EditIndicator:
+      roles:
+        - ic-sti-superuser
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    ResetIndicator:
       roles:
         - ic-sti-superuser
       clients: [ ]
@@ -645,6 +671,12 @@ permissions:
       allowAnonymous: false
       allowAuthenticated: false
     ViewBlueprintTemplatePage:
+      roles:
+        - ic-sti-superuser
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    ViewDynamicPage:
       roles:
         - ic-sti-superuser
       clients: [ ]

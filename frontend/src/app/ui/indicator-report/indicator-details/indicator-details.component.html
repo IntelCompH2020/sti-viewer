@@ -10,14 +10,14 @@
                 <input [disabled]="disabled" type="text" matInput [(ngModel)]="searchTerm" (ngModelChange)="searchTermChanged({text:$event,field: item?.field?.code })" >
             </mat-form-field>
             <ng-container *ngFor="let levelItem of item.items; let j = index">
-                <mat-card class="p-1 pl-3 pr-3 cursor-pointer item-preview" (click)="availableForPresentation.includes(levelItem.value) && onSelectIndicator(i,j)"
+                <mat-card [matBadge]="'!'"  [matBadgeHidden]="levelItem.hasNewData !== true || disableNewDataIndicator === true" [matBadgePosition]="'after'" [matBadgeSize]="'small'" class="p-1 pl-3 pr-3 cursor-pointer item-preview" (click)="availableForPresentation.includes(levelItem.value) && onSelectIndicator(i,j)"
                     [class.disabled]="disabled"
                     [class.presentation-disabled]="!availableForPresentation.includes(levelItem.value)"
                     [class.background-accent]="i === selectedIindex && selectedJindex === j"
                     [class.text-white]="i === selectedIindex && selectedJindex === j">
                     <div class="indicator-overview" [matTooltip]="!availableForPresentation.includes(levelItem.value)? 'Coming soon': ''" matTooltipShowDelay="800" [class.text-muted]="!availableForPresentation.includes(levelItem.value)">
                         <div class="indicator-info">
-                            {{levelItem.value}}
+							<div  >{{levelItem.value}}</div>
                             <ng-container *ngIf="(item?.supportedDashboards?.length || levelItem.supportedDashboards?.length) && item.supportSubLevel ">
                                 <br>
                                 <small>
@@ -38,8 +38,10 @@
         </ng-container>
     </div>
     <div class="details" *ngIf="childConfiguration">
-        <app-indicator-details 
+        <app-indicator-details
             [configuration]="childConfiguration"
+            [parentConfigId]="parentConfigId"
+			[disableNewDataIndicator] = "disableNewDataIndicator"
             (goto)="onGoto($event)"
             [disabled]="disabled"
             [availableForPresentation]="availableForPresentation"

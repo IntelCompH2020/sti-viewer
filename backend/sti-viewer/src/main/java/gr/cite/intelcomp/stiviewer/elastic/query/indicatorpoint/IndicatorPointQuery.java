@@ -583,6 +583,8 @@ public class IndicatorPointQuery extends ElasticQuery<IndicatorPointEntity, UUID
 
 	@Override
 	protected Boolean supportsMetricAggregate(MetricAggregateType metricAggregateType, FieldResolver resolver) {
+		if (resolver.match(IndicatorPoint._timestamp)) return true;
+		else if (resolver.match(IndicatorPoint._batchTimestamp)) return true;
 		FieldEntity fieldEntity = this.getOrDefaultFieldEntity(resolver.getField(), null);
 		return fieldEntity != null && (fieldEntity.getBaseType() == IndicatorFieldBaseType.Double || fieldEntity.getBaseType() == IndicatorFieldBaseType.Integer);
 	}

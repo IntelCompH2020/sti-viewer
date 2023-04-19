@@ -56,8 +56,9 @@ public class NotificationConfig {
 
     @Bean(BeanQualifier.STATIC_FIELD_LIST)
     public List<NotificationProperties.Field> getStaticFieldList() {
-        return properties.getMessage().get("staticFields") != null ? new ArrayList<>(properties.getMessage()
-                .get("staticFields").getFields().values()) : new ArrayList<>();
+        return properties.getStaticFields() != null && properties.getStaticFields()
+                .getFields() != null ? new ArrayList<>(properties.getStaticFields()
+                .getFields()) : new ArrayList<>();
     }
 
     @Bean(BeanQualifier.CIPHER_FIELDS)

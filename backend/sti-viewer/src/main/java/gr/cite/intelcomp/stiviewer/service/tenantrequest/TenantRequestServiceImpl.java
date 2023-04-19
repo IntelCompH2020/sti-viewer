@@ -3,16 +3,23 @@ package gr.cite.intelcomp.stiviewer.service.tenantrequest;
 import gr.cite.commons.web.authz.service.AuthorizationService;
 import gr.cite.intelcomp.stiviewer.authorization.AuthorizationFlags;
 import gr.cite.intelcomp.stiviewer.authorization.Permission;
+import gr.cite.intelcomp.stiviewer.common.JsonHandlingService;
+import gr.cite.intelcomp.stiviewer.common.enums.ContactInfoType;
 import gr.cite.intelcomp.stiviewer.common.enums.IsActive;
 import gr.cite.intelcomp.stiviewer.common.enums.TenantRequestStatus;
+import gr.cite.intelcomp.stiviewer.common.enums.UserContactType;
+import gr.cite.intelcomp.stiviewer.common.enums.notification.NotificationContactType;
 import gr.cite.intelcomp.stiviewer.common.scope.tenant.TenantScope;
 import gr.cite.intelcomp.stiviewer.common.scope.user.UserScope;
+import gr.cite.intelcomp.stiviewer.common.types.notification.*;
 import gr.cite.intelcomp.stiviewer.config.keycloak.KeycloakAuthorities;
 import gr.cite.intelcomp.stiviewer.convention.ConventionService;
 import gr.cite.intelcomp.stiviewer.data.*;
 import gr.cite.intelcomp.stiviewer.errorcode.ErrorThesaurusProperties;
 import gr.cite.intelcomp.stiviewer.event.EventBroker;
 import gr.cite.intelcomp.stiviewer.event.UserAddedToTenantEvent;
+import gr.cite.intelcomp.stiviewer.integrationevent.outbox.notification.NotificationIntegrationEvent;
+import gr.cite.intelcomp.stiviewer.integrationevent.outbox.notification.NotificationIntegrationEventHandler;
 import gr.cite.intelcomp.stiviewer.model.TenantRequest;
 import gr.cite.intelcomp.stiviewer.model.builder.TenantRequestBuilder;
 import gr.cite.intelcomp.stiviewer.model.persist.TenantRequestPersist;
@@ -38,7 +45,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.RequestScope;
 
 import javax.management.InvalidApplicationException;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -57,6 +68,12 @@ public class TenantRequestServiceImpl implements TenantRequestService {
 	private final EventBroker eventBroker;
 	private final KeycloakService keycloakService;
 	private final QueryFactory queryFactory;
+	private final JsonHandlingService jsonHandlingService;
+	private final NotificationIntegrationEventHandler eventHandler;
+	private final TenantRequestProperties config;
+	
+	@PersistenceContext
+	private EntityManager globalEntityManager;
 
 	@Autowired
 	public TenantRequestServiceImpl(TenantEntityManager entityManager,
@@ -69,7 +86,11 @@ public class TenantRequestServiceImpl implements TenantRequestService {
 	                                UserScope userScope,
 	                                TenantScope tenantScope,
 	                                EventBroker eventBroker,
-	                                KeycloakService keycloakService, QueryFactory queryFactory) {
+	                                KeycloakService keycloakService,
+	                                QueryFactory queryFactory,
+	                                JsonHandlingService jsonHandlingService,
+	                                NotificationIntegrationEventHandler eventHandler, 
+	                                TenantRequestProperties config) {
 		this.entityManager = entityManager;
 		this.authService = authService;
 		this.deleterFactory = deleterFactory;
@@ -82,6 +103,9 @@ public class TenantRequestServiceImpl implements TenantRequestService {
 		this.eventBroker = eventBroker;
 		this.keycloakService = keycloakService;
 		this.queryFactory = queryFactory;
+		this.jsonHandlingService = jsonHandlingService;
+		this.eventHandler = eventHandler;
+		this.config = config;
 	}
 
 	@Override
@@ -159,6 +183,10 @@ public class TenantRequestServiceImpl implements TenantRequestService {
 			this.eventBroker.emit(new UserAddedToTenantEvent(data.getForUserId(), tenant.getId()));
 		}
 
+		if (statusChanged && data.getStatus() == TenantRequestStatus.REJECTED) {
+			this.notifyForReject(data);
+		}
+		
 		if (isUpdate) this.entityManager.merge(data);
 		else this.entityManager.persist(data);
 
@@ -181,20 +209,31 @@ public class TenantRequestServiceImpl implements TenantRequestService {
 		tenant.setName(model.getTenantName());
 
 		try {
-			this.tenantScope.setTempTenant(tenant.getId(), tenant.getCode());
+			this.tenantScope.setTempTenant(this.globalEntityManager, tenant.getId(), tenant.getCode());
 
 			this.entityManager.persist(tenant);
 
 			TenantUserEntity tenantUserEntity = new TenantUserEntity();
 			tenantUserEntity.setId(UUID.randomUUID());
-			tenantUserEntity.setCreatedAt(Instant.now());
+			tenantUserEntity.setCreatedAt(Instant.now());		
 			tenantUserEntity.setUpdatedAt(Instant.now());
 			tenantUserEntity.setIsActive(IsActive.ACTIVE);
 			tenantUserEntity.setUserId(request.getForUserId());
-
 			this.entityManager.persist(tenantUserEntity);
+
+			if (this.conventionService.isValidEmail(request.getEmail())) {
+				UserContactInfoEntity userContactInfoEntity = new UserContactInfoEntity();
+				userContactInfoEntity.setUserId(request.getForUserId());
+				userContactInfoEntity.setCreatedAt(Instant.now());
+				userContactInfoEntity.setUpdatedAt(Instant.now());
+				userContactInfoEntity.setIsActive(IsActive.ACTIVE);
+				userContactInfoEntity.setType(UserContactType.Email);
+				userContactInfoEntity.setValue(request.getEmail());
+				this.entityManager.persist(userContactInfoEntity);
+			}
+			this.notifyForApprove(request);
 		} finally {
-			this.tenantScope.removeTempTenant();
+			this.tenantScope.removeTempTenant(this.globalEntityManager);
 		}
 
 		return tenant;
@@ -250,6 +289,71 @@ public class TenantRequestServiceImpl implements TenantRequestService {
 		UserQuery query = this.queryFactory.query(UserQuery.class).ids(userId);
 		UserEntity user = query.first();
 		this.keycloakService.addUserToTenantAuthorityGroup(UUID.fromString(user.getSubjectId()), entity, KeycloakAuthorities.ADMIN);
+	}
+
+	private void notifyForApprove(TenantRequestEntity data) throws InvalidApplicationException {
+		if (this.conventionService.isValidEmail(data.getEmail())) {
+			NotificationIntegrationEvent eventEmail = this.createNotificationForApprove(data);
+			eventEmail.setContactTypeHint(NotificationContactType.EMAIL);
+			eventHandler.handle(eventEmail);
+		}
+		NotificationIntegrationEvent eventInApp = this.createNotificationForApprove(data);
+		eventInApp.setContactTypeHint(NotificationContactType.IN_APP);
+		eventHandler.handle(eventInApp);
+	}
+
+	private NotificationIntegrationEvent createNotificationForApprove(TenantRequestEntity data) throws InvalidApplicationException {
+		UserEntity user = this.entityManager.find(UserEntity.class, data.getForUserId());
+		if (user == null) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{data.getForUserId(), UserEntity.class.getSimpleName()}, LocaleContextHolder.getLocale()));
+
+		NotificationIntegrationEvent event = new NotificationIntegrationEvent();
+		event.setTenant(tenantScope.getTenant());
+		event.setUserId(data.getForUserId());
+
+		event.setContactTypeHint(NotificationContactType.EMAIL);
+		event.setNotificationType(this.config.getTenantRequestApprovedNotificationKey());
+		NotificationFieldData fieldData = new NotificationFieldData();
+		List<FieldInfo> fieldInfoList = new ArrayList<>();
+		fieldInfoList.add(new FieldInfo(this.config.getTenantRequestApprovedTemplate().getName(), DataType.String, user.getLastName() + " " +  user.getFirstName()));
+		fieldInfoList.add(new FieldInfo(this.config.getTenantRequestApprovedTemplate().getTenantCode(), DataType.String, tenantScope.getTenantCode()));
+		fieldInfoList.add(new FieldInfo(this.config.getTenantRequestApprovedTemplate().getTenantRequestId(), DataType.String, data.getId().toString()));
+		fieldData.setFields(fieldInfoList);
+		event.setData(jsonHandlingService.toJsonSafe(fieldData));
+		return event;
+	}
+	private void notifyForReject(TenantRequestEntity data) throws InvalidApplicationException {
+		//TODO Notify without tenant
+//		if (this.conventionService.isValidEmail(data.getEmail())) {
+//			NotificationIntegrationEvent eventEmail = this.createNotificationForReject(data);
+//			List<ContactPair> contactPairs = new ArrayList<>();
+//			contactPairs.add(new ContactPair(ContactInfoType.Email, data.getEmail()));
+//			NotificationContactData contactData = new NotificationContactData(contactPairs, null, null);
+//			eventEmail.setContactHint(jsonHandlingService.toJsonSafe(contactData));
+//			eventEmail.setContactTypeHint(NotificationContactType.EMAIL);
+//			eventHandler.handle(eventEmail);
+//		}
+//
+//		NotificationIntegrationEvent eventInApp = this.createNotificationForReject(data);
+//		eventInApp.setContactTypeHint(NotificationContactType.IN_APP);
+//		eventHandler.handle(eventInApp);
+	}
+
+	private NotificationIntegrationEvent createNotificationForReject(TenantRequestEntity data) throws InvalidApplicationException {
+		UserEntity user = this.entityManager.find(UserEntity.class, data.getForUserId());
+		if (user == null) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{data.getForUserId(), UserEntity.class.getSimpleName()}, LocaleContextHolder.getLocale()));
+
+		NotificationIntegrationEvent event = new NotificationIntegrationEvent();
+		event.setUserId(data.getForUserId());
+
+		event.setContactTypeHint(NotificationContactType.EMAIL);
+		event.setNotificationType(this.config.getTenantRequestRejectedNotificationKey());
+		NotificationFieldData fieldData = new NotificationFieldData();
+		List<FieldInfo> fieldInfoList = new ArrayList<>();
+		fieldInfoList.add(new FieldInfo(this.config.getTenantRequestRejectedTemplate().getName(), DataType.String, user.getLastName() + " " +  user.getFirstName()));
+		fieldInfoList.add(new FieldInfo(this.config.getTenantRequestApprovedTemplate().getTenantRequestId(), DataType.String, data.getId().toString()));
+		fieldData.setFields(fieldInfoList);
+		event.setData(jsonHandlingService.toJsonSafe(fieldData));
+		return event;
 	}
 
 //    @Override

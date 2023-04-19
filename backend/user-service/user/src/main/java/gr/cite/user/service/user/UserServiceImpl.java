@@ -173,7 +173,7 @@ public class UserServiceImpl implements UserService {
 
         this.eventBroker.emit(new UserTouchedEvent(data.getId(), data.getSubjectId(), previousSubjectId));
 
-        User persisted = this.builderFactory.builder(UserBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(BaseFieldSet.build(fields, User._id, User._hash), data);
+        User persisted = this.builderFactory.builder(UserBuilder.class).authorize(AuthorizationFlags.OwnerOrPermission).build(BaseFieldSet.build(fields, User._id, User._hash), data);
         return persisted;
     }
 

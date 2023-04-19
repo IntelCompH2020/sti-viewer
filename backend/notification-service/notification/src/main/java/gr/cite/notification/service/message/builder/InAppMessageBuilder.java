@@ -69,7 +69,6 @@ public class InAppMessageBuilder extends MessageBuilderBase implements MessageBu
             return null;
         }
 
-        boolean overriden = false;
         MessageBuilderBase.FieldCiphering ciphering = options.getCipherFields() == null || options.getCipherFields().isEmpty() ? new MessageBuilderBase.FieldCiphering() : new MessageBuilderBase.FieldCiphering(options.getCipherFields());
 
         String subjectTemplate = null;

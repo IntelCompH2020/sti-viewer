@@ -1,0 +1,7 @@
+data-access-request:
+  dataAccessRequestApprovedTemplate:
+    tenantCode: "{tenant-code}"
+    name: "{name}"
+  dataAccessRequestRejectedTemplate:
+    tenantCode: "{tenant-code}"
+    name: "{name}"

@@ -196,6 +196,10 @@ export class IndicatorDashboardComponent extends BaseComponent implements OnInit
 
 	selectTab(index: number) {
 		this.selectedTabIndex = index;
+		//* Little bit hacky, find navigation content container and scroll on top (navigation content container has height 100% and overflows its content)
+		document.getElementById('navigation-content-container')?.scrollTo?.({
+			top: 0,
+		});
 	}
 
 	selectTag(tag: string){

@@ -168,9 +168,9 @@ public class IndicatorPointController {
 
 	@PostMapping("{indicatorId}/export-xlsx")
 	public ResponseEntity<?> exportXlsx(@PathVariable("indicatorId") UUID indicatorId, @MyValidate @RequestBody IndicatorPointReportLookup model, HttpServletResponse response) throws InvalidApplicationException, IOException {
-		logger.debug(new MapLogEntry("persisting" + IndicatorPoint.class.getSimpleName()).And("model", model));
+		logger.debug(new MapLogEntry("get data" + IndicatorPoint.class.getSimpleName()).And("model", model));
 
-		byte[] report = this.indicatorPointService.export(indicatorId, model);
+		byte[] report = this.indicatorPointService.exportXlsx(indicatorId, model);
 
 		this.auditService.track(AuditableAction.Indicator_Point_ExportXlsx, Map.ofEntries(
 				new AbstractMap.SimpleEntry<String, Object>("model", model)
@@ -180,6 +180,23 @@ public class IndicatorPointController {
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.set(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE); // (3) Content-Type: application/octet-stream
 		httpHeaders.set(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.attachment().filename("report.xlsx").build().toString()); // (4) Content-Disposition: attachment; filename="demo-file.txt"
+		return new ResponseEntity(report, httpHeaders, HttpStatus.OK);
+	}
+
+	@PostMapping("{indicatorId}/export-json")
+	public ResponseEntity<?> exportJson(@PathVariable("indicatorId") UUID indicatorId, @MyValidate @RequestBody IndicatorPointReportLookup model, HttpServletResponse response) throws InvalidApplicationException, IOException {
+		logger.debug(new MapLogEntry("get data" + IndicatorPoint.class.getSimpleName()).And("model", model));
+
+		byte[] report = this.indicatorPointService.exportJson(indicatorId, model);
+
+		this.auditService.track(AuditableAction.Indicator_Point_ExportJson, Map.ofEntries(
+				new AbstractMap.SimpleEntry<String, Object>("model", model)
+		));
+		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
+
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.set(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE); // (3) Content-Type: application/octet-stream
+		httpHeaders.set(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.attachment().filename("report.json").build().toString()); // (4) Content-Disposition: attachment; filename="demo-file.txt"
 		return new ResponseEntity(report, httpHeaders, HttpStatus.OK);
 	}
 

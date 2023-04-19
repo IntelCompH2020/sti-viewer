@@ -35,4 +35,7 @@ error-thesaurus:
   bookmark-hash-conflict:
     code: 114
     message: there is a hash conflict for the bookmark
+  dynamic-page-url-required:
+    code: 115
+    message: dynamic page external url required
   

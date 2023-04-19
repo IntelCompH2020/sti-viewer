@@ -11,7 +11,6 @@ import gr.cite.commons.web.oidc.configuration.WebSecurityProperties;
 import gr.cite.user.authorization.OwnedAuthorizationRequirement;
 import gr.cite.user.authorization.OwnedResource;
 import gr.cite.user.web.authorization.OwnedAuthorizationHandler;
-import gr.cite.user.web.authorization.TimeOfDayAuthorizationHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -35,20 +34,16 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	private final WebSecurityProperties webSecurityProperties;
 	private final AuthenticationManagerResolver<HttpServletRequest> authenticationManagerResolver;
 	private final Filter apiKeyFilter;
-
-	private final TimeOfDayAuthorizationHandler timeOfDayAuthorizationHandler;
 	private final OwnedAuthorizationHandler ownedAuthorizationHandler;
 
 	@Autowired
 	public SecurityConfiguration(WebSecurityProperties webSecurityProperties,
 	                             @Qualifier("tokenAuthenticationResolver") AuthenticationManagerResolver<HttpServletRequest> authenticationManagerResolver,
 	                             @Qualifier("apiKeyFilter") Filter apiKeyFilter,
-	                             @Qualifier("timeOfDayAuthorizationHandler") TimeOfDayAuthorizationHandler timeOfDayAuthorizationHandler,
 	                             @Qualifier("ownedAuthorizationHandler") OwnedAuthorizationHandler ownedAuthorizationHandler) {
 		this.webSecurityProperties = webSecurityProperties;
 		this.authenticationManagerResolver = authenticationManagerResolver;
 		this.apiKeyFilter = apiKeyFilter;
-		this.timeOfDayAuthorizationHandler = timeOfDayAuthorizationHandler;
 		this.ownedAuthorizationHandler = ownedAuthorizationHandler;
 	}
 
@@ -82,7 +77,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 			//If not set / set to null, only the default authorization handlers will be used
 			@Override
 			public List<AuthorizationHandler<? extends AuthorizationRequirement>> addCustomHandlers() {
-				return List.of(timeOfDayAuthorizationHandler,ownedAuthorizationHandler);
+				return List.of(ownedAuthorizationHandler);
 			}
 
 			//Here you can register your custom authorization requirements (if any)

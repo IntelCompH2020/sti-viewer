@@ -15,6 +15,7 @@ import gr.cite.intelcomp.stiviewer.model.censorship.IndicatorCensor;
 import gr.cite.intelcomp.stiviewer.model.censorship.indicatorelastic.IndicatorElasticCensor;
 import gr.cite.intelcomp.stiviewer.model.persist.IndicatorElasticPersist;
 import gr.cite.intelcomp.stiviewer.model.persist.IndicatorPersist;
+import gr.cite.intelcomp.stiviewer.model.persist.ResetIndicatorElasticPersist;
 import gr.cite.intelcomp.stiviewer.query.IndicatorQuery;
 import gr.cite.intelcomp.stiviewer.query.lookup.IndicatorLookup;
 import gr.cite.intelcomp.stiviewer.service.indicator.IndicatorService;
@@ -152,6 +153,21 @@ public class IndicatorController {
 		return indicatorElastic;
 	}
 
+	@PostMapping("reset/es")
+	@Transactional
+	public IndicatorElastic ResetElastic(@MyValidate @RequestBody ResetIndicatorElasticPersist model, FieldSet fieldSet) throws MyApplicationException, MyForbiddenException, MyNotFoundException, IOException, InvalidApplicationException {
+		logger.debug(new MapLogEntry("reset" + IndicatorElastic.class.getSimpleName()).And("model", model).And("fieldSet", fieldSet));
+
+		IndicatorElastic indicatorElastic = this.elasticIndicatorService.reset(model, fieldSet);
+
+		this.auditService.track(AuditableAction.Indicator_ElasticReset, Map.ofEntries(
+				new AbstractMap.SimpleEntry<String, Object>("model", model),
+				new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
+		));
+		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
+		return indicatorElastic;
+	}
+
 	@DeleteMapping("delete/es/{id}")
 	@Transactional
 	public void DeleteElastic(@PathVariable("id") UUID id) throws MyForbiddenException, InvalidApplicationException, IOException {
@@ -159,7 +175,7 @@ public class IndicatorController {
 
 		this.elasticIndicatorService.deleteAndSave(id);
 
-		this.auditService.track(AuditableAction.Indicator_Delete, "id", id);
+		this.auditService.track(AuditableAction.Indicator_ElasticDelete, "id", id);
 		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
 	}
 

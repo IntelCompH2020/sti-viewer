@@ -4,6 +4,7 @@ import { IndicatorPointLookup } from "./indicator-point.lookup";
 
 export class IndicatorReportLevelLookup extends Lookup implements IndicatorReportLevelLockupFilter {
     configId: string;
+    parentConfigId: string;
     selectedLevels: string[];
     filters: IndicatorPointLookup;
     constructor() {
@@ -13,6 +14,7 @@ export class IndicatorReportLevelLookup extends Lookup implements IndicatorRepor
 
 export interface IndicatorReportLevelLockupFilter {
     configId: string;
+    parentConfigId: string;
     selectedLevels: string[];
     filters: IndicatorPointLookup;
 }

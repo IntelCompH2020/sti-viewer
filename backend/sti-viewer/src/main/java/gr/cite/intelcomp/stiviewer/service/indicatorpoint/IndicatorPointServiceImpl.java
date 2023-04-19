@@ -49,6 +49,9 @@ import gr.cite.tools.logging.LoggerService;
 import gr.cite.tools.logging.MapLogEntry;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -58,10 +61,15 @@ import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.RequestScope;
 
+import javax.json.Json;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonBuilderFactory;
+import javax.json.JsonObjectBuilder;
 import javax.management.InvalidApplicationException;
 import javax.validation.constraints.NotNull;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.*;
@@ -387,7 +395,7 @@ public class IndicatorPointServiceImpl implements IndicatorPointService {
 	}
 
 
-	public byte[] export(UUID indicatorId, IndicatorPointReportLookup lookup) throws InvalidApplicationException, IOException {
+	public byte[] exportXlsx(UUID indicatorId, IndicatorPointReportLookup lookup) throws InvalidApplicationException, IOException {
 		logger.debug(new MapLogEntry("export" + IndicatorPoint.class.getSimpleName()).And("lookup", lookup));
 
 		IndicatorConfigItem indicatorConfigItem = this.getIndicatorConfigItem(indicatorId);
@@ -540,6 +548,128 @@ public class IndicatorPointServiceImpl implements IndicatorPointService {
 		return true;
 	}
 
+	public byte[] exportJson(UUID indicatorId, IndicatorPointReportLookup lookup) throws InvalidApplicationException, UnsupportedEncodingException {
+		logger.debug(new MapLogEntry("export json" + IndicatorPoint.class.getSimpleName()).And("lookup", lookup));
+
+		IndicatorConfigItem indicatorConfigItem = this.getIndicatorConfigItem(indicatorId);
+		if (indicatorConfigItem == null) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{indicatorId, IndicatorConfigItem.class.getSimpleName()}, LocaleContextHolder.getLocale()));
+
+		AggregateResponse aggregateResponse = this.report(indicatorId, lookup);
+		JSONObject objectBuilder = new JSONObject();
+		if (lookup.getBucket() != null) {
+			if (lookup.getBucket().getType() == BucketAggregateType.Nested) {
+				gr.cite.intelcomp.stiviewer.model.elasticreport.Nested nested = (gr.cite.intelcomp.stiviewer.model.elasticreport.Nested) lookup.getBucket();
+				JSONArray bucketJsonArrayBuilder = this.createJsonFromBucket(indicatorConfigItem, nested.getBucket(), aggregateResponse);
+				if (bucketJsonArrayBuilder != null)  objectBuilder.put("data", bucketJsonArrayBuilder);
+				JSONArray bucketMetricJsonArrayBuilder = this.createJsonFromMetric(indicatorConfigItem, nested.getMetrics(), aggregateResponse);
+				if (bucketMetricJsonArrayBuilder != null)  objectBuilder.put("data_metric", bucketMetricJsonArrayBuilder);
+			} else {
+				JSONArray bucketJsonArrayBuilder = this.createJsonFromBucket(indicatorConfigItem, lookup.getBucket(), aggregateResponse);
+				if (bucketJsonArrayBuilder != null)  objectBuilder.put("data", bucketJsonArrayBuilder);
+			}
+		}
+		JSONArray  metricJsonArrayBuilder = this.createJsonFromMetric(indicatorConfigItem, lookup.getMetrics(), aggregateResponse);
+		if (metricJsonArrayBuilder != null)  objectBuilder.put("metric", metricJsonArrayBuilder);
+		String jsonText = JSONValue.toJSONString(objectBuilder);
+		return jsonText.getBytes("UTF-8");
+	}
+	
+	private JSONArray createJsonFromMetric(IndicatorConfigItem indicatorConfigItem, List<gr.cite.intelcomp.stiviewer.model.elasticreport.Metric> metrics, AggregateResponse aggregateResponse) {
+		if (metrics == null) return null;
+
+		ArrayList<String> columns = this.addMetricsColumns(metrics, indicatorConfigItem, new ArrayList<>());
+
+		JSONArray  itemsBuilder = new JSONArray();
+		for (AggregateResponseItem aggregateResponseItem : aggregateResponse.getItems()) {
+			JSONObject itemBuilder =  this.createJsonFromAggregateResponseItem(columns, aggregateResponseItem);
+			if (itemBuilder != null) {
+				itemsBuilder.add(itemBuilder);
+			}
+		}
+		return itemsBuilder;
+	}
+	
+	private JSONArray createJsonFromBucket(IndicatorConfigItem indicatorConfigItem, gr.cite.intelcomp.stiviewer.model.elasticreport.Bucket bucket, AggregateResponse aggregateResponse) {
+		if (bucket == null) return null;
+
+		ArrayList<String> columns = new ArrayList<>();
+
+		switch (bucket.getType()) {
+			case DateHistogram:
+			case Terms: {
+				FieldEntity fieldEntity = indicatorConfigItem.getExtraProps().getOrDefault(bucket.getField(), null);
+				if (fieldEntity == null) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{bucket.getField(), FieldEntity.class.getSimpleName()}, LocaleContextHolder.getLocale()));
+				columns.add(bucket.getField());
+				columns = this.addMetricsColumns(bucket.getMetrics(), indicatorConfigItem, columns);
+				break;
+			}
+			case Composite: {
+				gr.cite.intelcomp.stiviewer.model.elasticreport.Composite composite = (gr.cite.intelcomp.stiviewer.model.elasticreport.Composite) bucket;
+				int i = 0;
+				if (composite.getDateHistogramSource() != null) {
+					FieldEntity fieldEntity = indicatorConfigItem.getExtraProps().getOrDefault(composite.getDateHistogramSource().getField(), null);
+					if (fieldEntity == null) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{composite.getDateHistogramSource().getField(), FieldEntity.class.getSimpleName()}, LocaleContextHolder.getLocale()));
+					columns.add(composite.getDateHistogramSource().getField());
+				}
+
+				if (composite.getSources() != null) {
+					for (gr.cite.intelcomp.stiviewer.model.elasticreport.CompositeSource source : composite.getSources()) {
+						FieldEntity fieldEntity = indicatorConfigItem.getExtraProps().getOrDefault(source.getField(), null);
+						if (fieldEntity == null) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{source.getField(), FieldEntity.class.getSimpleName()}, LocaleContextHolder.getLocale()));
+						columns.add(source.getField());
+					}
+				}
+				columns = this.addMetricsColumns(composite.getMetrics(), indicatorConfigItem, columns);
+				break;
+			}
+			default:
+				throw new MyApplicationException("invalid type " + bucket.getType());
+		}
+		JSONArray itemsBuilder = new JSONArray();
+		for (AggregateResponseItem aggregateResponseItem : aggregateResponse.getItems()) {
+			JSONObject itemBuilder =  this.createJsonFromAggregateResponseItem(columns, aggregateResponseItem);
+			if (itemBuilder != null) {
+				itemsBuilder.add(itemBuilder);
+			}
+		}
+		return itemsBuilder;
+	}
+	private JSONObject createJsonFromAggregateResponseItem(ArrayList<String> keys, AggregateResponseItem item) {
+		int itemColumnSize = (item.getGroup() != null && item.getGroup().getItems() != null ? item.getGroup().getItems().size() : 0)
+				+ (item.getValues() != null ? item.getValues().size() : 0);
+		if (itemColumnSize != keys.size()) return null;
+		JSONObject jsonItem = new JSONObject();
+		for (String key : keys) {
+			if (item.getGroup() != null && item.getGroup().getItems() != null && item.getGroup().getItems().containsKey(key)) {
+				jsonItem.put(key, item.getGroup().getItems().get(key));
+			} else if (item.getValues() != null) {
+				boolean found = false;
+				for (AggregateResponseValue aggregateResponseValue : item.getValues()) {
+					if (this.generateMetricFieldKey(aggregateResponseValue.getField(), aggregateResponseValue.getAggregateType()).equals(key)) {
+						jsonItem.put(key, aggregateResponseValue.getValue());
+						found = true;
+						break;
+					}
+				}
+				if (!found) return null;
+			} else {
+				return null;
+			}
+		}
+		return jsonItem;
+	}
+
+	private ArrayList<String> addMetricsColumns(List<gr.cite.intelcomp.stiviewer.model.elasticreport.Metric> metrics, IndicatorConfigItem indicatorConfigItem, ArrayList<String> columns) {
+		if (metrics != null) {
+			for (gr.cite.intelcomp.stiviewer.model.elasticreport.Metric metric : metrics) {
+				FieldEntity fieldEntity = indicatorConfigItem.getExtraProps().getOrDefault(metric.getField(), null);
+				if (fieldEntity == null) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{metric.getField(), FieldEntity.class.getSimpleName()}, LocaleContextHolder.getLocale()));
+				columns.add(this.generateMetricFieldKey(metric.getField(), metric.getType()));
+			}
+		}
+		return columns;
+	}
+
 	private void addMetricsToHeader(List<gr.cite.intelcomp.stiviewer.model.elasticreport.Metric> metrics, IndicatorConfigItem indicatorConfigItem, Row header, int startColumn, Map<String, Integer> columnMapping) {
 		if (metrics != null) {
 			int i = startColumn;
@@ -589,6 +719,20 @@ public class IndicatorPointServiceImpl implements IndicatorPointService {
 		return new AggregationMetricHaving(having.getField(), having.getMetricAggregateType(), having.getType(), having.getOperator(), having.getValue());
 	}
 
+	private AggregationMetricSort buildMetricSort(gr.cite.intelcomp.stiviewer.model.elasticreport.AggregationMetricSort having) {
+		if (having == null) return null;
+		return new AggregationMetricSort(this.buildMetricSortFields(having.getSortFields()), having.getPaging());
+	}
+
+	private List<AggregationMetricSortField> buildMetricSortFields(List<gr.cite.intelcomp.stiviewer.model.elasticreport.AggregationMetricSortField> sortFields) {
+		if (sortFields == null || sortFields.isEmpty()) return null;
+		ArrayList<AggregationMetricSortField> aggregationMetricSortFields = new ArrayList<>();
+		for (gr.cite.intelcomp.stiviewer.model.elasticreport.AggregationMetricSortField sortField : sortFields) {
+			aggregationMetricSortFields.add(new AggregationMetricSortField(sortField.getField(), sortField.getMetricAggregateType(), sortField.getOrder()));
+		}
+		return aggregationMetricSortFields;
+	}
+
 	private BucketAggregate buildTermsBucketAggregate(Function<String, IndicatorFieldBaseType> indicatorFieldBaseTypeFunction, gr.cite.intelcomp.stiviewer.model.elasticreport.Terms bucket) {
 		if (bucket == null) return null;
 		switch (indicatorFieldBaseTypeFunction.apply(bucket.getField())) {
@@ -600,6 +744,7 @@ public class IndicatorPointServiceImpl implements IndicatorPointService {
 				terms.setMetrics(this.buildMetricsForQuery(indicatorFieldBaseTypeFunction, bucket.getMetrics()));
 				terms.setBucketAggregate(this.buildBucketAggregate(indicatorFieldBaseTypeFunction, bucket.getBucket()));
 				terms.setHaving(this.buildHaving(bucket.getHaving()));
+				terms.setBucketSort(this.buildMetricSort(bucket.getBucketSort()));
 				if (bucket.getOrder() != null) terms.setOrder(bucket.getOrder());
 				return terms;
 			default:
@@ -616,6 +761,7 @@ public class IndicatorPointServiceImpl implements IndicatorPointService {
 				nested.setMetrics(this.buildMetricsForQuery(f -> this.getDoubleMapFieldBaseType(f), bucket.getMetrics()));
 				nested.setBucketAggregate(this.buildBucketAggregate(f -> this.getDoubleMapFieldBaseType(f), bucket.getBucket()));
 				nested.setHaving(this.buildHaving(bucket.getHaving()));
+				nested.setBucketSort(this.buildMetricSort(bucket.getBucketSort()));
 				return nested;
 			}
 			case IntegerMap: {
@@ -623,6 +769,7 @@ public class IndicatorPointServiceImpl implements IndicatorPointService {
 				nested.setMetrics(this.buildMetricsForQuery(f -> this.getIntegerMapFieldBaseType(f), bucket.getMetrics()));
 				nested.setBucketAggregate(this.buildBucketAggregate(f -> this.getIntegerMapFieldBaseType(f), bucket.getBucket()));
 				nested.setHaving(this.buildHaving(bucket.getHaving()));
+				nested.setBucketSort(this.buildMetricSort(bucket.getBucketSort()));
 				return nested;
 			}
 			default:
@@ -657,6 +804,7 @@ public class IndicatorPointServiceImpl implements IndicatorPointService {
 					dateHistogram.setMetrics(this.buildMetricsForQuery(indicatorFieldBaseTypeFunction, bucket.getMetrics()));
 					dateHistogram.setBucketAggregate(this.buildBucketAggregate(indicatorFieldBaseTypeFunction, bucket.getBucket()));
 					dateHistogram.setHaving(this.buildHaving(bucket.getHaving()));
+					dateHistogram.setBucketSort(this.buildMetricSort(bucket.getBucketSort()));
 					if (bucket.getDateHistogramSource().getOrder() != null) dateHistogram.setOrder(bucket.getDateHistogramSource().getOrder());
 					break;
 				default:
@@ -668,6 +816,7 @@ public class IndicatorPointServiceImpl implements IndicatorPointService {
 		composite.setMetrics(this.buildMetricsForQuery(indicatorFieldBaseTypeFunction, bucket.getMetrics()));
 		composite.setBucketAggregate(this.buildBucketAggregate(indicatorFieldBaseTypeFunction, bucket.getBucket()));
 		composite.setHaving(this.buildHaving(bucket.getHaving()));
+		composite.setBucketSort(this.buildMetricSort(bucket.getBucketSort()));
 		composite.setDateHistogramSource(dateHistogram);
 		return composite;
 	}
@@ -680,6 +829,7 @@ public class IndicatorPointServiceImpl implements IndicatorPointService {
 				dateHistogram.setMetrics(this.buildMetricsForQuery(indicatorFieldBaseTypeFunction, bucket.getMetrics()));
 				dateHistogram.setBucketAggregate(this.buildBucketAggregate(indicatorFieldBaseTypeFunction, bucket.getBucket()));
 				dateHistogram.setHaving(this.buildHaving(bucket.getHaving()));
+				dateHistogram.setBucketSort(this.buildMetricSort(bucket.getBucketSort()));
 				if (bucket.getOrder() != null) dateHistogram.setOrder(bucket.getOrder());
 				return dateHistogram;
 			default:

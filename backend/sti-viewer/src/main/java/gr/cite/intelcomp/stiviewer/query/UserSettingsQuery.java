@@ -180,7 +180,9 @@ public class UserSettingsQuery extends QueryBase<UserSettingsEntity> {
 	protected <X, Y> Predicate applyFilters(QueryContext<X, Y> queryContext) {
 		List<Predicate> predicates = new ArrayList<>();
 		if (this.like != null && !this.like.isEmpty()) {
-			predicates.add(queryContext.CriteriaBuilder.like(queryContext.Root.get(UserSettingsEntity._key), this.like));
+			predicates.add(queryContext.CriteriaBuilder.or(queryContext.CriteriaBuilder.like(queryContext.Root.get(UserSettingsEntity._key), this.like),
+					queryContext.CriteriaBuilder.like(queryContext.Root.get(UserSettingsEntity._value), this.like)
+					));
 		}
 		if (this.ids != null) {
 			CriteriaBuilder.In<UUID> inClause = queryContext.CriteriaBuilder.in(queryContext.Root.get(UserSettingsEntity._id));

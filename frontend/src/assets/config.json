@@ -18,7 +18,7 @@
 	},
 	"notification_service": {
 		"enabled": true,
-		"address": "http://dev04.local.cite.gr:50302/"
+		"address": "http://localhost:8086/"
 	},
 	"app_service": {
 		"enabled": true,

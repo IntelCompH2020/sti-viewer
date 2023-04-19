@@ -1,12 +1,7 @@
 package gr.cite.notification.query;
 
-import gr.cite.notification.common.enums.IsActive;
 import gr.cite.notification.common.enums.NotificationContactType;
-import gr.cite.notification.common.enums.TenantConfigurationType;
-import gr.cite.notification.data.TenantConfigurationEntity;
-import gr.cite.notification.data.TenantEntity;
 import gr.cite.notification.data.UserNotificationPreferenceEntity;
-import gr.cite.notification.model.TenantConfiguration;
 import gr.cite.notification.model.UserNotificationPreference;
 import gr.cite.tools.data.query.FieldResolver;
 import gr.cite.tools.data.query.QueryBase;
@@ -16,7 +11,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.Tuple;
-import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Predicate;
 import java.time.Instant;
 import java.util.*;

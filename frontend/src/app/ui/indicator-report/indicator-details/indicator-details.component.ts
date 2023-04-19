@@ -27,8 +27,18 @@ export class IndicatorDetailsComponent extends BaseComponent implements OnInit, 
   @Input()
   configuration: IndicatorDetailsConfiguration;
 
+  @Input()
+  parentConfigId: string;
+
   @Output()
   onIndicatorExpanded = new EventEmitter<void>();
+
+  @Output()
+  onHasNewData = new EventEmitter<boolean>();
+
+
+  @Input()
+  disableNewDataIndicator = false;
 
   selectedIindex: number = null;
   selectedJindex: number = null;
@@ -70,7 +80,7 @@ export class IndicatorDetailsComponent extends BaseComponent implements OnInit, 
       this.selectedJindex = null;
       this.selectedIindex = null;
       this.childConfiguration = null;
-      this.loadLevel();
+      this.loadLevel(true);
     }
   }
 
@@ -86,14 +96,17 @@ export class IndicatorDetailsComponent extends BaseComponent implements OnInit, 
   }
 
 
-  loadLevel(config?: {searchTerm?: string, field?: string }): void {
+  loadLevel(calculateOnHasNewData: boolean, config?: {searchTerm?: string, field?: string }): void {
 
     const lookup = this._buildLookup(config);
 
     this._dataTreeService.queryLevel(lookup).pipe(
     takeUntil(this._destroyed))
       .subscribe(
-        data => this.data = data.items,
+		  (data) => {
+			  this.data = data.items;
+			  if (calculateOnHasNewData) this.onHasNewData.next(this.data?.find(x => x.items?.find(y => y.hasNewData)) != null);
+		  },
         error => this.onCallbackError(error));
   }
 
@@ -130,7 +143,7 @@ export class IndicatorDetailsComponent extends BaseComponent implements OnInit, 
             this.selectReport(i,j);
             break defineAction;
           }
-  
+
           // * Go to goto
           if(this.configuration.goTo){
             this.goto.emit({
@@ -143,22 +156,22 @@ export class IndicatorDetailsComponent extends BaseComponent implements OnInit, 
                 },
               ]
             });
-            
+
             this.selectedJindex = j;
             this.selectedIindex = i;
           }
-  
+
         }
-  
+
         return ;
       }
       return;
     }
-  
-    
 
 
- 
+
+
+
 
 
     const indicatorExpanded = this.selectedIindex === null || this.selectedJindex === null;
@@ -187,28 +200,38 @@ export class IndicatorDetailsComponent extends BaseComponent implements OnInit, 
       return;
     }
     const value = this.data[i].items[j].value;
-    const dashboard = this.data[i].items[j].supportedDashboards?.[0] ?? this.data[i].supportedDashboards[0]; 
+    const dashboard = this.data[i].items[j].supportedDashboards?.[0] ?? this.data[i].supportedDashboards[0];
     const code = this.data[i].field.code;
     if(!dashboard){
       return;
     }
 
+    const keywordFilters = [
+  // ...this.configuration.selectedLevelsTillNow,
+          // code,
+          ...(this.configuration.keywordFilters ??[]),
+          {
+            field: code,
+            values: [value]
+          }
+    ]
+
+    const displayName = keywordFilters
+      ?.map(x => x)// shallow copy
+      .reverse()
+      .slice(0,2)
+      .map(x => x.values.find(x => true))
+      .join(' - ') ?? value;
+
+
     this._router.navigate(['dashboard'], {relativeTo: this._activatedRoute, queryParams: {
       params: this._queryParamsService.serializeObject<IndicatorQueryParams>({
-        keywordFilters: [
-          // ...this.configuration.selectedLevelsTillNow,
-          // code, 
-        ...(this.configuration.keywordFilters ??[]),
-        {
-          field: code,
-          values: [value]
-        }
-        ],
-        displayName: value,
+        keywordFilters,
+        displayName,
         dashboard
       })}
     });
-    
+
   }
   onExpand(): void {
     this.onIndicatorExpanded.next();
@@ -230,6 +253,7 @@ export class IndicatorDetailsComponent extends BaseComponent implements OnInit, 
 
     const lookup = new IndicatorReportLevelLookup();
     lookup.configId = this.configuration.viewConfigId;
+    lookup.parentConfigId = this.parentConfigId;
 
     lookup.selectedLevels = this.configuration.selectedLevelsTillNow;
 
@@ -241,6 +265,7 @@ export class IndicatorDetailsComponent extends BaseComponent implements OnInit, 
         [nameof<BrowseDataTreeLevelModel>(x => x.items), nameof<BrowseDataTreeLevelItemModel>(x => x.value) ].join('.'),
         [nameof<BrowseDataTreeLevelModel>(x => x.items), nameof<BrowseDataTreeLevelItemModel>(x => x.supportedDashboards) ].join('.'),
         [nameof<BrowseDataTreeLevelModel>(x => x.items), nameof<BrowseDataTreeLevelItemModel>(x => x.supportSubLevel) ].join('.'),
+        [nameof<BrowseDataTreeLevelModel>(x => x.items), nameof<BrowseDataTreeLevelItemModel>(x => x.hasNewData) ].join('.'),
         [nameof<BrowseDataTreeLevelModel>(x => x.field), nameof<BrowseDataFieldModel>(x => x.code) ].join('.'),
         [nameof<BrowseDataTreeLevelModel>(x => x.field), nameof<BrowseDataFieldModel>(x => x.name) ].join('.'),
       ]
@@ -267,7 +292,7 @@ export class IndicatorDetailsComponent extends BaseComponent implements OnInit, 
   }
 
   private _registerSearchTermChangeListener():void{
-    
+
     this._searchTermChanges$.pipe(
       debounceTime(this._SEARCH_TERM_DELAY_),
       switchMap(change => {

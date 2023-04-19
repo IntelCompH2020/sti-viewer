@@ -57,6 +57,7 @@ public class BrowseDataTreeLevelItemBuilder extends BaseBuilder<DataTreeLevelIte
 			DataTreeLevelItem m = new DataTreeLevelItem();
 
 			if (fields.hasField(this.asIndexer(DataTreeLevelItem._value))) m.setValue(d.getValue());
+			if (fields.hasField(this.asIndexer(DataTreeLevelItem._hasNewData))) m.setHasNewData(d.getHasNewData());
 			if (fields.hasField(this.asIndexer(DataTreeLevelItem._supportedDashboards))) m.setSupportedDashboards(d.getSupportedDashboards());
 			if (fields.hasField(this.asIndexer(DataTreeLevelItem._supportSubLevel))) m.setSupportSubLevel(d.getSupportSubLevel());
 

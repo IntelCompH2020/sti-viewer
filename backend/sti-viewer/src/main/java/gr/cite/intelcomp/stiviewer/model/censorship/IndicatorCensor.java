@@ -42,5 +42,4 @@ public class IndicatorCensor extends BaseCensor {
 		FieldSet indicatorAccessesFields = fields.extractPrefixed(this.asIndexerPrefix(Indicator._indicatorAccesses));
 		this.censorFactory.censor(IndicatorAccessCensor.class).censor(indicatorAccessesFields, userId);
 	}
-
 }

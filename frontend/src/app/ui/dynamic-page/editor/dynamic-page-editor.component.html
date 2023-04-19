@@ -1,0 +1,94 @@
+<div class="row dynamic-page-editor">
+	<div class="col-md-8 offset-md-2">
+		<mat-card>
+			<!-- <mat-card-title *ngIf="isNew">{{'APP.DYNAMIC-PAGE-EDITOR.TITLE.NEW' | translate}}</mat-card-title>
+			<mat-card-title *ngIf="!isNew">{{formGroup.get('title').value}}</mat-card-title> -->
+			<mat-card-content>
+				<form (ngSubmit)="formSubmit()" [formGroup]="formGroup">
+					<div class="row">
+
+						<mat-form-field class="col-md-12">
+							<mat-label>{{'APP.DYNAMIC-PAGE-EDITOR.FIELDS.TYPE' | translate}}</mat-label>
+							<mat-select name="dynamic-page-type" formControlName="type"  (selectionChange)="onTypeChange($event)" required>
+								<mat-option *ngFor="let type of dynamicPageTypeValues"
+									[value]="type">
+									{{enumUtils.toPageTypeString(type)}}</mat-option>
+							</mat-select>
+							<mat-error *ngIf="formGroup.get('type').hasError('backendError')">{{formGroup.get('type').getError('backendError')?.message}}</mat-error>
+							<mat-error *ngIf="formGroup.get('type').hasError('required')">{{'COMMONS.VALIDATION.REQUIRED' | translate}}</mat-error>
+						</mat-form-field>
+
+						<mat-form-field class="col-md-12">
+							<mat-label>{{'APP.DYNAMIC-PAGE-EDITOR.FIELDS.ORDER' | translate}}</mat-label>
+							<input matInput type="number" autocomplete="off" name="dynamic-page-order" formControlName="order" required>
+							<mat-error *ngIf="formGroup.get('order').hasError('backendError')">{{formGroup.get('order').getError('backendError')?.message}}</mat-error>
+							<mat-error *ngIf="formGroup.get('order').hasError('required')">{{'COMMONS.VALIDATION.REQUIRED' | translate}}</mat-error>
+						</mat-form-field>
+						<mat-form-field class="col-md-12">
+							<mat-label>{{'APP.DYNAMIC-PAGE-EDITOR.FIELDS.VISIBILITY' | translate}}</mat-label>
+							<mat-select name="dynamic-page-visibility" formControlName="visibility"  (selectionChange)="onvVisibilityChange($event)"  required>
+								<mat-option *ngFor="let visibility of dynamicPageVisibilityTypeValues"
+									[value]="visibility">
+									{{enumUtils.toPageVisibilityString(visibility)}}</mat-option>
+							</mat-select>
+							<mat-error *ngIf="formGroup.get('visibility').hasError('backendError')">{{formGroup.get('visibility').getError('backendError')?.message}}</mat-error>
+							<mat-error *ngIf="formGroup.get('visibility').hasError('required')">{{'COMMONS.VALIDATION.REQUIRED' | translate}}</mat-error>
+						</mat-form-field>
+						<mat-form-field class="col-md-12">
+							<mat-label>{{'APP.DYNAMIC-PAGE-EDITOR.FIELDS.DEFAULT-LANGUAGE' | translate}}</mat-label>
+							<mat-select name="dynamic-page-default-language" formControlName="defaultLanguage" required>
+								<mat-option *ngFor="let languageType of languageTypeValues"
+									[value]="languageService.getLanguageValue(languageType)">
+									{{enumUtils.toLanguageTypeString(languageType)}}</mat-option>
+							</mat-select>
+							<mat-error *ngIf="formGroup.get('defaultLanguage').hasError('backendError')">{{formGroup.get('defaultLanguage').getError('backendError')?.message}}</mat-error>
+							<mat-error *ngIf="formGroup.get('defaultLanguage').hasError('required')">{{'COMMONS.VALIDATION.REQUIRED' | translate}}</mat-error>
+						</mat-form-field>
+
+						<mat-form-field class="col-md-12">
+							<mat-label>{{'APP.DYNAMIC-PAGE-EDITOR.FIELDS.MAT-ICON' | translate}}</mat-label>
+							<input matInput type="text" autocomplete="off" name="dynamic-page-mat-icon" [formControl]="formGroup.get('config').get('matIcon')">
+							<mat-error *ngIf="formGroup.get('config').get('matIcon').hasError('backendError')">{{formGroup.get('config').get('matIcon').getError('backendError')?.message}}</mat-error>
+						</mat-form-field>
+						<mat-form-field *ngIf="formGroup.get('type')?.value === dynamicPageType.External" class="col-md-12">
+							<mat-label>{{'APP.DYNAMIC-PAGE-EDITOR.FIELDS.EXTERNAL-URL' | translate}}</mat-label>
+							<input matInput type="text" autocomplete="off" name="dynamic-page-external-url" [formControl]="formGroup.get('config').get('externalUrl')" required>
+							<mat-error *ngIf="formGroup.get('config')?.get('externalUrl').hasError('backendError')">{{formGroup.get('config')?.get('externalUrl').getError('backendError')?.message}}</mat-error>
+							<mat-error *ngIf="formGroup.get('config')?.get('externalUrl').hasError('required')">{{'COMMONS.VALIDATION.REQUIRED' | translate}}</mat-error>
+						</mat-form-field>
+						<mat-form-field *ngIf="formGroup.get('visibility')?.value === dynamicPageVisibility.HasRole" class="col-md-12">
+							<mat-label>{{'APP.DYNAMIC-PAGE-EDITOR.FIELDS.ALLOWED-ROLES' | translate}}</mat-label>
+
+							<mat-chip-list #chipList>
+								<mat-chip *ngFor="let role of (formGroup.get('config')?.get('allowedRoles')?.value || []); let index = index">
+								  {{role}}
+								  <button matChipRemove (click)="removeRole(role)">
+									<mat-icon>cancel</mat-icon>
+								  </button>
+								</mat-chip>
+								<input
+									#rolesInput
+									   [matChipInputFor]="chipList"
+									   [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+									   (keyup.enter)="addRole(rolesInput)">
+							  </mat-chip-list>
+
+							<mat-error *ngIf="formGroup.get('config')?.get('allowedRoles').hasError('backendError')">{{formGroup.get('config')?.get('allowedRoles').getError('backendError')?.message}}</mat-error>
+							<mat-error *ngIf="formGroup.get('config')?.get('allowedRoles').hasError('required')">{{'COMMONS.VALIDATION.REQUIRED' | translate}}</mat-error>
+						</mat-form-field>
+
+						<mat-tab-group class="col-md-12">
+							<mat-tab [label]="enumUtils.toLanguageTypeString(languageService.getLanguageKey(pageContent.get('language').value))" *ngFor="let pageContent of formGroup?.get('pageContents')['controls']">
+								<ng-template matTabContent>
+									<app-dynamic-page-content-editor class="col-md-12" [pageType]="formGroup.get('type').value" [contentFormGroup]="pageContent"></app-dynamic-page-content-editor>
+								</ng-template>
+							</mat-tab>
+						</mat-tab-group>
+
+					</div>
+					<app-editor-actions-component [canDelete]="authService.hasPermission(authService.permissionEnum.DeleteDynamicPage) && !isDeleted && !isNew" [canSave]="authService.hasPermission(authService.permissionEnum.EditDynamicPage) && !isDeleted" (onDelete)="delete()" (onCancel)="cancel()" (onSave)="save()"></app-editor-actions-component>
+				</form>
+			</mat-card-content>
+		</mat-card>
+	</div>
+</div>

@@ -78,36 +78,6 @@ public class ErrorThesaurusProperties {
 		this.tenantNameRequired = tenantNameRequired;
 	}
 
-	private ErrorDescription indexAlreadyExists;
-
-	public ErrorDescription getIndexAlreadyExists() {
-		return indexAlreadyExists;
-	}
-
-	public void setIndexAlreadyExists(ErrorDescription indexAlreadyExists) {
-		this.indexAlreadyExists = indexAlreadyExists;
-	}
-
-	private ErrorDescription configRequired;
-
-	public ErrorDescription getConfigRequired() {
-		return configRequired;
-	}
-
-	public void setConfigRequired(ErrorDescription configRequired) {
-		this.configRequired = configRequired;
-	}
-
-	private ErrorDescription configIndicatorsRequired;
-
-	public ErrorDescription getConfigIndicatorsRequired() {
-		return configIndicatorsRequired;
-	}
-
-	public void setConfigIndicatorsRequired(ErrorDescription configIndicatorsRequired) {
-		this.configIndicatorsRequired = configIndicatorsRequired;
-	}
-
 	private ErrorDescription tenantNotAllowed;
 
 	public ErrorDescription getTenantNotAllowed() {

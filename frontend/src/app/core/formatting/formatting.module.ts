@@ -5,6 +5,7 @@ import { IsActiveTypePipe } from '@app/core/formatting/pipes/is-active-type.pipe
 import { CommonFormattingModule } from '@common/formatting/common-formatting.module';
 import { PipeService } from '@common/formatting/pipe.service';
 import { DashboardTabBlockToChartGroupBlockPipe } from './pipes/dashboard-chart-group.pipe';
+import { SafeHtmlPipe } from './pipes/safe-html.pipe';
 
 //
 //
@@ -12,24 +13,25 @@ import { DashboardTabBlockToChartGroupBlockPipe } from './pipes/dashboard-chart-
 //
 //
 @NgModule({
-	imports: [
-		CommonFormattingModule
-	],
+	imports: [CommonFormattingModule],
 	declarations: [
 		IsActiveTypePipe,
-		DashboardTabBlockToChartGroupBlockPipe
+		SafeHtmlPipe,
+		DashboardTabBlockToChartGroupBlockPipe,
 	],
 	exports: [
 		DashboardTabBlockToChartGroupBlockPipe,
 		CommonFormattingModule,
 		IsActiveTypePipe,
+		SafeHtmlPipe,
 	],
 	providers: [
 		DashboardTabBlockToChartGroupBlockPipe,
 		AppEnumUtils,
 		PipeService,
+		SafeHtmlPipe,
 		DatePipe,
 		IsActiveTypePipe,
-	]
+	],
 })
-export class FormattingModule { }
+export class FormattingModule {}

@@ -23,7 +23,8 @@ import { IndicatorQueryParams } from '../indicator-dashboard/indicator-dashboard
 	animations: GENERAL_ANIMATIONS
 })
 export class HomeComponent extends BaseComponent implements OnInit{
-
+	bookmarksLike: string;
+	hasBookmarks = false;
 
 	// bookmarks = Array(12).fill(0).map(() =>({
 	// 	description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Cum ipsa iusto natus exercitationem voluptas blanditiis! Voluptates, esse. Voluptatibus, nihil, explicabo facilis dolorum et nobis officia dolorem neque quos ab exercitationem.',
@@ -42,7 +43,7 @@ export class HomeComponent extends BaseComponent implements OnInit{
 	get hasMoreBookmarks (): boolean{
 		return this.totalBookmarks > this.bookmarks?.length;
 	}
-	
+
 
 	constructor(
 		private router: Router,
@@ -56,7 +57,9 @@ export class HomeComponent extends BaseComponent implements OnInit{
 	}
 
 	ngOnInit(): void {
+		this.hasBookmarks = false;
 		this._refreshBookmarks();
+		this.bookmarksLike = null;
 	}
 
 	navigateToIndicators():void{
@@ -78,6 +81,11 @@ export class HomeComponent extends BaseComponent implements OnInit{
 		this.router.navigate(['search'], {queryParams:{
 			q: searchTerm
 		}})
+	}
+
+	searchBookmarks(bookmarksLike): void{
+		this.bookmarksLike = bookmarksLike;
+		this._refreshBookmarks();
 	}
 
 	removeBookmark(bookmark: ComponentBookmark): void{
@@ -124,6 +132,7 @@ export class HomeComponent extends BaseComponent implements OnInit{
 				)
 			).subscribe(bookmaks => {
 				if(emptyBookmarks) {
+					if (!lookup.like || lookup.like.length === 0) this.hasBookmarks = bookmaks != null && bookmaks.length > 0;
 					this.bookmarks = [];
 				}
 				this.bookmarks.push(...bookmaks)
@@ -141,6 +150,7 @@ export class HomeComponent extends BaseComponent implements OnInit{
 			]
 		}
 		lookup.isActive = [IsActive.Active];
+		if (this.bookmarksLike && this.bookmarksLike.trim().length > 0) lookup.like = '%' + this.bookmarksLike + '%';
 		lookup.page = {
 			offset: skipPaging ? 0 : this.bookmarks.length,
 			size: this.PAGE_SIZE
@@ -171,7 +181,7 @@ export class HomeComponent extends BaseComponent implements OnInit{
 				value: bookmark.value
 
 			}
-	} 
+	}
 }
 
 

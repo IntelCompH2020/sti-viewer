@@ -13,6 +13,7 @@ public interface ConventionService {
 	Boolean isValidGuid(UUID guid);
 
 	Boolean isValidUUID(String str);
+	Boolean isValidEmail(String str);
 	UUID parseUUIDSafe(String str);
 
 	Boolean isValidHash(String hash);

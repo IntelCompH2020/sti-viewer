@@ -18,12 +18,14 @@ public class NotificationProperties {
 	private final Resolver resolver;
 	private final Map<String, Template> message;
 	private final Template overrideCache;
+	private final StaticFieldItems staticFields;
 
-	public NotificationProperties(Task task, Resolver resolver, Map<String, Template> message, Template overrideCache) {
+	public NotificationProperties(Task task, Resolver resolver, Map<String, Template> message, Template overrideCache, StaticFieldItems staticFields) {
 		this.task = task;
 		this.resolver = resolver;
 		this.message = message;
 		this.overrideCache = overrideCache;
+		this.staticFields = staticFields;
 	}
 
 	public Task getTask() {
@@ -40,6 +42,10 @@ public class NotificationProperties {
 
 	public Template getOverrideCache() {
 		return overrideCache;
+	}
+
+	public StaticFieldItems getStaticFields() {
+		return staticFields;
 	}
 
 	public static class Task {
@@ -145,13 +151,11 @@ public class NotificationProperties {
 	}
 
 	public static class Template {
-		private final Map<String, Field> fields;
 		private final TemplateCache templateCache;
 
 		private final List<Flow> flows;
 
-		public Template(Map<String, Field> fields, TemplateCache templateCache, List<Flow> flows) {
-			this.fields = fields;
+		public Template(TemplateCache templateCache, List<Flow> flows) {
 			this.templateCache = templateCache;
 			this.flows = flows;
 		}
@@ -160,9 +164,6 @@ public class NotificationProperties {
 			return templateCache;
 		}
 
-		public Map<String, Field> getFields() {
-			return fields;
-		}
 
 		public List<Flow> getFlows() {
 			return flows;
@@ -184,6 +185,18 @@ public class NotificationProperties {
 			public String getKeyPattern() {
 				return keyPattern;
 			}
+		}
+	}
+
+	public static class StaticFieldItems {
+		private final List<Field> Fields;
+
+		public StaticFieldItems(List<Field> fields) {
+			Fields = fields;
+		}
+
+		public List<Field> getFields() {
+			return Fields;
 		}
 	}
 

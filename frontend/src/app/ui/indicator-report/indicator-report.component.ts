@@ -25,6 +25,8 @@ export class IndicatorReportComponent extends BaseComponent implements OnInit{
 
   selectedView = 0;
   // treeConfigs: BrowseDataTreeLevelModel[];
+	hasNewData = false;
+	disableNewDataIndicator = false;
 
   private _allMyConfigurations: BrowseDataTreeConfigModel[];
 
@@ -45,7 +47,7 @@ export class IndicatorReportComponent extends BaseComponent implements OnInit{
 
     ) {
     super();
-  
+
   }
   ngOnInit(): void {
     this.loadIndicators();
@@ -69,19 +71,33 @@ export class IndicatorReportComponent extends BaseComponent implements OnInit{
     });
 
     this.activeGotos = this.nestedDetails.map(detail => detail.viewConfigId);
-  }
+	}
+
+	updateLastAccess(): void {
+		const initialConfig = this._allMyConfigurations.find(config => config.order === 0) ?? this._allMyConfigurations[0];
+		this._dataTreeService
+			.updateLastAccess({ configId: initialConfig.id })
+			.pipe(takeUntil(this._destroyed))
+			.subscribe(results => {
+				this.hasNewData = false;
+				this.disableNewDataIndicator = true;
+			});
+	}
 
   loadIndicators(): void{
 
     this._dataTreeService
       .getMyConfigs()
       .pipe(
-        switchMap(configs => {
+		  switchMap(configs => {
+
+			this.hasNewData = false;
+			this.disableNewDataIndicator = false;
 
           this._allMyConfigurations = configs;
 
           const initialConfig = configs.find(config => config.order === 0) ?? configs[0];
-          
+
           // load up first configuration
           this.configuration = {
             selectedLevelsTillNow: [],
@@ -126,7 +142,7 @@ export class IndicatorReportComponent extends BaseComponent implements OnInit{
 
 
   // navigateToNode(node: DynamicFlatNode){
-  //   this._router.navigate(['dashboard'], 
+  //   this._router.navigate(['dashboard'],
   //   {
   //     relativeTo: this._activatedRoute,
   //     queryParams: {
@@ -147,7 +163,7 @@ export class IndicatorReportComponent extends BaseComponent implements OnInit{
   }
 
   onExpand(detailIndex?:number): void {
-    
+
     let nativeElement: HTMLElement;
 
     if(isNaN(detailIndex)){
@@ -179,7 +195,7 @@ export class IndicatorReportComponent extends BaseComponent implements OnInit{
 
 }
 // export class DynamicDataSource extends BaseComponent implements DataSource<DynamicFlatNode>{
-  
+
 
 //   dataChange = new BehaviorSubject<DynamicFlatNode[]>([]);
 
@@ -242,7 +258,7 @@ export class IndicatorReportComponent extends BaseComponent implements OnInit{
 //       // If no children, or cannot find the node, no op
 //       return;
 //     }
-    
+
 //     const lookup = new IndicatorReportLevelLookup();
 //     lookup.configId = node.viewConfigId;
 //     lookup.selectedLevels = node.filtersTillNow;
@@ -256,7 +272,7 @@ export class IndicatorReportComponent extends BaseComponent implements OnInit{
 //         [nameof<BrowseDataTreeLevelModel>(x => x.field), nameof<BrowseDataFieldModel>(x => x.name) ].join('.'),
 //       ]
 //     };
-    
+
 //     if(expand){
 
 //       node.isLoading = true;
@@ -265,9 +281,9 @@ export class IndicatorReportComponent extends BaseComponent implements OnInit{
 //           return item.items;
 //         }), takeUntil(this._destroyed))
 //         .subscribe(
-//           data => { 
+//           data => {
 //             const config = data[0] as BrowseDataTreeLevelModel;
-  
+
 //             const nodes:DynamicFlatNode[] = config.items.map(item => ({
 //               expandable: config.supportSubLevel,
 //               filtersTillNow: [...node.filtersTillNow, {code:config.field.code, value: item.value}],

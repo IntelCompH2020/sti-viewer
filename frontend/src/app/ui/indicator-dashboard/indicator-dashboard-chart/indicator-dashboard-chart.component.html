@@ -5,7 +5,7 @@
 	</div> -->
 	<div 
 		*ngIf="(chartOptions && (uiMinimumTimePased$ | async)) else loading"
-		[merge]="merge"
+		[merge]="merge | mergeEchartOption :extraFields "
 		[options]="chartOptions"
 		echarts
 		@fadeIn

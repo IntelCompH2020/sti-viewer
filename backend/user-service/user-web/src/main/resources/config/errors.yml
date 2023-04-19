@@ -20,19 +20,7 @@ error-thesaurus:
   tenant-name-required:
     code: 109
     message: tenant name required
-  index-already-exists:
-    code: 110
-    message: index already exists
-  config-required:
-    code: 111
-    message: config is required
-  config-indicators-required:
-    code: 112
-    message: config indicators is required
   tenant-not-allowed:
     code: 113
     message: tenant not allowed
-  bookmark-hash-conflict:
-    code: 114
-    message: there is a hash conflict for the bookmark
   

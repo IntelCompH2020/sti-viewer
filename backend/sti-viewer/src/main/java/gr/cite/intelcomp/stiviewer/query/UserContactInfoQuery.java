@@ -34,6 +34,7 @@ public class UserContactInfoQuery extends QueryBase<UserContactInfoEntity> {
 	private Collection<UUID> userIds;
 	private Collection<UUID> tenantIds;
 	private Collection<IsActive> isActives;
+	private Collection<UserContactType> type;
 	private UserQuery userQuery;
 
 	private EnumSet<AuthorizationFlags> authorize = EnumSet.of(AuthorizationFlags.None);
@@ -109,6 +110,21 @@ public class UserContactInfoQuery extends QueryBase<UserContactInfoEntity> {
 		return this;
 	}
 
+	public UserContactInfoQuery type(UserContactType value) {
+		this.type = List.of(value);
+		return this;
+	}
+
+	public UserContactInfoQuery type(UserContactType... value) {
+		this.type = Arrays.asList(value);
+		return this;
+	}
+
+	public UserContactInfoQuery type(Collection<UserContactType> values) {
+		this.type = values;
+		return this;
+	}
+	
 	public UserContactInfoQuery userSubQuery(UserQuery subQuery) {
 		this.userQuery = subQuery;
 		return this;
@@ -121,7 +137,7 @@ public class UserContactInfoQuery extends QueryBase<UserContactInfoEntity> {
 
 	@Override
 	protected Boolean isFalseQuery() {
-		return this.isEmpty(this.userIds) || this.isEmpty(this.tenantIds) || this.isEmpty(this.isActives) || this.isFalseQuery(this.userQuery);
+		return this.isEmpty(this.userIds) || this.isEmpty(this.tenantIds) || this.isEmpty(this.isActives) || this.isEmpty(this.type) || this.isFalseQuery(this.userQuery);
 	}
 
 	@Override
@@ -164,6 +180,11 @@ public class UserContactInfoQuery extends QueryBase<UserContactInfoEntity> {
 		if (this.isActives != null) {
 			CriteriaBuilder.In<IsActive> inClause = queryContext.CriteriaBuilder.in(queryContext.Root.get(UserContactInfoEntity._isActive));
 			for (IsActive item : this.isActives) inClause.value(item);
+			predicates.add(inClause);
+		}
+		if (this.type != null) {
+			CriteriaBuilder.In<UserContactType> inClause = queryContext.CriteriaBuilder.in(queryContext.Root.get(UserContactInfoEntity._type));
+			for (UserContactType item : this.type) inClause.value(item);
 			predicates.add(inClause);
 		}
 		if (this.userQuery != null) {

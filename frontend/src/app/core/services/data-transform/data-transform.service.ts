@@ -26,7 +26,8 @@ export class DataTransformService {
 				field: configurationBucket.field,
 				having: configurationBucket.having,
 				metrics: configurationBucket.metrics?.map((configurationMetric) => this._configurationMetricToLookupMetric(configurationMetric)),
-				type: configurationBucket.type
+				type: configurationBucket.type,
+				bucketSort: configurationBucket.bucketSort
 			}
 
 

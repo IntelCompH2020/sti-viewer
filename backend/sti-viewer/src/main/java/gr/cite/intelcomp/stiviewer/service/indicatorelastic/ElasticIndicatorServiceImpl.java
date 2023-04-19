@@ -27,6 +27,7 @@ import gr.cite.intelcomp.stiviewer.model.builder.IndicatorElasticBuilder;
 import gr.cite.intelcomp.stiviewer.model.deleter.IndicatorDeleter;
 import gr.cite.intelcomp.stiviewer.model.persist.IndicatorElasticPersist;
 import gr.cite.intelcomp.stiviewer.model.persist.IndicatorPersist;
+import gr.cite.intelcomp.stiviewer.model.persist.ResetIndicatorElasticPersist;
 import gr.cite.intelcomp.stiviewer.model.persist.elasticindicator.*;
 import gr.cite.intelcomp.stiviewer.service.indicator.IndicatorConfigItem;
 import gr.cite.intelcomp.stiviewer.service.indicator.IndicatorConfigService;
@@ -43,6 +44,7 @@ import gr.cite.tools.logging.LoggerService;
 import gr.cite.tools.logging.MapLogEntry;
 import gr.cite.tools.validation.ValidationService;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
+import org.elasticsearch.action.support.master.AcknowledgedResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.indices.CreateIndexRequest;
@@ -62,6 +64,7 @@ import org.springframework.stereotype.Service;
 
 import javax.management.InvalidApplicationException;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -144,6 +147,33 @@ public class ElasticIndicatorServiceImpl implements ElasticIndicatorService {
 			persist.setId(indicatorId);
 		}
 		this.createDbIndicator(persist, indicatorId);
+
+		IndicatorElasticEntity data = new IndicatorElasticEntity();
+		data.setId(persist.getId());
+		data.setMetadata(this.buildIndicatorMetadataEntity(persist.getMetadata()));
+		data.setSchema(this.buildIndicatorSchemaEntity(persist.getSchema()));
+
+		data = elasticsearchRestTemplate.save(data, IndexCoordinates.of(this.appElasticProperties.getIndicatorIndexName()));
+		this.ensureIndex(data.getId());
+
+		this.eventBroker.emit(new IndicatorTouchedEvent(data.getId()));
+		return builderFactory.builder(IndicatorElasticBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(fieldSet, data);
+	}
+
+	public IndicatorElastic reset(ResetIndicatorElasticPersist persist, FieldSet fieldSet) throws IOException, InvalidApplicationException {
+		logger.debug(new MapLogEntry("reset data indicator").And("persist", persist).And("fieldSet", fieldSet));
+
+		this.authorizationService.authorizeForce(Permission.ResetIndicator);
+		UUID indicatorId = persist.getId();
+
+		IndicatorEntity indicatorEntity = this.entityManager.find(IndicatorEntity.class, indicatorId);
+		if (indicatorEntity == null) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{indicatorId, Indicator.class.getSimpleName()}, LocaleContextHolder.getLocale()));
+		indicatorEntity.setUpdatedAt(Instant.now());
+		this.entityManager.persist(indicatorEntity);
+
+		String index = this.getIndexName(indicatorId);
+		this.elasticsearchRestTemplate.delete(indicatorId.toString(), IndexCoordinates.of(this.appElasticProperties.getIndicatorIndexName()));
+		this.restHighLevelClient.indices().delete(new DeleteIndexRequest(index), RequestOptions.DEFAULT);
 
 		IndicatorElasticEntity data = new IndicatorElasticEntity();
 		data.setId(persist.getId());

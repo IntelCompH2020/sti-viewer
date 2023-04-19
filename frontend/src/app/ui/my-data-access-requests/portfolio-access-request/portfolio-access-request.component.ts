@@ -66,6 +66,7 @@ export class PortfolioAccessRequestComponent extends BasePendingChangesComponent
 
                     ...column.additions
                 ],
+                title: column.label
             },
             width: '30rem',
             disableClose: true

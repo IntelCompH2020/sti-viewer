@@ -60,14 +60,6 @@ public class UserDeleter implements Deleter {
 		logger.debug("will delete {} items", Optional.ofNullable(datas).map(x -> x.size()).orElse(0));
 		if (datas == null || datas.isEmpty()) return;
 
-		List<UUID> ids = datas.stream().map(x -> x.getId()).distinct().collect(Collectors.toList());
-		{
-			logger.debug("checking related - {}", TenantUserEntity.class.getSimpleName());
-			List<TenantUserEntity> items = this.queryFactory.query(TenantUserQuery.class).userIds(ids).collect();
-			TenantUserDeleter deleter = this.deleterFactory.deleter(TenantUserDeleter.class);
-			deleter.delete(items);
-		}
-
 		Instant now = Instant.now();
 
 		for (UserEntity item : datas) {

@@ -1,6 +1,7 @@
 import { BucketAggregateType } from "@app/core/enum/bucket-aggregate-type.enum";
 import { DateInterval } from "@app/core/enum/date-interval.enum";
 import { MetricAggregateType } from "@app/core/enum/metric-aggregate-type.enum";
+import { Lookup } from "@common/model/lookup";
 import { Moment } from "moment";
 import { Metric } from "../metic/metric.model";
 
@@ -9,6 +10,7 @@ export interface Bucket{
     field: string;
     metrics: Metric[];
     having: AggregationMetricHaving;
+    bucketSort: AggregationMetricSort;
 }
 
 
@@ -45,6 +47,17 @@ export interface CompositeSource{
 
 type BucketOrder = 'ASC' | 'DESC';
 
+
+export interface AggregationMetricSort{
+    sortFields:AggregationMetricSortField[],
+    paging: Lookup.Paging
+}
+
+export interface AggregationMetricSortField{
+    field: string;
+    metricAggregateType: MetricAggregateType;
+    order: 'ASC' | 'DESC';
+}
 export interface AggregationMetricHaving{
     field: string;
     metricAggregateType: MetricAggregateType;

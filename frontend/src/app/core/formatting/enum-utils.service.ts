@@ -7,6 +7,8 @@ import { LanguageType } from '@app/core/enum/language-type.enum';
 import { RoleType } from '@app/core/enum/role-type.enum';
 import { BaseEnumUtilsService } from '@common/base/base-enum-utils.service';
 import { TranslateService } from '@ngx-translate/core';
+import { DynamicPageType } from '../enum/dynamic-page-type.enum';
+import { DynamicPageVisibility } from '../enum/dynamic-page-visibility.enum';
 
 @Injectable()
 export class AppEnumUtils extends BaseEnumUtilsService {
@@ -28,6 +30,24 @@ export class AppEnumUtils extends BaseEnumUtilsService {
 		switch (value) {
 			case IsActive.Active: return this.language.instant('APP.TYPES.IS-ACTIVE.ACTIVE');
 			case IsActive.Inactive: return this.language.instant('APP.TYPES.IS-ACTIVE.INACTIVE');
+			default: return '';
+		}
+	}
+
+	public toPageVisibilityString(value: DynamicPageVisibility): string {
+		switch (value) {
+			case DynamicPageVisibility.Authenticated: return this.language.instant("APP.TYPES.PAGE-VISIBILITY.AUTHENTICATED");
+			case DynamicPageVisibility.HasRole: return this.language.instant("APP.TYPES.PAGE-VISIBILITY.HAS-ROLE");
+			case DynamicPageVisibility.Owner: return this.language.instant("APP.TYPES.PAGE-VISIBILITY.OWNER");
+			case DynamicPageVisibility.Hidden: return this.language.instant("APP.TYPES.PAGE-VISIBILITY.HIDDEN");
+			default: return '';
+		}
+	}
+
+	public toPageTypeString(value: DynamicPageType): string {
+		switch (value) {
+			case DynamicPageType.External: return this.language.instant("APP.TYPES.PAGE-TYPE.EXTERNAL");
+			case DynamicPageType.Simple: return this.language.instant("APP.TYPES.PAGE-TYPE.SIMPLE");
 			default: return '';
 		}
 	}

@@ -8,13 +8,9 @@ import gr.cite.commons.web.authz.policy.AuthorizationResource;
 import gr.cite.commons.web.authz.policy.resolver.AuthorizationPolicyConfigurer;
 import gr.cite.commons.web.authz.policy.resolver.AuthorizationPolicyResolverStrategy;
 import gr.cite.commons.web.oidc.configuration.WebSecurityProperties;
-import gr.cite.notification.authorization.IndicatorRolesAuthorizationRequirement;
-import gr.cite.notification.authorization.IndicatorRolesResource;
 import gr.cite.notification.authorization.OwnedAuthorizationRequirement;
 import gr.cite.notification.authorization.OwnedResource;
-import gr.cite.notification.web.authorization.IndicatorRolesAuthorizationHandler;
 import gr.cite.notification.web.authorization.OwnedAuthorizationHandler;
-import gr.cite.notification.web.authorization.TimeOfDayAuthorizationHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -25,7 +21,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.servlet.Filter;
 import javax.servlet.http.HttpServletRequest;
@@ -39,23 +34,16 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	private final WebSecurityProperties webSecurityProperties;
 	private final AuthenticationManagerResolver<HttpServletRequest> authenticationManagerResolver;
 	private final Filter apiKeyFilter;
-
-	private final TimeOfDayAuthorizationHandler timeOfDayAuthorizationHandler;
-	private final IndicatorRolesAuthorizationHandler indicatorRolesAuthorizationHandler;
 	private final OwnedAuthorizationHandler ownedAuthorizationHandler;
 
 	@Autowired
 	public SecurityConfiguration(WebSecurityProperties webSecurityProperties,
 	                             @Qualifier("tokenAuthenticationResolver") AuthenticationManagerResolver<HttpServletRequest> authenticationManagerResolver,
 	                             @Qualifier("apiKeyFilter") Filter apiKeyFilter,
-	                             @Qualifier("timeOfDayAuthorizationHandler") TimeOfDayAuthorizationHandler timeOfDayAuthorizationHandler,
-	                             @Qualifier("indicatorRolesAuthorizationHandler") IndicatorRolesAuthorizationHandler indicatorRolesAuthorizationHandler,
 	                             @Qualifier("ownedAuthorizationHandler") OwnedAuthorizationHandler ownedAuthorizationHandler) {
 		this.webSecurityProperties = webSecurityProperties;
 		this.authenticationManagerResolver = authenticationManagerResolver;
 		this.apiKeyFilter = apiKeyFilter;
-		this.timeOfDayAuthorizationHandler = timeOfDayAuthorizationHandler;
-		this.indicatorRolesAuthorizationHandler = indicatorRolesAuthorizationHandler;
 		this.ownedAuthorizationHandler = ownedAuthorizationHandler;
 	}
 
@@ -89,7 +77,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 			//If not set / set to null, only the default authorization handlers will be used
 			@Override
 			public List<AuthorizationHandler<? extends AuthorizationRequirement>> addCustomHandlers() {
-				return List.of(timeOfDayAuthorizationHandler, indicatorRolesAuthorizationHandler, ownedAuthorizationHandler);
+				return List.of(ownedAuthorizationHandler);
 			}
 
 			//Here you can register your custom authorization requirements (if any)
@@ -122,9 +110,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 				Class<?> type = resource.getClass();
 				if (!AuthorizationResource.class.isAssignableFrom(type)) throw new IllegalArgumentException("resource");
 
-				if (IndicatorRolesResource.class.equals(type)) {
-					return new IndicatorRolesAuthorizationRequirement(matchAll, permissions);
-				}
 				if (OwnedResource.class.equals(type)) {
 					return new OwnedAuthorizationRequirement();
 				}

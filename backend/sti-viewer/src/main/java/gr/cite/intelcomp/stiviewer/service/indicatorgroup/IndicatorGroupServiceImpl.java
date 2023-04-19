@@ -84,7 +84,7 @@ public class IndicatorGroupServiceImpl implements IndicatorGroupService {
 	public List<IndicatorGroupEntity> getIndicatorGroups() {
 		List<IndicatorGroupEntity> indicatorGroupEntities = new ArrayList<>();
 		if (this.config.getGroups() != null && !this.config.getGroups().isEmpty()) {
-			for (IndicatorGroupsProperties.IndicatorGroup indicatorGroup : this.config.getGroups()) {
+			for (IndicatorGroup indicatorGroup : this.config.getGroups()) {
 				indicatorGroupEntities.add(this.toEntity(indicatorGroup));
 			}
 		} else {
@@ -105,13 +105,13 @@ public class IndicatorGroupServiceImpl implements IndicatorGroupService {
 
 	@Override
 	public IndicatorGroupEntity getIndicatorGroupByCode(String code) {
-		if (this.config.getGroups() == null) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{code, IndicatorGroupsProperties.IndicatorGroup .class.getSimpleName()}, LocaleContextHolder.getLocale()));
-		IndicatorGroupsProperties.IndicatorGroup indicatorGroup = this.config.getGroups().stream().filter(x-> x.getCode().equalsIgnoreCase(code)).findFirst().orElse(null);
-		if (indicatorGroup == null) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{code, IndicatorGroupsProperties.IndicatorGroup .class.getSimpleName()}, LocaleContextHolder.getLocale()));
+		if (this.config.getGroups() == null) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{code, IndicatorGroup .class.getSimpleName()}, LocaleContextHolder.getLocale()));
+		IndicatorGroup indicatorGroup = this.config.getGroups().stream().filter(x-> x.getCode().equalsIgnoreCase(code)).findFirst().orElse(null);
+		if (indicatorGroup == null) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{code, IndicatorGroup .class.getSimpleName()}, LocaleContextHolder.getLocale()));
 		return this.toEntity(indicatorGroup);
 	}
 	
-	private IndicatorGroupEntity toEntity(IndicatorGroupsProperties.IndicatorGroup indicatorGroup){
+	private IndicatorGroupEntity toEntity(IndicatorGroup indicatorGroup){
 		List<IndicatorEntity> indicators = this.queryFactory.query(IndicatorQuery.class).codes(indicatorGroup.getIndicatorCodes().stream().distinct().collect(Collectors.toList())).isActive(IsActive.ACTIVE).collectAs(new BaseFieldSet().ensure(Indicator._id, Indicator._code, Indicator._config));
 		List<FilterColumnEntity> fieldCodes = new ArrayList<>();
 		for (IndicatorEntity indicator : indicators) {

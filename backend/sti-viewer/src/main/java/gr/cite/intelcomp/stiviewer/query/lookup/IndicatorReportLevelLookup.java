@@ -8,6 +8,7 @@ import java.util.List;
 public class IndicatorReportLevelLookup extends Lookup {
 
 	private String configId;
+	private String parentConfigId;
 	private IndicatorPointLookup filters;
 	private List<String> selectedLevels;
 
@@ -33,5 +34,13 @@ public class IndicatorReportLevelLookup extends Lookup {
 
 	public void setFilters(IndicatorPointLookup filters) {
 		this.filters = filters;
+	}
+
+	public String getParentConfigId() {
+		return parentConfigId;
+	}
+
+	public void setParentConfigId(String parentConfigId) {
+		this.parentConfigId = parentConfigId;
 	}
 }

@@ -9,14 +9,14 @@ import { UiNotificationService } from '@common/modules/notification/ui-notificat
 import { DataZoomComponentOption, EChartsOption, registerMap} from 'echarts';
 import { BehaviorSubject, combineLatest, interval, Observable, of, Subject } from 'rxjs';
 import { delayWhen, distinctUntilChanged, filter, map, takeUntil } from 'rxjs/operators';
-import { BaseIndicatorDashboardChartConfig, IndicatorDashboardBarChartConfig, IndicatorDashboardChartType, IndicatorDashboardConfig, IndicatorDashboardGraphChartConfig, IndicatorDashboardLineChartConfig, IndicatorDashboardMapChartConfig, IndicatorDashboardPolarBarChartConfig, IndicatorDashboardSankeyChartConfig, IndicatorDashboardScatterChartConfig, IndicatorDashboardTreeMapChartConfig, IndicatorFilterType} from '../indicator-dashboard-config';
+import { BaseIndicatorDashboardChartConfig, IndicatorDashboardBarChartConfig, IndicatorDashboardChartType, IndicatorDashboardConfig, IndicatorDashboardGraphChartConfig, IndicatorDashboardLineChartConfig, IndicatorDashboardMapChartConfig, IndicatorDashboardPolarBarChartConfig, IndicatorDashboardRadarChartConfig, IndicatorDashboardSankeyChartConfig, IndicatorDashboardScatterChartConfig, IndicatorDashboardTreeMapChartConfig, IndicatorFilterType} from '../indicator-dashboard-config';
 import { IndicatorQueryParams } from '../indicator-dashboard.component';
 import { MatDialog } from '@angular/material/dialog';
 import { IndicatorDashboardFiltersComponent, IndicatorListingFiltersComponentData } from './indicator-dashboard-filters/indicator-dashboard-filters.component';
 import * as FileSaver from 'file-saver';
 import { IndicatorPointReportLookup, RawDataRequest } from '@app/core/query/indicator-point-report.lookup';
 import { IndicatorPointLookup } from '@app/core/query/indicator-point.lookup';
-import moment from 'moment';
+import moment, { max } from 'moment';
 const mapGeo = require('./world-sm.geo.json');
 const MAP_GEO_DICTIONARY = mapGeo.features.reduce((aggr, country) => ({...aggr, [country.properties.name]: country.properties.name}), {});
 const GRAPH_OPTIONS = require('./les-miserables.json') as GraphOptions;
@@ -46,7 +46,11 @@ export class IndicatorDashboardChartComponent extends BaseComponent implements O
 
 	protected noDataFound: boolean = false;
 
-	private _extraFields: {fieldCode: string, value: any, indicatorFilterType: IndicatorFilterType  }[] = [];
+	private _extraFields: ExtraFilterField[] = [];
+	
+	protected get extraFields(){
+		return this._extraFields
+	}
 	private _ComponentInitializedSubject$ = new BehaviorSubject<boolean>(false);
 	public errorLoading = false;
 
@@ -103,8 +107,23 @@ export class IndicatorDashboardChartComponent extends BaseComponent implements O
 
 		
 	}
-	ngOnChanges(): void {
+	ngOnChanges(simpleChanges: SimpleChanges): void {
 		this._inputChanges$.next();
+
+		if(simpleChanges.chartConfig){
+			this._extraFields = this.chartConfig?.filters?.map(filter =>{
+	
+				if(!filter?.valueToAssignOnInitialLoad){
+					return null;
+				}
+				return {
+					fieldCode: filter.fieldCode,
+					value: filter.valueToAssignOnInitialLoad,
+					indicatorFilterType: filter.indicatorFilterType,
+					displayName: filter.values?.find(filterValue => filterValue.value === filter.valueToAssignOnInitialLoad)?.name
+				}
+			}).filter(x => !!x) ?? []
+		}
 
 		if(this.chartConfig?.tags?.attachedTags?.length){
 			this._chartTags$.next(this.chartConfig.tags?.attachedTags);
@@ -138,7 +157,7 @@ export class IndicatorDashboardChartComponent extends BaseComponent implements O
 					IndicatorDashboardChartType.Line,
 					IndicatorDashboardChartType.Bar,
 					IndicatorDashboardChartType.PolarBar,
-				]
+				].includes(this.chartConfig?.type)
 			){
 				const dataZoomArray: DataZoomComponentOption[] = Array.isArray(this.chartOptions.dataZoom) ? this.chartOptions.dataZoom : [this.chartOptions.dataZoom];
 				this.supportsZoom = !!dataZoomArray?.some(dataZoomItem => dataZoomItem?.type === 'inside');
@@ -247,6 +266,8 @@ export class IndicatorDashboardChartComponent extends BaseComponent implements O
 			IndicatorDashboardChartType.Pie,
 			IndicatorDashboardChartType.TreeMap,
 			IndicatorDashboardChartType.Sankey,
+			IndicatorDashboardChartType.Radar,
+			IndicatorDashboardChartType.Scatter,
 		]
 
 
@@ -359,6 +380,58 @@ export class IndicatorDashboardChartComponent extends BaseComponent implements O
 							return;
 						}
 	
+
+
+
+						//  * SCATTERER CHART
+						if (this.chartConfig.type === IndicatorDashboardChartType.Scatter) {
+							if (!seriesData?.series || !Object.keys(seriesData.series).length) {
+								console.warn('No series found for Scatter chart');
+								return;
+							}
+
+							this.chartOptions = this.chartBuilderService.buildScatterOptions({
+								config: this.chartConfig as IndicatorDashboardScatterChartConfig,
+								onFiltersOpen: () => {
+									this.openFilters();
+								},
+								onDownload: () => {
+									this.downloadData();
+								},
+								onDownloadJSON: () =>{
+									this.downloadJsonData()
+								},
+								labels: seriesData.labels,
+								series: seriesData.series
+							})
+							break buildConfiguration;
+						}
+
+
+						//  * RADAR CHART
+						if (this.chartConfig.type === IndicatorDashboardChartType.Radar) {
+							if (!seriesData?.series || !Object.keys(seriesData.series).length) {
+								console.warn('No series found for RADAR chart');
+								return;
+							}
+	
+							this.chartOptions = this.chartBuilderService.buildRadarOptions({
+								config: this.chartConfig as IndicatorDashboardRadarChartConfig,
+								// radarIndicatorOptions,
+								inputSeries: seriesData.series,
+								labels: seriesData.labels,
+								onFiltersOpen: () => {
+									this.openFilters();
+								},
+								onDownload: () => {
+									this.downloadData();
+								},
+								onDownloadJSON: () =>{
+									this.downloadJsonData()
+								},
+							})
+							break buildConfiguration;
+						}
 	
 						//  * LINE CHART
 						if (this.chartConfig.type === IndicatorDashboardChartType.Line) {
@@ -376,7 +449,10 @@ export class IndicatorDashboardChartComponent extends BaseComponent implements O
 								},
 								onDownload: () => {
 									this.downloadData();
-								}
+								},
+								onDownloadJSON: () =>{
+									this.downloadJsonData()
+								},
 							});
 							break buildConfiguration;
 						}
@@ -394,7 +470,13 @@ export class IndicatorDashboardChartComponent extends BaseComponent implements O
 								inputSeries: seriesData.series,
 								onDownload: () => {
 									this.downloadData();
-								}
+								},
+								onFiltersOpen: () => {
+									this.openFilters();
+								},
+								onDownloadJSON: () =>{
+									this.downloadJsonData()
+								},
 							});
 							break buildConfiguration;
 						}
@@ -411,7 +493,10 @@ export class IndicatorDashboardChartComponent extends BaseComponent implements O
 								inputSeries: seriesData.series,
 								onDownload: () => {
 									this.downloadData();
-								}
+								},
+								onDownloadJSON: () =>{
+									this.downloadJsonData()
+								},
 							});
 							break buildConfiguration;
 						}
@@ -441,7 +526,13 @@ export class IndicatorDashboardChartComponent extends BaseComponent implements O
 								}))
 								,onDownload: () => {
 									this.downloadData();
-								}
+								},
+								onFiltersOpen: () => {
+									this.openFilters();
+								},
+								onDownloadJSON: () =>{
+									this.downloadJsonData()
+								},
 							});
 							break buildConfiguration;
 						}
@@ -470,7 +561,10 @@ export class IndicatorDashboardChartComponent extends BaseComponent implements O
 								data:treeMapdata,
 								onDownload: () => {
 									this.downloadData();
-								}
+								},
+								onDownloadJSON: () =>{
+									this.downloadJsonData()
+								},
 							});
 							break buildConfiguration;
 						}
@@ -512,7 +606,13 @@ export class IndicatorDashboardChartComponent extends BaseComponent implements O
 								pieData: standAloneData ?? standAloneDataFromSeries,
 								onDownload: () => {
 									this.downloadData();
-								}
+								},
+								onFiltersOpen: () => {
+									this.openFilters();
+								},
+								onDownloadJSON: () =>{
+									this.downloadJsonData()
+								},
 							});
 							break buildConfiguration;
 						}
@@ -546,15 +646,18 @@ export class IndicatorDashboardChartComponent extends BaseComponent implements O
 		// 	data2.push(Math.abs((Math.cos(i / 5) * (i / 5 - 10) + i / 6) * 5));
 		// }
 
-		if (this.chartConfig.type === IndicatorDashboardChartType.Scatter) {
-			return this.chartBuilderService.buildScatterOptions({config: this.chartConfig as IndicatorDashboardScatterChartConfig});
-		}
+		// if (this.chartConfig.type === IndicatorDashboardChartType.Scatter) {
+		// 	return this.chartBuilderService.buildScatterOptions({config: this.chartConfig as IndicatorDashboardScatterChartConfig});
+		// }
 		if (this.chartConfig.type === IndicatorDashboardChartType.Graph) {
 			return this.chartBuilderService.buildGraphOptions({
 				config: this.chartConfig as IndicatorDashboardGraphChartConfig,
 				graph: GRAPH_OPTIONS
 			});
 		}
+		// if(this.chartConfig.type === IndicatorDashboardChartType.Radar){
+		// 	return this.chartBuilderService.buildRadarOptions({config: this.chartConfig as IndicatorDashboardRadarChartConfig, radarIndicatorOptions: []})
+		// }
 
 	}
 
@@ -605,6 +708,20 @@ export class IndicatorDashboardChartComponent extends BaseComponent implements O
 
 		this.indicatorPointService
 			.exportXlsx(this.chartConfig.indicatorId, this._buildIndicatorLookup())
+			.pipe(
+				takeUntil(this._destroyed)
+			)
+			.subscribe(response => {
+
+				const filenametosave = this.getFilenameFromContentDispositionHeader(response.headers.get('Content-Disposition'));
+
+				FileSaver.saveAs(response.body, filenametosave);
+			});
+	}
+
+	public downloadJsonData(): void{
+		this.indicatorPointService
+			.exportJSON(this.chartConfig.indicatorId, this._buildIndicatorLookup())
 			.pipe(
 				takeUntil(this._destroyed)
 			)
@@ -771,4 +888,12 @@ export class IndicatorDashboardChartComponent extends BaseComponent implements O
 interface ChartTag{
 	selected: boolean;
 	name: string;
+}
+
+
+export interface ExtraFilterField{
+	fieldCode: string;
+	value: any; 
+	indicatorFilterType: IndicatorFilterType ;
+	displayName?: string;
 }

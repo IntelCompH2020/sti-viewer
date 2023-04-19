@@ -12,6 +12,7 @@ import gr.cite.tools.fieldset.FieldSet;
 
 import javax.management.InvalidApplicationException;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,8 +21,8 @@ public interface IndicatorPointService {
 
 	AggregateResponseModel report(UUID indicatorId, IndicatorPointReportLookup model, FieldSet fields) throws MyForbiddenException, MyValidationException, MyApplicationException, MyNotFoundException, InvalidApplicationException;
 
-	byte[] export(UUID indicatorId, IndicatorPointReportLookup lookup) throws InvalidApplicationException, IOException;
-
+	byte[] exportXlsx(UUID indicatorId, IndicatorPointReportLookup lookup) throws InvalidApplicationException, IOException;
+	byte[] exportJson(UUID indicatorId, IndicatorPointReportLookup lookup) throws InvalidApplicationException, UnsupportedEncodingException;
 	void persist(UUID indicatorId, List<IndicatorPointPersist> models) throws MyForbiddenException, MyValidationException, MyApplicationException, MyNotFoundException, InvalidApplicationException, IOException;
 
 	String getGlobalSearchConfig(String key);

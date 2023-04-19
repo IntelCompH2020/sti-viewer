@@ -27,10 +27,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.management.InvalidApplicationException;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.OptimisticLockException;
+import javax.persistence.*;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.AbstractMap;
@@ -45,6 +42,9 @@ public class CreateDataGroupScheduledEventHandlerImpl implements CreateDataGroup
 	protected final ApplicationContext applicationContext;
 	private final ErrorThesaurusProperties errors;
 	private final MessageSource messageSource;
+
+	@PersistenceContext
+	public EntityManager entityManager;
 
 	public CreateDataGroupScheduledEventHandlerImpl(
 			JsonHandlingService jsonHandlingService,
@@ -152,7 +152,7 @@ public class CreateDataGroupScheduledEventHandlerImpl implements CreateDataGroup
 		try {
 			for (DataGroupRequestEntity item : dataGroupRequests) {
 				TenantEntity tenant = queryFactory.query(TenantQuery.class).ids(dataGroupRequest.getTenantId()).firstAs(new BaseFieldSet().ensure(Tenant._id).ensure(Tenant._code));
-				scope.setTempTenant(tenant.getId(), tenant.getCode());
+				scope.setTempTenant(this.entityManager, tenant.getId(), tenant.getCode());
 
 				item.setStatus(status);
 				item.setUpdatedAt(Instant.now());
@@ -160,7 +160,7 @@ public class CreateDataGroupScheduledEventHandlerImpl implements CreateDataGroup
 				entityManager.flush();
 			}
 		} finally {
-			scope.removeTempTenant();
+			scope.removeTempTenant(this.entityManager);
 		}
 	}
 }

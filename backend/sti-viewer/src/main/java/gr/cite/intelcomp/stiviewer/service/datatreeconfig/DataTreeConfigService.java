@@ -1,5 +1,6 @@
 package gr.cite.intelcomp.stiviewer.service.datatreeconfig;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import gr.cite.intelcomp.stiviewer.model.datatreeconfig.DataTreeConfig;
 import gr.cite.intelcomp.stiviewer.model.datatreeconfig.DataTreeLevel;
 import gr.cite.intelcomp.stiviewer.model.portofolioconfig.PortofolioConfig;
@@ -17,5 +18,7 @@ public interface DataTreeConfigService {
 	DataTreeLevel getIndicatorReportLevel(IndicatorReportLevelLookup lookup, FieldSet fields);
 
 	List<DataTreeConfig> getMyConfigByKey(String key, FieldSet fields);
+
+	void updateLastAccess(String configId) throws InvalidApplicationException, JsonProcessingException;
 
 }

@@ -1,6 +1,0 @@
-#Source of properties for Spring boot autoconfigure
-# https://github.com/spring-projects/spring-boot/blob/main/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/elasticsearch/ElasticsearchProperties.java
-elastic:
-  disableHostnameVerifier: true
-  serverCertificatePaths:
-    - classpath:certificates/elasticsearch.crt

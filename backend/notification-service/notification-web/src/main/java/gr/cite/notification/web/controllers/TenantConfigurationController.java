@@ -13,7 +13,6 @@ import gr.cite.notification.model.persist.tenantconfiguration.TenantConfiguratio
 import gr.cite.notification.query.TenantConfigurationQuery;
 import gr.cite.notification.query.lookup.NotifierListLookup;
 import gr.cite.notification.query.lookup.TenantConfigurationLookup;
-import gr.cite.notification.service.tenant.TenantService;
 import gr.cite.notification.service.tenantconfiguration.TenantConfigurationService;
 import gr.cite.notification.web.model.QueryResult;
 import gr.cite.tools.auditing.AuditService;
@@ -71,7 +70,7 @@ public class TenantConfigurationController {
 
 		TenantConfigurationQuery query = lookup.enrich(this.queryFactory);
 		List<TenantConfigurationEntity> data = query.collectAs(lookup.getProject());
-		List<TenantConfiguration> models = this.builderFactory.builder(TenantConfigurationBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(lookup.getProject(), data);
+		List<TenantConfiguration> models = this.builderFactory.builder(TenantConfigurationBuilder.class).authorize(AuthorizationFlags.OwnerOrPermission).build(lookup.getProject(), data);
 		long count = (lookup.getMetadata() != null && lookup.getMetadata().getCountAll()) ? query.count() : models.size();
 
 		this.auditService.track(AuditableAction.Tenant_Configuration_Query, "lookup", lookup);
@@ -87,7 +86,7 @@ public class TenantConfigurationController {
 		this.censorFactory.censor(TenantConfigurationCensor.class).censor(fieldSet);
 
 		TenantConfigurationQuery query = this.queryFactory.query(TenantConfigurationQuery.class).ids(id);
-		TenantConfiguration model = this.builderFactory.builder(TenantConfigurationBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(fieldSet, query.firstAs(fieldSet));
+		TenantConfiguration model = this.builderFactory.builder(TenantConfigurationBuilder.class).authorize(AuthorizationFlags.OwnerOrPermission).build(fieldSet, query.firstAs(fieldSet));
 		if (model == null)
 			throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{id, TenantConfiguration.class.getSimpleName()}, LocaleContextHolder.getLocale()));
 

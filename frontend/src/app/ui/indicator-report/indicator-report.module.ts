@@ -12,6 +12,7 @@ import { IndicatorReportComponent } from './indicator-report.component';
 import { MatCardModule } from '@angular/material/card';
 import { IndicatorDetailsComponent } from './indicator-details/indicator-details.component';
 import {MatTreeModule} from '@angular/material/tree';
+import { MatBadgeModule } from '@angular/material/badge';
 @NgModule({
 	imports: [
 		CommonUiModule,
@@ -24,6 +25,7 @@ import {MatTreeModule} from '@angular/material/tree';
 		EditorActionsModule,
 		MatCardModule,
 		UserSettingsModule,
+		MatBadgeModule,
 		MatTreeModule
 	],
 	declarations: [

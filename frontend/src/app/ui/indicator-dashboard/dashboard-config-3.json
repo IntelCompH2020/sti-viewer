@@ -22,7 +22,28 @@
 							"yAxis": {
 								"name": "publications"
 							},
-							"description": "The graph shows the evolution in the number of publications in the Energy domain, over time.",
+							"description": "The graph shows the evolution in the number of publications in the Energy domain, in the EU (at least one author is affiliated to an EU organization). Select the filter to recreate the ranking by the number of multi-disciplinary publications, defined as belonging in more at least another FoS level 3 field, besides Energy. <i>Data Source</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a>",
+							"filters":[
+								{
+									"type":"select",
+									"indicatorFilterType":"keyword",
+									"multiple":false,
+									"fieldCode": "indid",
+									"name": "Publications",
+									"valueToAssignOnInitialLoad":"i01",
+									"required":true,
+									"values":[
+										{
+											"name":"Total",
+											"value":"i01"
+										},
+										{
+											"name":"Multi disciplinary",
+											"value":"i27a"
+										}
+									]
+								}
+							],
 							"bucket": {
 								"type": "Terms",
 								"field": "key",
@@ -42,10 +63,6 @@
 									{
 										"field": "svid",
 										"value": ["sv01"]
-									},
-									{
-										"field": "indid",
-										"value": ["i01"]
 									}
 								]
 							},
@@ -75,9 +92,9 @@
 								}
 							],
 							"areaStyle": {},
-							"filters": [],
 							"chartDownloadData": {},
-							"chartDownloadImage": {}
+							"chartDownloadImage": {},
+							"chartDownloadJson": {}
 						},
 						{
 							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
@@ -87,7 +104,7 @@
 							},
 							"legend": {},
 							"name": "",
-							"chartName": "Publication in sub-topics of Energy over time",
+							"chartName": "Share of publications in Energy topics over time",
 							"xAxis": {
 								"name": "year"
 							},
@@ -95,8 +112,9 @@
 								"name": "publications"
 							},
 							"labelSortKey": "year",
-							"description": "The graph shows the evolution in the number of publications in different topics in the Energy domain, over time. The ontology of topics is taken from the technical annex of the Final Report of the [EU taxonomy for sustainable activities](<a href=\"https://finance.ec.europa.eu/sustainable-finance/tools-and-standards/eu-taxonomy-sustainable-activities_en#documents\" target=\"_blank\">https://finance.ec.europa.eu/sustainable-finance/tools-and-standards/eu-taxonomy-sustainable-activities_en#documents</a>) (Chapter 4. “Electricity, gas, steam and air conditioning supply,” p. 205). Our Fields of Science (FoS) classification system uses deep learning techniques to assign a scientific publication to different FoS classes, down to level 6, which we subsequently map to the ontology of topics in Energy.",
+							"description": "The graph shows the evolution in the share of publications in different topics in the Energy domain in the EU, over time. The ontology of topics is taken from the technical annex of the Final Report of the <a href=\"https://finance.ec.europa.eu/sustainable-finance/tools-and-standards/eu-taxonomy-sustainable-activities_en#documents\" target=\"_blank\">EU taxonomy for sustainable activities</a> (Chapter 4. “Electricity, gas, steam and air conditioning supply,” p. 205). Our Fields of Science (FoS) classification system uses deep learning techniques to assign a scientific publication to different FoS classes, which we subsequently map to the ontology of topics in Energy. <i>Data Source</i>: (<a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a>)",
 							"chartDownloadData": {},
+							"chartDownloadJson": {},
 							"chartDownloadImage": {},
 							"bucket": {
 								"type": "Composite",
@@ -128,7 +146,7 @@
 									},
 									{
 										"field": "indid",
-										"value": ["i09"]
+										"value": ["i03"]
 									}
 								]
 							},
@@ -170,16 +188,18 @@
 								"inside": true
 							},
 							"name": "",
-							"chartName": "Open Access publications in energy over time",
+							"chartName": "Open Access publications in Energy over time",
 							"xAxis": {
 								"name": "year"
 							},
 							"yAxis": {
 								"name": "publications"
 							},
+							"legend": {},
 							"labelSortKey": "year",
-							"description": "The graph shows the evolution in the number of publications that are open access (best available access rights).",
+							"description": "The graph shows the evolution in the number of scientific articles published in Open Access, and in the number of publications (any type) that can be found in Open Access in the OpenAIRE graph (best available access rights from any of the OpenAIRE data sources). <i>Data Source</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a>",
 							"chartDownloadData": {},
+							"chartDownloadJson": {},
 							"chartDownloadImage": {},
 							"bucket": {
 								"type": "Composite",
@@ -211,14 +231,43 @@
 									},
 									{
 										"field": "indid",
-										"value": ["i01", "i23"]
+										"value": ["i01", "i23", "i23b"]
 									}
 								]
 							},
 							"series": [
 								{
+									"nested": {
+										"type": "bar"
+									},
 									"label": {
-										"name": "Open access publications over time",
+										"name": "Publications",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										],
+										"groupTests": [
+											{
+												"indid": "i01"
+											}
+										]
+									}
+								},
+								{
+									"label": {
+										"name": "Publications (any type) in Open Access",
 										"labelKey": "key"
 									},
 									"values": {
@@ -243,11 +292,8 @@
 									}
 								},
 								{
-									"nested": {
-										"type": "bar"
-									},
 									"label": {
-										"name": "Publications over time",
+										"name": "Scientific articles published in Open Access",
 										"labelKey": "key"
 									},
 									"values": {
@@ -266,7 +312,7 @@
 										],
 										"groupTests": [
 											{
-												"indid": "i01"
+												"indid": "i23b"
 											}
 										]
 									}
@@ -283,8 +329,9 @@
 							"type": "map",
 							"name": "",
 							"chartName": "Publications by Country",
-							"description": "The graph shows the number of publications by the country of the affiliated organization of an author. In the case of multiple authors each organization and corresponding country is counted as a separate publication (e.g., one publication with three authors, where two are from Greece and one is from Spain is counted as two publications in Greece and one in Spain).",
+							"description": "The graph shows the number of publications in Energy by the country of the affiliated organization of an author  (with at least one author affiiated to an EU organization). In the case of multiple authors each organization and corresponding country is counted as a separate publication (e.g., one publication with three authors, where two are from Greece and one is from Spain is counted as two publications in Greece and one in Spain). <i>Data Source</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a>",
 							"chartDownloadData": {},
+							"chartDownloadJson": {},
 							"chartDownloadImage": {},
 							"mapChartConfig": {
 								"high": {
@@ -350,7 +397,7 @@
 							"type": "bar",
 							"name": "",
 							"chartName": "Publications by Organization (top 100)",
-							"description": "The graph shows the top 100 organizations in terms of number of publications in Energy.",
+							"description": "The graph shows the top 100 organizations in terms of the number of publications in Energy with at least one author from an EU organization. Select the filter to recreate the ranking by the number of multi-disciplinary publications, defined as belonging in more at least another FoS level 3 field, besides Energy. <i>Data Source</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a>",
 							"horizontal": false,
 							"dataZoom": {
 								"inside": true,
@@ -361,7 +408,29 @@
 								}
 							},
 							"chartDownloadData": {},
+							"chartDownloadJson": {},
 							"chartDownloadImage": {},
+							"filters":[
+								{
+									"type":"select",
+									"indicatorFilterType":"keyword",
+									"multiple":false,
+									"fieldCode": "indid",
+									"name": "Publications",
+									"valueToAssignOnInitialLoad":"i01",
+									"required":true,
+									"values":[
+										{
+											"name":"Total",
+											"value":"i01"
+										},
+										{
+											"name":"Multi disciplinary",
+											"value":"i27"
+										}
+									]
+								}
+							],
 							"bucket": {
 								"type": "Terms",
 								"field": "key",
@@ -372,7 +441,11 @@
 									}
 								]
 							},
+							"yAxis":{
+								"name":"publications"
+							},
 							"xAxis": {
+								"name":"organizations",
 								"axisLabel": {
 									"rotate": 45,
 									"width": 100
@@ -398,10 +471,6 @@
 									{
 										"field": "svid",
 										"value": ["sv06"]
-									},
-									{
-										"field": "indid",
-										"value": ["i01"]
 									}
 								]
 							},
@@ -443,7 +512,7 @@
 							},
 							"name": "",
 							"chartName": "Publications by Funder",
-							"description": "The graph shows the number of grant-supported publications in Energy by funder (those that are currently integrated in OpenAIRE. See Methodology for a list).",
+							"description": "The graph shows the number of grant-supported publications in Energy with at least one author from an EU organization, by funder. <i>Data Source</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a>",
 							"xAxis": {
 								"name": "funder",
 								"axisLabel": {
@@ -455,6 +524,7 @@
 								"name": "publications"
 							},
 							"chartDownloadData": {},
+							"chartDownloadJson": {},
 							"chartDownloadImage": {},
 							"bucket": {
 								"type": "Terms",
@@ -527,7 +597,7 @@
 							"type": "treemap",
 							"name": "",
 							"chartName": "Publications by SDG",
-							"description": "The graph shows the number of publications by UN Sustainable Development Goal (SDG, <a href=\"https://sdgs.un.org/goals\" target=\"_blank\">https://sdgs.un.org/goals</a>). Our SDG classification system uses deep learning techniques to assign a scientific publication to the SDGs that are related to it.",
+							"description": "The graph shows the number of publications in Energy with at least one author from an EU organization, by UN Sustainable Development Goal (SDG, <a href=\"https://sdgs.un.org/goals\" target=\"_blank\">https://sdgs.un.org/goals</a>). Our SDG classification system uses deep learning techniques to assign a scientific publication to the SDGs that it applies to. <i>Data Source</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a>",
 							"treeName": "Publications by SDG",
 							"toolTip": {
 								"name": "Publications"
@@ -551,6 +621,7 @@
 								"16. Peace & justice": "#02548a"
 							},
 							"chartDownloadData": {},
+							"chartDownloadJson": {},
 							"chartDownloadImage": {},
 							"bucket": {
 								"type": "Terms",
@@ -606,21 +677,35 @@
 						},
 						{
 							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
-							"type": "sankey",
-							"chartName": "Top 25 Journals and Publishers",
-							"description": "The graph shows the number of publications by publisher and journal for the 25 journals with the most publications in Energy.",
+							"type": "bar",
+							"chartName": "Top 50 Journals",
+							"description": "The graph shows top 50 journals by the number of scientific publications in Energy, with at least one author from an EU organization. <i>Data Source</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a>",
 							"chartDownloadData": {},
+							"chartDownloadJson": {},
 							"chartDownloadImage": {},
-                            "dataZoom": {
-								"inside": true
+                            "horizontal": false,
+							"dataZoom": {
+								"inside": true,
+								"slider": true,
+								"areaZoom": {
+									"start": 0,
+									"end": 20
+								}
+							},
+							"xAxis": {
+								"name": "journal",
+								"axisLabel": {
+									"width": 100,
+									"rotate": 45
+								}
+							},
+							"yAxis": {
+								"name": "publications"
 							},
 							"bucket": {
 								"type": "Composite",
 								"field": "key",
 								"sources": [
-									{
-										"field": "publisher"
-									},
 									{
 										"field": "key"
 									}
@@ -645,16 +730,40 @@
 								]
 							},
 							"labelsTransform": {},
-							"connectionExtractor":{
-                                "sourceKeyExtractor": "publisher",
-                                "targetKeyExtractor": "key",
-                                "valueKeyExtractor": "value",
-								"limit":{
-									"type":"connection",
-									"order":"desc",
-									"count": 25
+							"rawDataRequest": {
+								"keyField": "key",
+								"valueField": "value",
+								"order": {
+									"items": ["-value"]
+								},
+								"page": {
+									"offset": 0,
+									"size": 50
 								}
-                            }
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Scientific publications in Energy",
+										"labelKey": "key"
+									},
+									"values": {
+										"valueKey": "value",
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							]
 						}
 					]
 				},
@@ -665,8 +774,8 @@
 							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
 							"type": "line",
 							"name": "",
-							"chartName": "Citable scientific publications over time",
-							"description": "The graph shows the number of scientific publications in the Energy domain, originating from European organizations with at least one citation, over time.",
+							"chartName": "Publications cited in patents",
+							"description": "The graph shows the total number of publications, superimposed with the number of those that are cited in patents, over time using data on publications and patents are in the Energy domain in the EU. <i>Data Sources</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a>, <a href=\"https://www.epo.org/searching-for-patents/business/patstat.html\" target=\"_blank\">Patstat - EPO dataset</a>.",
 							"xAxis": {
 								"name": "year"
 							},
@@ -674,7 +783,9 @@
 								"name": "publications"
 							},
 							"chartDownloadData": {},
+							"chartDownloadJson": {},
 							"chartDownloadImage": {},
+							"legend":{},
 							"bucket": {
 								"type": "Composite",
 								"field": "key",
@@ -705,14 +816,14 @@
 									},
 									{
 										"field": "indid",
-										"value": ["i05", "i01"]
+										"value": ["i01", "i13a"]
 									}
 								]
 							},
 							"series": [
 								{
 									"label": {
-										"name": "Publications over time",
+										"name": "Publications",
 										"labelKey": "key"
 									},
 									"nested": {
@@ -741,7 +852,7 @@
 								},
 								{
 									"label": {
-										"name": "Citable publications over time",
+										"name": "Publications cited in patents",
 										"labelKey": "key"
 									},
 									"values": {
@@ -760,7 +871,7 @@
 										],
 										"groupTests": [
 											{
-												"indid": "i05"
+												"indid": "i13a"
 											}
 										]
 									}
@@ -772,16 +883,17 @@
 							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
 							"type": "line",
 							"name": "",
-							"chartName": "Total citations over time",
-							"description": "The graph shows the total number of citations of scientific publications in the Energy domain, originating from European organizations, over time by the year of publication.",
+							"chartName": "Average citations per publication over time",
+							"description": "The graph shows the average number of citations per scientific publication in the Energy domain, with at least one author from an EU organization, over time by the year of publication. <i>Data Source</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a> using the integrated <a href=\"https://opencitations.net/\" target=\"_blank\">Open Citations</a> dataset.",
 							"xAxis": {
 								"name": "year"
 							},
 							"yAxis": {
-								"name": "citations"
+								"name": "citations per publication"
 							},
 							"areaStyle": {},
 							"chartDownloadData": {},
+							"chartDownloadJson": {},
 							"chartDownloadImage": {},
 							"bucket": {
 								"type": "Terms",
@@ -829,7 +941,7 @@
 									},
 									{
 										"field": "indid",
-										"value": ["i06"]
+										"value": ["i07"]
 									}
 								]
 							}
@@ -838,15 +950,16 @@
 							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
 							"type": "line",
 							"name": "",
-							"chartName": "Average citations per publication over time",
-							"description": "The graph shows the average number of citations per scientific publication in the Energy domain, originating from European organizations, over time by the year of publication.",
+							"chartName": "Total citations over time",
+							"description": "The graph shows the total number of citations for scientific publications in Energy with at least one author from an EU organization over time by the year of publication. <i>Data Source</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a> using the integrated <a href=\"https://opencitations.net/\" target=\"_blank\">Open Citations</a> dataset.",
 							"xAxis": {
 								"name": "year"
 							},
 							"yAxis": {
-								"name": "citations per publication"
+								"name": "citations"
 							},
 							"chartDownloadData": {},
+							"chartDownloadJson": {},
 							"chartDownloadImage": {},
 							"areaStyle": {},
 							"bucket": {
@@ -895,7 +1008,7 @@
 									},
 									{
 										"field": "indid",
-										"value": ["i07"]
+										"value": ["i06"]
 									}
 								]
 							}
@@ -904,20 +1017,30 @@
 							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
 							"type": "line",
 							"name": "",
-							"chartName": "Field-weighted citation index over time",
-							"description": "The graph shows the evolution of the field-weighted citation index of publications in Energy. The index is defined as the total number of citations received over the average number in the same subject in the field world-wide.",
+							"chartName": "Field-weighted citation index over time, OA vs. all",
+							"description": "The graph shows the evolution of the field-weighted citation index of publications in Energy with at least one author from an EU organization, for all and only published in Open Access articles. The index is defined as the average number of citations received over the average number in the same subject in the field world-wide, in a 3 year window. <i>Data Source</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a> using the integrated <a href=\"https://opencitations.net/\" target=\"_blank\">Open Citations</a> dataset.",
 							"xAxis": {
 								"name": "year"
 							},
 							"yAxis": {
 								"name": "citation index"
 							},
+							"legend":{},
 							"chartDownloadData": {},
+							"chartDownloadJson": {},
 							"chartDownloadImage": {},
 							"areaStyle": {},
 							"bucket": {
-								"type": "Terms",
+								"type": "Composite",
 								"field": "key",
+								"sources": [
+									{
+										"field": "key"
+									},
+									{
+										"field": "indid"
+									}
+								],
 								"metrics": [
 									{
 										"type": "Sum",
@@ -929,7 +1052,7 @@
 							"series": [
 								{
 									"label": {
-										"name": "Citation index of publications in Energy",
+										"name": "FWCI all publications",
 										"labelKey": "key"
 									},
 									"values": {
@@ -945,8 +1068,40 @@
 											{
 												"field": "value"
 											}
+										],
+										"groupTests": [
+											{
+												"indid": "i08"
+											}
 										]
 									}
+								},
+								{
+									"label": {
+										"name": "FWCI for publications published in OA",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										],
+										"groupTests": [
+											{
+												"indid": "i24c"
+											}
+										]
+									}
+									
 								}
 							],
 							"staticFilters": {
@@ -961,7 +1116,7 @@
 									},
 									{
 										"field": "indid",
-										"value": ["i08"]
+										"value": ["i08", "i24c"]
 									}
 								]
 							}
@@ -976,8 +1131,9 @@
 							"type": "map",
 							"name": "",
 							"chartName": "Citations per publication by country",
-							"description": "The graph shows the average number of citations per publication by the country of the affiliated organization of an author. In the case of multiple authors each organization and corresponding country is counted as a separate publication (e.g., one publication with three authors, where two are from Greece and one is from Spain is counted as two publications in Greece and one in Spain).",
+							"description": "The graph shows the average number of citations per publication, in Energy with at least one author from an EU organization, by the country of the affiliated organization of an author. In the case of multiple authors each organization and corresponding country is counted as a separate publication (e.g., one publication with three authors, where two are from Greece and one is from Spain is counted as two publications in Greece and one in Spain). <i>Data Source</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a> using the integrated <a href=\"https://opencitations.net/\" target=\"_blank\">Open Citations</a> dataset.",
 							"chartDownloadData": {},
+							"chartDownloadJson": {},
 							"chartDownloadImage": {},
 							"mapChartConfig": {
 								"high": {
@@ -1049,7 +1205,7 @@
 							},
 							"name": "",
 							"chartName": "Citations per publication by organization (top 100)",
-							"description": "The graph shows the top 100 organizations in terms of average number of citations per publication in Energy.",
+							"description": "Description: The graph shows the top 100 organizations in terms of the average number of citations per publication in Energy with at least one author from an EU organization.  Select the filter to recreate the ranking by the number of multi-disciplinary publications, defined as belonging in more at least another FoS level 3 field, besides Energy. <i>Data Source</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a> using the integrated <a href=\"https://opencitations.net/\" target=\"_blank\">Open Citations</a> dataset.",
 							"xAxis": {
 								"name": "organization",
 								"axisLabel": {
@@ -1058,10 +1214,32 @@
 								}
 							},
 							"yAxis": {
-								"name": "citations per publications"
+								"name": "citations per publication"
 							},
 							"chartDownloadData": {},
+							"chartDownloadJson": {},
 							"chartDownloadImage": {},
+							"filters":[
+								{
+									"type":"select",
+									"indicatorFilterType":"keyword",
+									"multiple":false,
+									"fieldCode": "indid",
+									"name": "Publications",
+									"valueToAssignOnInitialLoad":"i07",
+									"required":true,
+									"values":[
+										{
+											"name":"Total",
+											"value":"i07"
+										},
+										{
+											"name":"Multi disciplinary",
+											"value":"i28"
+										}
+									]
+								}
+							],
 							"bucket": {
 								"type": "Terms",
 								"field": "key",
@@ -1115,10 +1293,6 @@
 									{
 										"field": "svid",
 										"value": ["sv06"]
-									},
-									{
-										"field": "indid",
-										"value": ["i07"]
 									}
 								]
 							}
@@ -1137,7 +1311,7 @@
 							},
 							"name": "",
 							"chartName": "Citations per publication by funder",
-							"description": "The graph shows citations per publication for grant-supported publications, by funder (for funders integrated in OpenAIRE – see Methodology for a list).",
+							"description": "The graph shows citations per publication for grant-supported publications, by funder (for funders integrated in OpenAIRE – see Methodology for a list), in Energy with at least one author from an EU organization.  <i>Data Source</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a> using the integrated <a href=\"https://opencitations.net/\" target=\"_blank\">Open Citations</a> dataset.",
 							"xAxis": {
 								"name": "funder",
 								"axisLabel": {
@@ -1149,6 +1323,7 @@
 								"name": "citations per publication"
 							},
 							"chartDownloadData": {},
+							"chartDownloadJson": {},
 							"chartDownloadImage": {},
 							"bucket": {
 								"type": "Terms",
@@ -1219,10 +1394,11 @@
 						{
 							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
 							"type": "pie",
+							"doughnut": true,
 							"roseType": "area",
 							"name": "",
-							"chartName": "Citations per publication by topic in Energy",
-							"description": "The graph shows the average number of citations per scientific publication for different topics in the Energy domain. The ontology of topics is taken from the technical annex of the Final Report of the [EU taxonomy for sustainable activities](<a href=\"https://finance.ec.europa.eu/sustainable-finance/tools-and-standards/eu-taxonomy-sustainable-activities_en#documents\" target=\"_blank\">https://finance.ec.europa.eu/sustainable-finance/tools-and-standards/eu-taxonomy-sustainable-activities_en#documents</a>) (Chapter 4. “Electricity, gas, steam and air conditioning supply,” p. 205). Our Fields of Science (FoS) classification system uses deep learning techniques to assign a scientific publication to different FoS classes, down to level 6, which we subsequently map to the ontology of topics in Energy.",
+							"chartName": "Publications cited in patents by topic in Energy",
+							"description": "The graph shows the number of publications cited in patents by topic within the Energy domain, both publications and patents are in the Energy domain in the EU. The ontology of topics is taken from the technical annex of the Final Report of the <a href=\"https://finance.ec.europa.eu/sustainable-finance/tools-and-standards/eu-taxonomy-sustainable-activities_en#documents\" target=\"_blank\">EU taxonomy for sustainable activities</a> (Chapter 4. “Electricity, gas, steam and air conditioning supply,” p. 205). Our Fields of Science (FoS) classification system uses deep learning techniques to assign a scientific publication to different FoS classes, which we subsequently map to the ontology of topics in Energy. <i>Data Sources</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a>, <a href=\"https://www.epo.org/searching-for-patents/business/patstat.html\" target=\"_blank\">Patstat - EPO dataset</a>.",
 							"xAxis": {
 								"name": "topic"
 							},
@@ -1230,6 +1406,164 @@
 								"name": ""
 							},
 							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+							"legend": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"rawDataRequest": {
+								"keyField": "key",
+								"valueField": "value",
+								"order": {
+									"items": ["-value"]
+								}
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Average Number of citation",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv01"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv02"]
+									},
+									{
+										"field": "indid",
+										"value": ["I13A"]
+									}
+								]
+							}
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "treemap",
+							"name": "",
+							"chartName": "Publications cited in patents by SDG",
+							"description": "The graph shows the number of publications cited in patentsby UN Sustainable Development Goal (SDG, <a href=\"https://sdgs.un.org/goals\" target=\"_blank\">https://sdgs.un.org/goals</a>), both publications and patents are in the Energy domain in the EU. Our SDG classification system uses deep learning techniques to assign a scientific publication to the SDGs that are related to it. <i>Data Sources</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a>, <a href=\"https://www.epo.org/searching-for-patents/business/patstat.html\" target=\"_blank\">Patstat - EPO dataset</a>.",
+							"treeName": "Average publications by Development Goal ",
+							"toolTip": {
+								"name": "Average publications"
+							},
+							"treeColors": {
+								"1. No poverty": "#eb1c2c",
+								"2. Zero hunger": "#d3a029",
+								"3. Good health": "#279b47",
+								"4. Education": "#c21e32",
+								"5. Gender equality": "#ee402a",
+								"6. Clean water": "#00add8",
+								"7. Clean energy": "#fdb713",
+								"8. Economic growth": "#8f1838",
+								"9. Industry and infrastructure": "#f26c25FF",
+								"10. No inequality": "#e11484",
+								"11. Sustainability": "#f99d26",
+								"12. Responsible consumption": "#cf8d2a",
+								"13. Climate action": "#48773e",
+								"14. Life underwater": "#007cbc",
+								"15. Life on land": "#3eb049",
+								"16. Peace & justice": "#02548a"
+							},
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv01"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv05"]
+									},
+									{
+										"field": "indid",
+										"value": ["i13a"]
+									}
+								]
+							},
+
+							"series": [
+								{
+									"label": {
+										"name": "Publications cited in patents by SDG",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							]
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "pie",
+							"doughnut": true,
+							"roseType": "area",
+							"name": "",
+							"chartName": "Citations per publication by topic in Energy",
+							"description": "The graph shows the average number of citations per scientific publication for different topics in the Energy domain. The ontology of topics is taken from the technical annex of the Final Report of the <a href=\"https://finance.ec.europa.eu/sustainable-finance/tools-and-standards/eu-taxonomy-sustainable-activities_en#documents\" target=\"_blank\">EU taxonomy for sustainable activities</a> (Chapter 4. “Electricity, gas, steam and air conditioning supply,” p. 205). Our Fields of Science (FoS) classification system uses deep learning techniques to assign a scientific publication to different FoS classes, which we subsequently map to the ontology of topics in Energy. <i>Data Source</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a> using the integrated <a href=\"https://opencitations.net/\" target=\"_blank\">Open Citations</a> dataset.",
+							"xAxis": {
+								"name": "topic"
+							},
+							"yAxis": {
+								"name": ""
+							},
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
 							"chartDownloadImage": {},
 							"legend": {},
 							"bucket": {
@@ -1294,7 +1628,7 @@
 							"type": "treemap",
 							"name": "",
 							"chartName": "Citations per publication by SDG",
-							"description": "The graph shows the average number of citations per scientific publication by UN Sustainable Development Goal (SDG, <a href=\"https://sdgs.un.org/goals\" target=\"_blank\">https://sdgs.un.org/goals</a>). Our SDG classification system uses deep learning techniques to assign a scientific publication to the SDGs that are related to it.",
+							"description": "The graph shows the average number of citations per scientific publication in Energy, by UN Sustainable Development Goal (SDG, <a href=\"https://sdgs.un.org/goals\" target=\"_blank\">https://sdgs.un.org/goals</a>). Our SDG classification system uses deep learning techniques to assign a scientific publication to the SDGs that are related to it.  <i>Data Source</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a> using the integrated <a href=\"https://opencitations.net/\" target=\"_blank\">Open Citations</a> dataset.",
 							"treeName": "Average publications by Development Goal ",
 							"toolTip": {
 								"name": "Average publications"
@@ -1318,6 +1652,7 @@
 								"16. Peace & justice": "#02548a"
 							},
 							"chartDownloadData": {},
+							"chartDownloadJson": {},
 							"chartDownloadImage": {},
 							"bucket": {
 								"type": "Terms",
@@ -1391,8 +1726,9 @@
 								"name": "publications"
 							},
 							"labelSortKey": "year",
-							"description": "The graph shows the evolution in the number of publications with authors affiliated to organizations in at least two different countries. Superimposed is the number of those that are cited by at least one publication.",
+							"description": "The graph shows the evolution in the number of publications in Energy with authors affiliated to organizations in at least two different countries, one of which is in the EU. Superimposed is the number of those that are cited by at least one publication. <i>Data Source</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a> using the integrated <a href=\"https://opencitations.net/\" target=\"_blank\">Open Citations</a> dataset.",
 							"chartDownloadData": {},
+							"chartDownloadJson": {},
 							"chartDownloadImage": {},
 							"bucket": {
 								"type": "Composite",
@@ -1515,15 +1851,16 @@
 						{
 							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
 							"type": "pie",
+							"doughnut": true,
 							"roseType": "area",
 							"name": "",
 							"chartName": "International collaborations by topic",
-							"description": "The graph shows the number of publications with authors affiliated to organizations in at least two different countries by topic in the Energy domain. The ontology of topics is taken from the technical annex of the Final Report of the EU taxonomy for sustainable activities (Chapter 4. “Electricity, gas, steam and air conditioning supply,” p. 205). Our Fields of Science (FoS) classification system uses deep learning techniques to assign a scientific publication to different FoS classes, down to level 6, which we subsequently map to the ontology of topics in Energy.",
+							"description": "The graph shows the number of publications with authors affiliated to organizations in at least two different countries, one of which is in the EU, by topic in the Energy domain. The ontology of topics is taken from the technical annex of the Final Report of the <a href=\"https://finance.ec.europa.eu/sustainable-finance/tools-and-standards/eu-taxonomy-sustainable-activities_en#documents\" target=\"_blank\">EU taxonomy for sustainable activities</a> (Chapter 4. “Electricity, gas, steam and air conditioning supply,” p. 205). Our Fields of Science (FoS) classification system uses deep learning techniques to assign a scientific publication to different FoS classes, which we subsequently map to the ontology of topics in Energy. <i>Data Sourc</i>_: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a>",
 							"xAxis": {
 								"name": "topic"
 							},
 							"yAxis": {
-								"name": ""
+								"name": "publications"
 							},
 							"rawDataRequest": {
 								"keyField": "key",
@@ -1537,6 +1874,7 @@
 								}
 							},
 							"chartDownloadData": {},
+							"chartDownloadJson": {},
 							"chartDownloadImage": {},
 							"legend": {},
 							"bucket": {
@@ -1591,15 +1929,119 @@
 						},
 						{
 							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
-							"type": "treemap",
-							"name": "",
-							"chartName": "International collaborations by SDG",
-							"description": "The graph shows the number of publications with authors affiliated to organizations in at least two different countries by UN Sustainable Development Goal (SDG, <a href=\"https://sdgs.un.org/goals\" target=\"_blank\">https://sdgs.un.org/goals</a>). Our SDG classification system uses deep learning techniques to assign a scientific publication to the SDGs that are related to it.",
-							"treeName": "International collaborations by SDG",
-							"toolTip": {
-								"name": "Publications"
+							"type": "scatter",
+							"dataZoom": {
+								"inside": true,
+								"slider": true
 							},
-							"treeColors": {
+							"name": "",
+							"chartName": "Collaboration Index by SDG",
+							"xAxis": {
+								"name": "SDG",
+								"seriesKeyExtractor":"total publications"
+							},
+							"yAxis": {
+								"name": "Collaboration index",
+								"seriesKeyExtractor":"i19a"
+							},
+							"bubble":{
+								"seriesKeyExtractor":"i01"
+							},
+							"legend":{},
+							"description": "The graph shows the average number of authors in publications in Energy by UN Sustainable Development Goal (SDG, <a href=\"https://sdgs.un.org/goals\" target=\"_blank\">https://sdgs.un.org/goals</a>). Our SDG classification system uses deep learning techniques to assign a scientific publication to the SDGs that are related to it. The size of the bubble indicates the number of publications associated with that SDG. <i>Data Source</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a>",
+							"bucket": {
+								"type": "Composite",
+								"field": "key",
+								"sources":[
+									{
+										"field":"key"
+									},
+									{
+										"field": "indid"
+									}
+								],
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									},
+									{
+										"type": "Sum",
+										"field": "total_publications"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv01"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv05"]
+									},
+									{
+										"field": "indid",
+										"value": ["i19a", "i01"]
+									}
+								]
+							},
+							"labelSortKey": "key",
+							"labelsTransform": {},
+							"series": [
+								{
+									"splitSeries": [
+										{
+											"key": "indid"
+										}
+									],
+									"label": {
+										"name": "tbd",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								},
+								{
+									"label": {
+										"name": "total publications",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "total_publications"
+											}
+										]
+									}
+								}
+							],
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+							"colorMap": {
 								"1. No poverty": "#eb1c2c",
 								"2. Zero hunger": "#d3a029",
 								"3. Good health": "#279b47",
@@ -1616,9 +2058,34 @@
 								"14. Life underwater": "#007cbc",
 								"15. Life on land": "#3eb049",
 								"16. Peace & justice": "#02548a"
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Technology",
+			"chartGroups": [
+				{
+					"name": "Technological Production Trends",
+					"charts":[
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "line",
+							"dataZoom": {
+								"inside": true,
+								"slider": true
 							},
-							"chartDownloadData": {},
-							"chartDownloadImage": {},
+							"name": "",
+							"chartName": "Patents in Energy over time",
+							"xAxis": {
+								"name": "year"
+							},
+							"yAxis": {
+								"name": "patents"
+							},
+							"description": "The graph shows the evolution in the number of patents in the Energy domain granted by the EPO and still valid in 2021-Q2 by priority year. <i>Data Source</i>: <a href=\"https://www.epo.org/searching-for-patents/business/patstat.html\" target=\"_blank\">Patstat - EPO dataset</a>",
 							"bucket": {
 								"type": "Terms",
 								"field": "key",
@@ -1637,18 +2104,20 @@
 									},
 									{
 										"field": "svid",
-										"value": ["sv05"]
+										"value": ["sv01"]
 									},
 									{
 										"field": "indid",
-										"value": ["i19"]
+										"value": ["i09"]
 									}
 								]
 							},
+							"labelSortKey": "key",
+							"labelsTransform": {},
 							"series": [
 								{
 									"label": {
-										"name": "Publicatios by SDG",
+										"name": "patents",
 										"labelKey": "key"
 									},
 									"values": {
@@ -1668,31 +2137,1532 @@
 									}
 								}
 							],
-							"stack": "x",
-							"areaStyle": {}
+							"areaStyle": {},
+							"filters": [],
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {}
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "line",
+							"dataZoom": {
+								"inside": true
+							},
+							"legend": {},
+							"name": "",
+							"chartName": "Share of patents in Energy topics over time",
+							"xAxis": {
+								"name": "year"
+							},
+							"yAxis": {
+								"name": "patents"
+							},
+							"labelSortKey": "year",
+							"description": "The graph shows the evolution in the share of patents in different topics in the Energy domain, granted by the EPO and still valid in 2021-Q2. The ontology of topics is taken from the technical annex of the Final Report of the <a href=\"https://finance.ec.europa.eu/sustainable-finance/tools-and-standards/eu-taxonomy-sustainable-activities_en#documents\" target=\"_blank\">EU taxonomy for sustainable activities</a> (Chapter 4. “Electricity, gas, steam and air conditioning supply,” p. 205). We assigned patents to  topics, by matching topics to CPC codes. <i>Data Source</i>: <a href=\"https://www.epo.org/searching-for-patents/business/patstat.html\" target=\"_blank\">Patstat - EPO dataset</a>",
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Composite",
+								"field": "key",
+								"sources": [
+									{
+										"field": "key"
+									},
+									{
+										"field": "year"
+									}
+								],
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv01"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv02"]
+									},
+									{
+										"field": "indid",
+										"value": ["i09b"]
+									}
+								]
+							},
+							"series": [
+								{
+									"splitSeries": [
+										{
+											"key": "key"
+										}
+									],
+									"label": {
+										"name": "Topic",
+										"labelKey": "year"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"areaStyle": {},
+							"stack": "x"
+						}
+					]
+				},
+				{
+					"name": "Technological Production Origins",
+					"charts":[
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "map",
+							"name": "",
+							"chartName": "Patents by country",
+							"description": "The graph shows the number of patents in the Energy domain granted by the EPO and still valid in 2021-Q2 by the country of the applicant . <i>Data Source<i/>: <a href=\"https://www.epo.org/searching-for-patents/business/patstat.html\" target=\"_blank\">Patstat - EPO dataset</a>",
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+							"mapChartConfig": {
+								"high": {
+									"text": "High",
+									"color": "#42c39a"
+								}
+							},
+							"countryNameMapping": {
+								"Italy": "Italy"
+							},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv01"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv09"]
+									},
+									{
+										"field": "indid",
+										"value": ["i09"]
+									}
+								]
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Patents by Country",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							]
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "bar",
+							"horizontal": false,
+							"dataZoom": {
+								"inside": true,
+								"slider": true,
+								"areaZoom": {
+									"start": 0,
+									"end": 20
+								}
+							},
+							"name": "",
+							"chartName": "Patents by Organization (top 100)",
+							"description": "The graph shows the top 100 organizations of patent applicants in terms of the number of patents in the Energy domain granted by the EPO and still valid in 2021-Q2.",
+							"xAxis": {
+								"name": "organization",
+								"axisLabel": {
+									"width": 100,
+									"rotate": 45
+								}
+							},
+							"yAxis": {
+								"name": "patents"
+							},
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								],
+								"bucketSort":{
+									"sortFields":[
+										{
+											"field":"value",
+											"metricAggregateType":"Sum",
+											"order":"DESC"
+										}
+									],
+									"paging":{
+										"offset":0,
+										"size":100
+									}
+								}
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Number of patents",
+										"labelKey": "key"
+									},
+									"values": {
+										"valueKey": "value",
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv01"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv06"]
+									},
+									{
+										"field": "indid",
+										"value": ["i09"]
+									}
+								]
+							}
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "pie",
+							"doughnut": true,
+							"name": "",
+							"chartName": "Patents by sector",
+							"description": "The graph shows the number of patents in the Energy domain granted by the EPO and currently valid (at least until 2021 Q2) by the type of patent applicant. <i>Data Source</i>: <a href=\"https://www.epo.org/searching-for-patents/business/patstat.html\" target=\"_blank\">Patstat - EPO dataset</a>",
+							"xAxis": {
+								"name": "topic"
+							},
+							"yAxis": {
+								"name": ""
+							},
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+							"legend": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Number of patents",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv01"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv08"]
+									},
+									{
+										"field": "indid",
+										"value": ["i09"]
+									}
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Technological Production Characteristics",
+					"charts":[
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "pie",
+							"name": "",
+							"chartName": "Patents by NACE code",
+							"description": "The graph shows the number of patents in the Energy domain granted by the EPO and still valid in 2021-Q2 by the NACE (Nomenclature of Economic Activities) codes of patents as assigned by PATSTAT. <i>Data Source</i>: <a href=\"https://www.epo.org/searching-for-patents/business/patstat.html\" target=\"_blank\">Patstat - EPO dataset</a>",
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+							"legend": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Number of patents",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv01"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv07"]
+									},
+									{
+										"field": "indid",
+										"value": ["i09"]
+									}
+								]
+							}
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "bar",
+							"horizontal": true,
+							"dataZoom": {
+								"inside": true,
+								"slider": true,
+								"areaZoom": {
+									"start": 0,
+									"end": 45
+								}
+							},
+							"name": "",
+							"chartName": "Patents by IPC code (top 20 codes)",
+							"description": "The graph shows the top 20 IPC (International Patent Classification) codes by the number of patents in the Energy domain granted by the EPO and still valid in 2021-Q2 by IPC. <i>Data Source</i>: <a href=\"https://www.epo.org/searching-for-patents/business/patstat.html\" target=\"_blank\">Patstat - EPO dataset</a>",
+							"xAxis": {
+								"name": "organization",
+								"axisLabel": {
+									"width": 100,
+									"rotate": 45
+								}
+							},
+							"yAxis": {
+								"name": "citations per publications"
+							},
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								],
+								"bucketSort":{
+									"sortFields":[
+										{
+											"field":"value",
+											"metricAggregateType":"Sum",
+											"order":"DESC"
+										}
+									],
+									"paging":{
+										"offset":0,
+										"size":20
+									}
+								}
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Number of patents",
+										"labelKey": "key"
+									},
+									"values": {
+										"valueKey": "value",
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv01"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv13"]
+									},
+									{
+										"field": "indid",
+										"value": ["i09"]
+									}
+								]
+							}
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "pie",
+							"roseType": "area",
+							"doughnut": true,
+							"name": "",
+							"chartName": "Patents by topic",
+							"description": "The graph shows the number of patents by topic in the Energy domain, granted by the EPO and still valid in 2021-Q2. The ontology of topics is taken from the technical annex of the Final Report of the <a href=\"https://finance.ec.europa.eu/sustainable-finance/tools-and-standards/eu-taxonomy-sustainable-activities_en#documents\" target=\"_blank\">EU taxonomy for sustainable activities</a> (Chapter 4. “Electricity, gas, steam and air conditioning supply,” p. 205). We assigned patents to topics, by matching topics to CPC codes. <i>Data Source</i>: <a href=\"https://www.epo.org/searching-for-patents/business/patstat.html\" target=\"_blank\">Patstat - EPO dataset</a>",
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+							"legend": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								],
+								"bucketSort":{
+									"sortFields":[
+										{
+											"field":"value",
+											"metricAggregateType":"Sum",
+											"order":"DESC"
+										}
+									],
+									"paging":{
+										"offset":0,
+										"size":50
+									}
+								}
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Number of patents",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv01"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv02"]
+									},
+									{
+										"field": "indid",
+										"value": ["i09"]
+									}
+								]
+							}
+						}
+					]
+				},
+				{
+					"name":"Technological Impact Trends",
+					"charts":[
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "radar",
+							"name": "",
+							"chartName": "Technological value of patents over time",
+							"description": "Description: The graph shows the evolution in the type of patents in the Energy domain granted by the EPO and still valid in 2021-Q2 by priority year. There are four types of patents based on the average number of backward citations (BC) and forward citations (FC) to other patents. Adopters (low FC, high BC), enablers (high FC, high BC), pioneers (high FC, low BC) and mavericks (low FC, low BC), where the low is defined as below average, and high as above average. <i>Data Source</i>: <a href=\"https://www.epo.org/searching-for-patents/business/patstat.html\" target=\"_blank\">Patstat - EPO dataset</a>",
+							"radarConfig":{
+								"high":{
+									"value": 3200,
+									"color": "#61a0a8"
+								},
+								"low":{
+									"value": 0,
+									"color": "#dfeced"
+								},
+								"emphasisColor": "#ffdf33"
+							},
+							"bucket": {
+								"type": "Composite",
+								"field": "key",
+								"sources": [
+									{
+										"field": "key"
+									},
+									{
+										"field": "tag"
+									}
+								],
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv01"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv01"]
+									},
+									{
+										"field": "indid",
+										"value": ["I12A"]
+									},
+									{
+										"field": "tag",
+										"value":["pioneer", "adopter", "enabler", "maverick"]
+									}
+								]
+							},
+							"labelSortKey": "key",
+							"labelsTransform": {},
+							"series": [
+								{
+									"label": {
+										"name": "Maverick",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										],
+										"groupTests":[
+											{
+												"tag": "maverick"
+											}
+										]
+									}
+								},
+								{
+									"label": {
+										"name": "Adopter",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										],
+										"groupTests":[
+											{
+												"tag": "adopter"
+											}
+										]
+									}
+								},
+								{
+									"label": {
+										"name": "Enabler",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										],
+										"groupTests":[
+											{
+												"tag": "enabler"
+											}
+										]
+									}
+								},
+								{
+									"label": {
+										"name": "Pioneer",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										],
+										"groupTests":[
+											{
+												"tag": "pioneer"
+											}
+										]
+									}
+								}
+							],
+							"areaStyle": {},
+							"filters": [],
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {}
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "line",
+							"dataZoom": {
+								"inside": true
+							},
+							"legend": {},
+							"name": "",
+							"chartName": "Patent citations over time",
+							"xAxis": {
+								"name": "year"
+							},
+							"yAxis": {
+								"name": "average citations"
+							},
+							"labelSortKey": "key",
+							"description": "The graph shows the average number of backward and forward citations to other patents for patents in the Energy domain, granted by the EPO and still valid in 2021-Q2. <i>Data Source</i>: <a href=\"https://www.epo.org/searching-for-patents/business/patstat.html\" target=\"_blank\">Patstat - EPO dataset</a>.",
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Composite",
+								"field": "key",
+								"sources": [
+									{
+										"field": "key"
+									},
+									{
+										"field": "indid"
+									},
+									{
+										"field": "svid"
+									}
+								],
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv01"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv01"]
+									},
+									{
+										"field": "indid",
+										"value": ["i11", "i12"]
+									}
+								]
+							},
+							"series": [
+								{							
+									"label": {
+										"name": "Average backward citations",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										],
+										"groupTests":[
+											{
+												"indid":"i11"
+											}
+										]
+									}
+								},
+								{							
+									"label": {
+										"name": "Average forward citations",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										],
+										"groupTests":[
+											{
+												"indid":"i12"
+											}
+										]
+									}
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Technological Impact Origins",
+					"charts":[
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "map",
+							"name": "",
+							"chartName": "Patents by country and technological value",
+							"description": "The graph shows the number of patents in the Energy domain granted by the EPO and still valid in 2021-Q2 by the country of the applicant, for different types of patent. There are four types of patents based on the average number of backward citations (BC) and forward citations (FC) to other patents. Adopters (low FC, high BC), enablers (high FC, high BC), pioneers (high FC, low BC) and mavericks (low FC, low BC), where the low is defined as below average, and high as above average. <i>Data Source</i>: <a href=\"https://www.epo.org/searching-for-patents/business/patstat.html\" target=\"_blank\">Patstat - EPO dataset</a>",
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+							"mapChartConfig": {
+								"high": {
+									"text": "High",
+									"color": "#42c39a"
+								}
+							},
+							"countryNameMapping": {
+								"AT": "Austria",
+								"BE": "Belgium",
+								"BG": "Bulgaria",
+								"CY": "Cyprus",
+								"CZ": "Czech Rep.",
+								"DE": "Germany",
+								"DK": "Denmark",
+								"EE": "Estonia",
+								"ES": "Spain",
+								"FI": "Finland",
+								"FR": "France",
+								"GR": "Greece",
+								"HR": "Croatia",
+								"HU": "Hungary",
+								"IE": "Ireland",
+								"IT": "Italy",
+								"LT": "Lithuania",
+								"LU": "Luxembourg",
+								"LV": "Latvia",
+								"NL": "Netherlands",
+								"PL": "Poland",
+								"PT": "Portugal",
+								"RO": "Romania",
+								"SE": "Sweden",
+								"SI": "Slovenia",
+								"SK": "Slovakia"
+							},
+							"filters":[
+								{
+									"type":"select",
+									"indicatorFilterType":"keyword",
+									"multiple":false,
+									"fieldCode": "tag",
+									"name": "Type of patent",
+									"valueToAssignOnInitialLoad":"pioneer",
+									"required":true,
+									"values":[
+										{
+											"name":"Pioneers",
+											"value":"pioneer"
+										},
+										{
+											"name":"Adopters",
+											"value":"adopter"
+										},
+										{
+											"name":"Enablers",
+											"value":"enabler"
+										},
+										{
+											"name":"Maverics",
+											"value":"maverick"
+										}
+									]
+								}
+							],
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv01"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv09"]
+									},
+									{
+										"field": "indid",
+										"value": ["I12A"]
+									}
+								]
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Number of patents",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							]
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "bar",
+							"horizontal": false,
+							"dataZoom": {
+								"inside": true,
+								"slider": true,
+								"areaZoom": {
+									"start": 0,
+									"end": 20
+								}
+							},
+							"name": "",
+							"chartName": "Patents by Organization (top 100) and technological value",
+							"description": "The graph shows the top 100 organizations of patent applicants in terms of the number of patents in the Energy domain granted by the EPO and still valid in 2021-Q2, for different types of patents. There are four types of patents based on the average number of backward citations (BC) and forward citations (FC) to other patents. Adopters (low FC, high BC), enablers (high FC, high BC), pioneers (high FC, low BC) and mavericks (low FC, low BC), where the low is defined as below average, and high as above average. <i>Data Source</i>: <a href=\"https://www.epo.org/searching-for-patents/business/patstat.html\" target=\"_blank\">Patstat - EPO dataset</a>",
+							"xAxis": {
+								"name": "organization",
+								"axisLabel": {
+									"width": 100,
+									"rotate": 45
+								}
+							},
+							"yAxis": {
+								"name": "patents"
+							},
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+							"filters":[
+								{
+									"type":"select",
+									"indicatorFilterType":"keyword",
+									"multiple":false,
+									"fieldCode": "tag",
+									"name": "Type of patent",
+									"valueToAssignOnInitialLoad":"pioneer",
+									"required":true,
+									"values":[
+										{
+											"name":"Pioneers",
+											"value":"pioneer"
+										},
+										{
+											"name":"Adopters",
+											"value":"adopter"
+										},
+										{
+											"name":"Enablers",
+											"value":"enabler"
+										},
+										{
+											"name":"Maverics",
+											"value":"maverick"
+										}
+									]
+								}
+							],
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"rawDataRequest": {
+								"keyField": "key",
+								"valueField": "value",
+								"order": {
+									"items": ["-value"]
+								},
+								"page": {
+									"offset": 0,
+									"size": 100
+								}
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Number of patents",
+										"labelKey": "key"
+									},
+									"values": {
+										"valueKey": "value",
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv01"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv06"]
+									},
+									{
+										"field": "indid",
+										"value": ["I12A"]
+									}
+								]
+							}
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "pie",
+							"doughnut": true,
+							"name": "",
+							"chartName": "Patents by sector and technological value",
+							"description": "The graph shows the number of patents in the Energy domain granted by the EPO and currently valid (at least until 2021 Q2) by the type of patent applicant, for different types of patents. There are four types of patents based on the average number of backward citations (BC) and forward citations (FC) to other patents. Adopters (low FC, high BC), enablers (high FC, high BC), pioneers (high FC, low BC) and mavericks (low FC, low BC), where the low is defined as below average, and high as above average. <i>Data Source</i>: <a href=\"https://www.epo.org/searching-for-patents/business/patstat.html\" target=\"_blank\">Patstat - EPO dataset</a>",
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+							"legend": {},
+							"filters":[
+								{
+									"type":"select",
+									"indicatorFilterType":"keyword",
+									"multiple":false,
+									"fieldCode": "tag",
+									"name": "Type of patent",
+									"valueToAssignOnInitialLoad":"pioneer",
+									"required":true,
+									"values":[
+										{
+											"name":"Pioneers",
+											"value":"pioneer"
+										},
+										{
+											"name":"Adopters",
+											"value":"adopter"
+										},
+										{
+											"name":"Enablers",
+											"value":"enabler"
+										},
+										{
+											"name":"Maverics",
+											"value":"maverick"
+										}
+									]
+								}
+							],
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"rawDataRequest": {
+								"keyField": "key",
+								"valueField": "value",
+								"order": {
+									"items": ["-value"]
+								}
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Number of patents",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv01"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv08"]
+									},
+									{
+										"field": "indid",
+										"value": ["I12A"]
+									}
+								]
+							}
+						}
+					]
+				},
+				{
+					"name":"Technological Impact Characteristics",
+					"charts":[
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "pie",
+							"name": "",
+							"chartName": "Patents by NACE code and by technological value",
+							"description": "The graph shows the number of patents in the Energy domain granted by the EPO and still valid in 2021-Q2 by the NACE (Nomenclature of Economic Activities) codes of patents as assigned by PATSTAT, for different types of patents. There are four types of patents based on the average number of backward citations (BC) and forward citations (FC) to other patents. Adopters (low FC, high BC), enablers (high FC, high BC), pioneers (high FC, low BC) and mavericks (low FC, low BC), where the low is defined as below average, and high as above average. <i>Data Source</i>: <a href=\"https://www.epo.org/searching-for-patents/business/patstat.html\" target=\"_blank\">Patstat - EPO dataset</a> .",
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+							"legend": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"filters":[
+								{
+									"type":"select",
+									"indicatorFilterType":"keyword",
+									"multiple":false,
+									"fieldCode": "tag",
+									"name": "Type of patent",
+									"valueToAssignOnInitialLoad":"pioneer",
+									"required":true,
+									"values":[
+										{
+											"name":"Pioneers",
+											"value":"pioneer"
+										},
+										{
+											"name":"Adopters",
+											"value":"adopter"
+										},
+										{
+											"name":"Enablers",
+											"value":"enabler"
+										},
+										{
+											"name":"Maverics",
+											"value":"maverick"
+										}
+									]
+								}
+							],
+							"rawDataRequest": {
+								"keyField": "key",
+								"valueField": "value",
+								"order": {
+									"items": ["-value"]
+								}
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Number of patents",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv01"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv07"]
+									},
+									{
+										"field": "indid",
+										"value": ["I12A"]
+									}
+								]
+							}
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "bar",
+							"horizontal": true,
+							"dataZoom": {
+								"inside": true,
+								"slider": true,
+								"areaZoom": {
+									"start": 0,
+									"end": 20
+								}
+							},
+							"name": "",
+							"chartName": "Patents by IPC code (top 20 codes) and by technological value",
+							"description": "The graph shows the top 20 IPC (International Patent Classification) codes by the number of patents in the Energy domain granted by the EPO and still valid in 2021-Q2 by IPC, for different types of patents. There are four types of patents based on the average number of backward citations (BC) and forward citations (FC) to other patents. Adopters (low FC, high BC), enablers (high FC, high BC), pioneers (high FC, low BC) and mavericks (low FC, low BC), where the low is defined as below average, and high as above average. <i>Data Source</i>: <a href=\"https://www.epo.org/searching-for-patents/business/patstat.html\" target=\"_blank\">Patstat - EPO dataset</a>",
+							"xAxis": {
+								"name": "organization",
+								"axisLabel": {
+									"width": 100,
+									"rotate": 45
+								}
+							},
+							"yAxis": {
+								"name": "patents"
+							},
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+							"filters":[
+								{
+									"type":"select",
+									"indicatorFilterType":"keyword",
+									"multiple":false,
+									"fieldCode": "tag",
+									"name": "Type of patent",
+									"valueToAssignOnInitialLoad":"pioneer",
+									"required":true,
+									"values":[
+										{
+											"name":"Pioneers",
+											"value":"pioneer"
+										},
+										{
+											"name":"Adopters",
+											"value":"adopter"
+										},
+										{
+											"name":"Enablers",
+											"value":"enabler"
+										},
+										{
+											"name":"Maverics",
+											"value":"maverick"
+										}
+									]
+								}
+							],
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"rawDataRequest": {
+								"keyField": "key",
+								"valueField": "value",
+								"order": {
+									"items": ["-value"]
+								},
+								"page": {
+									"offset": 0,
+									"size": 100
+								}
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Number of patents",
+										"labelKey": "key"
+									},
+									"values": {
+										"valueKey": "value",
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv01"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv13"]
+									},
+									{
+										"field": "indid",
+										"value": ["i12a"]
+									}
+								]
+							}
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "pie",
+							"roseType": "area",
+							"doughnut": true,
+							"name": "",
+							"chartName": "Patents by topic",
+							"description": "The graph shows the number of patents by topic in the Energy domain, granted by the EPO and still valid in 2021-Q2, for different types of patents. There are four types of patents based on the average number of backward citations (BC) and forward citations (FC) to other patents. Adopters (low FC, high BC), enablers (high FC, high BC), pioneers (high FC, low BC) and mavericks (low FC, low BC), where the low is defined as below average, and high as above average. The ontology of topics is taken from the technical annex of the Final Report of the EU taxonomy for sustainable activities (Chapter 4. “Electricity, gas, steam and air conditioning supply,” p. 205). We assigned patents to topics, by matching topics to CPC codes. <i>Data Source</i>: <a href=\"https://www.epo.org/searching-for-patents/business/patstat.html\" target=\"_blank\">Patstat - EPO dataset</a>",
+							"xAxis": {
+								"name": "topic"
+							},
+							"yAxis": {
+								"name": ""
+							},
+							"filters":[
+								{
+									"type":"select",
+									"indicatorFilterType":"keyword",
+									"multiple":false,
+									"fieldCode": "tag",
+									"name": "Type of patent",
+									"valueToAssignOnInitialLoad":"pioneer",
+									"required":true,
+									"values":[
+										{
+											"name":"Pioneers",
+											"value":"pioneer"
+										},
+										{
+											"name":"Adopters",
+											"value":"adopter"
+										},
+										{
+											"name":"Enablers",
+											"value":"enabler"
+										},
+										{
+											"name":"Maverics",
+											"value":"maverick"
+										}
+									]
+								}
+							],
+							"rawDataRequest": {
+								"keyField": "key",
+								"valueField": "value",
+								"order": {
+									"items": ["-value"]
+								},
+								"page": {
+									"offset": 0,
+									"size": 1000
+								}
+							},
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+							"legend": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Number of patents",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv01"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv02"]
+									},
+									{
+										"field": "indid",
+										"value": ["I12A"]
+									}
+								]
+							}
 						}
 					]
 				}
 			]
 		},
 		{
-			"name": "Technology",
-			"chartGroups": []
-		},
-		{
 			"name": "Industry",
 			"chartGroups": []
 		},
 		{
-			"name": "Human Resources",
+			"name": "ESG Reports",
 			"chartGroups": []
 		},
 		{
-			"name": "Policy",
+			"name": "Green Skills",
 			"chartGroups": []
 		},
 		{
-			"name": "Society",
+			"name": "Regulations",
 			"chartGroups": []
 		}
 	]

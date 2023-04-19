@@ -1,8 +1,10 @@
 package gr.cite.intelcomp.stiviewer.service.datatreeconfig;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import gr.cite.commons.web.authz.service.AuthorizationService;
 import gr.cite.intelcomp.stiviewer.authorization.AuthorizationContentResolver;
 import gr.cite.intelcomp.stiviewer.authorization.AuthorizationFlags;
+import gr.cite.intelcomp.stiviewer.authorization.OwnedResource;
 import gr.cite.intelcomp.stiviewer.authorization.Permission;
 import gr.cite.intelcomp.stiviewer.common.JsonHandlingService;
 import gr.cite.intelcomp.stiviewer.common.enums.IndicatorFieldBaseType;
@@ -10,15 +12,16 @@ import gr.cite.intelcomp.stiviewer.common.enums.IsActive;
 import gr.cite.intelcomp.stiviewer.common.enums.UserSettingsEntityType;
 import gr.cite.intelcomp.stiviewer.common.enums.UserSettingsType;
 import gr.cite.intelcomp.stiviewer.common.scope.user.UserScope;
+import gr.cite.intelcomp.stiviewer.common.types.datalastview.DataTreeLastViewConfigEntity;
 import gr.cite.intelcomp.stiviewer.common.types.datatreeconfig.*;
 import gr.cite.intelcomp.stiviewer.common.types.indicatorgroup.IndicatorGroupEntity;
-import gr.cite.intelcomp.stiviewer.common.types.portofolioconfig.PortofolioConfigEntity;
 import gr.cite.intelcomp.stiviewer.convention.ConventionService;
 import gr.cite.intelcomp.stiviewer.data.IndicatorAccessEntity;
 import gr.cite.intelcomp.stiviewer.data.IndicatorEntity;
 import gr.cite.intelcomp.stiviewer.data.TenantEntityManager;
 import gr.cite.intelcomp.stiviewer.data.UserSettingsEntity;
 import gr.cite.intelcomp.stiviewer.elastic.data.indicator.FieldEntity;
+import gr.cite.intelcomp.stiviewer.elastic.data.indicatorpoint.IndicatorPointEntity;
 import gr.cite.intelcomp.stiviewer.elastic.query.indicatorpoint.IndicatorPointQuery;
 import gr.cite.intelcomp.stiviewer.elastic.query.indicatorpointfilter.*;
 import gr.cite.intelcomp.stiviewer.model.Indicator;
@@ -26,10 +29,8 @@ import gr.cite.intelcomp.stiviewer.model.IndicatorAccess;
 import gr.cite.intelcomp.stiviewer.model.UserSettings;
 import gr.cite.intelcomp.stiviewer.model.builder.datatreeconfig.BrowseDataTreeConfigBuilder;
 import gr.cite.intelcomp.stiviewer.model.builder.datatreeconfig.BrowseDataTreeLevelBuilder;
-import gr.cite.intelcomp.stiviewer.model.builder.portofolioconfig.PortofolioConfigBuilder;
 import gr.cite.intelcomp.stiviewer.model.datatreeconfig.DataTreeConfig;
 import gr.cite.intelcomp.stiviewer.model.datatreeconfig.DataTreeLevel;
-import gr.cite.intelcomp.stiviewer.model.portofolioconfig.PortofolioConfig;
 import gr.cite.intelcomp.stiviewer.query.IndicatorAccessQuery;
 import gr.cite.intelcomp.stiviewer.query.IndicatorQuery;
 import gr.cite.intelcomp.stiviewer.query.UserSettingsQuery;
@@ -39,17 +40,18 @@ import gr.cite.intelcomp.stiviewer.service.indicator.IndicatorConfigService;
 import gr.cite.intelcomp.stiviewer.service.indicatorgroup.IndicatorGroupService;
 import gr.cite.tools.data.builder.BuilderFactory;
 import gr.cite.tools.data.query.QueryFactory;
-import gr.cite.tools.elastic.query.DistinctValuesResponse;
+import gr.cite.tools.elastic.query.Aggregation.*;
 import gr.cite.tools.exception.MyNotFoundException;
 import gr.cite.tools.fieldset.BaseFieldSet;
 import gr.cite.tools.fieldset.FieldSet;
-import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.RequestScope;
 
+import javax.management.InvalidApplicationException;
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -98,7 +100,7 @@ public class DataTreeConfigServiceImpl implements DataTreeConfigService {
 
 	@Override
 	public List<DataTreeConfig> getMyConfigs(FieldSet fields) {
-		List<DataTreeConfigEntity> browseDataTreeConfigEntities = this.getMyConfigs();
+		List<DataTreeConfigEntity> browseDataTreeConfigEntities = this.getMyDataTreeConfigs();
 		return this.builderFactory.builder(BrowseDataTreeConfigBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(BaseFieldSet.build(fields, DataTreeConfig._id), browseDataTreeConfigEntities);
 	}
 
@@ -113,13 +115,13 @@ public class DataTreeConfigServiceImpl implements DataTreeConfigService {
 		return this.builderFactory.builder(BrowseDataTreeConfigBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(BaseFieldSet.build(fields, DataTreeConfig._id), List.of(dataTreeConfigs));
 	}
 
-	private List<DataTreeConfigEntity> getMyConfigs() {
+	private List<DataTreeConfigEntity> getMyDataTreeConfigs() {
 		List<UserSettingsEntity> userSettingsEntities = this.queryFactory.query(UserSettingsQuery.class).types(UserSettingsType.BrowseDataTree).entityTypes(UserSettingsEntityType.Application).collectAs(new BaseFieldSet().ensure(UserSettings._key).ensure(UserSettings._value));
 		List<DataTreeConfigEntity> browseDataTreeConfigEntities = new ArrayList<>();
 		if (userSettingsEntities != null) {
 			for (UserSettingsEntity userSettingsEntity : userSettingsEntities) {
 				DataTreeConfigEntity[] dataTreeConfigs = this.jsonHandlingService.fromJsonSafe(DataTreeConfigEntity[].class, userSettingsEntity.getValue());
-				if (browseDataTreeConfigEntities != null) {
+				if (dataTreeConfigs != null) {
 					for (DataTreeConfigEntity dataTreeConfig : dataTreeConfigs) {
 						browseDataTreeConfigEntities.add(dataTreeConfig);
 					}
@@ -129,9 +131,52 @@ public class DataTreeConfigServiceImpl implements DataTreeConfigService {
 		return browseDataTreeConfigEntities;
 	}
 
+	public void updateLastAccess(String configId) throws InvalidApplicationException, JsonProcessingException {
+		UUID userId = userScope.getUserIdSafe();
+		this.authorizationService.authorizeAtLeastOneForce(List.of(new OwnedResource(userId)));
+		UserSettingsEntity data = this.queryFactory.query(UserSettingsQuery.class).keys(configId).types(UserSettingsType.DataTreeLastView).entityTypes(UserSettingsEntityType.User).entityIds(userScope.getUserId()).first();
+		boolean isUpdate = data != null;
+		if (!isUpdate) {
+			data = new UserSettingsEntity();
+			data.setId(UUID.randomUUID());
+			data.setKey(configId);
+			data.setEntityId(userId);
+			data.setEntityType(UserSettingsEntityType.User);
+			data.setCreatedAt(Instant.now());
+			data.setType(UserSettingsType.DataTreeLastView);
+			data.setName(configId);
+		}
+		DataTreeLastViewConfigEntity dataTreeLastViewConfigEntity = new DataTreeLastViewConfigEntity();
+		dataTreeLastViewConfigEntity.setLastAccess(Instant.now());
+		data.setValue(this.jsonHandlingService.toJson(dataTreeLastViewConfigEntity));
+		data.setUpdatedAt(Instant.now());
+
+		if (isUpdate) this.entityManager.merge(data);
+		else this.entityManager.persist(data);
+
+		this.entityManager.flush();
+	}
+
+	private DataTreeLastViewConfigEntity getDataTreeLastViewConfig(String configId) {
+		List<UserSettingsEntity> userSettingsEntities = null;
+		try {
+			userSettingsEntities = this.queryFactory.query(UserSettingsQuery.class).keys(configId).types(UserSettingsType.DataTreeLastView).entityTypes(UserSettingsEntityType.User).entityIds(userScope.getUserId())
+					.collectAs(new BaseFieldSet().ensure(UserSettings._key).ensure(UserSettings._value));
+		} catch (InvalidApplicationException e) {
+			userSettingsEntities = null;
+		}
+		if (userSettingsEntities != null) {
+			for (UserSettingsEntity userSettingsEntity : userSettingsEntities) {
+				DataTreeLastViewConfigEntity lastViewConfigEntity = this.jsonHandlingService.fromJsonSafe(DataTreeLastViewConfigEntity.class, userSettingsEntity.getValue());
+				return lastViewConfigEntity;
+			}
+		}
+		return null;
+	}
+
 	@Override
 	public DataTreeLevel getIndicatorReportLevel(IndicatorReportLevelLookup lookup, FieldSet fields) {
-		List<DataTreeConfigEntity> browseDataTreeConfigEntities = this.getMyConfigs();
+		List<DataTreeConfigEntity> browseDataTreeConfigEntities = this.getMyDataTreeConfigs();
 		DataTreeConfigEntity viewConfig = browseDataTreeConfigEntities.stream().filter(x -> x.getId().equals(lookup.getConfigId())).findFirst().orElse(null);
 		if (viewConfig == null) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{lookup.getConfigId(), DataTreeConfigEntity.class.getSimpleName()}, LocaleContextHolder.getLocale()));
 
@@ -144,6 +189,12 @@ public class DataTreeConfigServiceImpl implements DataTreeConfigService {
 		}
 		if (nextLevelConfig == null) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{lookup.getConfigId(), DataTreeLevelConfigEntity.class.getSimpleName()}, LocaleContextHolder.getLocale()));
 
+		DataTreeLastViewConfigEntity dataTreeLastViewConfig = this.getDataTreeLastViewConfig(lookup.getConfigId());
+		if (dataTreeLastViewConfig == null && !this.conventionService.isNullOrEmpty(lookup.getParentConfigId())) dataTreeLastViewConfig = this.getDataTreeLastViewConfig(lookup.getParentConfigId());
+		if (dataTreeLastViewConfig == null){
+			dataTreeLastViewConfig = new DataTreeLastViewConfigEntity();
+			dataTreeLastViewConfig.setLastAccess(Instant.MIN);
+		}
 		DataTreeLevelEntity browseDataTreeLevelType = new DataTreeLevelEntity();
 		browseDataTreeLevelType.setField(nextLevelConfig.getField());
 		browseDataTreeLevelType.setOrder(nextLevelConfig.getOrder());
@@ -162,9 +213,11 @@ public class DataTreeConfigServiceImpl implements DataTreeConfigService {
 
 		List<DataTreeLevelItemEntity> indicatorReportConfigs = new ArrayList<>();
 		for (UUID indicatorId : indicatorIds) {
-			List<DataTreeLevelItemEntity> itemEntities = this.collectBrowseDataTreeLevelItems(lookup, indicatorId, nextLevelConfig);
+			List<DataTreeLevelItemEntity> itemEntities = this.collectBrowseDataTreeLevelItems(lookup, indicatorId, nextLevelConfig, dataTreeLastViewConfig);
 			for (DataTreeLevelItemEntity itemEntity : itemEntities) {
-				if (indicatorReportConfigs.stream().filter(x -> Objects.equals(x.getValue(), itemEntity.getValue())).count() == 0) indicatorReportConfigs.add(itemEntity);
+				DataTreeLevelItemEntity dataTreeLevelItemEntity = indicatorReportConfigs.stream().filter(x -> Objects.equals(x.getValue(), itemEntity.getValue())).findFirst().orElse(null);
+				if (dataTreeLevelItemEntity == null) indicatorReportConfigs.add(itemEntity);
+				else if (itemEntity.getHasNewData()) dataTreeLevelItemEntity.setHasNewData(true);
 			}
 		}
 		browseDataTreeLevelType.setItems(indicatorReportConfigs.stream().sorted(Comparator.comparing(DataTreeLevelItemEntity::getValue)).collect(Collectors.toList()));
@@ -172,7 +225,7 @@ public class DataTreeConfigServiceImpl implements DataTreeConfigService {
 		return this.builderFactory.builder(BrowseDataTreeLevelBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(fields, browseDataTreeLevelType);
 	}
 
-	private List<DataTreeLevelItemEntity> collectBrowseDataTreeLevelItems(IndicatorReportLevelLookup lookup, UUID indicatorId, DataTreeLevelConfigEntity nextLevelConfig) {
+	private List<DataTreeLevelItemEntity> collectBrowseDataTreeLevelItems(IndicatorReportLevelLookup lookup, UUID indicatorId, DataTreeLevelConfigEntity nextLevelConfig, DataTreeLastViewConfigEntity lastViewItemConfig) {
 		List<DataTreeLevelItemEntity> indicatorReportConfigs = new ArrayList<>();
 
 		IndicatorConfigItem indicatorConfigItem = this.indicatorConfigService.getConfig(indicatorId);
@@ -257,7 +310,7 @@ public class DataTreeConfigServiceImpl implements DataTreeConfigService {
 			}
 		}
 
-		DistinctValuesResponse<String> items = null;
+		AggregateResponse aggregateResponse = null;
 		Map<String, Object> afterKey = null;
 		DataTreeLevelDashboardOverrideFieldRequirementEntity nextLevelDashboardOverrideFieldRequirementEntity = new DataTreeLevelDashboardOverrideFieldRequirementEntity();
 		nextLevelDashboardOverrideFieldRequirementEntity.setField(nextLevelConfig.getField().getCode());
@@ -271,13 +324,22 @@ public class DataTreeConfigServiceImpl implements DataTreeConfigService {
 			IndicatorPointQuery query = lookup.getFilters() == null ? this.queryFactory.query(IndicatorPointQuery.class) : lookup.getFilters().enrich(this.queryFactory);
 			query.setPage(null);
 			query.setOrder(null);
-			items = query.indicatorIds(indicatorId).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicatorOrIndicatorAccess).collectDistinct(distinctKey, SortOrder.ASC, (x) -> x, afterKey);
-
-			for (String item : items.getItems()) {
+			AggregationQuery aggregationQuery = new AggregationQuery();
+			aggregationQuery.setBucketAggregate(new Terms(distinctKey));
+			aggregationQuery.getBucketAggregate().setMetrics(new ArrayList<>());
+			aggregationQuery.getBucketAggregate().getMetrics().add(new Metric(IndicatorPointEntity.Fields.timestamp, MetricAggregateType.Max));
+			aggregateResponse = query.indicatorIds(indicatorId).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicatorOrIndicatorAccess).collectAggregate(aggregationQuery);
+			
+			for (AggregateResponseItem item : aggregateResponse.getItems()) {
+				if (item.getGroup() == null || item.getGroup().getItems() == null || !item.getGroup().getItems().containsKey(distinctKey)) continue;
 				DataTreeLevelItemEntity levelConfigItem = new DataTreeLevelItemEntity();
-				levelConfigItem.setValue(item);
+				levelConfigItem.setValue(item.getGroup().getItems().getOrDefault(distinctKey, null));
+				AggregateResponseValue maxTimestampValue = item.getValues() != null ? item.getValues().stream().filter(x-> x.getAggregateType().equals(MetricAggregateType.Max) && IndicatorPointEntity.Fields.timestamp.equals(x.getField())).findFirst().orElse(null) : null;
+				Instant maxTimestamp = Instant.now();
+				if (maxTimestampValue != null) maxTimestamp = Instant.ofEpochMilli(maxTimestampValue.getValue().longValue());
+				levelConfigItem.setHasNewData(lastViewItemConfig.getLastAccess().isBefore(maxTimestamp));
 				if (nextLevelConfig.getDashboardOverrides() != null) {
-					nextLevelDashboardOverrideFieldRequirementEntity.setValue(item);
+					nextLevelDashboardOverrideFieldRequirementEntity.setValue(item.getGroup().getItems().get(distinctKey));
 					List<DataTreeLevelDashboardOverrideEntity> dashboardOverrideEntities = nextLevelConfig.getDashboardOverrides().stream().filter(x -> x.applies(dashboardOverrideFieldRequirementEntities)).collect(Collectors.toList());
 					if (!dashboardOverrideEntities.isEmpty()) {
 						levelConfigItem.setSupportedDashboards(dashboardOverrideEntities.stream().map(x -> x.getSupportedDashboards()).flatMap(List::stream).distinct().collect(Collectors.toList()));
@@ -289,8 +351,8 @@ public class DataTreeConfigServiceImpl implements DataTreeConfigService {
 				}
 				indicatorReportConfigs.add(levelConfigItem);
 			}
-			afterKey = items.getAfterKey();
-		} while (items != null && !items.getItems().isEmpty() && afterKey != null && indicatorReportConfigs.size() < items.getTotal());
+			afterKey = aggregateResponse.getAfterKey();
+		} while (aggregateResponse.getItems() != null && !aggregateResponse.getItems().isEmpty() && afterKey != null /*&& indicatorReportConfigs.size() < aggregateResponse.sl()*/);
 		return indicatorReportConfigs;
 	}
 }

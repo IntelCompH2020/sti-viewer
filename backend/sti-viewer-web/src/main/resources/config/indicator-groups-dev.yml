@@ -1,22 +1,13 @@
 indicator-group:
   groups:
-    #    - groupId: BE240B1A-3D3B-4769-BC50-0D2345BFFD0F
-    #      name: cordis
-    #      dashboardKey: someDashboardId
-    #      indicator-codes:
-    #        - ic-sti-test-cordis-1-point-dev
-    - groupId: EA39A344-29C4-4EAC-BF7D-93DAD2CD5550
-      name: d4i
-      dashboardKey: someDashboardId
+    - groupId: BE240B1A-3D3B-4769-BC50-0D2345BFFD0F
+      name: data-tree
+      code: data-tree
       indicator-codes:
-        - ic-sti-test-d4i-basic-1-point-dev
-        - ic-sti-test-d4i-project-keyterms-1-point-dev
-        - ic-sti-test-d4i-industrial-project-diseases-v2-1-point-dev
-        - ic-sti-test-d4i-diseases-mentions-1-point-dev
-        - ic-sti-test-d4i-project-insights-keyterms-1-point-dev
-        - ic-sti-test-d4i-industrial-project-diseases-1-point-dev
-        - ic-sti-test-d4i-coordinators-contribution-per-country-1-point-dev
-        - ic-sti-test-d4i-participants-contribution-per-activity_type-1-point-dev
-        - ic-sti-test-d4i-coordinators-contribution-per-activity_type-1-point-dev
-        - ic-sti-test-d4i-industrial-project-terms-1-point-dev
-        - ic-sti-test-d4i-participants-contribution-per-country-1-point-dev
+        - ai
+        - climate
+    - groupId: EA39A344-29C4-4EAC-BF7D-93DAD2CD5550
+      name: portofolio
+      code: portofolio
+      indicator-codes:
+        - portofolio

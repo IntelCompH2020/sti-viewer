@@ -27,14 +27,14 @@
         <div>
             <mat-icon class="item-icon">table_chart</mat-icon>
         </div>
-        <a class="navigation-description" [class.d-none]="!expanded" mat-button 
+        <a class="navigation-description" [class.d-none]="!expanded" mat-button
             >{{'APP.NAVIGATION.INDICATOR-DASHBOARD' |
             translate}}</a>
     </a> -->
 
-    <!-- <a matTooltip="Coming soon" matTooltipShowDelay="800" -->
-    <a (click)="handleNavigation()" routerLink="data-access-requests" routerLinkActive="text-accent" disabled
-        class="navigation-item " *ngIf="authService.hasPermission(authService.permissionEnum.ViewDataAccessRequestPage)">
+    <!-- <a (click)="handleNavigation()" routerLink="data-access-requests" routerLinkActive="text-accent" disabled -->
+    <a matTooltip="Coming soon" matTooltipShowDelay="800" disabled
+        class="navigation-item text-muted" *ngIf="authService.hasPermission(authService.permissionEnum.ViewDataAccessRequestPage)">
         <div>
             <mat-icon class="item-icon">content_paste</mat-icon>
         </div>
@@ -43,9 +43,9 @@
             translate}}</a>
     </a>
 
-    <!-- <a matTooltip="Coming soon" matTooltipShowDelay="800"  -->
-    <a (click)="handleNavigation()" routerLink="my-data-access-requests" routerLinkActive="text-accent" disabled
-        class="navigation-item" *ngIf="authService.hasPermission(authService.permissionEnum.ViewMyDataAccessRequestPage)">
+    <!-- <a (click)="handleNavigation()" routerLink="my-data-access-requests" routerLinkActive="text-accent" disabled -->
+    <a matTooltip="Coming soon" matTooltipShowDelay="800"
+        class="navigation-item text-muted" *ngIf="authService.hasPermission(authService.permissionEnum.ViewMyDataAccessRequestPage)" disabled>
         <div>
             <mat-icon class="item-icon">card_travel</mat-icon>
         </div>
@@ -82,6 +82,22 @@
         <a class="navigation-description" [class.d-none]="!expanded" mat-button>{{'APP.NAVIGATION.MASTER-ITEMS' |
             translate}}</a>
     </a>
+	<div *ngFor="let dynamicMenuItem of (dynamicMenuItems || [])">
+		<a *ngIf="pageTypeEnumValues.Simple === dynamicMenuItem.type" routerLink="{{this.getSimplePageUrl(dynamicMenuItem)}}" routerLinkActive="text-accent" (click)="handleNavigation()" class="navigation-item">
+			<div>
+				<mat-icon *ngIf="dynamicMenuItem.matIcon && dynamicMenuItem.matIcon.length > 0" class="item-icon">{{dynamicMenuItem.matIcon}}</mat-icon>
+				<mat-icon *ngIf="!dynamicMenuItem.matIcon || dynamicMenuItem.matIcon.length == 0" class="item-icon">description</mat-icon>
+			</div>
+			<a class="navigation-description" [class.d-none]="!expanded" mat-button>{{dynamicMenuItem.title}}</a>
+		</a>
+		<a *ngIf="pageTypeEnumValues.External === dynamicMenuItem.type" (click)="goToExternalLink(dynamicMenuItem)" class="navigation-item">
+			<div>
+				<mat-icon *ngIf="dynamicMenuItem.matIcon && dynamicMenuItem.matIcon.length > 0" class="item-icon">{{dynamicMenuItem.matIcon}}</mat-icon>
+				<mat-icon *ngIf="!dynamicMenuItem.matIcon || dynamicMenuItem.matIcon.length == 0" class="item-icon">link</mat-icon>
+			</div>
+			<a class="navigation-description" [class.d-none]="!expanded" mat-button>{{dynamicMenuItem.title}}</a>
+		</a>
+	</div>
     <a [mat-menu-trigger-for]="menu" class="navigation-item" *ngIf="authService.hasPermission(authService.permissionEnum.ViewUsersPage)
     || authService.hasPermission(authService.permissionEnum.ViewRoleAssignmentPage)
     || authService.hasPermission(authService.permissionEnum.ViewAccessTokensPage)
@@ -92,6 +108,7 @@
     || authService.hasPermission(authService.permissionEnum.ViewNotificationPage)
     || authService.hasPermission(authService.permissionEnum.ViewNotificationEventRulePage)
     || authService.hasPermission(authService.permissionEnum.ViewBlueprintRequestPage)
+    || authService.hasPermission(authService.permissionEnum.ViewDynamicPage)
     || authService.hasPermission(authService.permissionEnum.ViewNotificationTemplatePage)
     || authService.hasPermission(authService.permissionEnum.ViewBlueprintTemplatePage)">
         <div>
@@ -131,6 +148,9 @@
                     *ngIf="authService.hasPermission(authService.permissionEnum.ViewNotificationPage)" mat-menu-item
                     routerLink="/notifications">{{'APP.NAVIGATION.NOTIFICATIONS' | translate}}</a>
                 <!-- <a *ngIf="authService.hasPermission(authService.permissionEnum.ViewNotificationEventRulePage)" mat-menu-item routerLink="/notification-event-rules">{{'APP.NAVIGATION.NOTIFICATION-EVENT-RULES' | translate}}</a> -->
+                <a (click)="handleNavigation()"
+                    *ngIf="authService.hasPermission(authService.permissionEnum.ViewDynamicPage)" mat-menu-item
+                    routerLink="/dynamic-pages">{{'APP.NAVIGATION.DYNAMIC-PAGES' | translate}}</a>
                 <a (click)="handleNavigation()"
                     *ngIf="authService.hasPermission(authService.permissionEnum.ViewBlueprintRequestPage)" mat-menu-item
                     routerLink="/blueprint-requests">{{'APP.NAVIGATION.BLUEPRINT-REQUESTS' | translate}}</a>

@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { LanguageType } from '@app/core/enum/language-type.enum';
 import { ThemeType } from '@app/core/enum/theme-type.enum';
 import { AuthService } from '@app/core/services/ui/auth.service';
+import { DynamicPageProviderService } from '@app/core/services/ui/dynamic-page.service';
 import { ProgressIndicationService } from '@app/core/services/ui/progress-indication.service';
 import { ThemingService } from '@app/core/services/ui/theming.service';
 import { BaseComponent } from '@common/base/base.component';
@@ -12,18 +13,18 @@ import { InAppNotificationService } from '@notification-service/services/http/in
 import { InAppNotificationListingDialogComponent } from '@notification-service/ui/inapp-notification/listing-dialog/inapp-notification-listing-dialog.component';
 import { UserService } from '@user-service/services/http/user.service';
 import { LanguageService } from '@user-service/services/language.service';
+import { timer } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 @Component({
-	selector: 'app-navigation',
-	templateUrl: './navigation.component.html',
-	styleUrls: ['./navigation.component.scss'],
-	encapsulation: ViewEncapsulation.None
+	selector: "app-navigation",
+	templateUrl: "./navigation.component.html",
+	styleUrls: ["./navigation.component.scss"],
+	encapsulation: ViewEncapsulation.None,
 })
 export class NavigationComponent extends BaseComponent implements OnInit {
-
 	@Input()
-	expanded:boolean;
+	expanded: boolean;
 
 	@Output()
 	onToggleNav = new EventEmitter<boolean>();
@@ -31,7 +32,8 @@ export class NavigationComponent extends BaseComponent implements OnInit {
 	progressIndication = false;
 	themeTypes = ThemeType;
 	languageTypes = LanguageType;
-	inAppNotificationDialog: MatDialogRef<InAppNotificationListingDialogComponent> = null;
+	inAppNotificationDialog: MatDialogRef<InAppNotificationListingDialogComponent> =
+		null;
 	inAppNotificationCount = 0;
 
 	constructor(
@@ -50,14 +52,19 @@ export class NavigationComponent extends BaseComponent implements OnInit {
 	}
 
 	ngOnInit() {
-		this.progressIndicationService.getProgressIndicationObservable().pipe(takeUntil(this._destroyed)).subscribe(x => {
-			setTimeout(() => { this.progressIndication = x; });
-		});
-		// timer(2000, this.installationConfiguration.inAppNotificationsCountInterval * 1000)
-		// 	.pipe(takeUntil(this._destroyed))
-		// 	.subscribe(x => {
-		// 		this.countUnreadInappNotifications();
-		// 	});
+		this.progressIndicationService
+			.getProgressIndicationObservable()
+			.pipe(takeUntil(this._destroyed))
+			.subscribe((x) => {
+				setTimeout(() => {
+					this.progressIndication = x;
+				});
+			});
+		timer(2000, this.installationConfiguration.inAppNotificationsCountInterval * 1000)
+			.pipe(takeUntil(this._destroyed))
+			.subscribe(x => {
+				this.countUnreadInappNotifications();
+			});
 	}
 
 	private countUnreadInappNotifications() {
@@ -66,7 +73,7 @@ export class NavigationComponent extends BaseComponent implements OnInit {
 				.pipe(takeUntil(this._destroyed))
 				.subscribe(
 					data => {
-						this.inAppNotificationCount = data;
+					this.inAppNotificationCount = data;
 					},
 				);
 		}
@@ -97,14 +104,16 @@ export class NavigationComponent extends BaseComponent implements OnInit {
 	}
 
 	public getPrincipalName(): string {
-		return this.authService.getPrincipalName() || '';
+		return this.authService.getPrincipalName() || "";
 	}
 
 	public getProfilePicture(): string {
 		if (this.authService.getUserProfilePictureRef()) {
-			return this.userService.getProfilePictureUrl(this.authService.getUserProfilePictureRef());
+			return this.userService.getProfilePictureUrl(
+				this.authService.getUserProfilePictureRef()
+			);
 		} else {
-			return 'assets/images/profile-placeholder.png';
+			return "assets/images/profile-placeholder.png";
 		}
 	}
 
@@ -117,7 +126,9 @@ export class NavigationComponent extends BaseComponent implements OnInit {
 	}
 
 	getUserProfileQueryParams(): any {
-		const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || this.router.url;
+		const returnUrl =
+			this.route.snapshot.queryParamMap.get("returnUrl") ||
+			this.router.url;
 		return { returnUrl: returnUrl };
 	}
 
@@ -126,24 +137,31 @@ export class NavigationComponent extends BaseComponent implements OnInit {
 			this.inAppNotificationDialog.close();
 		} else {
 			this.countUnreadInappNotifications();
-			this.inAppNotificationDialog = this.dialog.open(InAppNotificationListingDialogComponent, {
-				position: {
-					top: '64px', right: '0px'
+			this.inAppNotificationDialog = this.dialog.open(
+				InAppNotificationListingDialogComponent,
+				{
+					position: {
+						top: "64px",
+						right: "0px",
+					},
 				}
-			});
-			this.inAppNotificationDialog.afterClosed().pipe(takeUntil(this._destroyed)).subscribe(result => {
-				this.countUnreadInappNotifications();
-				this.inAppNotificationDialog = null;
-			});
+			);
+			this.inAppNotificationDialog
+				.afterClosed()
+				.pipe(takeUntil(this._destroyed))
+				.subscribe((result) => {
+					this.countUnreadInappNotifications();
+					this.inAppNotificationDialog = null;
+				});
 		}
 	}
 
-	toggleNav(): void{
+	toggleNav(): void {
 		const newVal = !this.expanded;
 		this.onToggleNav.emit(newVal);
 	}
 
-	closeNav():void{
+	closeNav(): void {
 		this.onToggleNav.emit(false);
 	}
 }

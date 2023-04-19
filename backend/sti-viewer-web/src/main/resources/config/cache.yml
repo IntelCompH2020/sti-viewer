@@ -82,19 +82,8 @@ cache:
         expireAfterWriteMinutes: 1
         expireAfterAccessMinutes: 1
         refreshAfterWriteMinutes: 1
-      - names: [ cacheA ]
-        allowNullValues: true
-        initialCapacity: 100
-        maximumSize: 500
-        enableRecordStats: false
-        expireAfterWriteMinutes: 10
-        expireAfterAccessMinutes: 10
-        refreshAfterWriteMinutes: 10
     mapCaches:
       - names: [ cacheB ]
-        allowNullValues: true
-        storeByValue: true
-      - names: [ cacheC ]
         allowNullValues: true
         storeByValue: true
   apiKey:
@@ -127,12 +116,3 @@ cache:
   indicatorIndex:
     name: indicatorIndex
     keyPattern: indicator_index_$indicator$:v0
-  testCacheA:
-    name: cacheA
-    keyPattern: $keypart1$-$keypart2$
-  testCacheB:
-    name: cacheC
-    keyPattern: $keypart1$-$keypart2$
-  testCacheC:
-    name: cacheD
-    keyPattern: $keypart1$-$keypart2$

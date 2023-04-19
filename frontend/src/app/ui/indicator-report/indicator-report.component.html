@@ -18,8 +18,10 @@
 
     </div>
 
+	<div class="alert alert-primary" *ngIf="hasNewData" role="alert">
+		{{'APP.INDICATOR-REPORTS-PAGE.NEW-DATA' | translate}} <button mat-stroked-button type="button" color="warn" (click)="updateLastAccess(node)">{{'APP.INDICATOR-REPORTS-PAGE.NEW-DATA-DISMISS' | translate}}</button>
+	  </div>
 
-    
     <!-- <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" *ngIf="treeControl && dataSource" [class.d-none]="selectedView !== 1">
         <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding [@fadeIn]>
             <button mat-button (click)="navigateToNode(node)">
@@ -27,7 +29,7 @@
             </button>
         </mat-tree-node>
         <mat-tree-node *matTreeNodeDef="let node; when: hasChild" matTreeNodePadding [@fadeIn]>
-            
+
             <div class="d-flex flex-row align-items-center tree-item" style="gap: 1rem">
                 <button mat-icon-button
                 [attr.aria-label]="'Toggle ' + node.item" matTreeNodeToggle>
@@ -38,7 +40,7 @@
                 <span>
                     {{node.item}}
                 </span>
-                    
+
                 <button mat-icon-button class="preview-item" color="accent" (click)="navigateToNode(node)">
                     <mat-icon class="mat-icon-rtl-mirror">
                         visibility
@@ -52,21 +54,26 @@
     <div [class.d-none]="selectedView !== 0">
         <div class="contents" #contents>
             <div class="contents-details" *ngIf="configuration">
-                <app-indicator-details 
+                <app-indicator-details
                     [configuration]="configuration"
+                    [parentConfigId]="configuration.viewConfigId"
                     [disabled]="activeGotos?.includes( configuration.goTo)"
+					[disableNewDataIndicator] = "disableNewDataIndicator"
                     (goto)="onGoto($event)"
+					(onHasNewData)="hasNewData = $event"
                     [availableForPresentation]="availableForPresentation"
                     (onIndicatorExpanded)="onExpand()">
                 </app-indicator-details>
             </div>
         </div>
-    
+
         <div class="contents" #detailContents *ngIf="nestedDetails?.length">
             <div class="contents-details" *ngFor="let item of nestedDetails; let index = index">
-                <app-indicator-details 
+                <app-indicator-details
                     [disabled]="activeGotos?.includes(item.goTo)"
+                    [parentConfigId]="configuration.viewConfigId"
                     [configuration]="item"
+					[disableNewDataIndicator] = "disableNewDataIndicator"
                     (goto)="onGoto($event)"
                     [availableForPresentation]="availableForPresentation"
                     (onIndicatorExpanded)="onExpand(index)">

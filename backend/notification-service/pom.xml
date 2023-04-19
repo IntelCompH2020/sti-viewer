@@ -13,7 +13,8 @@
     </parent>
 
     <groupId>gr.cite</groupId>
-    <artifactId>notification-service</artifactId>
+    <artifactId>notification-service-parent</artifactId>
+    <name>STI Viewer Notification Parent</name>
     <version>1.0.0</version>
     <packaging>pom</packaging>
 

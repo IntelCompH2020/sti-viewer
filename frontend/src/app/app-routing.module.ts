@@ -120,6 +120,15 @@ const appRoutes: Routes = [
 		loadChildren: () => import('@app/ui/tenant-request/tenant-request.module').then(m => m.TenantRequestModule)
 	},
 	{
+		path: "simple-page",
+		canLoad: [AuthGuard],
+		data: {},
+		loadChildren: () =>
+			import("@app/ui/simple-page/simple-page.module").then(
+				(m) => m.SimplePageModule
+			),
+	},
+	{
 		path: 'download-report',
 		canLoad: [AuthGuard],
 		data: {
@@ -138,6 +147,16 @@ const appRoutes: Routes = [
 			}
 		},
 		loadChildren: () => import('@app/ui/master-item/master-item.module').then(m => m.MasterItemModule)
+	},
+	{
+		path: 'dynamic-pages',
+		canLoad: [AuthGuard],
+		data: {
+			authContext: {
+				permissions: [AppPermission.ViewDynamicPage]
+			}
+		},
+		loadChildren: () => import('@app/ui/dynamic-page/dynamic-page.module').then(m => m.DynamicPageModule)
 	},
 	{
 		path: 'notifications',

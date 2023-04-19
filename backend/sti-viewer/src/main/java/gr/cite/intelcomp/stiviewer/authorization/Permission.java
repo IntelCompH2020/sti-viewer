@@ -13,6 +13,7 @@ public final class Permission {
 	//Indicator
 	public static String BrowseIndicator = "BrowseIndicator";
 	public static String EditIndicator = "EditIndicator";
+	public static String ResetIndicator = "ResetIndicator";
 	public static String DeleteIndicator = "DeleteIndicator";
 	public static String BrowseIndicatorReportConfig = "BrowseIndicatorReportConfig";
 
@@ -60,6 +61,12 @@ public final class Permission {
 	public static String BrowseUserSettings = "BrowseUserSettings";
 	public static String EditUserSettings = "EditUserSettings";
 	public static String DeleteUserSettings = "DeleteUserSettings";
+
+
+	//DynamicPage
+	public static String BrowseDynamicPage = "BrowseDynamicPage";
+	public static String EditDynamicPage = "EditDynamicPage";
+	public static String DeleteDynamicPage = "DeleteDynamicPage";
 
 	//Tenant
 	public static String BrowseTenant = "BrowseTenant";
@@ -140,4 +147,6 @@ public final class Permission {
 	public static String ViewBlueprintRequestPage = "ViewBlueprintRequestPage";
 	public static String DownloadReport = "DownloadReport";
 	public static String ViewBlueprintTemplatePage = "ViewBlueprintTemplatePage";
+	public static String ViewDynamicPage = "ViewDynamicPage";
+	
 }

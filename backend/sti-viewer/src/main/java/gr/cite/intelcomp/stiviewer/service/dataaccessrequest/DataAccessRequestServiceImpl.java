@@ -7,6 +7,7 @@ import gr.cite.intelcomp.stiviewer.authorization.Permission;
 import gr.cite.intelcomp.stiviewer.common.JsonHandlingService;
 import gr.cite.intelcomp.stiviewer.common.enums.DataAccessRequestStatus;
 import gr.cite.intelcomp.stiviewer.common.enums.IsActive;
+import gr.cite.intelcomp.stiviewer.common.enums.notification.NotificationContactType;
 import gr.cite.intelcomp.stiviewer.common.scope.tenant.TenantScope;
 import gr.cite.intelcomp.stiviewer.common.scope.user.UserScope;
 import gr.cite.intelcomp.stiviewer.common.types.dataaccessrequest.DataAccessRequestConfigEntity;
@@ -19,12 +20,12 @@ import gr.cite.intelcomp.stiviewer.common.types.indicatorgroup.IndicatorGroupAcc
 import gr.cite.intelcomp.stiviewer.common.types.indicatorgroup.IndicatorGroupAccessColumnConfigViewEntity;
 import gr.cite.intelcomp.stiviewer.common.types.indicatorgroup.IndicatorGroupAccessConfigViewEntity;
 import gr.cite.intelcomp.stiviewer.common.types.indicatorgroup.IndicatorGroupEntity;
+import gr.cite.intelcomp.stiviewer.common.types.notification.*;
 import gr.cite.intelcomp.stiviewer.convention.ConventionService;
-import gr.cite.intelcomp.stiviewer.data.DataAccessRequestEntity;
-import gr.cite.intelcomp.stiviewer.data.IndicatorAccessEntity;
-import gr.cite.intelcomp.stiviewer.data.TenantEntity;
-import gr.cite.intelcomp.stiviewer.data.TenantEntityManager;
+import gr.cite.intelcomp.stiviewer.data.*;
 import gr.cite.intelcomp.stiviewer.errorcode.ErrorThesaurusProperties;
+import gr.cite.intelcomp.stiviewer.integrationevent.outbox.notification.NotificationIntegrationEvent;
+import gr.cite.intelcomp.stiviewer.integrationevent.outbox.notification.NotificationIntegrationEventHandler;
 import gr.cite.intelcomp.stiviewer.model.IndicatorAccess;
 import gr.cite.intelcomp.stiviewer.model.builder.dataaccessrequest.DataAccessRequestBuilder;
 import gr.cite.intelcomp.stiviewer.model.dataaccessrequest.DataAccessRequest;
@@ -56,6 +57,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.RequestScope;
 
 import javax.management.InvalidApplicationException;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -80,7 +83,12 @@ public class DataAccessRequestServiceImpl implements DataAccessRequestService {
 	private final ValidationService validation;
 	private final QueryFactory queryFactory;
 	private final IndicatorGroupService indicatorGroupService;
+	private final NotificationIntegrationEventHandler eventHandler;
+	private final DataAccessRequestProperties config;
 
+	@PersistenceContext
+	private EntityManager globalEntityManager;
+	
 	@Autowired
 	public DataAccessRequestServiceImpl(
 			TenantEntityManager entityManager,
@@ -95,7 +103,9 @@ public class DataAccessRequestServiceImpl implements DataAccessRequestService {
 			IndicatorAccessService indicatorAccessService,
 			ValidationService validation,
 			QueryFactory queryFactory,
-			IndicatorGroupService indicatorGroupService
+			IndicatorGroupService indicatorGroupService,
+			NotificationIntegrationEventHandler eventHandler,
+			DataAccessRequestProperties config
 	) {
 		this.entityManager = entityManager;
 		this.authorizationService = authorizationService;
@@ -110,6 +120,8 @@ public class DataAccessRequestServiceImpl implements DataAccessRequestService {
 		this.validation = validation;
 		this.queryFactory = queryFactory;
 		this.indicatorGroupService = indicatorGroupService;
+		this.eventHandler = eventHandler;
+		this.config = config;
 	}
 
 	public DataAccessRequest persist(DataAccessRequestPersist model, FieldSet fields) throws MyForbiddenException, MyValidationException, MyApplicationException, MyNotFoundException, InvalidApplicationException {
@@ -131,6 +143,7 @@ public class DataAccessRequestServiceImpl implements DataAccessRequestService {
 			data.setUserId(this.userScope.getUserId());
 			data.setStatus(DataAccessRequestStatus.NEW);
 		}
+		boolean statusChanged = model.getStatus() != data.getStatus();
 
 		if (model.getStatus() != DataAccessRequestStatus.NEW && model.getStatus() != DataAccessRequestStatus.SUBMITTED) throw new MyApplicationException("Operation not supported");
 
@@ -146,26 +159,97 @@ public class DataAccessRequestServiceImpl implements DataAccessRequestService {
 		data.setUpdatedAt(Instant.now());
 
 		boolean shouldChange = this.shouldChangeTenant(model.getStatus());
-
 		try {
+			boolean shouldNotifyForApprove = false;
+			boolean shouldNotifyForReject = false;
+
 			if (shouldChange) {
 				TenantEntity tenant = this.entityManager.find(TenantEntity.class, data.getTenantId());
-				this.tenantScope.setTempTenant(tenant.getId(), tenant.getCode());
+				this.tenantScope.setTempTenant(this.globalEntityManager, tenant.getId(), tenant.getCode());
 			}
 
+			if (statusChanged && data.getStatus() == DataAccessRequestStatus.APPROVED) {
+				this.saveIndicatorAccessEntity(data);
+				shouldNotifyForApprove = true;
+			}
+
+			if (statusChanged && data.getStatus() == DataAccessRequestStatus.REJECTED) {
+				shouldNotifyForReject = true;
+			}
+			
 			if (isUpdate) this.entityManager.merge(data);
 			else this.entityManager.persist(data);
 
 			this.entityManager.flush();
 
+			if (shouldNotifyForApprove) this.notifyForApprove(data);
+			if (shouldNotifyForReject) this.notifyForReject(data);
 		} finally {
-			if (shouldChange) this.tenantScope.removeTempTenant();
+			if (shouldChange) this.tenantScope.removeTempTenant(this.globalEntityManager);
 		}
 
 		this.entityManager.flush();
 
 		return this.builderFactory.builder(DataAccessRequestBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(BaseFieldSet.build(fields, DataAccessRequest._id, DataAccessRequest._hash), data);
 	}
+	
+	private void notifyForApprove(DataAccessRequestEntity data) throws InvalidApplicationException {
+		NotificationIntegrationEvent eventEmail = this.createNotificationForApprove(data);
+		eventEmail.setContactTypeHint(NotificationContactType.EMAIL);
+		eventHandler.handle(eventEmail);
+
+		NotificationIntegrationEvent eventInApp = this.createNotificationForApprove(data);
+		eventInApp.setContactTypeHint(NotificationContactType.IN_APP);
+		eventHandler.handle(eventInApp);
+	}
+
+	private NotificationIntegrationEvent createNotificationForApprove(DataAccessRequestEntity data) throws InvalidApplicationException {
+		UserEntity user = this.entityManager.find(UserEntity.class, data.getUserId());
+		if (user == null) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{data.getUserId(), UserEntity.class.getSimpleName()}, LocaleContextHolder.getLocale()));
+
+		NotificationIntegrationEvent event = new NotificationIntegrationEvent();
+		event.setTenant(tenantScope.getTenant());
+		event.setUserId(data.getUserId());
+
+		event.setContactTypeHint(NotificationContactType.EMAIL);
+		event.setNotificationType(this.config.getDataAccessRequestApprovedNotificationKey());
+		NotificationFieldData fieldData = new NotificationFieldData();
+		List<FieldInfo> fieldInfoList = new ArrayList<>();
+		fieldInfoList.add(new FieldInfo(this.config.getDataAccessRequestApprovedTemplate().getName(), DataType.String, user.getLastName() + " " +  user.getFirstName()));
+		fieldInfoList.add(new FieldInfo(this.config.getDataAccessRequestApprovedTemplate().getTenantCode(), DataType.String, tenantScope.getTenantCode()));
+		fieldData.setFields(fieldInfoList);
+		event.setData(jsonHandlingService.toJsonSafe(fieldData));
+		return event;
+	}
+	private void notifyForReject(DataAccessRequestEntity data) throws InvalidApplicationException {
+		NotificationIntegrationEvent eventEmail = this.createNotificationForReject(data);
+		eventEmail.setContactTypeHint(NotificationContactType.EMAIL);
+		eventHandler.handle(eventEmail);
+
+		NotificationIntegrationEvent eventInApp = this.createNotificationForReject(data);
+		eventInApp.setContactTypeHint(NotificationContactType.IN_APP);
+		eventHandler.handle(eventInApp);
+	}
+
+	private NotificationIntegrationEvent createNotificationForReject(DataAccessRequestEntity data) throws InvalidApplicationException {
+		UserEntity user = this.entityManager.find(UserEntity.class, data.getUserId());
+		if (user == null) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{data.getUserId(), UserEntity.class.getSimpleName()}, LocaleContextHolder.getLocale()));
+
+		NotificationIntegrationEvent event = new NotificationIntegrationEvent();
+		event.setTenant(tenantScope.getTenant());
+		event.setUserId(data.getUserId());
+
+		event.setContactTypeHint(NotificationContactType.EMAIL);
+		event.setNotificationType(this.config.getDataAccessRequestRejectedNotificationKey());
+		NotificationFieldData fieldData = new NotificationFieldData();
+		List<FieldInfo> fieldInfoList = new ArrayList<>();
+		fieldInfoList.add(new FieldInfo(this.config.getDataAccessRequestRejectedTemplate().getName(), DataType.String, user.getLastName() + " " +  user.getFirstName()));
+		fieldInfoList.add(new FieldInfo(this.config.getDataAccessRequestRejectedTemplate().getTenantCode(), DataType.String, tenantScope.getTenantCode()));
+		fieldData.setFields(fieldInfoList);
+		event.setData(jsonHandlingService.toJsonSafe(fieldData));
+		return event;
+	}
+	
 	private DataAccessRequestConfigEntity mapToDataAccessRequestConfig(DataAccessRequestConfigPersist config) {
 		if (config == null) return null;
 		DataAccessRequestConfigEntity persistConfig = new DataAccessRequestConfigEntity();
@@ -247,13 +331,21 @@ public class DataAccessRequestServiceImpl implements DataAccessRequestService {
 		boolean shouldChange = this.shouldChangeTenant(model.getStatus());
 
 		try {
+			boolean shouldNotifyForApprove = false;
+			boolean shouldNotifyForReject = false;
+
 			if (shouldChange) {
 				TenantEntity tenant = this.entityManager.find(TenantEntity.class, data.getTenantId());
-				this.tenantScope.setTempTenant(tenant.getId(), tenant.getCode());
+				this.tenantScope.setTempTenant(this.globalEntityManager, tenant.getId(), tenant.getCode());
 			}
 
 			if (statusChanged && data.getStatus() == DataAccessRequestStatus.APPROVED) {
 				this.saveIndicatorAccessEntity(data);
+				shouldNotifyForApprove = true;
+			}
+
+			if (statusChanged && data.getStatus() == DataAccessRequestStatus.REJECTED) {
+				shouldNotifyForReject = true;
 			}
 
 			if (isUpdate) this.entityManager.merge(data);
@@ -261,8 +353,11 @@ public class DataAccessRequestServiceImpl implements DataAccessRequestService {
 
 			this.entityManager.flush();
 
+			if (shouldNotifyForApprove) this.notifyForApprove(data);
+			if (shouldNotifyForReject) this.notifyForReject(data);
+
 		} finally {
-			if (shouldChange) this.tenantScope.removeTempTenant();
+			if (shouldChange) this.tenantScope.removeTempTenant(this.globalEntityManager);
 		}
 
 

@@ -90,12 +90,15 @@ public class UserContactInfoEntity extends TenantScopedBaseEntity {
     public void setIsActive(IsActive isActive) {
         this.isActive = isActive;
     }
+    
+    
 }
 
 class UserContactInfoCompositeKey implements Serializable {
 
     private UUID userId;
-    private String type;
+    @Enumerated(EnumType.STRING)
+    private UserContactType type;
 
     public UUID getUserId() {
         return userId;
@@ -105,11 +108,11 @@ class UserContactInfoCompositeKey implements Serializable {
         this.userId = userId;
     }
 
-    public String getType() {
+    public UserContactType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(UserContactType type) {
         this.type = type;
     }
 

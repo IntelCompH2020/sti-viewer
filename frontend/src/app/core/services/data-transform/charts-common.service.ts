@@ -1,6 +1,6 @@
 import { Injectable, NgZone } from "@angular/core";
 import { Metric } from "@app/core/model/metic/metric.model";
-import { BaseIndicatorDashboardChartConfig, FieldFormatterConfig, IndicatorDashboardBarChartConfig, IndicatorDashboardGraphChartConfig, IndicatorDashboardLineChartConfig, IndicatorDashboardMapChartConfig, IndicatorDashboardPieChartConfig, IndicatorDashboardPolarBarChartConfig, IndicatorDashboardSankeyChartConfig, IndicatorDashboardScatterChartConfig, IndicatorDashboardTreeMapChartConfig, LegendConfig } from "@app/ui/indicator-dashboard/indicator-dashboard-config";
+import { BaseIndicatorDashboardChartConfig, FieldFormatterConfig, IndicatorDashboardBarChartConfig, IndicatorDashboardGraphChartConfig, IndicatorDashboardLineChartConfig, IndicatorDashboardMapChartConfig, IndicatorDashboardPieChartConfig, IndicatorDashboardPolarBarChartConfig, IndicatorDashboardRadarChartConfig, IndicatorDashboardSankeyChartConfig, IndicatorDashboardScatterChartConfig, IndicatorDashboardTreeMapChartConfig, LegendConfig } from "@app/ui/indicator-dashboard/indicator-dashboard-config";
 import { DataZoomComponentOption, EChartsOption, LegendComponentOption, SeriesOption, TitleComponentOption, ToolboxComponentOption, TreemapSeriesOption, XAXisComponentOption, YAXisComponentOption } from "echarts";
 import { ChartSerie} from "./data-transform.service";
 // import { sankeyData } from "./sankey-data";
@@ -43,9 +43,14 @@ export class ChartBuilderService {
 
 
     // * MAP
-    public buildGeoMap(args:{config: IndicatorDashboardMapChartConfig, data: GeoMapData[], onDownload?:() => void, onFiltersOpen?:() => void }): EChartsOption{
+    public buildGeoMap(args:{
+		config: IndicatorDashboardMapChartConfig,
+		data: GeoMapData[], onDownload?:() => void,
+		onFiltersOpen?:() => void,
+		onDownloadJSON?: ()=> void
+	}): EChartsOption{
 
-		const { config, data, onDownload, onFiltersOpen } = args;
+		const { config, data, onDownload, onFiltersOpen, onDownloadJSON } = args;
 		let serie: GeoMapData;
 
 		if(!data.length){
@@ -78,7 +83,8 @@ export class ChartBuilderService {
 			toolbox: this._buildToolbox({
 				config,
 				onDownload,
-				onFiltersOpen
+				onFiltersOpen,
+				onDownloadJSON
 			}),
 
 			visualMap: {
@@ -114,9 +120,14 @@ export class ChartBuilderService {
 
 
 	
-	public buildTreeMap(args: {config: IndicatorDashboardTreeMapChartConfig, data: TreeMapData[], onDownload?:() => void}): EChartsOption{
+	public buildTreeMap(args: {
+		config: IndicatorDashboardTreeMapChartConfig,
+		data: TreeMapData[],
+		onDownload?:() => void,
+		onDownloadJSON?: ()=> void
+	}): EChartsOption{
 
-		const {data, config, onDownload} = args;
+		const {data, config, onDownload, onDownloadJSON} = args;
 		function getLevelOption() {
 			return [
 			  {
@@ -158,7 +169,7 @@ export class ChartBuilderService {
 
 		return {
 			title: this._buildTitle(config),
-			toolbox: this._buildToolbox({config, onDownload}),
+			toolbox: this._buildToolbox({config, onDownload, onDownloadJSON}),
 			tooltip: config.toolTip ? {
 			  formatter: function (info) {
 				var value = info.value;
@@ -220,8 +231,15 @@ export class ChartBuilderService {
 	// itemStyle:{color: 'blue'}}
 
     // * POLAR BAR
-    public buildPolarBar(args:{config : IndicatorDashboardPolarBarChartConfig, labels: string[], inputSeries: ChartSerie, onDownload?:() => void, onFiltersOpen?:() => void}): EChartsOption{
-		const {config, labels, inputSeries, onDownload, onFiltersOpen} = args;
+    public buildPolarBar(args:{
+		config : IndicatorDashboardPolarBarChartConfig,
+		labels: string[],
+		inputSeries: ChartSerie,
+		onDownload?:() => void,
+		onFiltersOpen?:() => void,
+		onDownloadJSON?: ()=> void
+	}): EChartsOption{
+		const {config, labels, inputSeries, onDownload, onFiltersOpen, onDownloadJSON} = args;
 		const series = Object.keys(inputSeries).map((key,_index) => {
 			// return this._buildPolarBarSerie(config as any, inputSeries[key].name ,inputSeries[key].data, (index) => index * 10 + (index * 10) )
 			return this._buildPolarBarSerie({
@@ -241,7 +259,7 @@ export class ChartBuilderService {
 			  data: labels
 			},
 			tooltip:{},
-			toolbox: this._buildToolbox({config, onFiltersOpen, onDownload}),
+			toolbox: this._buildToolbox({config, onFiltersOpen, onDownload, onDownloadJSON}),
 			radiusAxis: {name: config?.radiusAxis?.name},
 			polar: {},
 			series,
@@ -252,84 +270,220 @@ export class ChartBuilderService {
 
 
     // * SCATTER OPTIONS
-	public buildScatterOptions(args:{config: IndicatorDashboardScatterChartConfig, onDownload?:() => void, onFiltersOpen?:() => void}): EChartsOption{
-		const {config , onDownload, onFiltersOpen} = args;
+	public buildScatterOptions(args:{
+		config: IndicatorDashboardScatterChartConfig,
+		onDownload?:() => void,
+		onFiltersOpen?:() => void,
+		onDownloadJSON?: ()=> void,
+		labels: string[],
+		// xAxis: number[],
+		// yAxis:number[],
+		// bubbleSize: number[], // todo any
+
+		series: ChartSerie
+	}): EChartsOption{
+		const {config , onDownload, onFiltersOpen, labels, series, onDownloadJSON} = args;
+
+
+		const bubbleSizeKeyExtractor = config?.bubble?.seriesKeyExtractor;
+		const xAxisKeyExtractor = config?.xAxis?.seriesKeyExtractor;
+		const yAxisKeyExtractor = config?.yAxis?.seriesKeyExtractor;
+
+		if(
+			[
+				bubbleSizeKeyExtractor,
+				yAxisKeyExtractor,
+				xAxisKeyExtractor
+			].some(x => !x)
+		){
+			console.warn("ScatterConfigurationError: No exctractor found for either xAxis, yAxis or Bubble")
+			throw "Invalid configuration"
+		}
+
+
+		const yAxis = series[yAxisKeyExtractor]?.data;
+		const xAxis = series[xAxisKeyExtractor]?.data;
+		const bubbleSize = series[bubbleSizeKeyExtractor]?.data;
+		const maxBubbleValue = Math.max(...bubbleSize)
+		const colorMap = config.colorMap ?? {};
+
+
         return{
 			
 			title:this._buildTitle(config),
 			legend: this._buildLegend(config.legend),
 			xAxis: {
+				name: config?.xAxis?.name,
 				// type: 'value',
 				// data: new Array(7).fill(0).map((_, index) => Math.floor(Math.random()*1000))
 			},
 			yAxis: { 
+				name: config?.yAxis?.name,
+				nameLocation: 'middle',
+				nameGap: 50
 				// type:'value'
+			},
+			tooltip: {
+				backgroundColor: 'rgba(255,255,255,0.7)',
+				formatter: function (param) {
+				  var value = param.value;
+				  return `
+				  	<div style="border-bottom: 1px solid rgba(255,255,255); font-size: 18px;padding-bottom: 7px;margin-bottom: 7px">
+						${param.seriesName} ${(value[2] as number)?.toLocaleString?.() ?? value[2] }
+					</div>
+					<div>
+						${config?.yAxis?.name ?? ''}: ${ (value[1] as number)?.toLocaleString?.() ?? value[1]}
+						<br>
+						${config?.xAxis?.name ?? ''}: ${(value[0] as number)?.toLocaleString?.() ?? value[0]}
+					</div>
+				  `
+				}
 			},
 			toolbox: this._buildToolbox({
 				onDownload,
 				config, 
-				onFiltersOpen
+				onFiltersOpen,
+				onDownloadJSON
 			}),
-			series: [
-				{
-					name: '1967',
-					data: scatterData,
+			series: labels.map(
+				(label, labelIndex) =>({
+					name: label,
+					data: [
+						[
+							xAxis[labelIndex],//x
+							yAxis[labelIndex],//y
+							bubbleSize[labelIndex]//bublesize
+						]
+					],
+	
 					type: 'scatter',
 					symbolSize: function (data) {
-					  return Math.sqrt(data[2]) / 5e2;
+						return ((data[2]/ maxBubbleValue) * 100) + 10
 					},
 					emphasis: {
 					  focus: 'series',
-					  label: {
-						show: true,
-						formatter: function (param) {
-						  return param.data[2];
-						},
-						position: 'top'
-					  }
 					},
 					itemStyle: {
 					  shadowBlur: 10,
 					  shadowColor: 'rgba(120, 36, 50, 0.5)',
 					  shadowOffsetY: 5,
+					  color: colorMap[label]
 					}
-				  },
+				})
+			)
+		}
+    }
+	public buildRadarOptions(args:{
+		config: IndicatorDashboardRadarChartConfig,
+		// radarIndicatorOptions: RadarIndicatorGraphOption[],
+		labels:string[],
+		inputSeries: ChartSerie,
+		onDownload?:() => void,
+		onFiltersOpen?:() => void,
+		onDownloadJSON?: ()=> void
+	}): EChartsOption{
+		const {config , onDownload, onFiltersOpen, inputSeries, labels, onDownloadJSON} = args;
+
+
+		const dimensions = Object.keys(inputSeries).filter(x => !!x);
+
+		let maxValue = dimensions.reduce(
+			(previousMaxValue, currentDimension) =>{
+				
+				const currentMax = Math.max(...inputSeries[currentDimension].data);
+				return Math.max(previousMaxValue, currentMax)
+			}
+			,0
+		)
+		const radarIndicatorOptions = dimensions.map(dimension =>({
+			name: dimension,
+			max: maxValue
+		}))
+		// const radarIndicatorOptions = dimensions.map(dimension =>({
+		// 	name: dimension,
+		// 	max: Math.max(...inputSeries[dimension].data)
+		// }))
+		
+
+		const radarSeries = labels.map((label, labelIndex) =>({
+			type: "radar",
+			// symbol:"none",
+			emphasis:{
+				areaStyle: {
+				 color: config?.radarConfig?.emphasisColor //"rgba(0,250,0,0.3)"
+				}
+			},
+			// lineStyle:{
+			// 	width: 1
+			// },
+			data:[
 				{
-					name: '1980',
-					data: scatterData,
-					type: 'scatter',
-					symbolSize: function (data) {
-					  return Math.sqrt(data[2]) / 3e2;
-					},
-					emphasis: {
-					  focus: 'series',
-					  label: {
-						show: true,
-						formatter: function (param) {
-						  return param.data[2];
-						},
-						position: 'top'
-					  }
-					},
-					itemStyle: {
-					  shadowBlur: 10,
-					  shadowColor: 'rgba(120, 36, 50, 0.5)',
-					  shadowOffsetY: 5,
-					}
-				  },
+					name: label,
+					value: dimensions.map(dimension => inputSeries[dimension].data[labelIndex])
+				}
 			]
+		}))
+
+
+
+		const highColor = config?.radarConfig?.high?.color ?? '#61a0a8';
+		const lowColor = config?.radarConfig?.low?.color ?? '#dfeced';
+		const min = config?.radarConfig?.low?.value ?? 0;
+		const max = config?.radarConfig?.high?.value ?? 200;
+        return{
+			title: this._buildTitle(config),
+			toolbox: this._buildToolbox({
+				config,
+				onDownload,
+				onFiltersOpen,
+				onDownloadJSON
+			}),
+			tooltip: {
+			//   trigger: 'item'
+			},
+			legend: {
+			  type: 'scroll',
+			  bottom: 10,
+			},
+			visualMap: {
+				max,
+				min,
+				type: 'continuous',
+				top: 'middle',
+				right: 10,
+				color: [
+					highColor,
+					lowColor
+				],
+				calculable: true,
+				text: [
+					config?.radarConfig?.high?.text ?? '',
+					config?.radarConfig?.low?.text?? '',
+				]
+			},
+			radar: {
+			  indicator: radarIndicatorOptions
+			},
+			series: radarSeries as any,
 		}
     }
 
 
-	public  buildGraphOptions(args:{config: IndicatorDashboardGraphChartConfig, graph: GraphOptions, onDownload?:() => void, onFiltersOpen?:() => void}): EChartsOption{
-		const {config, graph, onDownload, onFiltersOpen} = args;
+	public  buildGraphOptions(args:{
+		config: IndicatorDashboardGraphChartConfig,
+		graph: GraphOptions,
+		onDownload?:() => void,
+		onFiltersOpen?:() => void,
+		onDownloadJSON?: ()=> void
+	}): EChartsOption{
+		const {config, graph, onDownload, onFiltersOpen, onDownloadJSON} = args;
 		return {
 			tooltip: {},
 			toolbox: this._buildToolbox({
 				config,
 				onDownload,
-				onFiltersOpen
+				onFiltersOpen,
+				onDownloadJSON
 			}),
 			legend: [ // TODO SPECIFIC GRAPH BUILDER
 			  {
@@ -380,8 +534,14 @@ export class ChartBuilderService {
 	}
 
     // * PIE
-	public buildPie(args:{config:IndicatorDashboardPieChartConfig, pieData: PieDataRecord[], onDownload?:() => void, onFiltersOpen?:() => void}):EChartsOption{
-		const {config, pieData, onDownload, onFiltersOpen} = args;
+	public buildPie(args:{
+		config:IndicatorDashboardPieChartConfig,
+		pieData: PieDataRecord[],
+		onDownload?:() => void,
+		onFiltersOpen?:() => void,
+		onDownloadJSON?:() => void, 
+	}):EChartsOption{
+		const {config, pieData, onDownload, onFiltersOpen, onDownloadJSON} = args;
         return {
             title: this._buildTitle(config),
 			legend: this._buildLegend(config.legend),
@@ -399,7 +559,8 @@ export class ChartBuilderService {
 			toolbox:this._buildToolbox({
 				config,
 				onDownload,
-				onFiltersOpen
+				onFiltersOpen,
+				onDownloadJSON
 			}),
             series:[
                 this._buildPie(config as IndicatorDashboardPieChartConfig, pieData)
@@ -408,16 +569,23 @@ export class ChartBuilderService {
     }
 
 
-	public buildSankeyOptions(args: {data: SankeyData, config: IndicatorDashboardSankeyChartConfig, onDownload?:() => void, onFiltersOpen?:() => void}): EChartsOption{
+	public buildSankeyOptions(args: {
+		data: SankeyData,
+		config: IndicatorDashboardSankeyChartConfig,
+		onDownload?:() => void,
+		onFiltersOpen?:() => void,
+		onDownloadJSON?: ()=> void
+	}): EChartsOption{
 
-		const {config, onDownload, onFiltersOpen, data} = args;
+		const {config, onDownload, onFiltersOpen, data, onDownloadJSON} = args;
 
 		return {
 			title: this._buildTitle(config),
 			toolbox: this._buildToolbox({
 				config,
 				onDownload,
-				onFiltersOpen
+				onFiltersOpen,
+				onDownloadJSON
 			}),
 			tooltip:{},
 			series: {
@@ -433,8 +601,15 @@ export class ChartBuilderService {
 
 
     // *LINECHART
-    public buildLine(params: {config: IndicatorDashboardLineChartConfig, labels:string[], inputSeries: ChartSerie, onFiltersOpen?: () => void, onDownload?: () => void}): EChartsOption{
-		const {config,labels, inputSeries, onFiltersOpen, onDownload } = params;
+    public buildLine(params: {
+		config: IndicatorDashboardLineChartConfig,
+		labels:string[],
+		inputSeries: ChartSerie,
+		onFiltersOpen?: () => void,
+		onDownload?: () => void,
+		onDownloadJSON?: ()=> void
+	}): EChartsOption{
+		const {config,labels, inputSeries, onFiltersOpen, onDownload, onDownloadJSON} = params;
 		const dataZoom  = this._buildDataZoom(config);
 		
 
@@ -455,13 +630,13 @@ export class ChartBuilderService {
 			legend: this._buildLegend(config.legend),
 			tooltip: {
 				trigger: 'axis',
-				
+				confine: true
 			},
 			xAxis: this._buildXAxis(config, labels),
 			yAxis: this._buildYAxis(config, labels),
 			dataZoom,
 			series,
-			toolbox:this._buildToolbox({config, onDownload, onFiltersOpen}),
+			toolbox:this._buildToolbox({config, onDownload, onFiltersOpen, onDownloadJSON}),
 			animationEasing: 'elasticOut',
 			animationDelayUpdate: (idx) => idx * 5,
 		};
@@ -470,14 +645,31 @@ export class ChartBuilderService {
 
 
     // *BARCHART
-    public buildBar(args:{config: IndicatorDashboardBarChartConfig, labels:string[], inputSeries: ChartSerie, onDownload?:() => void, onFiltersOpen?:() => void}): EChartsOption{
-		const {config, labels, inputSeries, onDownload, onFiltersOpen} = args;
+    public buildBar(args:{
+		config: IndicatorDashboardBarChartConfig,
+		labels:string[],
+		inputSeries: ChartSerie,
+		onDownload?:() => void,
+		onFiltersOpen?:() => void,
+		onDownloadJSON?: ()=> void
+	}): EChartsOption{
+		const {config, inputSeries, onDownload, onFiltersOpen, onDownloadJSON} = args;
+		let { labels } = args;
+		
+		if(config?.horizontal){
+			labels = labels.map(x => x).reverse();
+		}
 		
 		const series = Object.keys(inputSeries).map((key,_index) => {
+
+			let data = inputSeries[key].data;
+			if(config?.horizontal){
+				data = data.map(x => x).reverse();
+			}
 			return this._buildSerie({
 				animationDelay: index => index * 10 + (index * 10),
 				config: config,
-				data: inputSeries[key].data,
+				data: data,
 				name: inputSeries[key].name,
 				color: inputSeries[key].color,
 				type: inputSeries[key].type
@@ -491,7 +683,8 @@ export class ChartBuilderService {
 			toolbox: this._buildToolbox({
 				config,
 				onDownload,
-				onFiltersOpen
+				onFiltersOpen,
+				onDownloadJSON
 			}),
 			xAxis: this._buildXAxis(config, labels),
 			yAxis: this._buildYAxis(config, labels),
@@ -535,11 +728,13 @@ export class ChartBuilderService {
 					end,
 				} as any;
 
-				// if((config as any).horizontal){
-				// 	dataZ.yAxisIndex = [0];
-				// }else{
-				// 	dataZ.xAxisIndex = [0];
-				// }
+				if((config as any).horizontal){
+					dataZ.yAxisIndex = [0];
+					dataZ.start = 100 - dataZ.start;
+					dataZ.end = 100 - dataZ.end;
+				}else{
+					// dataZ.xAxisIndex = [0];
+				}
 
 				dataZoom.push(dataZ);
 			}
@@ -633,10 +828,10 @@ export class ChartBuilderService {
 		const chart :SeriesOption  =  {
 			type: 'pie',
 			data: data ?? [],
-			radius: [50, 250],
-			itemStyle: {
+			radius: config?.doughnut ? [50, 250]: "85%"  ,
+			itemStyle: config?.doughnut? {
 				borderRadius: 8
-			},
+			} : null,
 			color
 		}
 
@@ -689,6 +884,8 @@ export class ChartBuilderService {
 		if(config.horizontal){
 			xAxis = {
 				name: config?.yAxis?.name,
+				nameLocation: 'middle',
+				nameGap: 50
 			};
 		} else{
 
@@ -720,6 +917,8 @@ export class ChartBuilderService {
 		if(!config.horizontal){
 			yAxis = 	{
 				name: config?.yAxis?.name,
+				nameLocation: 'middle',
+				nameGap: 50
 			}
 		}else{
 			yAxis = {
@@ -749,16 +948,22 @@ export class ChartBuilderService {
 			textStyle:{
 				width: 120,
 				overflow:'truncate'
-			}
+			},
+			type: "scroll"
 		};
 
 		return null
 	}
 
 	// TODO SAVE AS IMAGE AND MYDOWNLOAD VIA CONFIGURATION
-	private _buildToolbox(args:{config: BaseIndicatorDashboardChartConfig, onFiltersOpen?:() => void, onDownload?:() => void }): ToolboxComponentOption{
+	private _buildToolbox(args:{
+		config: BaseIndicatorDashboardChartConfig,
+		onFiltersOpen?: () => void,
+		onDownload?: () => void,
+		onDownloadJSON?: () => void
+	}): ToolboxComponentOption{
 		
-		const {config, onDownload, onFiltersOpen} = args;
+		const {config, onDownload, onFiltersOpen, onDownloadJSON} = args;
 
 		const feature: any = {};
 		if(config.filters?.length){
@@ -790,6 +995,20 @@ export class ChartBuilderService {
 					onclick:() =>{
 						this._zone.run(() =>{
 							onDownload?.();
+						})
+					}
+			}
+		}
+
+
+		if(config.chartDownloadJson){
+			feature.myOnDownloadJson = {
+				show: true,
+					title: 'Download JSON Data',
+					icon: 'path://M221.37 618.44h757.94V405.15H755.14c-23.5 0-56.32-12.74-71.82-28.24-15.5-15.5-25-43.47-25-66.97V82.89H88.39c-1.99 0-3.49 1-4.49 2-1.5 1-2 2.5-2 4.5v1155.04c0 1.5 1 3.5 2 4.5 1 1.49 3 1.99 4.49 1.99H972.8c2 0 1.89-.99 2.89-1.99 1.5-1 3.61-3 3.61-4.5v-121.09H221.36c-44.96 0-82-36.9-82-81.99V700.44c0-45.1 36.9-82 82-82zm126.51 117.47h75.24v146.61c0 30.79-2.44 54.23-7.33 70.31-4.92 16.03-14.8 29.67-29.65 40.85-14.86 11.12-33.91 16.72-57.05 16.72-24.53 0-43.51-3.71-56.94-11.06-13.5-7.36-23.89-18.1-31.23-32.3-7.35-14.14-11.69-31.67-12.99-52.53l71.5-10.81c.11 11.81 1.07 20.61 2.81 26.33 1.76 5.78 4.75 10.37 9 13.95 2.87 2.33 6.94 3.46 12.25 3.46 8.4 0 14.58-3.46 18.53-10.37 3.9-6.92 5.87-18.6 5.87-35V735.92zm112.77 180.67l71.17-4.97c1.54 12.81 4.69 22.62 9.44 29.28 7.74 10.88 18.74 16.34 33.09 16.34 10.68 0 18.93-2.76 24.68-8.36 5.81-5.58 8.7-12.07 8.7-19.41 0-6.97-2.71-13.26-8.2-18.79-5.47-5.53-18.23-10.68-38.28-15.65-32.89-8.17-56.27-19.1-70.26-32.74-14.12-13.57-21.18-30.92-21.18-52.03 0-13.83 3.61-26.89 10.85-39.21 7.22-12.38 18.07-22.06 32.59-29.09 14.52-7.04 34.4-10.56 59.65-10.56 31 0 54.62 6.41 70.88 19.29 16.28 12.81 25.92 33.24 29.04 61.27l-70.5 4.65c-1.87-12.25-5.81-21.17-11.81-26.7-6.05-5.6-14.35-8.36-24.9-8.36-8.71 0-15.31 2.07-19.73 6.16-4.4 4.09-6.59 9.12-6.59 15.02 0 4.27 1.81 8.11 5.37 11.57 3.45 3.59 11.8 6.85 25.02 9.93 32.75 7.86 56.2 15.84 70.31 23.87 14.18 8.05 24.52 17.98 30.96 29.92 6.44 11.88 9.66 25.2 9.66 39.96 0 17.29-4.3 33.24-12.88 47.89-8.63 14.58-20.61 25.7-36.08 33.24-15.41 7.54-34.85 11.31-58.33 11.31-41.24 0-69.81-8.86-85.68-26.52-15.88-17.65-24.85-40.09-26.96-67.3zm248.74-45.5c0-44.05 11.02-78.36 33.09-102.87 22.09-24.57 52.82-36.82 92.24-36.82 40.38 0 71.5 12.07 93.34 36.13 21.86 24.13 32.77 57.94 32.77 101.37 0 31.54-4.75 57.36-14.3 77.54-9.54 20.18-23.37 35.89-41.4 47.13-18.07 11.24-40.55 16.84-67.48 16.84-27.33 0-49.99-4.83-67.94-14.52-17.92-9.74-32.49-25.07-43.62-46.06-11.13-20.92-16.72-47.19-16.72-78.74zm74.89.19c0 27.21 4.57 46.81 13.68 58.68 9.13 11.88 21.57 17.85 37.26 17.85 16.1 0 28.65-5.84 37.45-17.47 8.87-11.68 13.28-32.54 13.28-62.77 0-25.39-4.63-43.92-13.84-55.61-9.26-11.76-21.75-17.6-37.56-17.6-15.13 0-27.34 5.97-36.49 17.85-9.21 11.88-13.78 31.61-13.78 59.07zm209.08-135.36h69.99l90.98 149.05V735.91h70.83v269.96h-70.83l-90.48-148.24v148.24h-70.49V735.91zm67.71-117.47h178.37c45.1 0 82 37.04 82 82v340.91c0 44.96-37.03 81.99-82 81.99h-178.37v147c0 17.5-6.99 32.99-18.5 44.5-11.5 11.49-27 18.5-44.5 18.5H62.97c-17.5 0-32.99-7-44.5-18.5-11.49-11.5-18.5-27-18.5-44.5V63.49c0-17.5 7-33 18.5-44.5S45.97.49 62.97.49H700.1c1.5-.5 3-.5 4.5-.5 7 0 14 3 19 7.49h1c1 .5 1.5 1 2.5 2l325.46 329.47c5.5 5.5 9.5 13 9.5 21.5 0 2.5-.5 4.5-1 7v250.98zM732.61 303.47V96.99l232.48 235.47H761.6c-7.99 0-14.99-3.5-20.5-8.49-4.99-5-8.49-12.5-8.49-20.5z',
+					onclick:() =>{
+						this._zone.run(() =>{
+							onDownloadJSON?.();
 						})
 					}
 			}
@@ -866,3 +1085,8 @@ interface SankeyData{
 		value: number
 	}[]
 };
+
+interface RadarIndicatorGraphOption{
+	name?: string;
+    max?: number;
+}

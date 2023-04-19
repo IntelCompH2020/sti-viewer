@@ -73,7 +73,7 @@ public class UserNotificationPreferenceController {
 
 		UserNotificationPreferenceQuery query = lookup.enrich(this.queryFactory);
 		List<UserNotificationPreferenceEntity> data = query.collectAs(lookup.getProject());
-		List<UserNotificationPreference> models = this.builderFactory.builder(UserNotificationPreferenceBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(lookup.getProject(), data);
+		List<UserNotificationPreference> models = this.builderFactory.builder(UserNotificationPreferenceBuilder.class).authorize(AuthorizationFlags.OwnerOrPermission).build(lookup.getProject(), data);
 		long count = (lookup.getMetadata() != null && lookup.getMetadata().getCountAll()) ? query.count() : models.size();
 
 		this.auditService.track(AuditableAction.User_Notification_Preference_Query, "lookup", lookup);
@@ -89,7 +89,7 @@ public class UserNotificationPreferenceController {
 		this.censorFactory.censor(UserNotificationPreferenceCensor.class).censor(fieldSet);
 
 		UserNotificationPreferenceQuery query = this.queryFactory.query(UserNotificationPreferenceQuery.class).userId(userId);
-		UserNotificationPreference model = this.builderFactory.builder(UserNotificationPreferenceBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(fieldSet, query.firstAs(fieldSet));
+		UserNotificationPreference model = this.builderFactory.builder(UserNotificationPreferenceBuilder.class).authorize(AuthorizationFlags.OwnerOrPermission).build(fieldSet, query.firstAs(fieldSet));
 		if (model == null)
 			throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{userId, TenantConfiguration.class.getSimpleName()}, LocaleContextHolder.getLocale()));
 

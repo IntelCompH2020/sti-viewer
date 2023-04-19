@@ -35,6 +35,8 @@ export class NewColumnRequesDialogComponent extends BaseComponent{
 
     results: string[];
 
+    title: string;
+
     constructor(
         private dialogRef: MatDialogRef<NewColumnRequesDialogComponent, string[]>,
         private indicatorPointService: IndicatorPointService,
@@ -43,7 +45,7 @@ export class NewColumnRequesDialogComponent extends BaseComponent{
         
     ){
         super();
-
+        this.title = data?.title;
         this.column = data?.column;
         this.indicatorIds = data?.indicatorIds ?? [];
         this.exludedItems = data?.exludedItems ?? []
@@ -123,4 +125,5 @@ export interface NewColumnRequesDialogComponentParams{
     column: string;
     indicatorIds: Guid[];
     exludedItems: string[];
+    title: string
 }

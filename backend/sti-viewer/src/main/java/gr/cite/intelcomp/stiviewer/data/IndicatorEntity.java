@@ -108,3 +108,5 @@ public class IndicatorEntity {
         this.config = config;
     }
 }
+
+

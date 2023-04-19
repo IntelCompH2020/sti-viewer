@@ -6,9 +6,12 @@ import gr.cite.commons.web.oidc.principal.CurrentPrincipalResolver;
 import gr.cite.commons.web.oidc.principal.extractor.ClaimExtractor;
 import gr.cite.intelcomp.stiviewer.authorization.Permission;
 import gr.cite.intelcomp.stiviewer.common.enums.IsActive;
+import gr.cite.intelcomp.stiviewer.common.enums.UserContactType;
 import gr.cite.intelcomp.stiviewer.common.scope.tenant.TenantScope;
 import gr.cite.intelcomp.stiviewer.common.scope.user.UserScope;
+import gr.cite.intelcomp.stiviewer.convention.ConventionService;
 import gr.cite.intelcomp.stiviewer.data.TenantUserEntity;
+import gr.cite.intelcomp.stiviewer.data.UserContactInfoEntity;
 import gr.cite.intelcomp.stiviewer.data.UserEntity;
 import gr.cite.intelcomp.stiviewer.data.tenant.TenantScopedBaseEntity;
 import gr.cite.intelcomp.stiviewer.errorcode.ErrorThesaurusProperties;
@@ -56,6 +59,7 @@ public class TenantInterceptor implements WebRequestInterceptor {
 	private final UserAllowedTenantCacheService userAllowedTenantCacheService;
 	private final PlatformTransactionManager transactionManager;
 	private final ErrorThesaurusProperties errors;
+	private final ConventionService conventionService;
 
 	@PersistenceContext
 	public EntityManager entityManager;
@@ -71,7 +75,8 @@ public class TenantInterceptor implements WebRequestInterceptor {
 			TenantScopeProperties tenantScopeProperties,
 			UserAllowedTenantCacheService userAllowedTenantCacheService,
 			PlatformTransactionManager transactionManager,
-			ErrorThesaurusProperties errors) {
+			ErrorThesaurusProperties errors, 
+			ConventionService conventionService) {
 		this.tenantScope = tenantScope;
 		this.userScope = userScope;
 		this.currentPrincipalResolver = currentPrincipalResolver;
@@ -82,6 +87,7 @@ public class TenantInterceptor implements WebRequestInterceptor {
 		this.userAllowedTenantCacheService = userAllowedTenantCacheService;
 		this.transactionManager = transactionManager;
 		this.errors = errors;
+		this.conventionService = conventionService;
 	}
 
 	@Override
@@ -178,6 +184,19 @@ public class TenantInterceptor implements WebRequestInterceptor {
 		user.setTenantId(this.tenantScope.getTenant());
 		user.setUserId(userScope.getUserId());
 
+		String email = this.claimExtractor.email(this.currentPrincipalResolver.currentPrincipal());
+		UserContactInfoEntity userContactInfoEntity = null;
+		if (this.conventionService.isValidEmail(email)) {
+			userContactInfoEntity = new UserContactInfoEntity();
+			userContactInfoEntity.setUserId(userScope.getUserId());
+			userContactInfoEntity.setCreatedAt(Instant.now());
+			userContactInfoEntity.setUpdatedAt(Instant.now());
+			userContactInfoEntity.setIsActive(IsActive.ACTIVE);
+			userContactInfoEntity.setType(UserContactType.Email);
+			userContactInfoEntity.setTenantId(this.tenantScope.getTenant());
+			userContactInfoEntity.setValue(email);
+		}
+
 		DefaultTransactionDefinition definition = new DefaultTransactionDefinition();
 		definition.setName(UUID.randomUUID().toString());
 		definition.setIsolationLevel(TransactionDefinition.ISOLATION_READ_COMMITTED);
@@ -186,7 +205,7 @@ public class TenantInterceptor implements WebRequestInterceptor {
 		try {
 			status = transactionManager.getTransaction(definition);
 			this.entityManager.persist(user);
-
+			if (userContactInfoEntity != null) this.entityManager.persist(userContactInfoEntity);
 			this.entityManager.flush();
 			transactionManager.commit(status);
 		} catch (Exception ex) {

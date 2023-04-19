@@ -34,7 +34,4 @@ public class EventBroker {
 		this.applicationEventPublisher.publishEvent(event);
 	}
 
-	public void emit(IndicatorTouchedEvent event) {
-		this.applicationEventPublisher.publishEvent(event);
-	}
 }

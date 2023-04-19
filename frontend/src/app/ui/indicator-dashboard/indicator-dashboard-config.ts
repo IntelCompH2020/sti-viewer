@@ -86,7 +86,26 @@ export interface IndicatorDashboardBarChartConfig extends IndicatorDashboardLine
 }
 export interface IndicatorDashboardScatterChartConfig extends BaseIndicatorDashboardChartConfig, Omit <BaseIndicatorDashboardChartConfig, 'type'>{
 	type: IndicatorDashboardChartType.Scatter;
-	
+	colorMap?: Record<string, string> ;// TODO ADD IN EDITOR
+	xAxis: ScatterAxis; // TODO ADD IN EDITOR
+	yAxis: ScatterAxis; // TODO ADD IN EDITOR
+	bubble: ScatterBubble; // TODO ADD IN EDITOR
+}
+
+export interface ScatterAxis{ // TODO ADD IN EDITOR
+	name: string;
+	seriesKeyExtractor: string;
+}
+
+export interface ScatterBubble{ // TODO ADD IN EDITOR
+	seriesKeyExtractor: string;
+}
+
+
+
+export interface IndicatorDashboardRadarChartConfig extends BaseIndicatorDashboardChartConfig, Omit <BaseIndicatorDashboardChartConfig, 'type'>{
+	// type: IndicatorDashboardChartType.Radar;// TODO ADD IN EDITOR
+	radarConfig: RadarConfig; // TODO ADD IN EDITOR
 }
 export interface IndicatorDashboardGraphChartConfig extends BaseIndicatorDashboardChartConfig, Omit <BaseIndicatorDashboardChartConfig, 'type'>{
 	type: IndicatorDashboardChartType.Graph;
@@ -95,6 +114,7 @@ export interface IndicatorDashboardGraphChartConfig extends BaseIndicatorDashboa
 export interface IndicatorDashboardPieChartConfig extends BaseIndicatorDashboardChartConfig, Omit <BaseIndicatorDashboardChartConfig, 'type'>{
 	// type: IndicatorDashboardChartType.Pie;
 	roseType?:string;
+	doughnut?: boolean; // TODO PUT IN EDITOR
 }
 export interface IndicatorDashboardPolarBarChartConfig extends BaseIndicatorDashboardChartConfig, Omit <BaseIndicatorDashboardChartConfig, 'type'>{
 	// type: IndicatorDashboardChartType.PolarBar;
@@ -123,7 +143,17 @@ export interface MapConfig{
 	high?:MapConfigLegentItem;
 	low?:MapConfigLegentItem;
 }
+export interface RadarConfig{ // TODO ADD IN EDITOR
+	low?: RadarConfigLegendItem;// TODO ADD IN EDITOR
+	high?: RadarConfigLegendItem;  // TODO ADD IN EDITOR
+	emphasisColor?: string; // TODO ADD IN EDITOR
+}
 
+export interface RadarConfigLegendItem{ // TODO ADD IN EDITOR
+	color?: string; // TODO ADD IN EDITOR
+	text?: string; // TODO ADD IN EDITOR
+	value?: number; // TODO ADD IN EDITOR
+}
 export interface MapConfigLegentItem{
 	color?: string;
 	text?:string;
@@ -140,6 +170,10 @@ export interface ChartDownloadImageConfig{
 export interface ChartDownloadDataConfig{
 
 }
+export interface ChartDownloadJSONConfig{ // todo add in editor
+
+}
+
 
 export interface DashboardChartTagConfig{
 	attachedTags?: string[];
@@ -189,6 +223,7 @@ export interface BaseIndicatorDashboardChartConfig extends CommonDashboardItemCo
 	filters?: ChartFilter[];
 	chartDownloadImage?:ChartDownloadImageConfig;
 	chartDownloadData?:ChartDownloadDataConfig;
+	chartDownloadJson?: ChartDownloadJSONConfig;// todo add in editor
 }
 
 
@@ -285,6 +320,8 @@ export interface ChartFilterBase{
 	fieldCode: string;
 	values: ChartFilterValue[];
 	indicatorFilterType: IndicatorFilterType;
+	valueToAssignOnInitialLoad?: any; // TODO ADD IT ON EDITOR
+	required?: boolean // TODO ADD ON EDITOR
 }
 
 export enum IndicatorFilterType{
@@ -338,8 +375,9 @@ export enum IndicatorDashboardChartType {
 	PolarBar = 'polar_bar',
 	Map = 'map',
 	Graph = 'graph',
-	TreeMap="treemap",
-	Sankey='sankey'
+	TreeMap= "treemap",
+	Sankey= 'sankey',
+	Radar = 'radar'// TODO PUT IN EDITOR
 }
 
 export interface DataZoom{

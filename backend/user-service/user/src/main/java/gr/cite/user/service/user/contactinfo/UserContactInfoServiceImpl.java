@@ -36,6 +36,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.RequestScope;
 
 import javax.management.InvalidApplicationException;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
@@ -55,6 +57,9 @@ public class UserContactInfoServiceImpl implements UserContactInfoService {
 	private final MessageSource messageSource;
 	private final UserScope userScope;
 	private final TenantScope tenantScope;
+	
+	@PersistenceContext
+	private EntityManager globalEntityManager;
 	@Value("${spring.jpa.hibernate.jdbc.batch-size}")
 	private int batchSize;
 
@@ -111,14 +116,14 @@ public class UserContactInfoServiceImpl implements UserContactInfoService {
 		try {
 			if (shouldChange) {
 				TenantEntity tenant = this.entityManager.find(TenantEntity.class, data.getTenantId());
-				this.tenantScope.setTempTenant(tenant.getId(), tenant.getCode());
+				this.tenantScope.setTempTenant(this.globalEntityManager, tenant.getId(), tenant.getCode());
 			}
 
 			if (isUpdate) data = this.entityManager.merge(data);
 			else this.entityManager.persist(data);
 
 		} finally {
-			if (shouldChange) this.tenantScope.removeTempTenant();
+			if (shouldChange) this.tenantScope.removeTempTenant(this.globalEntityManager);
 		}
 
 		return this.builderFactory.builder(UserContactInfoBuilder.class).authorize(AuthorizationFlags.OwnerOrPermission).build(BaseFieldSet.build(fields, UserContactInfo._user,UserContactInfo._type,UserContactInfo._value), data);
@@ -158,7 +163,7 @@ public class UserContactInfoServiceImpl implements UserContactInfoService {
 			try {
 				if (shouldChange) {
 					TenantEntity tenant = this.entityManager.find(TenantEntity.class, m.getTenantId());
-					this.tenantScope.setTempTenant(tenant.getId(), tenant.getCode());
+					this.tenantScope.setTempTenant(this.globalEntityManager, tenant.getId(), tenant.getCode());
 				}
 				UserContactInfoCompositeKey compositeKey = new UserContactInfoCompositeKey();
 				compositeKey.setType(m.getType());
@@ -166,7 +171,7 @@ public class UserContactInfoServiceImpl implements UserContactInfoService {
 				this.deleterFactory.deleter(UserContactInfoDeleter.class).deleteAndSaveByIds(List.of(compositeKey));
 
 			} finally {
-				if (shouldChange) this.tenantScope.removeTempTenant();
+				if (shouldChange) this.tenantScope.removeTempTenant(this.globalEntityManager);
 			}
 		}
 

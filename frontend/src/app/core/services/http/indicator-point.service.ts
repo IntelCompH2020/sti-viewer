@@ -90,6 +90,17 @@ export class IndicatorPointService implements OnDestroy {
         return this.http.post<HttpResponse<Blob>>(url, lookup, { params, responseType: 'blob', observe: 'response'   }).pipe(
             catchError((error: any) => throwError(error)));;
     }
+    public exportJSON(id: Guid | string, lookup: IndicatorPointReportLookup, skipLoader?: boolean,): Observable<HttpResponse<Blob>> {
+        const url = `${this.apiBase}/${id}/export-json`;
+        const params = new BaseHttpParams();
+        if (skipLoader) {
+            params.interceptorContext = {
+                excludedInterceptors: [InterceptorType.ProgressIndication],
+            };
+        }
+        return this.http.post<HttpResponse<Blob>>(url, lookup, { params, responseType: 'blob', observe: 'response'   }).pipe(
+            catchError((error: any) => throwError(error)));;
+    }
 
     public getIndicatorPointQueryDistinct(lookup: IndicatorPointDistinctLookup): Observable<ElasticValuesResponse<string>> {
         const url = `${this.apiBase}/query-distinct`;
@@ -126,7 +137,6 @@ class ServiceCache {
 
     constructor(){
         this._routine = setInterval(() =>{
-            console.log('interval');
 
             for(let value of this._cache.values()){
                 const invalidRecords: string[] = [];

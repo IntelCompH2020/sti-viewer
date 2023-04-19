@@ -13,8 +13,9 @@
 
     <parent>
         <groupId>gr.cite</groupId>
-        <artifactId>user-service</artifactId>
+        <artifactId>user-service-parent</artifactId>
         <version>1.0.0</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>user-web</artifactId>
@@ -67,11 +68,6 @@
         <dependency>
             <groupId>gr.cite</groupId>
             <artifactId>cors-web</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>gr.cite</groupId>
-            <artifactId>keycloak-api</artifactId>
             <version>1.0.0</version>
         </dependency>
     </dependencies>

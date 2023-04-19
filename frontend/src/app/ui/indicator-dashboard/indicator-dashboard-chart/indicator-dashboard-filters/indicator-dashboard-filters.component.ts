@@ -1,6 +1,6 @@
 import { Options } from '@angular-slider/ngx-slider';
 import { AfterViewInit, Component, EventEmitter, Inject, OnInit } from '@angular/core';
-import { UntypedFormArray, UntypedFormBuilder, UntypedFormControl } from '@angular/forms';
+import { UntypedFormArray, UntypedFormBuilder, UntypedFormControl, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ElasticOrderEnum } from '@app/core/enum/elastic-order.enum';
 import { IndicatorPointDistinctLookup } from '@app/core/query/IndicatorPointDistinctLookup';
@@ -97,6 +97,10 @@ export class IndicatorDashboardFiltersComponent implements OnInit, AfterViewInit
         indicatorFilterType: filter.indicatorFilterType,
         value: (() => {
 
+          let validators = null;
+          if(filter?.required){
+            validators = [Validators.required]
+          }
 
           if(this.bannedValues[filter.fieldCode]) return null;
 
@@ -107,7 +111,7 @@ export class IndicatorDashboardFiltersComponent implements OnInit, AfterViewInit
           }
 
           if (paramsValue !== null && paramsValue !== undefined) {
-            return new UntypedFormControl(paramsValue);
+            return new UntypedFormControl(paramsValue, validators);
           }
 
           if (filter.type === ChartFilterType.Slider) {
@@ -115,11 +119,11 @@ export class IndicatorDashboardFiltersComponent implements OnInit, AfterViewInit
             if (castedFilter?.range) {
               return new UntypedFormControl([
                 filter.values[0].value, filter.values[filter.values.length - 1].value
-              ]);
+              ], validators);
             }
           }
 
-          return null;
+          return new UntypedFormControl(null,validators);
         })()
 
       }))
@@ -136,8 +140,18 @@ export class IndicatorDashboardFiltersComponent implements OnInit, AfterViewInit
 
 
   submit(): void {
+    if(this.filtersArray.invalid){
+      this.filtersArray.markAllAsTouched();
+      return;
+    }
     const value = this.filtersArray.value;
-    this._dialogRef.close(value);
+    this._dialogRef.close(value.map((x, filterIndex) => ({
+      ...x,
+      displayName: this.filters?.[filterIndex]
+        ?.values
+        ?.find(val => val.value === x.value )
+        ?.name // TODO INCASE OF AUTOCOMPLETE
+    })));
   }
 
 
@@ -204,7 +218,7 @@ export class IndicatorDashboardFiltersComponent implements OnInit, AfterViewInit
 
 
     if(
-      Object.keys(indicatorPointQuery).some(key => [indicatorPointQuery[key]] !== undefined)
+      Object.keys(indicatorPointQuery).some(key => indicatorPointQuery[key] !== undefined)
     ){
       lookup.indicatorPointQuery = indicatorPointQuery;
     }

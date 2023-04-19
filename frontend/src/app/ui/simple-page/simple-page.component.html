@@ -1,0 +1,10 @@
+<div class="row simple-page">
+	<div class="col-md-8 offset-md-2">
+		<mat-card>
+			<mat-card-title *ngIf="pageData">{{pageData.title}}</mat-card-title>
+			<mat-card-content *ngIf="pageData">
+				<div *ngIf="pageData" [innerHTML]="pageData.content | safeHtml"></div>
+			</mat-card-content>
+		</mat-card>
+	</div>
+</div>

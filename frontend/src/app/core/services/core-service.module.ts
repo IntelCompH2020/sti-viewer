@@ -24,6 +24,8 @@ import { IndicatorPointService } from './http/indicator-point.service';
 import { DataTransformService } from './data-transform/data-transform.service';
 import { ChartBuilderService } from './data-transform/charts-common.service';
 import { BookmarkService } from './http/bookmark.service';
+import { DynamicPageService } from './http/dynamic-page.service';
+import { DynamicPageProviderService } from './ui/dynamic-page.service';
 
 //
 //
@@ -44,6 +46,7 @@ export class CoreAppServiceModule {
 			ngModule: CoreAppServiceModule,
 			providers: [
 				AuthService,
+				DynamicPageProviderService,
 				BaseHttpService,
 				AuthGuard,
 				ThemingService,
@@ -55,6 +58,7 @@ export class CoreAppServiceModule {
 				TenantRequestService,
 				FilterService,
 				DatasetService,
+				DynamicPageService,
 				BookmarkService,
 				IndicatorService,
 				DataAccessRequestService,

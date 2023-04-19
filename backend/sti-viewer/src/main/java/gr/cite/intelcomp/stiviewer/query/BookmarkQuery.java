@@ -5,13 +5,18 @@ import gr.cite.intelcomp.stiviewer.authorization.AuthorizationFlags;
 import gr.cite.intelcomp.stiviewer.authorization.Permission;
 import gr.cite.intelcomp.stiviewer.common.enums.BookmarkType;
 import gr.cite.intelcomp.stiviewer.common.enums.IsActive;
+import gr.cite.intelcomp.stiviewer.common.enums.UserSettingsType;
 import gr.cite.intelcomp.stiviewer.common.scope.user.UserScope;
 import gr.cite.intelcomp.stiviewer.data.BookmarkEntity;
 import gr.cite.intelcomp.stiviewer.data.UserEntity;
+import gr.cite.intelcomp.stiviewer.data.UserSettingsEntity;
 import gr.cite.intelcomp.stiviewer.model.Bookmark;
+import gr.cite.intelcomp.stiviewer.model.UserSettings;
 import gr.cite.tools.data.query.FieldResolver;
 import gr.cite.tools.data.query.QueryBase;
 import gr.cite.tools.data.query.QueryContext;
+import gr.cite.tools.data.query.QueryFactory;
+import gr.cite.tools.fieldset.BaseFieldSet;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -38,13 +43,16 @@ public class BookmarkQuery extends QueryBase<BookmarkEntity> {
 	private EnumSet<AuthorizationFlags> authorize = EnumSet.of(AuthorizationFlags.None);
 	private final UserScope userScope;
 	private final AuthorizationService authService;
+	private final QueryFactory queryFactory;
 
 	public BookmarkQuery(
 			UserScope userScope,
-			AuthorizationService authService
+			AuthorizationService authService,
+			QueryFactory queryFactory
 	) {
 		this.userScope = userScope;
 		this.authService = authService;
+		this.queryFactory = queryFactory;
 	}
 
 	public BookmarkQuery like(String value) {
@@ -176,7 +184,18 @@ public class BookmarkQuery extends QueryBase<BookmarkEntity> {
 	protected <X, Y> Predicate applyFilters(QueryContext<X, Y> queryContext) {
 		List<Predicate> predicates = new ArrayList<>();
 		if (this.like != null && !this.like.isEmpty()) {
-			predicates.add(queryContext.CriteriaBuilder.like(queryContext.Root.get(BookmarkEntity._name), this.like));
+			//TODO find solution for this query 
+			List<UserSettingsEntity> userSettings = this.queryFactory.query(UserSettingsQuery.class).types(UserSettingsType.Dashboard).authorize(this.authorize).like(this.like).collectAs(new BaseFieldSet(UserSettings._key));
+			ArrayList<Predicate> likes = new ArrayList<>();
+			likes.add(queryContext.CriteriaBuilder.like(queryContext.Root.get(BookmarkEntity._name), this.like));
+			likes.add(queryContext.CriteriaBuilder.like(queryContext.Root.get(BookmarkEntity._value), this.like));
+			if (userSettings != null && !userSettings.isEmpty()){
+				for (UserSettingsEntity userSettingsEntity : userSettings){
+					if (userSettingsEntity.getKey() != null && !userSettingsEntity.getKey().isBlank()) likes.add(queryContext.CriteriaBuilder.like(queryContext.Root.get(BookmarkEntity._value), "%" + userSettingsEntity.getKey() + "%"));
+				}
+			}
+
+			predicates.add(queryContext.CriteriaBuilder.or(likes.toArray(new Predicate[likes.size()])));
 		}
 
 		if (this.hashCode != null && !this.hashCode.isEmpty()) {

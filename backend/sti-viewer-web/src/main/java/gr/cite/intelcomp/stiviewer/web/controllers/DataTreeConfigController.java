@@ -1,5 +1,6 @@
 package gr.cite.intelcomp.stiviewer.web.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import gr.cite.intelcomp.stiviewer.audit.AuditableAction;
 import gr.cite.intelcomp.stiviewer.common.types.datatreeconfig.DataTreeLevelItemEntity;
 import gr.cite.intelcomp.stiviewer.model.censorship.datatreeconfig.BrowseDataTreeConfigCensor;
@@ -7,6 +8,8 @@ import gr.cite.intelcomp.stiviewer.model.censorship.datatreeconfig.BrowseDataTre
 import gr.cite.intelcomp.stiviewer.model.censorship.portofolioconfig.PortofolioConfigCensor;
 import gr.cite.intelcomp.stiviewer.model.datatreeconfig.DataTreeConfig;
 import gr.cite.intelcomp.stiviewer.model.datatreeconfig.DataTreeLevel;
+import gr.cite.intelcomp.stiviewer.model.persist.MasterItemPersist;
+import gr.cite.intelcomp.stiviewer.model.persist.UpdateDataTreeLastAccess;
 import gr.cite.intelcomp.stiviewer.model.portofolioconfig.PortofolioConfig;
 import gr.cite.intelcomp.stiviewer.query.lookup.IndicatorReportLevelLookup;
 import gr.cite.intelcomp.stiviewer.service.datatreeconfig.DataTreeConfigService;
@@ -19,10 +22,12 @@ import gr.cite.tools.exception.MyForbiddenException;
 import gr.cite.tools.fieldset.FieldSet;
 import gr.cite.tools.logging.LoggerService;
 import gr.cite.tools.logging.MapLogEntry;
+import gr.cite.tools.validation.MyValidate;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
 import javax.management.InvalidApplicationException;
+import javax.transaction.Transactional;
 import java.util.AbstractMap;
 import java.util.List;
 import java.util.Map;
@@ -75,6 +80,19 @@ public class DataTreeConfigController {
 		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
 
 		return models;
+	}
+
+	@PostMapping("update-last-access")
+	@Transactional
+	public void updateLastAccess(@MyValidate @RequestBody UpdateDataTreeLastAccess model) throws InvalidApplicationException, JsonProcessingException {
+		logger.debug(new MapLogEntry("get update last access" + DataTreeConfig.class.getSimpleName()).And("model", model));
+
+		this.dataTreeConfigService.updateLastAccess(model.getConfigId());
+		this.auditService.track(AuditableAction.DataTreeConfig_UpdateLastAccess, Map.ofEntries(
+				new AbstractMap.SimpleEntry<String, Object>("model", model)
+		));
+		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
+		return;
 	}
 
 	@PostMapping("query-level")

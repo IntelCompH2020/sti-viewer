@@ -19,6 +19,7 @@ public abstract class Bucket {
 	private String field;
 	private List<Metric> metrics;
 	private AggregationMetricHaving having;
+	private AggregationMetricSort bucketSort;
 	private Bucket bucket;
 
 	public Bucket getBucket() {
@@ -59,6 +60,14 @@ public abstract class Bucket {
 
 	public void setHaving(AggregationMetricHaving having) {
 		this.having = having;
+	}
+
+	public AggregationMetricSort getBucketSort() {
+		return bucketSort;
+	}
+
+	public void setBucketSort(AggregationMetricSort bucketSort) {
+		this.bucketSort = bucketSort;
 	}
 }
 

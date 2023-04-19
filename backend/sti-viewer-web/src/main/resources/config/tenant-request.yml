@@ -1,0 +1,8 @@
+tenant-request:
+ tenantRequestApprovedTemplate:
+    tenantCode: "{tenant-code}"
+    tenantRequestId: "{tenant-request-id}"
+    name: "{name}"
+ tenantRequestRejectedTemplate:
+    tenantRequestId: "{tenant-request-id}"
+    name: "{name}"

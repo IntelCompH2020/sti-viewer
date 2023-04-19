@@ -1,4 +1,8 @@
 .editor-actions{
-    margin-top: 2rem;
-    margin-bottom: 2rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    position: sticky;
+    top: 0;
+    background-color: #f2f3f8;
+    z-index: 10;
 }

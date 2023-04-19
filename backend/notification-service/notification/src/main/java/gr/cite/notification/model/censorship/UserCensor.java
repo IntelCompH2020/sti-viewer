@@ -44,7 +44,6 @@ public class UserCensor extends BaseCensor {
 		if (this.isEmpty(fields)) return;
 		this.authService.authorizeAtLeastOneForce(userId != null ? List.of(new OwnedResource(userId)) : null, Permission.BrowseUser);
 		FieldSet tenantUsersFields = fields.extractPrefixed(this.asIndexerPrefix(User._tenantUsers));
-		this.censorFactory.censor(TenantUserCensor.class).censor(tenantUsersFields, userId);
 		//FieldSet indicatorAccessesFields = fields.extractPrefixed(this.asIndexerPrefix(User._indicatorAccesses));
 		//this.censorFactory.censor(IndicatorAccessCensor.class).censor(indicatorAccessesFields, userId);
 	}

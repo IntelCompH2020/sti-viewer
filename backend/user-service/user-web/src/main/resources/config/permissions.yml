@@ -1,15 +1,6 @@
 permissions:
   extendedClaims: [ ]
   policies:
-    DeferredAffiliation:
-      roles:
-        - ic-sti-superuser
-        - tenantadmin
-        - ic-sti-guest
-        - tenantuser
-      clients: [ ]
-      allowAnonymous: false
-      allowAuthenticated: false
 
     # Tenants
     BrowseTenant:
@@ -39,67 +30,6 @@ permissions:
       allowAnonymous: false
       allowAuthenticated: false
 
-    # TenantUsers
-    BrowseTenantUser:
-      roles:
-        - ic-sti-superuser
-      clients: [ ]
-      allowAnonymous: false
-      allowAuthenticated: false
-    EditTenantUser:
-      roles:
-        - ic-sti-superuser
-      clients: [ ]
-      allowAnonymous: false
-      allowAuthenticated: false
-    DeleteTenantUser:
-      roles:
-        - ic-sti-superuser
-      claims: [ ]
-      clients: [ ]
-      allowAnonymous: false
-      allowAuthenticated: false
-
-    # Tenant Requests
-    BrowseTenantRequest:
-      roles:
-        - ic-sti-superuser
-      clients: [ ]
-      allowAnonymous: false
-      allowAuthenticated: false
-    EditTenantRequest:
-      roles:
-        - ic-sti-superuser
-      clients: [ ]
-      allowAnonymous: false
-      allowAuthenticated: false
-    CreateTenantRequest:
-      roles:
-        - tenantadmin
-        - ic-sti-guest
-        - ic-sti-superuser
-      clients: [ ]
-      allowAnonymous: false
-      allowAuthenticated: false
-    ApproveTenantRequest:
-      roles:
-        - ic-sti-superuser
-      clients: [ ]
-      allowAnonymous: false
-      allowAuthenticated: false
-    RejectTenantRequest:
-      roles:
-        - ic-sti-superuser
-      clients: [ ]
-      allowAnonymous: false
-      allowAuthenticated: false
-    DeleteTenantRequest:
-      roles:
-        - ic-sti-superuser
-      claims: [ ]
-      clients: [ ]
-      allowAnonymous: false
-      allowAuthenticated: false
 
     # Users
     BrowseUser:
@@ -116,29 +46,6 @@ permissions:
       allowAnonymous: false
       allowAuthenticated: false
     DeleteUser:
-      roles:
-        - ic-sti-superuser
-      claims: [ ]
-      clients: [ ]
-      allowAnonymous: false
-      allowAuthenticated: false
-
-    # UserInvitations
-    BrowseUserInvitation:
-      roles:
-        - ic-sti-superuser
-        - user
-      clients: [ ]
-      allowAnonymous: true
-      allowAuthenticated: false
-    EditUserInvitation:
-      roles:
-        - ic-sti-superuser
-        - user
-      clients: [ ]
-      allowAnonymous: false
-      allowAuthenticated: false
-    DeleteUserInvitation:
       roles:
         - ic-sti-superuser
       claims: [ ]
@@ -171,62 +78,6 @@ permissions:
 
 
     # ViewPage Permissions
-    ViewDatasetPage:
-      roles:
-        - ic-sti-superuser
-      clients: [ ]
-      allowAnonymous: false
-      allowAuthenticated: false
-    ViewIndicatorPage:
-      roles:
-        - ic-sti-superuser
-      clients: [ ]
-      allowAnonymous: false
-      allowAuthenticated: false
-    ViewIndicatorReportsPage:
-      roles:
-        - tenantadmin
-        - tenantuser
-        - ic-sti-superuser
-      clients: [ ]
-      allowAnonymous: false
-      allowAuthenticated: false
-    ViewIndicatorReportsDashboardPage:
-      roles:
-        - tenantadmin
-        - tenantuser
-        - ic-sti-superuser
-      clients: [ ]
-      allowAnonymous: false
-      allowAuthenticated: false
-    ViewMasterItemPage:
-      roles:
-        - ic-sti-superuser
-      clients: [ ]
-      allowAnonymous: false
-      allowAuthenticated: false
-    ViewTenantRequestPage:
-      roles:
-        - ic-sti-superuser
-        - tenantadmin
-        - ic-sti-guest
-      clients: [ ]
-      allowAnonymous: false
-      allowAuthenticated: false
-    ViewDataAccessRequestPage:
-      roles:
-        - ic-sti-superuser
-        - tenantadmin
-      clients: [ ]
-      allowAnonymous: false
-      allowAuthenticated: false
-    ViewMyDataAccessRequestPage:
-      roles:
-        - ic-sti-superuser
-        - tenantadmin
-      clients: [ ]
-      allowAnonymous: false
-      allowAuthenticated: false
     ViewTenantPage:
       roles:
         - ic-sti-superuser
@@ -257,12 +108,6 @@ permissions:
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false
-    ViewUserInvitationPage:
-      roles:
-        - ic-sti-superuser
-      clients: [ ]
-      allowAnonymous: false
-      allowAuthenticated: false
     ViewUserProfilePage:
       roles:
         - ic-sti-superuser
@@ -283,49 +128,6 @@ permissions:
       allowAnonymous: false
       allowAuthenticated: false
     ViewTenantConfigurationPage:
-      roles:
-        - ic-sti-superuser
-      clients: [ ]
-      allowAnonymous: false
-      allowAuthenticated: false
-    ViewNotificationPage:
-      roles:
-        - ic-sti-superuser
-      clients: [ ]
-      allowAnonymous: false
-      allowAuthenticated: false
-    ViewNotificationEventRulePage:
-      roles:
-        - ic-sti-superuser
-      clients: [ ]
-      allowAnonymous: false
-      allowAuthenticated: false
-    ViewInAppNotificationPage:
-      roles:
-        - ic-sti-superuser
-        - tenantadmin
-      clients: [ ]
-      allowAnonymous: false
-      allowAuthenticated: false
-    ViewNotificationTemplatePage:
-      roles:
-        - ic-sti-superuser
-      clients: [ ]
-      allowAnonymous: false
-      allowAuthenticated: false
-    ViewBlueprintRequestPage:
-      roles:
-        - ic-sti-superuser
-      clients: [ ]
-      allowAnonymous: false
-      allowAuthenticated: false
-    DownloadReport:
-      roles:
-        - ic-sti-superuser
-      clients: [ ]
-      allowAnonymous: false
-      allowAuthenticated: false
-    ViewBlueprintTemplatePage:
       roles:
         - ic-sti-superuser
       clients: [ ]

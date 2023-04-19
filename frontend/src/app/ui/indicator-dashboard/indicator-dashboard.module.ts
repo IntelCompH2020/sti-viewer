@@ -22,6 +22,7 @@ import { AutoCompleteModule } from '@common/modules/auto-complete/auto-complete.
 import { TabChartGroupFilterPipe } from './indicator-dashboard-tab/chart-group-tag-filter.pipe';
 import { ValueCardComponent } from './value-card/value-card.component';
 import { IndicatorDashboardGaugeComponent } from './indicator-dashboard-gauge/indicator-dashboard-gauge.component';
+import { MergeEchartOptionsPipe } from './indicator-dashboard-chart/merge-options.pipe';
 @NgModule({
     imports: [
         CommonUiModule,
@@ -53,6 +54,7 @@ import { IndicatorDashboardGaugeComponent } from './indicator-dashboard-gauge/in
 
         //pipes
         TabChartGroupFilterPipe,
+        MergeEchartOptionsPipe
     ],
     providers: [
         IndicatorDashboardService

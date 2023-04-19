@@ -3,9 +3,7 @@ package gr.cite.notification.model.deleter;
 import gr.cite.notification.common.enums.IsActive;
 import gr.cite.notification.data.TenantEntity;
 import gr.cite.notification.data.TenantScopedEntityManager;
-import gr.cite.notification.data.TenantUserEntity;
 import gr.cite.notification.query.TenantQuery;
-import gr.cite.notification.query.TenantUserQuery;
 import gr.cite.tools.data.deleter.Deleter;
 import gr.cite.tools.data.deleter.DeleterFactory;
 import gr.cite.tools.data.query.QueryFactory;
@@ -62,14 +60,6 @@ public class TenantDeleter implements Deleter {
 	public void delete(List<TenantEntity> datas) throws InvalidApplicationException {
 		logger.debug("will delete {}  items", Optional.ofNullable(datas).map(List::size).orElse(0));
 		if (datas == null || datas.isEmpty()) return;
-
-		List<UUID> ids = datas.stream().map(TenantEntity::getId).distinct().collect(Collectors.toList());
-		{
-			logger.debug("checking related - {}", TenantUserEntity.class.getSimpleName());
-			List<TenantUserEntity> items = this.queryFactory.query(TenantUserQuery.class).tenantIds(ids).collect();
-			TenantUserDeleter deleter = this.deleterFactory.deleter(TenantUserDeleter.class);
-			deleter.delete(items);
-		}
 
 		Instant now = Instant.now();
 

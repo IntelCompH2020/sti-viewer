@@ -15,7 +15,6 @@ import gr.cite.notification.query.InAppNotificationQuery;
 import gr.cite.notification.query.lookup.InAppNotificationLookup;
 import gr.cite.notification.service.inappnotification.InAppNotificationService;
 import gr.cite.notification.service.notification.NotificationService;
-import gr.cite.notification.service.tenant.TenantService;
 import gr.cite.notification.web.model.QueryResult;
 import gr.cite.tools.auditing.AuditService;
 import gr.cite.tools.data.builder.BuilderFactory;
@@ -46,7 +45,6 @@ public class InAppNotificationController {
 
 	private final BuilderFactory builderFactory;
 	private final AuditService auditService;
-	private final TenantService tenantService;
 	private final NotificationService notificationService;
 	private final CensorFactory censorFactory;
 	private final QueryFactory queryFactory;
@@ -58,14 +56,12 @@ public class InAppNotificationController {
 	@Autowired
 	public InAppNotificationController(BuilderFactory builderFactory,
 									   AuditService auditService,
-									   TenantService tenantService,
 									   NotificationService notificationService, CensorFactory censorFactory,
 									   QueryFactory queryFactory,
 									   MessageSource messageSource,
 									   InAppNotificationService inAppNotificationService, UserScope userScope, ErrorThesaurusProperties errors) {
 		this.builderFactory = builderFactory;
 		this.auditService = auditService;
-		this.tenantService = tenantService;
 		this.notificationService = notificationService;
 		this.censorFactory = censorFactory;
 		this.queryFactory = queryFactory;
@@ -88,7 +84,7 @@ public class InAppNotificationController {
 		List<InAppNotification> models = this.builderFactory.builder(InAppNotificationBuilder.class).build(lookup.getProject(), data);
 		long count = (lookup.getMetadata() != null && lookup.getMetadata().getCountAll()) ? query.count() : models.size();
 
-		this.auditService.track(AuditableAction.Notification_Query, "lookup", lookup);
+		this.auditService.track(AuditableAction.InApp_Notification_Query, "lookup", lookup);
 
 		return new QueryResult<>(models, count);
 	}
@@ -100,12 +96,12 @@ public class InAppNotificationController {
 
 		this.censorFactory.censor(InAppNotificationCensor.class).censor(fieldSet);
 
-		InAppNotificationQuery query = this.queryFactory.query(InAppNotificationQuery.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).ids(id);
-		InAppNotification model = this.builderFactory.builder(InAppNotificationBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(fieldSet, query.firstAs(fieldSet));
+		InAppNotificationQuery query = this.queryFactory.query(InAppNotificationQuery.class).authorize(AuthorizationFlags.OwnerOrPermission).ids(id);
+		InAppNotification model = this.builderFactory.builder(InAppNotificationBuilder.class).authorize(AuthorizationFlags.OwnerOrPermission).build(fieldSet, query.firstAs(fieldSet));
 		if (model == null)
 			throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{id, Notification.class.getSimpleName()}, LocaleContextHolder.getLocale()));
 
-		this.auditService.track(AuditableAction.Notification_Lookup, Map.ofEntries(
+		this.auditService.track(AuditableAction.InApp_Notification_Lookup, Map.ofEntries(
 				new AbstractMap.SimpleEntry<String, Object>("id", id),
 				new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
 		));
@@ -166,7 +162,7 @@ public class InAppNotificationController {
 
 		this.notificationService.deleteAndSave(id);
 
-		this.auditService.track(AuditableAction.Tenant_Delete, "id", id);
+		this.auditService.track(AuditableAction.InApp_Notification_Delete, "id", id);
 
 		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
 	}

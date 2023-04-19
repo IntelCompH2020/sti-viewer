@@ -15,10 +15,6 @@ public class NotificationTemplateCache extends CacheService<NotificationTemplate
         private String prefix;
         private String key;
         private String pattern;
-        private UUID tenant;
-        private String type;
-        private String channel;
-        private String language;
 
         public NotificationTemplateCacheValue() {
         }
@@ -27,15 +23,6 @@ public class NotificationTemplateCache extends CacheService<NotificationTemplate
             this.prefix = prefix;
             this.key = key;
             this.pattern = pattern;
-        }
-
-        public NotificationTemplateCacheValue(String prefix, String pattern, UUID tenant, String type, String channel, String language) {
-            this.prefix = prefix;
-            this.pattern = pattern;
-            this.tenant = tenant;
-            this.type = type;
-            this.channel = channel;
-            this.language = language;
         }
 
         public String getPrefix() {
@@ -60,38 +47,6 @@ public class NotificationTemplateCache extends CacheService<NotificationTemplate
 
         public void setPattern(String pattern) {
             this.pattern = pattern;
-        }
-
-        public UUID getTenant() {
-            return tenant;
-        }
-
-        public void setTenant(UUID tenant) {
-            this.tenant = tenant;
-        }
-
-        public String getType() {
-            return type;
-        }
-
-        public void setType(String type) {
-            this.type = type;
-        }
-
-        public String getChannel() {
-            return channel;
-        }
-
-        public void setChannel(String channel) {
-            this.channel = channel;
-        }
-
-        public String getLanguage() {
-            return language;
-        }
-
-        public void setLanguage(String language) {
-            this.language = language;
         }
     }
 
@@ -123,10 +78,6 @@ public class NotificationTemplateCache extends CacheService<NotificationTemplate
     private String buildKey(NotificationTemplateCacheValue value) {
         return value.getPattern()
                 .replace("{prefix}", value.getPrefix())
-                .replace("{key}", value.getKey())
-                .replace("{tenant}", value.getTenant().toString())
-                .replace("{channel}", value.getChannel())
-                .replace("{type}", value.getType())
-                .replace("{{language}}", value.getLanguage());
+                .replace("{key}", value.getKey());
     }
 }

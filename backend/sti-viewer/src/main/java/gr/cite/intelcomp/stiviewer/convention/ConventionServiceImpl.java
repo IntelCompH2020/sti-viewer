@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class ConventionServiceImpl implements ConventionService {
 	private final static Pattern UUID_REGEX_PATTERN = Pattern.compile("^[{]?[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}[}]?$");
+	private final static Pattern EMAIL_RFC5322_REGEX_PATTERN = Pattern.compile("^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$");
 
 	private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(ConventionServiceImpl.class));
 	private final ErrorThesaurusProperties errors;
@@ -44,6 +45,14 @@ public class ConventionServiceImpl implements ConventionService {
 			return false;
 		}
 		return UUID_REGEX_PATTERN.matcher(str).matches();
+	}
+
+	@Override
+	public Boolean isValidEmail(String str) {
+		if (this.isNullOrEmpty(str)) {
+			return false;
+		}
+		return EMAIL_RFC5322_REGEX_PATTERN.matcher(str).matches();
 	}
 
 	@Override

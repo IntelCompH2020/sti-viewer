@@ -27,6 +27,6 @@ public class TenantConfigurationCensor extends BaseCensor {
 	public void censor(FieldSet fields) {
 		logger.debug(new DataLogEntry("censoring fields", fields));
 		if (this.isEmpty(fields)) return;
-		this.authService.authorizeForce(Permission.BrowseTenantConfiguration, Permission.DeferredAffiliation);
+		this.authService.authorizeForce(Permission.BrowseTenantConfiguration);
 	}
 }

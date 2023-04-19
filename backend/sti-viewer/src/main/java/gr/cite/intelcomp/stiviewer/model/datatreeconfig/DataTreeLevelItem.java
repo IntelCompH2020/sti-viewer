@@ -1,10 +1,13 @@
 package gr.cite.intelcomp.stiviewer.model.datatreeconfig;
 
+import java.time.Instant;
 import java.util.List;
 
 public class DataTreeLevelItem {
 	private String value;
 	public static final String _value = "value";
+	private Boolean hasNewData;
+	public static final String _hasNewData = "hasNewData";
 
 	private List<String> supportedDashboards;
 	public static final String _supportedDashboards = "supportedDashboards";
@@ -18,6 +21,14 @@ public class DataTreeLevelItem {
 
 	public void setValue(String value) {
 		this.value = value;
+	}
+
+	public Boolean getHasNewData() {
+		return hasNewData;
+	}
+
+	public void setHasNewData(Boolean hasNewData) {
+		this.hasNewData = hasNewData;
 	}
 
 	public List<String> getSupportedDashboards() {

@@ -127,4 +127,14 @@ public class ErrorThesaurusProperties {
 	public void setBookmarkHashConflict(ErrorDescription bookmarkHashConflict) {
 		this.bookmarkHashConflict = bookmarkHashConflict;
 	}
+
+	private ErrorDescription dynamicPageUrlRequired;
+
+	public ErrorDescription getDynamicPageUrlRequired() {
+		return dynamicPageUrlRequired;
+	}
+
+	public void setDynamicPageUrlRequired(ErrorDescription dynamicPageUrlRequired) {
+		this.dynamicPageUrlRequired = dynamicPageUrlRequired;
+	}
 }

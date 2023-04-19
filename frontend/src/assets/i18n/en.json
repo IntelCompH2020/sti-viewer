@@ -32,12 +32,14 @@
 			"INAPP-NOTIFICATIONS": "Notifications",
 			"BLUEPRINT-REQUESTS": "Blueprint Requests",
 			"BLUEPRINT-TEMPLATES": "Blueprint Templates",
+			"DYNAMIC-PAGES": "Dynamic Pages",
 			"INDICATOR-REPORTS": "Browse Data",
 			"INDICATOR-DASHBOARD": "Indicator Dashboard"
 		},
 		"HOME-COMPONENT": {
 			"TITLE": "Welcome to STI viewer",
 			"SEARCH-INDICATORS": "Search Topics",
+			"SEARCH-BOOKMARKS": "Search Bookmarks",
 			"BROWSE-INDICATORS": "Browse Topics",
 			"OR": "Or",
 			"BOOKMARKS": {
@@ -65,6 +67,8 @@
 		},
 		"INDICATOR-REPORTS-PAGE":{
 			"TITLE":"Browse all Topics",
+			"NEW-DATA":"New data are available",
+			"NEW-DATA-DISMISS":"OK",
 			"SEARCH":"Search"
 		},
 		"TENANT-CHOOSE-DIALOG": {
@@ -343,7 +347,7 @@
 							"LINE-CHART":{
 								"STACK":"Stack",
 								"HORIZONTAL":"Horizontal",
-								"AREASTYLE":"Area Chart"								
+								"AREASTYLE":"Area Chart"
 							},
 							"DATA-ZOOM":{
 								"INSIDE-ZOOM":"Inside zoom",
@@ -537,6 +541,41 @@
 			"FIELDS": {
 				"TITLE": "Title",
 				"NOTES": "Notes"
+			},
+			"ACTIONS": {
+				"SAVE": "Save",
+				"CANCEL": "Cancel",
+				"DELETE": "Delete"
+			}
+		},
+		"DYNAMIC-PAGE-LISTING": {
+			"TITLE": "Dynamic Pages",
+			"FIELDS": {
+				"TITLE": "Title",
+				"CREATED-AT": "Created"
+			},
+			"FILTER": {
+				"SEARCH-FILTER": "SEARCH FILTERS",
+				"ALL-FILTERS": "All the filters",
+				"NO-FILTERS": "No filter",
+				"MORE-FILTERS": "More Filters",
+				"LIKE": "search...",
+				"SHOW-INACTIVE": "Show Deleted"
+			}
+		},
+		"DYNAMIC-PAGE-EDITOR": {
+			"TITLE": {
+				"NEW": "New Page"
+			},
+			"FIELDS": {
+				"TITLE": "Title",
+				"TYPE": "Type",
+				"ORDER": "Order",
+				"VISIBILITY": "Visibility",
+				"DEFAULT-LANGUAGE": "Default Language",
+				"MAT-ICON": "Icon",
+				"EXTERNAL-URL": "External Url",
+				"ALLOWED-ROLES": "Allowed Roles"
 			},
 			"ACTIONS": {
 				"SAVE": "Save",
@@ -797,6 +836,16 @@
 			"IS-ACTIVE": {
 				"ACTIVE": "Active",
 				"INACTIVE": "Inactive"
+			},
+			"PAGE-VISIBILITY": {
+				"AUTHENTICATED": "Authenticated Users",
+				"HAS-ROLE": "Users with role",
+				"OWNER": "Owner",
+				"HIDDEN": "Hidden"
+			},
+			"PAGE-TYPE": {
+				"EXTERNAL": "External",
+				"SIMPLE": "Simple"
 			},
 			"APP-ROLE": {
 				"ADMIN": "Admin",

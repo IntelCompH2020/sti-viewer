@@ -1,0 +1,16 @@
+<div class="dynamic-page-content-editor">
+	<mat-form-field class="col-md-12">
+		<mat-label>{{'APP.DYNAMIC-PAGE-EDITOR.FIELDS.TITLE' | translate}}</mat-label>
+		<input matInput type="text" autocomplete="off" name="dynamic-page-title" [formControl]="contentFormGroup.get('title')">
+		<mat-error *ngIf="contentFormGroup.get('title').hasError('backendError')">{{contentFormGroup.get('title').getError('backendError')?.message}}</mat-error>
+		<mat-error *ngIf="contentFormGroup.get('title').hasError('required')">{{'COMMONS.VALIDATION.REQUIRED' | translate}}</mat-error>
+	</mat-form-field>
+
+
+
+	<editor  *ngIf="pageType === dynamicPageType.Simple && contentFormGroup.get('content')" class="col-md-12"
+		[formControl]="contentFormGroup.get('content')"
+		[init]="{height: 500, base_url: '/tinymce', suffix: '.min', plugins: 'lists advlist media',  promotion: false, toolbar: 'undo redo | bold italic | bullist numlist outdent indent'}">
+	</editor>
+
+</div>

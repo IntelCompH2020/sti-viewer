@@ -1,12 +1,15 @@
 package gr.cite.intelcomp.stiviewer.common.scope.tenant;
 
+import gr.cite.intelcomp.stiviewer.data.tenant.TenantScopedBaseEntity;
 import gr.cite.tools.logging.LoggerService;
+import org.hibernate.Session;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
 
 import javax.management.InvalidApplicationException;
+import javax.persistence.EntityManager;
 import java.util.UUID;
 
 @Component
@@ -49,13 +52,24 @@ public class TenantScope {
 		return this.tenantCode;
 	}
 
-	public void setTempTenant(UUID tenant, String tenantCode) {
+	public void setTempTenant(EntityManager  entityManager, UUID tenant, String tenantCode) {
 		this.tenant = tenant;
+
+		if(this.tenant != null) {
+			entityManager
+					.unwrap(Session.class)
+					.enableFilter(TenantScopedBaseEntity.tenantFilter).setParameter(TenantScopedBaseEntity.tenantFilterTenantParam, this.tenant.toString());
+		}
 	}
 
-	public void removeTempTenant() {
+	public void removeTempTenant(EntityManager  entityManager) {
 		this.tenant = this.initialTenant;
 		this.tenantCode = this.initialTenantCode;
+		if(this.initialTenant != null) {
+			entityManager
+					.unwrap(Session.class)
+					.enableFilter(TenantScopedBaseEntity.tenantFilter).setParameter(TenantScopedBaseEntity.tenantFilterTenantParam, this.initialTenant.toString());
+		}
 	}
 
 	public void setTenant(UUID tenant, String tenantCode) {

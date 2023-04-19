@@ -9,10 +9,12 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>2.6.4</version>
+        <relativePath></relativePath>
     </parent>
 
     <groupId>gr.cite</groupId>
-    <artifactId>user-service</artifactId>
+    <artifactId>user-service-parent</artifactId>
+    <name>STI Viewer User Parent</name>
     <version>1.0.0</version>
     <packaging>pom</packaging>
 

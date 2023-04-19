@@ -41,7 +41,6 @@ public class User {
 	private String hash;
 
 	public final static String _tenantUsers = "tenantUsers";
-	private List<TenantUser> tenantUsers;
 
 	public UUID getId() {
 		return id;
@@ -108,13 +107,6 @@ public class User {
 		this.subjectId = subjectId;
 	}
 
-	public List<TenantUser> getTenantUsers() {
-		return tenantUsers;
-	}
-
-	public void setTenantUsers(List<TenantUser> tenantUsers) {
-		this.tenantUsers = tenantUsers;
-	}
 
 	public Instant getCreatedAt() {
 		return createdAt;

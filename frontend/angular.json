@@ -27,25 +27,25 @@
               "src/favicon.ico",
               {
                 "glob": "**/*",
-                "input": "node_modules/tinymce/skins",
-                "output": "/tinymce/skins/"
+                "input": "node_modules/tinymce",
+                "output": "/tinymce/"
               },
               {
                 "glob": "**/*",
-                "input": "node_modules/tinymce/themes",
-                "output": "/tinymce/themes/"
+                "input": "node_modules/tinymce",
+                "output": "/tinymce/"
               },
               {
                 "glob": "**/*",
-                "input": "node_modules/tinymce/plugins",
-                "output": "/tinymce/plugins/"
+                "input": "node_modules/tinymce",
+                "output": "/tinymce/"
               }
             ],
             "styles": [
               "src/styles.scss"
             ],
             "scripts": [
-              "node_modules/tinymce/tinymce.min.js"
+				"node_modules/tinymce/tinymce.min.js"
             ],
             "vendorChunk": true,
             "extractLicenses": false,

@@ -9,6 +9,7 @@ export interface BrowseDataTreeLevelModel {
 
 export interface BrowseDataTreeLevelItemModel {
 	value: string;
+	hasNewData: boolean;
 	supportedDashboards: string[];
 	supportSubLevel: boolean;
 }
@@ -16,4 +17,9 @@ export interface BrowseDataTreeLevelItemModel {
 export interface BrowseDataFieldModel {
 	code: string;
 	name: string;
+}
+
+
+export interface UpdateDataTreeLastAccess {
+	configId: string;
 }

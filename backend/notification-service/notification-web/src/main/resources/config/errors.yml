@@ -26,27 +26,9 @@ error-thesaurus:
   non-person-principal:
     code: 108
     message: the operation is available only to person users
-  routee-authentication-failed:
-    code: 109
-    message: could not retrieve access token
-  routee-send-sms-failed:
-    code: 110
-    message: could not send sms
-  routee-track-sms-failed:
-    code: 111
-    message: could not retrieve tracking status for sms
-  slack-broadcast-failed:
-    code: 112
-    message: could not broadcast message through slack
   blocking-consent:
     code: 113
     message: user consents are not sufficient to complete the operation
-  what-you-know-about-me-incompatible-state:
-    code: 114
-    message: the what you know about me request is in incompatible state with respect to the action
-  existing-primary-notification-template:
-    code: 115
-    message: there is already a notification template set as primary
   single-tenant-configuration-per-type-supported:
     code: 116
     message: a single tenant configuration entry per config type is supported
@@ -59,8 +41,3 @@ error-thesaurus:
   overlapping-tenant-configuration-notifier-list:
     code: 119
     message: Overlapping Tenant Configuration Notifier List
-  notification-kind-must-be-set:
-    code: 120
-    message: notification kind must be set
-  
-  

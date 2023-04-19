@@ -1,11 +1,22 @@
 package gr.cite.intelcomp.stiviewer.common.types.datatreeconfig;
 
+import java.time.Instant;
 import java.util.List;
 
 public class DataTreeLevelItemEntity {
-	private String value;
+	private String value;	
+	private Boolean hasNewData;
+
 	private List<String> supportedDashboards;
 	private Boolean supportSubLevel;
+
+	public Boolean getHasNewData() {
+		return hasNewData;
+	}
+
+	public void setHasNewData(Boolean hasNewData) {
+		this.hasNewData = hasNewData;
+	}
 
 	public String getValue() {
 		return value;

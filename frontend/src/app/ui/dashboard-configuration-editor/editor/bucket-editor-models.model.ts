@@ -4,7 +4,7 @@ import { AbstractControl, FormBuilder, FormGroup, UntypedFormBuilder, UntypedFor
 import { BucketAggregateType } from "@app/core/enum/bucket-aggregate-type.enum";
 import { DateInterval } from "@app/core/enum/date-interval.enum";
 import { MetricAggregateType } from "@app/core/enum/metric-aggregate-type.enum";
-import { AggregationMetricHaving, AggregationMetricHavingOperator, AggregationMetricHavingType, Bucket, CompositeBucket, CompositeSource, DataHistogramBucket, NestedBucket, TermsBucket } from "@app/core/model/bucket/bucket.model";
+import { AggregationMetricHaving, AggregationMetricHavingOperator, AggregationMetricHavingType, AggregationMetricSort, Bucket, CompositeBucket, CompositeSource, DataHistogramBucket, NestedBucket, TermsBucket } from "@app/core/model/bucket/bucket.model";
 import { Metric } from "@app/core/model/metic/metric.model";
 import { ValidationErrorModel } from "@common/forms/validation/error-model/validation-error-model";
 import { Validation, ValidationContext } from "@common/forms/validation/validation-context";
@@ -20,6 +20,7 @@ interface AdditionalFieldBuilder{
 
 //  * Base bucket
 export class BaseBucketConfigEditorModel implements Bucket{
+	bucketSort: AggregationMetricSort;// TODO SORT FIELD
     type: BucketAggregateType;
     field: string;
     metrics: Metric[];
@@ -182,6 +183,7 @@ export class MetricConfigEditorModel implements Metric{
 
 // * TERMS BUCKET
 export class TermsBucketConfigEditorModel extends BaseBucketConfigEditorModel implements TermsBucket{
+	bucketSort: AggregationMetricSort;// TODO SORT FIELD
     order: "ASC" | "DESC";
 
 	public static readonly ADDITIONAL_FIELDS: AdditionalFieldBuilder[] = [
@@ -268,6 +270,7 @@ export class TermsBucketConfigEditorModel extends BaseBucketConfigEditorModel im
 
 // * NESTED BUCKET
 export class NestedBucketConfigEditorModel extends BaseBucketConfigEditorModel implements NestedBucket{
+	bucketSort: AggregationMetricSort; // TODO SORT FIELD
     bucket: Bucket;
 
 	public static readonly ADDITIONAL_FIELDS: AdditionalFieldBuilder[] = [
@@ -344,9 +347,11 @@ export class NestedBucketConfigEditorModel extends BaseBucketConfigEditorModel i
 }
 // * DataHistogramBucket
 export class DataHistogramBucketConfigEditorModel extends BaseBucketConfigEditorModel implements DataHistogramBucket{
+	bucketSort: AggregationMetricSort; // TODO SORT FIELD
     order: "ASC" | "DESC";
     interval: DateInterval;
     timezone: Moment;
+
 
 	public static readonly ADDITIONAL_FIELDS: AdditionalFieldBuilder[] = [
 		{
@@ -444,6 +449,7 @@ export class DataHistogramBucketConfigEditorModel extends BaseBucketConfigEditor
 
 // * COMPOSITE
 export class CompositeBucketConfigEditorModel extends BaseBucketConfigEditorModel implements CompositeBucket{
+	bucketSort: AggregationMetricSort; // TODO SORT FIELD
     sources: CompositeSource[];
     dateHistogramSource: DataHistogramBucket;
     afterKey: Record<string, any>;

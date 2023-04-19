@@ -14,7 +14,7 @@ elastic:
   defaultCollectAllResultSize: 1000
   defaultScrollSize: 100
   defaultScrollSeconds: 120
-  defaultCompositeAggregationResultSize: 1000
+  defaultCompositeAggregationResultSize: 200000
 
 app-elastic:
   indicatorCodeKey: "{{code}}"

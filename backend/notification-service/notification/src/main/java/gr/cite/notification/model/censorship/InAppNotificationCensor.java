@@ -27,6 +27,6 @@ public class InAppNotificationCensor extends BaseCensor {
 	public void censor(FieldSet fields) {
 		logger.debug(new DataLogEntry("censoring fields", fields));
 		if (this.isEmpty(fields)) return;
-		this.authService.authorizeForce(Permission.BrowseNotification, Permission.DeferredAffiliation);
+		this.authService.authorizeForce(Permission.BrowseNotification);
 	}
 }
