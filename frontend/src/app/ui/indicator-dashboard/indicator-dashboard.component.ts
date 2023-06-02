@@ -110,11 +110,11 @@ export class IndicatorDashboardComponent extends BaseComponent implements OnInit
 			switchMap(
 				params => {				
 					this.bookmark = null;
-					// if(params.params){
-					// 	this.indicatorQueryParams = this._queryParamsService.deserializeObject<IndicatorQueryParams>(params.params);
-					// 	this._validateBookmark();
-					// 	return this._dashboardService.getDashboard(this.indicatorQueryParams.dashboard).pipe(tap((config) => console.log('%c Dashboard configuration', 'color:green', config)));
-					// }
+					if(params.params){
+						this.indicatorQueryParams = this._queryParamsService.deserializeObject<IndicatorQueryParams>(params.params);
+						this._validateBookmark();
+						return this._dashboardService.getDashboard(this.indicatorQueryParams.dashboard).pipe(tap((config) => console.log('%c Dashboard configuration', 'color:green', config)));
+					}
 					return of(DASHBOARD_CONFIG);
 			}),
 			map(
