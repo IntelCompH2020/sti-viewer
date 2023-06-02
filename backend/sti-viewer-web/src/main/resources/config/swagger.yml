@@ -1,0 +1,13 @@
+springdoc:
+  swagger-ui:
+    enabled: ${SWAGGER_UI_ENABLED}
+  api-docs:
+    enabled: ${SWAGGER_ENABLED}
+swagger:
+  enabled: ${SWAGGER_ENABLED}
+  title: ${SWAGGER_API_TITLE}
+  version: ${SWAGGER_API_VERSION}
+  license: ${SWAGGER_API_LICENSE}
+  licenseUrl: ${SWAGGER_API_LICENSE_URL}
+  termsUrl: ${SWAGGER_API_TERMS_URL}
+  enableBearerAuth: ${SWAGGER_API_ENABLE_BEARER_AUTH}

@@ -34,7 +34,7 @@ export class IndicatorReportComponent extends BaseComponent implements OnInit{
   activeGotos:string[] = [];
 
 
-  protected availableForPresentation = ['Climate', 'EU', 'Energy', 'AI', 'All'];
+  protected availableForPresentation = ['Climate', 'EU', 'Energy', 'AI', 'All', 'Agrofood'];
 
 
   constructor(

@@ -21,6 +21,7 @@ import gr.cite.tools.fieldset.FieldSet;
 import gr.cite.tools.logging.LoggerService;
 import gr.cite.tools.logging.MapLogEntry;
 import gr.cite.tools.validation.MyValidate;
+import io.swagger.v3.oas.annotations.Hidden;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -33,6 +34,7 @@ import java.util.*;
 
 @RestController
 @RequestMapping(path = "api/master-item")
+@Hidden
 public class MasterItemController {
 	private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(MasterItemController.class));
 

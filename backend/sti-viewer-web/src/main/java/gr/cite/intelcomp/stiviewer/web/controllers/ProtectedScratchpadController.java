@@ -4,6 +4,7 @@ import gr.cite.commons.web.oidc.principal.CurrentPrincipalResolver;
 import gr.cite.commons.web.oidc.principal.MyPrincipal;
 import gr.cite.commons.web.oidc.principal.extractor.ClaimExtractor;
 import gr.cite.intelcomp.stiviewer.service.AuthnSandbox;
+import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(path = "api", produces = MediaType.APPLICATION_JSON_VALUE)
+@Hidden
 public class ProtectedScratchpadController {
 
 	private final AuthnSandbox authnSandbox;

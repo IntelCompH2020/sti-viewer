@@ -22,6 +22,7 @@ import gr.cite.tools.logging.DataLogEntry;
 import gr.cite.tools.logging.LoggerService;
 import gr.cite.tools.validation.MyValidate;
 import gr.cite.tools.validation.ValidationService;
+import io.swagger.v3.oas.annotations.Hidden;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -36,6 +37,7 @@ import java.util.*;
 
 @RestController
 @RequestMapping(path = "public")
+@Hidden
 public class PublicScratchpadController {
 	private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(PublicScratchpadController.class));
 

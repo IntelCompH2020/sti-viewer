@@ -14,6 +14,30 @@ public class UserSettingsLookup extends Lookup {
     private List<UUID> ids;
     private List<UserSettingsType> userSettingsTypes;
 
+    public String getLike() {
+        return like;
+    }
+
+    public void setLike(String like) {
+        this.like = like;
+    }
+
+    public List<UUID> getIds() {
+        return ids;
+    }
+
+    public void setIds(List<UUID> ids) {
+        this.ids = ids;
+    }
+
+    public List<UserSettingsType> getUserSettingsTypes() {
+        return userSettingsTypes;
+    }
+
+    public void setUserSettingsTypes(List<UserSettingsType> userSettingsTypes) {
+        this.userSettingsTypes = userSettingsTypes;
+    }
+
     public UserSettingsQuery enrich(QueryFactory queryFactory) {
         UserSettingsQuery query = queryFactory.query(UserSettingsQuery.class);
         if (this.like != null) query.like(this.like);

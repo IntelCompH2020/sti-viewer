@@ -66,7 +66,7 @@ public class FieldBuilder extends BaseBuilder<Field, FieldEntity> {
 			if (fields.hasField(this.asIndexer(Field._validation))) m.setValidation(d.getValidation().toString());
 			if (fields.hasField(this.asIndexer(Field._valueField))) m.setValueField(d.getValueField());
 			if (!valueRangeFields.isEmpty() && d.getValueRange() != null) m.setValueRange(this.builderFactory.builder(ValueRangeBuilder.class).authorize(this.authorize).build(valueRangeFields, d.getValueRange()));
-			if (!operationsFields.isEmpty() && d.getOperations() != null) m.setOperations(this.builderFactory.builder(OperationBuilder.class).authorize(this.authorize).build(operationsFields, d.getOperations()));
+			if (!operationsFields.isEmpty() && d.getOperations() != null) m.setOperations(this.builderFactory.builder(OperatorBuilder.class).authorize(this.authorize).build(operationsFields, d.getOperations()));
 			if (!altLabelsFields.isEmpty() && d.getAltLabels() != null) m.setAltLabels(this.builderFactory.builder(AltTextBuilder.class).authorize(this.authorize).build(altLabelsFields, d.getAltLabels()));
 			if (!altDescriptionsFields.isEmpty() && d.getAltDescriptions() != null) m.setAltDescriptions(this.builderFactory.builder(AltTextBuilder.class).authorize(this.authorize).build(altDescriptionsFields, d.getAltDescriptions()));
 

@@ -3,3 +3,6 @@ target
 .idea
 *.iml
 logs/
+StiIndicatorImport/.vs/
+StiIndicatorImport/bin/
+StiIndicatorImport/obj/

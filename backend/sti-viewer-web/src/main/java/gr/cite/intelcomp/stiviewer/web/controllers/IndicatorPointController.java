@@ -208,7 +208,7 @@ public class IndicatorPointController {
 		this.indicatorPointService.persist(indicatorId, models);
 
 		this.auditService.track(AuditableAction.Indicator_Point_Bulk_Persist, Map.ofEntries(
-				new AbstractMap.SimpleEntry<String, Object>("model", models)
+				new AbstractMap.SimpleEntry<String, Object>("indicatorId", indicatorId)
 		));
 		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
 		return;

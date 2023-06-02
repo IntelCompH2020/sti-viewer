@@ -1,5 +1,6 @@
 package gr.cite.intelcomp.stiviewer.service.indicatorpoint;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import gr.cite.commons.web.authz.service.AuthorizationService;
 import gr.cite.intelcomp.stiviewer.authorization.AuthorizationContentResolver;
 import gr.cite.intelcomp.stiviewer.authorization.AuthorizationFlags;
@@ -49,6 +50,10 @@ import gr.cite.tools.logging.LoggerService;
 import gr.cite.tools.logging.MapLogEntry;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.elasticsearch.action.bulk.BulkRequest;
+import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestHighLevelClient;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -57,14 +62,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
+import org.springframework.data.elasticsearch.core.convert.ElasticsearchConverter;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.RequestScope;
 
-import javax.json.Json;
-import javax.json.JsonArrayBuilder;
-import javax.json.JsonBuilderFactory;
-import javax.json.JsonObjectBuilder;
 import javax.management.InvalidApplicationException;
 import javax.validation.constraints.NotNull;
 import java.io.ByteArrayOutputStream;
@@ -94,8 +96,6 @@ public class IndicatorPointServiceImpl implements IndicatorPointService {
 	private final QueryFactory queryFactory;
 	private final IndicatorPointValidationService validationService;
 	private final IndicatorPointProperties indicatorPointProperties;
-
-	
 	@Autowired
 	public IndicatorPointServiceImpl(
 			TenantEntityManager entityManager,

@@ -942,12 +942,12 @@ export class ChartBuilderService {
 	private _buildLegend(legendConfig: LegendConfig): null | LegendComponentOption {
 		if(legendConfig) return {
 			orient: 'vertical',
-			right:10,
-			top:'center',
+			right: 10,
+			top: 30,
 			backgroundColor: '#fff',
 			textStyle:{
 				width: 120,
-				overflow:'truncate'
+				overflow:'break'
 			},
 			type: "scroll"
 		};

@@ -20,17 +20,17 @@ import java.util.*;
 @Component
 //Like in C# make it transient
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class OperationBuilder extends BaseBuilder<Operator, OperationEntity> {
-	private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(OperationBuilder.class));
+public class OperatorBuilder extends BaseBuilder<Operator, OperationEntity> {
+	private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(OperatorBuilder.class));
 
 	private EnumSet<AuthorizationFlags> authorize = EnumSet.of(AuthorizationFlags.None);
 
 	@Autowired
-	public OperationBuilder(ConventionService conventionService) {
+	public OperatorBuilder(ConventionService conventionService) {
 		super(conventionService, logger);
 	}
 
-	public OperationBuilder authorize(EnumSet<AuthorizationFlags> values) {
+	public OperatorBuilder authorize(EnumSet<AuthorizationFlags> values) {
 		this.authorize = values;
 		return this;
 	}
