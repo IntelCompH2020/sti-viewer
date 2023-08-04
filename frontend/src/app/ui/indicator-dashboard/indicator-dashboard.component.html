@@ -1,19 +1,22 @@
 
 <div class="col">
-	<div class="row align-items-center mt-4 mb-4">
-		<div class="col-auto">
+	<div *ngIf="!isEmbedded || (indicatorQueryParams?.displayName && indicatorQueryParams?.displayName.length > 0)" class="row align-items-center mt-4 mb-4">
+		<div *ngIf="!isEmbedded" class="col-auto">
 			<button mat-icon-button (click)="toggleBookmark()" [matTooltip]="(bookmark? 'APP.INDICATOR-DASHBOARD.UNBOOKMARK': 'APP.INDICATOR-DASHBOARD.BOOKMARK') | translate">
 				<mat-icon>{{bookmark? 'bookmark' : 'bookmark_outline'}}</mat-icon>
 			</button>
+			<button *ngIf="this.canShareDashboard" mat-icon-button (click)="shareDashboard()" [matTooltip]="'APP.INDICATOR-DASHBOARD.SHARE' | translate">
+				<mat-icon>share</mat-icon>
+			</button>
 		</div>
 		<div class="col">
-			<h2 *ngIf="indicatorQueryParams?.displayName">{{indicatorQueryParams.displayName}}</h2>
+			<h2 *ngIf="indicatorQueryParams?.displayName && indicatorQueryParams?.displayName.length">{{indicatorQueryParams.displayName}}</h2>
 		</div>
 	</div>
-	
+
 	<ng-container *ngIf="dashboardConfig?.tabs?.length">
 		<div class="row">
-			<div class="col-12 editor-actions">
+			<div *ngIf="dashboardConfig.tabs.length  > 1" class="col-12 editor-actions">
 				<div class="row" >
 					<div class="col-auto"  *ngFor="let tab of dashboardConfig.tabs; let i = index">
 						<button mat-stroked-button [color]="(i === selectedTabIndex ) ? 'accent':'primary'" type="button" (click)="selectTab(i)">{{tab.name}}</button>
@@ -22,7 +25,7 @@
 			</div>
 			<div class="col-12 mt-4">
 				<div class="row" style="flex-direction: row-reverse;">
-					
+
 					<div class="col-12 col-md" *ngIf="(tags$ | async)?.length" >
 						<div class="card p-3" style="position: sticky; top: 2rem" >
 							<h4>{{'APP.INDICATOR-DASHBOARD.AVAILABLE-TAGS' | translate}}</h4>
@@ -42,7 +45,7 @@
 					</div>
 					<div class="col-12 " [class.col-lg-8]="(tags$ | async)?.length">
 						<div class="row" *ngIf="selectedTabIndex >= 0">
-							<app-indicator-dashboard-tab [dashboardConfig]="dashboardConfig" [indicatorQueryParams]="indicatorQueryParams" class="col-12" [tabConfig]="dashboardConfig.tabs[selectedTabIndex]"></app-indicator-dashboard-tab>
+							<app-indicator-dashboard-tab [dashboardConfig]="dashboardConfig" [indicatorQueryParams]="indicatorQueryParams" [token]="token" class="col-12" [tabConfig]="dashboardConfig.tabs[selectedTabIndex]"></app-indicator-dashboard-tab>
 						</div>
 					</div>
 				</div>

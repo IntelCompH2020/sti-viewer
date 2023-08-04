@@ -61,6 +61,42 @@ permissions:
       claims: [ ]
       clients: [ ]
       allowAnonymous: false
+      allowAuthenticated: false    
+    
+    #ExternalToken
+    BrowseExternalToken:
+      roles:
+        - ic-sti-superuser
+        - tenantadmin
+      clients: [ ]
+      allowAnonymous: true
+      allowAuthenticated: false
+    EditExternalToken:
+      roles:
+        - ic-sti-superuser
+        - tenantadmin
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    CreateChartExternalToken:
+        roles:
+          - tenantadmin
+        clients: [ ]
+        allowAnonymous: false
+        allowAuthenticated: false
+    CreateDashboardExternalToken:
+      roles:
+        - tenantadmin
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    DeleteExternalToken:
+      roles:
+        - ic-sti-superuser
+        - tenantadmin
+      claims: [ ]
+      clients: [ ]
+      allowAnonymous: false
       allowAuthenticated: false
 
     # Indicators
@@ -679,6 +715,13 @@ permissions:
     ViewDynamicPage:
       roles:
         - ic-sti-superuser
+      clients: [ ]
+      allowAnonymous: false
+      allowAuthenticated: false
+    ViewExternalTokenPage:
+      roles:
+        - ic-sti-superuser
+        - tenantadmin
       clients: [ ]
       allowAnonymous: false
       allowAuthenticated: false

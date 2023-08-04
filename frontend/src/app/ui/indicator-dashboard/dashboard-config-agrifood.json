@@ -1,0 +1,6041 @@
+{
+	"id": "dg01_pv01_dashboard",
+	"tabs": [
+		{
+			"name": "Science",
+			"chartGroups": [
+				{
+					"name": "",
+					"type": "gauge",
+					"gauges": [
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "value_card",
+							"name": "",
+							"description": "",
+							"metrics": [
+								{
+									"type": "Sum",
+									"field": "value"
+								}
+							],
+							"labelOverride": "Publications",
+							"chartId":"ff442136-aa0b-4bf5-88d0-4b2a23c3e822",
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv00" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i01" ]
+									}
+								]
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Publications",
+										"labelKey": "indid"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"onShare": {}
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "value_card",
+							"name": "",
+							"description": "",
+							"metrics": [
+								{
+									"type": "Sum",
+									"field": "value"
+								}
+							],
+							"labelOverride": "Citations",
+							"chartId":"328e4a7d-ae38-40c4-b7de-dc87b9ec1e03",
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv00" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i06" ]
+									}
+								]
+							},
+							"series": [
+								{
+
+									"label": {
+										"name": "Citations",
+										"labelKey": "indid"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							]
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "value_card",
+							"name": "",
+							"description": "",
+							"metrics": [
+								{
+									"type": "Sum",
+									"field": "value"
+								}
+							],
+							"labelOverride": "Publications cited in patents",
+							"chartId":"ca53695f-5bfe-4531-b8cd-3684fb859afd",
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv00" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i13a" ]
+									}
+								]
+							},
+							"series": [
+								{
+
+									"label": {
+										"name": "Citations",
+										"labelKey": "indid"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Scientific Production Trends",
+					"charts": [
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "line",
+							"dataZoom": {
+								"inside": true,
+								"slider": true
+							},
+							"name": "",
+							"chartName": "Publications in Agrifood over Time",
+							"xAxis": {
+								"name": "year"
+							},
+							"yAxis": {
+								"name": "publications"
+							},
+							"description": "The graph shows the evolution in the number of publications in the Agrifood domain, in the EU (at least one author is affiliated to an EU organization) We identified the set of publications in Agrifood by .. ( <a href=\"http://doi.org/10.3389/frma.2023.1149834\" target=\"_blank\">http://doi.org/10.3389/frma.2023.1149834</a>)  <i>Data Source</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a>",
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "dgid",
+										"value": [ "dg01" ]
+									},
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i01" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv01" ]
+									}
+								]
+							},
+							"labelSortKey": "key",
+							"labelsTransform": {},
+							"series": [
+								{
+									"label": {
+										"name": "publications",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"areaStyle": {},
+							"chartDownloadData": {},
+							"chartDownloadImage": {},
+
+
+							"chartDownloadJson": {},
+							"chartShare": {}
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "line",
+							"dataZoom": {
+								"inside": true
+							},
+							"legend": {},
+							"name": "",
+							"chartName": "Share of publications in Agrifood Topics over Time",
+							"xAxis": {
+								"name": "year"
+							},
+							"yAxis": {
+								"name": "publications"
+							},
+							"labelSortKey": "year",
+							"description": "The graph shows the evolution in the share of publications in different topics in the Agrifood domain in the EU, over time. The assignment of topics is taken from Abbate, Centobelli, Cerchione (2023) (<a href=\"https://doi.org/10.1016/j.techfore.2022.122222\" target=\"_blank\">https://doi.org/10.1016/j.techfore.2022.122222</a>) which we enhanced and mapped to topics in our Fields of Science (FoS) publication classification system (<a href=\"http://doi.org/10.3389/frma.2023.1149834\" target=\"_blank\">http://doi.org/10.3389/frma.2023.1149834</a>). <i>Data Source</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a>",
+
+
+							"chartDownloadJson": {},
+							"chartShare": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Composite",
+								"field": "key",
+								"sources": [
+									{
+										"field": "key"
+									},
+									{
+										"field": "year"
+									}
+								],
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv02" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i03" ]
+									}
+								]
+							},
+							"series": [
+								{
+									"splitSeries": [
+										{
+											"key": "key"
+										}
+									],
+									"label": {
+										"name": "Topic",
+										"labelKey": "year"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"areaStyle": {},
+							"stack": "x"
+						}
+					]
+				},
+				{
+					"name": "Scientific Production Origins",
+					"charts": [
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "map",
+							"name": "",
+							"chartName": "Publications by Country",
+							"description": "The graph shows the number of publications in Agrifood by the country of the affiliated organization of an author  (with at least one author affiliated to an EU organization). In the case of multiple authors each organization and corresponding country is counted as a separate publication (e.g., one publication with three authors, where two are from Greece and one is from Spain is counted as two publications in Greece and one in Spain). <i>Data Source</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a>",
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartShare": {},
+							"chartDownloadImage": {},
+							"mapChartConfig": {
+								"high": {
+									"text": "High",
+									"color": "#42c39a"
+								}
+							},
+							"countryNameMapping": {
+								"Italy": "Italy"
+							},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "dgid",
+										"value": [ "dg01" ]
+									},
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv09" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i01" ]
+									}
+								]
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Publications by Country",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							]
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "bar",
+							"name": "",
+							"chartName": "Publications by Organization (top 100)",
+							"description": "The graph shows the top 100 organizations in terms of the number of publications in Agrifood with at least one author from an EU organization. <i>Data Source</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a>",
+							"horizontal": false,
+							"dataZoom": {
+								"inside": true,
+								"slider": true,
+								"areaZoom": {
+									"start": 0,
+									"end": 20
+								}
+							},
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartShare": {},
+							"chartDownloadImage": {},
+
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"yAxis": {
+								"name": "publications"
+							},
+							"xAxis": {
+								"name": "organizations",
+								"axisLabel": {
+									"rotate": 45,
+									"width": 100
+								}
+							},
+							"rawDataRequest": {
+								"keyField": "key",
+								"valueField": "value",
+								"order": {
+									"items": [ "-value" ]
+								},
+								"page": {
+									"offset": 0,
+									"size": 100
+								}
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "dgid",
+										"value": [ "dg01" ]
+									},
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv06" ]
+									}
+								]
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Energy publications per organization",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Scientific Production Characteristics",
+					"charts": [
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "treemap",
+							"name": "",
+							"chartName": "Publications by SDG",
+							"description": "The graph shows the number of publications in Agrifood with at least one author from an EU organization, by UN Sustainable Development Goal (SDG, <a href=\"https://sdgs.un.org/goals/\" target=\"_blank\">https://sdgs.un.org/goals</a>). Our SDG classification system uses deep learning techniques to assign a scientific publication to the SDGs that are related to it. <i>Data Source</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a>",
+							"treeName": "Publications by SDG",
+							"toolTip": {
+								"name": "Publications"
+							},
+							"treeColors": {
+								"1. No poverty": "#eb1c2c",
+								"2. Zero hunger": "#d3a029",
+								"3. Good health": "#279b47",
+								"4. Education": "#c21e32",
+								"5. Gender equality": "#ee402a",
+								"6. Clean water": "#00add8",
+								"7. Clean energy": "#fdb713",
+								"8. Economic growth": "#8f1838",
+								"9. Industry and infrastructure": "#f26c25FF",
+								"10. No inequality": "#e11484",
+								"11. Sustainability": "#f99d26",
+								"12. Responsible consumption": "#cf8d2a",
+								"13. Climate action": "#48773e",
+								"14. Life underwater": "#007cbc",
+								"15. Life on land": "#3eb049",
+								"16. Peace & justice": "#02548a"
+							},
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartShare": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "dgid",
+										"value": [ "dg01" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv05" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i01" ]
+									}
+								]
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Publicatios by SDG",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"stack": "x",
+							"areaStyle": {}
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "bar",
+							"chartName": "Top 50 Journals",
+							"description": "The graph shows the top 50 journals by the number of scientific publications in Agrifood, with at least one author from an EU organization. <i>Data Source</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a>",
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartShare": {},
+							"chartDownloadImage": {},
+							"horizontal": false,
+							"dataZoom": {
+								"inside": true,
+								"slider": true,
+								"areaZoom": {
+									"start": 0,
+									"end": 20
+								}
+							},
+							"xAxis": {
+								"name": "journal",
+								"axisLabel": {
+									"width": 100,
+									"rotate": 45
+								}
+							},
+							"yAxis": {
+								"name": "publications"
+							},
+							"bucket": {
+								"type": "Composite",
+								"field": "key",
+								"sources": [
+									{
+										"field": "key"
+									}
+								],
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "dgid",
+										"value": [ "dg01" ]
+									},
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv10" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i01" ]
+									}
+								]
+							},
+							"labelsTransform": {},
+							"rawDataRequest": {
+								"keyField": "key",
+								"valueField": "value",
+								"order": {
+									"items": [ "-value" ]
+								},
+								"page": {
+									"offset": 0,
+									"size": 50
+								}
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Scientific publications in Energy",
+										"labelKey": "key"
+									},
+									"values": {
+										"valueKey": "value",
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Scientific Impact Trends",
+					"charts": [
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "line",
+							"name": "",
+							"chartName": "Publications cited in patents",
+							"description": "The graph shows the total number of publications, superimposed with the number of those that are cited in patents, over time, using data on publications and patents in the Agrifood domain in the EU. <i>Data Sources</i>: (<a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a>, <a href=\"https://www.epo.org/searching-for-patents/business/patstat.html/\" target=\"_blank\">Patstat - EPO dataset</a>).",
+							"xAxis": {
+								"name": "year"
+							},
+							"yAxis": {
+								"name": "publications"
+							},
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartShare": {},
+							"chartDownloadImage": {},
+							"legend": {},
+							"bucket": {
+								"type": "Composite",
+								"field": "key",
+								"sources": [
+									{
+										"field": "key"
+									},
+									{
+										"field": "indid"
+									}
+								],
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "dgid",
+										"value": [ "dg01" ]
+									},
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv01" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i01", "i13a" ]
+									}
+								]
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Publications",
+										"labelKey": "key"
+									},
+									"nested": {
+										"type": "bar"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										],
+										"groupTests": [
+											{
+												"indid": "i01"
+											}
+										]
+									}
+								},
+								{
+									"label": {
+										"name": "Publications cited in patents",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										],
+										"groupTests": [
+											{
+												"indid": "i13a"
+											}
+										]
+									}
+								}
+							],
+							"labelSortKey": "key"
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "line",
+							"name": "",
+							"chartName": "Average Citations per Publication over Time",
+							"description": "The graph shows the average number of citations per scientific publication in the Agrifood domain, with at least one author from an EU organization, over time, by the year of publication. <i>Data Source</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a> using the integrated <a href=\"https://opencitations.net/\" target=\"_blank\">Open Citations</a> dataset.",
+							"xAxis": {
+								"name": "year"
+							},
+							"yAxis": {
+								"name": "citations per publication"
+							},
+							"areaStyle": {},
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartShare": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"labelSortKey": "key",
+							"series": [
+								{
+									"label": {
+										"name": "Number of citations of scientific publications in Agrifood domain",
+										"labelKey": "key"
+									},
+									"values": {
+										"valueKey": "value",
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "dgid",
+										"value": [ "dg01" ]
+									},
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv01" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i07" ]
+									}
+								]
+							}
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "line",
+							"name": "",
+							"chartName": "Total Citations over Time",
+							"description": "The graph shows the total number of citations for scientific publications in Agrifood, with at least one author from an EU organization, over time by the year of publication. <i>Data Source</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a> using the integrated <a href=\"https://opencitations.net/\" target=\"_blank\">Open Citations</a> dataset.",
+							"xAxis": {
+								"name": "year"
+							},
+							"yAxis": {
+								"name": "citations"
+							},
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartShare": {},
+							"chartDownloadImage": {},
+							"areaStyle": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"labelSortKey": "key",
+							"series": [
+								{
+									"label": {
+										"name": "Number of scientific publications in agrifood domain",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "dgid",
+										"value": [ "dg01" ]
+									},
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv01" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i06" ]
+									}
+								]
+							}
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "line",
+							"name": "",
+							"chartName": "Field-weighted Citation Index over Time",
+							"description": "The graph shows the evolution of the field-weighted citation index of publications in Agrifood, with at least one author from an EU organization. The index is defined as the average number of citations received over the average number in the same subject in the field world-wide, in a 3-year window. <i>Data Source</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a> using the integrated <a href=\"https://opencitations.net/\" target=\"_blank\">Open Citations</a> dataset.",
+							"xAxis": {
+								"name": "year"
+							},
+							"yAxis": {
+								"name": "citation index"
+							},
+							"legend": {},
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartShare": {},
+							"chartDownloadImage": {},
+							"areaStyle": {},
+							"bucket": {
+								"type": "Composite",
+								"field": "key",
+								"sources": [
+									{
+										"field": "key"
+									},
+									{
+										"field": "indid"
+									}
+								],
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"labelSortKey": "key",
+							"series": [
+								{
+									"label": {
+										"name": "FWCI all publications",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										],
+										"groupTests": [
+											{
+												"indid": "i08"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "dgid",
+										"value": [ "dg01" ]
+									},
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv01" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i08" ]
+									}
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Scientific Impact Origins",
+					"charts": [
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "map",
+							"name": "",
+							"chartName": "Citations per Publication by Country",
+							"description": "The graph shows the average number of citations per publication, in Agrifood with at least one author from an EU organization, by the country of the affiliated organization of an author. In the case of multiple authors each organization and corresponding country is counted as a separate publication (e.g., one publication with three authors, where two are from Greece and one is from Spain is counted as two publications in Greece and one in Spain). <i>Data Source</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a> using the integrated <a href=\"https://opencitations.net/\" target=\"_blank\">Open Citations</a> dataset.",
+							"xAxis": {
+								"name": "country"
+							},
+							"yAxis": {
+								"name": "citations per publication"
+							},
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartShare": {},
+							"chartDownloadImage": {},
+							"mapChartConfig": {
+								"high": {
+									"text": "High",
+									"color": "#42c39a"
+								}
+							},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Average Number of citation",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "dgid",
+										"value": [ "dg01" ]
+									},
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv09" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i07" ]
+									}
+								]
+							}
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "bar",
+							"horizontal": false,
+							"dataZoom": {
+								"inside": true,
+								"slider": true,
+								"areaZoom": {
+									"start": 0,
+									"end": 20
+								}
+							},
+							"name": "",
+							"chartName": "Citations per Publication by Organization (top 100)",
+							"description": "The graph shows the top 100 organizations in terms of the average number of citations per publication in Agrifood with at least one author from an EU organization. <i>Data Source</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a> using the integrated <a href=\"https://opencitations.net/\" target=\"_blank\">Open Citations</a> dataset.",
+							"xAxis": {
+								"name": "organization",
+								"axisLabel": {
+									"width": 100,
+									"rotate": 45
+								}
+							},
+							"yAxis": {
+								"name": "citations per publication"
+							},
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartShare": {},
+							"chartDownloadImage": {},
+							"filters": [							],
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"rawDataRequest": {
+								"keyField": "key",
+								"valueField": "value",
+								"order": {
+									"items": [ "-value" ]
+								},
+								"page": {
+									"offset": 0,
+									"size": 100
+								}
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Average Number of citation",
+										"labelKey": "key"
+									},
+									"values": {
+										"valueKey": "value",
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "dgid",
+										"value": [ "dg01" ]
+									},
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv06" ]
+									}
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Scientific Impact Characteristics",
+					"charts": [
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "pie",
+							"doughnut": true,
+							"roseType": "area",
+							"name": "",
+							"chartName": "Publications Cited in Patents by Topic in Agrifood",
+							"description": "The graph shows the number of publications cited in patents by topic within the Agrifood domain, both publications and patents are limited to the in the Agrifood domain in the EU. The assignment of topics is taken from Abbate, Centobelli, Cerchione (2023) (<a href=\"https://doi.org/10.1016/j.techfore.2022.122222\" target=\"_blank\">https://doi.org/10.1016/j.techfore.2022.122222/</a>) which we enhanced and mapped to topics in our Fields of Science (FoS) publication classification system (<a href=\"http://doi.org/10.3389/frma.2023.1149834\" target=\"_blank\">http://doi.org/10.3389/frma.2023.1149834/</a>). <i>Data Sources</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a>, <a href=\"https://www.epo.org/searching-for-patents/business/patstat.html\" target=\"_blank\">Patstat - EPO dataset</a>.",
+							"xAxis": {
+								"name": "topic"
+							},
+							"yAxis": {
+								"name": "publications cited in patents"
+							},
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartShare": {},
+							"chartDownloadImage": {},
+							"legend": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"rawDataRequest": {
+								"keyField": "key",
+								"valueField": "value",
+								"order": {
+									"items": [ "-value" ]
+								}
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Average Number of citation",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "dgid",
+										"value": [ "dg01" ]
+									},
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv02" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i13a" ]
+									}
+								]
+							}
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "treemap",
+							"name": "",
+							"chartName": "Publications cited in patents by SDG",
+							"description": "The graph shows the number of publications cited in patents by UN Sustainable Development Goal (SDG, <a href=\"https://sdgs.un.org/goals\" target=\"_blank\">https://sdgs.un.org/goals</a>), both publications and patents are limited to the Agrifood domain in the EU. Our SDG classification system uses deep learning techniques to assign a scientific publication to the SDGs that are related to it. <i>Data Sources</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a>, <a href=\"https://www.epo.org/searching-for-patents/business/patstat.html\" target=\"_blank\">Patstat - EPO dataset</a>.",
+							"xAxis": {
+								"name": "SDG"
+							},
+							"yAxis": {
+								"name": "publications cited in patents"
+							},
+							"treeName": "Average publications by Development Goal ",
+							"toolTip": {
+								"name": "Average publications"
+							},
+							"treeColors": {
+								"1. No poverty": "#eb1c2c",
+								"2. Zero hunger": "#d3a029",
+								"3. Good health": "#279b47",
+								"4. Education": "#c21e32",
+								"5. Gender equality": "#ee402a",
+								"6. Clean water": "#00add8",
+								"7. Clean energy": "#fdb713",
+								"8. Economic growth": "#8f1838",
+								"9. Industry and infrastructure": "#f26c25FF",
+								"10. No inequality": "#e11484",
+								"11. Sustainability": "#f99d26",
+								"12. Responsible consumption": "#cf8d2a",
+								"13. Climate action": "#48773e",
+								"14. Life underwater": "#007cbc",
+								"15. Life on land": "#3eb049",
+								"16. Peace & justice": "#02548a"
+							},
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartShare": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "dgid",
+										"value": [ "dg01" ]
+									},
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv05" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i13a" ]
+									}
+								]
+							},
+
+							"series": [
+								{
+									"label": {
+										"name": "Publications cited in patents by SDG",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							]
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "pie",
+							"doughnut": true,
+							"roseType": "area",
+							"name": "",
+							"chartName": "Citations per publication by topic in Agrifood",
+							"description": "The graph shows the average number of citations per scientific publication for different topics in the Agrifood domain. The assignment of topics is taken from Abbate, Centobelli, Cerchione (2023) (<a href=\"https://doi.org/10.1016/j.techfore.2022.122222\" target=\"_blank\">https://doi.org/10.1016/j.techfore.2022.122222</a>) which we enhanced and mapped to topics in our Fields of Science (FoS) publication classification system (<a href=\"http://doi.org/10.3389/frma.2023.1149834\" target=\"_blank\">http://doi.org/10.3389/frma.2023.1149834</a>). <i>Data Sources</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a> using the integrated <a href=\"https://opencitations.net/\" target=\"_blank\">Open Citations</a> dataset.",
+							"xAxis": {
+								"name": "topic"
+							},
+							"yAxis": {
+								"name": "citations per publication"
+							},
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartShare": {},
+							"chartDownloadImage": {},
+							"legend": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"rawDataRequest": {
+								"keyField": "key",
+								"valueField": "value",
+								"order": {
+									"items": [ "-value" ]
+								}
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Average Number of citation",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "dgid",
+										"value": [ "dg01" ]
+									},
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv02" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i07" ]
+									}
+								]
+							}
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "treemap",
+							"name": "",
+							"chartName": "Citations per publication by SDG",
+							"description": "The graph shows the average number of citations per scientific publication in Agrifood, by UN Sustainable Development Goal (SDG, <a href=\"https://sdgs.un.org/goals\" target=\"_blank\">https://sdgs.un.org/goals</a>). Our SDG classification system uses deep learning techniques to assign a scientific publication to the SDGs that are related to it. <i>Data Sources</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a> using the integrated <a href=\"https://opencitations.net/\" target=\"_blank\">Open Citations</a> dataset.**",
+							"xAxis": {
+								"name": "SDG"
+							},
+							"yAxis": {
+								"name": "citations per publication"
+							},
+							"treeName": "Average publications by Development Goal ",
+							"toolTip": {
+								"name": "Average publications"
+							},
+							"treeColors": {
+								"1. No poverty": "#eb1c2c",
+								"2. Zero hunger": "#d3a029",
+								"3. Good health": "#279b47",
+								"4. Education": "#c21e32",
+								"5. Gender equality": "#ee402a",
+								"6. Clean water": "#00add8",
+								"7. Clean energy": "#fdb713",
+								"8. Economic growth": "#8f1838",
+								"9. Industry and infrastructure": "#f26c25FF",
+								"10. No inequality": "#e11484",
+								"11. Sustainability": "#f99d26",
+								"12. Responsible consumption": "#cf8d2a",
+								"13. Climate action": "#48773e",
+								"14. Life underwater": "#007cbc",
+								"15. Life on land": "#3eb049",
+								"16. Peace & justice": "#02548a"
+							},
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartShare": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "dgid",
+										"value": [ "dg01" ]
+									},
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv05" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i07" ]
+									}
+								]
+							},
+
+							"series": [
+								{
+									"label": {
+										"name": "UN Sustainable Development Goal",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Scientific Collaborations",
+					"charts": [
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "line",
+							"dataZoom": {
+								"inside": true
+							},
+							"legend": {},
+							"name": "",
+							"chartName": "International collaborations over time",
+							"xAxis": {
+								"name": "year"
+							},
+							"yAxis": {
+								"name": "publications"
+							},
+							"labelSortKey": "year",
+							"description": "The graph shows the evolution in the number of publications in Agrifood with authors affiliated to organizations in at least two different countries, one of which is in the EU. Superimposed is the number of those that are cited by at least one publication. <i>Data Source</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a> using the integrated <a href=\"https://opencitations.net/\" target=\"_blank\">Open Citations</a> dataset.",
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartShare": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Composite",
+								"field": "key",
+								"sources": [
+									{
+										"field": "key"
+									},
+									{
+										"field": "indid"
+									}
+								],
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "dgid",
+										"value": [ "dg01" ]
+									},
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv01" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i19", "i20", "i01" ]
+									}
+								]
+							},
+							"series": [
+								{
+									"nested": {
+										"type": "bar"
+									},
+									"label": {
+										"name": "Publications over time",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										],
+										"groupTests": [
+											{
+												"indid": "i01"
+											}
+										]
+									}
+								},
+								{
+									"label": {
+										"name": "Citable international co-publications",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										],
+										"groupTests": [
+											{
+												"indid": "i20"
+											}
+										]
+									}
+								},
+								{
+									"label": {
+										"name": "International co-publications",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										],
+										"groupTests": [
+											{
+												"indid": "i19"
+											}
+										]
+									}
+								}
+							]
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "pie",
+							"doughnut": true,
+							"roseType": "area",
+							"name": "",
+							"chartName": "International collaborations by topic",
+							"description": "The graph shows the number of publications with authors affiliated to organizations in at least two different countries, one of which is in the EU, by topic in the Agrifood domain. The assignment of topics is taken from Abbate, Centobelli, Cerchione (2023) (<a href=\"https://doi.org/10.1016/j.techfore.2022.122222\" target=\"_blank\">https://doi.org/10.1016/j.techfore.2022.122222/</a>) which we enhanced and mapped to topics in our Fields of Science (FoS) publication classification system (<a href=\"http://doi.org/10.3389/frma.2023.1149834\" target=\"_blank\">http://doi.org/10.3389/frma.2023.1149834</a>). <i>Data Source</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a>**",
+							"xAxis": {
+								"name": "topic"
+							},
+							"yAxis": {
+								"name": "publications"
+							},
+							"rawDataRequest": {
+								"keyField": "key",
+								"valueField": "value",
+								"order": {
+									"items": [ "-value" ]
+								},
+								"page": {
+									"offset": 0,
+									"size": 1000
+								}
+							},
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartShare": {},
+							"chartDownloadImage": {},
+							"legend": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Average Number of citation",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "dgid",
+										"value": [ "dg01" ]
+									},
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv02" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i19" ]
+									}
+								]
+							}
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "scatter",
+							"dataZoom": {
+								"inside": true,
+								"slider": true
+							},
+							"name": "",
+							"chartName": "Collaboration Index by SDG",
+							"xAxis": {
+								"name": "SDG",
+								"seriesKeyExtractor": "total publications"
+							},
+							"yAxis": {
+								"name": "Collaboration index",
+								"seriesKeyExtractor": "i19a"
+							},
+							"bubble": {
+								"seriesKeyExtractor": "i01"
+							},
+							"legend": {},
+							"description": "The graph shows the average number of authors, i.e. the collaboration index, in publications in Agrifood by UN Sustainable Development Goal (SDG, <a href=\"https://sdgs.un.org/goals\" target=\"_blank\">https://sdgs.un.org/goals</a>). Our SDG classification system uses deep learning techniques to assign a scientific publication to the SDGs that are related to it. The size of the bubble indicates the number of publications associated with that SDG. <i>Data Source</i>:<a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a>",
+							"bucket": {
+								"type": "Composite",
+								"field": "key",
+								"sources": [
+									{
+										"field": "key"
+									},
+									{
+										"field": "indid"
+									}
+								],
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									},
+									{
+										"type": "Sum",
+										"field": "total_publications"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "dgid",
+										"value": [ "dg01" ]
+									},
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv05" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i19a", "i01" ]
+									}
+								]
+							},
+							"labelSortKey": "key",
+							"labelsTransform": {},
+							"series": [
+								{
+									"splitSeries": [
+										{
+											"key": "indid"
+										}
+									],
+									"label": {
+										"name": "tbd",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								},
+								{
+									"label": {
+										"name": "total publications",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "total_publications"
+											}
+										]
+									}
+								}
+							],
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartShare": {},
+							"chartDownloadImage": {},
+							"colorMap": {
+								"1. No poverty": "#eb1c2c",
+								"2. Zero hunger": "#d3a029",
+								"3. Good health": "#279b47",
+								"4. Education": "#c21e32",
+								"5. Gender equality": "#ee402a",
+								"6. Clean water": "#00add8",
+								"7. Clean energy": "#fdb713",
+								"8. Economic growth": "#8f1838",
+								"9. Industry and infrastructure": "#f26c25FF",
+								"10. No inequality": "#e11484",
+								"11. Sustainability": "#f99d26",
+								"12. Responsible consumption": "#cf8d2a",
+								"13. Climate action": "#48773e",
+								"14. Life underwater": "#007cbc",
+								"15. Life on land": "#3eb049",
+								"16. Peace & justice": "#02548a"
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Technology",
+			"chartGroups": [
+				{
+					"name": "",
+					"type": "gauge",
+					"gauges": [
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "value_card",
+							"name": "",
+							"description": "",
+							"metrics": [
+								{
+									"type": "Sum",
+									"field": "value"
+								}
+							],
+							"labelOverride": "Patents",
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv01" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i09" ]
+									}
+								]
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Publications",
+										"labelKey": "indid"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							]
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "value_card",
+							"name": "",
+							"description": "",
+							"metrics": [
+								{
+									"type": "Sum",
+									"field": "value"
+								}
+							],
+							"labelOverride": "Average forward citations",
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv01" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i12" ]
+									}
+								]
+							},
+							"series": [
+								{
+
+									"label": {
+										"name": "Citations",
+										"labelKey": "indid"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Technological Production Trends",
+					"charts": [
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "line",
+							"dataZoom": {
+								"inside": true,
+								"slider": true
+							},
+							"name": "",
+							"chartName": "Patents in Agrifood over Time",
+							"xAxis": {
+								"name": "year"
+							},
+							"yAxis": {
+								"name": "patents"
+							},
+							"description": "The graph presents the number of Agrifood patents granted by the EPO and still valid in 2021-Q2, by their respective priority years. To identify Agrifood-related patents in the EU, we initially conducted a comprehensive selection process using predefined patent categories. Subsequently, we matched CPC (Cooperative Patent Classification) codes to Agrifood topics (as described in Abbate, Centobelli, and Cerchione (2023), <a href=\"https://doi.org/10.1016/j.techfore.2022.122222\" target=\"_blank\">https://doi.org/10.1016/j.techfore.2022.122222</a>). Finally, we filtered the patents to include only those where at least one inventor or applicant is affiliated with an EU organization. <i>Data Source</i>: <a href=\"https://www.epo.org/searching-for-patents/business/patstat.html\" target=\"_blank\">Patstat - EPO dataset</a>",
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "dgid",
+										"value": [ "dg01" ]
+									},
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv01" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i09" ]
+									}
+								]
+							},
+							"labelSortKey": "key",
+							"labelsTransform": {},
+							"series": [
+								{
+									"label": {
+										"name": "patents",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"areaStyle": {},
+							"filters": [],
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartShare": {},
+							"chartDownloadImage": {}
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "line",
+							"dataZoom": {
+								"inside": true
+							},
+							"legend": {},
+							"name": "",
+							"chartName": "Share of Patents in Agrifood Topics over Time",
+							"xAxis": {
+								"name": "year"
+							},
+							"yAxis": {
+								"name": "patents"
+							},
+							"labelSortKey": "year",
+							"description": "The graph shows the evolution in the share of patents in different topics in the Agrifood domain, granted by the EPO and still valid in 2021-Q2, where at least one inventor or applicant is affiliated with an EU organization. The topics are taken from Abbate, Centobelli, Cerchione (2023) (<a href=\"https://doi.org/10.1016/j.techfore.2022.122222\" target=\"_blank\">https://doi.org/10.1016/j.techfore.2022.122222</a>) which we mapped to CPC codes. <i>Data Source</i>: <a href=\"https://www.epo.org/searching-for-patents/business/patstat.html\" target=\"_blank\">Patstat - EPO dataset</a>",
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartShare": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Composite",
+								"field": "key",
+								"sources": [
+									{
+										"field": "key"
+									},
+									{
+										"field": "year"
+									}
+								],
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "dgid",
+										"value": [ "dg01" ]
+									},
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv02" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i09b" ]
+									}
+								]
+							},
+							"series": [
+								{
+									"splitSeries": [
+										{
+											"key": "key"
+										}
+									],
+									"label": {
+										"name": "Topic",
+										"labelKey": "year"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"areaStyle": {},
+							"stack": "x"
+						}
+					]
+				},
+				{
+					"name": "Technological Production Origins",
+					"charts": [
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "map",
+							"name": "",
+							"chartName": "Patents by country",
+							"description": "The graph shows the number of patents in the Agrifood domain, granted by the EPO and still valid in 2021-Q2, where at least one inventor or applicant is affiliated with an EU organization, categorized by the country of the applicant. <i>Data Source</i>: <a href=\"https://www.epo.org/searching-for-patents/business/patstat.html\" target=\"_blank\">Patstat - EPO dataset</a>",
+							"xAxis": {
+								"name": "country"
+							},
+							"yAxis": {
+								"name": "patents"
+							},
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartShare": {},
+							"chartDownloadImage": {},
+							"mapChartConfig": {
+								"high": {
+									"text": "High",
+									"color": "#42c39a"
+								}
+							},
+							"countryNameMapping": {
+								"Italy": "Italy"
+							},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "dgid",
+										"value": [ "dg01" ]
+									},
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv09" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i09" ]
+									}
+								]
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Patents by Country",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							]
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "bar",
+							"horizontal": false,
+							"dataZoom": {
+								"inside": true,
+								"slider": true,
+								"areaZoom": {
+									"start": 0,
+									"end": 20
+								}
+							},
+							"name": "",
+							"chartName": "Patents by Organization (top 100)",
+							"description": "The graph shows the top 100 organizations of patent applicants in terms of the number of patents in the Agrifood domain, granted by the EPO and still valid in 2021-Q2, where at least one inventor or applicant is affiliated with an EU organization. <i>Data Source</i>: <a href=\"https://www.epo.org/searching-for-patents/business/patstat.html\" target=\"_blank\">Patstat - EPO dataset</a>",
+							"xAxis": {
+								"name": "organization",
+								"axisLabel": {
+									"width": 100,
+									"rotate": 45
+								}
+							},
+							"yAxis": {
+								"name": "patents"
+							},
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartShare": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								],
+								"bucketSort": {
+									"sortFields": [
+										{
+											"field": "value",
+											"metricAggregateType": "Sum",
+											"order": "DESC"
+										}
+									],
+									"paging": {
+										"offset": 0,
+										"size": 100
+									}
+								}
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Number of patents",
+										"labelKey": "key"
+									},
+									"values": {
+										"valueKey": "value",
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "dgid",
+										"value": [ "dg01" ]
+									},
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv06" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i09" ]
+									}
+								]
+							}
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "pie",
+							"doughnut": false,
+							"radius": ["40%", "70%"],
+							"name": "",
+							"chartName": "Patents by Sector",
+							"description": "The graph shows the number of patents in the Agrifood domain, granted by the EPO and still valid in 2021-Q2, where at least one inventor or applicant is affiliated with an EU organization, categorized by the type of patent applicant. <i>Data Source</i>: <a href=\"https://www.epo.org/searching-for-patents/business/patstat.html\" target=\"_blank\">Patstat - EPO dataset</a>",
+							"xAxis": {
+								"name": "sector"
+							},
+							"yAxis": {
+								"name": "patents"
+							},
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartShare": {},
+							"chartDownloadImage": {},
+							"legend": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Number of patents",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "dgid",
+										"value": [ "dg01" ]
+									},
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv08" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i09" ]
+									}
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Technological Production Characteristics",
+					"charts": [
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "pie",
+							"name": "",
+							"chartName": "Patents by NACE code",
+							"description": "The graph shows the number of patents in the Agrifood domain, granted by the EPO and still valid in 2021-Q2, where at least one inventor or applicant is affiliated with an EU organization, categorized by the NACE (Nomenclature of Economic Activities) codes of patents as assigned by PATSTAT. <i>Data Source</i>: <a href=\"https://www.epo.org/searching-for-patents/business/patstat.html\" target=\"_blank\">Patstat - EPO dataset</a>",
+							"xAxis": {
+								"name": "NACE code"
+							},
+							"yAxis": {
+								"name": "patents"
+							},
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartShare": {},
+							"chartDownloadImage": {},
+							"legend": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Number of patents",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "dgid",
+										"value": [ "dg01" ]
+									},
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv07" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i09" ]
+									}
+								]
+							}
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "bar",
+							"horizontal": true,
+							"dataZoom": {
+								"inside": true,
+								"slider": true,
+								"areaZoom": {
+									"start": 0,
+									"end": 45
+								}
+							},
+							"name": "",
+							"chartName": "Patents by IPC code (top 20 codes)",
+							"description": "The graph shows the top 20 IPC (International Patent Classification) codes by the number of patents in the Agrifood domain, granted by the EPO and still valid in 2021-Q2, where at least one inventor or applicant is affiliated with an EU organization. <i>Data Source</i>: <a href=\"https://www.epo.org/searching-for-patents/business/patstat.html\" target=\"_blank\">Patstat - EPO dataset</a>",
+							"xAxis": {
+								"name": "IPC code",
+								"axisLabel": {
+									"width": 100,
+									"rotate": 45
+								}
+							},
+							"yAxis": {
+								"name": "patents"
+							},
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartShare": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								],
+								"bucketSort": {
+									"sortFields": [
+										{
+											"field": "value",
+											"metricAggregateType": "Sum",
+											"order": "DESC"
+										}
+									],
+									"paging": {
+										"offset": 0,
+										"size": 20
+									}
+								}
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Number of patents",
+										"labelKey": "key"
+									},
+									"values": {
+										"valueKey": "value",
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "dgid",
+										"value": [ "dg01" ]
+									},
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv13" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i09" ]
+									}
+								]
+							}
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "pie",
+							"roseType": "area",
+							"doughnut": true,
+							"name": "",
+							"chartName": "Patents by topic",
+							"description": "The graph shows the number of patents by topic in the Agrifood domain, granted by the EPO and still valid in 2021-Q2, where at least one inventor or applicant is affiliated with an EU organization. The topics are taken from Abbate, Centobelli, Cerchione (2023) (<a href=\"https://doi.org/10.1016/j.techfore.2022.122222\" target=\"_blank\">https://doi.org/10.1016/j.techfore.2022.122222</a>) which we mapped to CPC codes. <i>Data Source</i>: <a href=\"https://www.epo.org/searching-for-patents/business/patstat.html\" target=\"_blank\">Patstat - EPO dataset</a>",
+							"xAxis": {
+								"name": "topic"
+							},
+							"yAxis": {
+								"name": "patents"
+							},
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartShare": {},
+							"chartDownloadImage": {},
+							"legend": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								],
+								"bucketSort": {
+									"sortFields": [
+										{
+											"field": "value",
+											"metricAggregateType": "Sum",
+											"order": "DESC"
+										}
+									],
+									"paging": {
+										"offset": 0,
+										"size": 50
+									}
+								}
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Number of patents",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "dgid",
+										"value": [ "dg01" ]
+									},
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv02" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i09" ]
+									}
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Technological Impact Trends",
+					"charts": [
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "radar",
+							"name": "",
+							"chartName": "Technological Value of Patents over Time",
+							"description": "The graph shows the evolution in the type of patents in the Agrifood domain, granted by the EPO and still valid in 2021-Q2, where at least one inventor or applicant is affiliated with an EU organization. There are four types of patents based on the average number of backward citations (BC) and forward citations (FC) to other patents. Adopters (low FC, high BC), enablers (high FC, high BC), pioneers (high FC, low BC) and mavericks (low FC, low BC), where “low” is defined as below average, and “high” as above average. <i>Data Source</i>: <a href=\"https://www.epo.org/searching-for-patents/business/patstat.html\" target=\"_blank\">Patstat - EPO dataset</a>",
+							"xAxis": {
+								"name": "(end points) class of patents (adopters, enablers, pioneers, mavericks)"
+							},
+							"yAxis": {
+								"name": "patents"
+							},
+							"radarConfig": {
+								"high": {
+									"value": 3200,
+									"color": "#61a0a8"
+								},
+								"low": {
+									"value": 0,
+									"color": "#dfeced"
+								},
+								"emphasisColor": "#ffdf33"
+							},
+							"bucket": {
+								"type": "Composite",
+								"field": "year",
+								"sources": [
+									{
+										"field": "year"
+									},
+									{
+										"field": "tag"
+									}
+								],
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "dgid",
+										"value": [ "dg01" ]
+									},
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv01" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i12a" ]
+									},
+									{
+										"field": "tag",
+										"value": [ "adopter", "enabler", "pioneer", "maverick" ]
+									}
+								]
+							},
+							"labelSortKey": "year",
+							"labelsTransform": {},
+							"series": [
+								{
+									"label": {
+										"name": "Maverick",
+										"labelKey": "year"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										],
+										"groupTests": [
+											{
+												"tag": "maverick"
+											}
+										]
+									}
+								},
+								{
+									"label": {
+										"name": "Adopter",
+										"labelKey": "year"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										],
+										"groupTests": [
+											{
+												"tag": "adopter"
+											}
+										]
+									}
+								},
+								{
+									"label": {
+										"name": "Enabler",
+										"labelKey": "year"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										],
+										"groupTests": [
+											{
+												"tag": "enabler"
+											}
+										]
+									}
+								},
+								{
+									"label": {
+										"name": "Pioneer",
+										"labelKey": "year"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										],
+										"groupTests": [
+											{
+												"tag": "pioneer"
+											}
+										]
+									}
+								}
+							],
+							"areaStyle": {},
+							"filters": [],
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartShare": {},
+							"chartDownloadImage": {}
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "line",
+							"dataZoom": {
+								"inside": true
+							},
+							"legend": {},
+							"name": "",
+							"chartName": "Patent citations over time",
+							"xAxis": {
+								"name": "year"
+							},
+							"yAxis": {
+								"name": "average citations"
+							},
+							"labelSortKey": "key",
+							"description": "The graph shows the average number of backward and forward citations to other patents for patents in the Agrifood domain, granted by the EPO and still valid in 2021-Q2, where at least one inventor or applicant is affiliated with an EU organization. <i>Data Source</i>: <a href=\"https://www.epo.org/searching-for-patents/business/patstat.html\" target=\"_blank\">Patstat - EPO dataset</a>.",
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartShare": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Composite",
+								"field": "key",
+								"sources": [
+									{
+										"field": "key"
+									},
+									{
+										"field": "indid"
+									},
+									{
+										"field": "svid"
+									}
+								],
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "dgid",
+										"value": [ "dg01" ]
+									},
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv01", "sv02" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i11", "i12" ]
+									}
+								]
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Average backward citations",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										],
+										"groupTests": [
+											{
+												"indid": "i11"
+											}
+										]
+									}
+								},
+								{
+									"label": {
+										"name": "Average forward citations",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										],
+										"groupTests": [
+											{
+												"indid": "i12"
+											}
+										]
+									}
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Technological Impact Origins",
+					"charts": [
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "map",
+							"name": "",
+							"chartName": "Patents by country and technological value",
+							"description": "The graph shows the number of patents by country for different types of patents in the Agrifood domain, granted by the EPO and still valid in 2021-Q2, where at least one inventor or applicant is affiliated with an EU organization. There are four types of patents based on the average number of backward citations (BC) and forward citations (FC) to other patents. Adopters (low FC, high BC), enablers (high FC, high BC), pioneers (high FC, low BC) and mavericks (low FC, low BC), where “low” is defined as below average, and “high” as above average. Use the filter on the top right to change the type selection. <i>Data Source</i>: <a href=\"https://www.epo.org/searching-for-patents/business/patstat.html\" target=\"_blank\">Patstat - EPO dataset</a>",
+							"filters": [
+								{
+									"type": "select",
+									"indicatorFilterType": "keyword",
+									"multiple": false,
+									"fieldCode": "key",
+									"name": "Type of patent",
+									"valueToAssignOnInitialLoad": "pioneer",
+									"required": true,
+									"values": [
+										{
+											"name": "Pioneers",
+											"value": "pioneer"
+										},
+										{
+											"name": "Adopters",
+											"value": "adopter"
+										},
+										{
+											"name": "Enablers",
+											"value": "enabler"
+										},
+										{
+											"name": "Maverics",
+											"value": "maverick"
+										}
+									]
+								}
+							],
+							"xAxis": {
+								"name": "country"
+							},
+							"yAxis": {
+								"name": "patents"
+							},
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartShare": {},
+							"chartDownloadImage": {},
+							"mapChartConfig": {
+								"high": {
+									"text": "High",
+									"color": "#42c39a"
+								}
+							},
+							"countryNameMapping": {
+								"AT": "Austria",
+								"BE": "Belgium",
+								"BG": "Bulgaria",
+								"CY": "Cyprus",
+								"CZ": "Czech Rep.",
+								"DE": "Germany",
+								"DK": "Denmark",
+								"EE": "Estonia",
+								"ES": "Spain",
+								"FI": "Finland",
+								"FR": "France",
+								"GR": "Greece",
+								"HR": "Croatia",
+								"HU": "Hungary",
+								"IE": "Ireland",
+								"IT": "Italy",
+								"LT": "Lithuania",
+								"LU": "Luxembourg",
+								"LV": "Latvia",
+								"NL": "Netherlands",
+								"PL": "Poland",
+								"PT": "Portugal",
+								"RO": "Romania",
+								"SE": "Sweden",
+								"SI": "Slovenia",
+								"SK": "Slovakia"
+							},
+							"bucket": {
+								"type": "Terms",
+								"field": "metric_scope",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "dgid",
+										"value": [ "dg01" ]
+									},
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv09" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i12a" ]
+									}
+								]
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Number of patents",
+										"labelKey": "metric_scope"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							]
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "bar",
+							"horizontal": false,
+							"dataZoom": {
+								"inside": true,
+								"slider": true,
+								"areaZoom": {
+									"start": 0,
+									"end": 20
+								}
+							},
+							"name": "",
+							"chartName": "Patents by Organization (top 100) and technological value",
+							"description": "The graph shows the top 100 organizations by the number of patents for different types of patents in the Agrifood domain, granted by the EPO and still valid in 2021-Q2, where at least one inventor or applicant is affiliated with an EU organization. There are four types of patents based on the average number of backward citations (BC) and forward citations (FC) to other patents. Adopters (low FC, high BC), enablers (high FC, high BC), pioneers (high FC, low BC) and mavericks (low FC, low BC), where “low” is defined as below average, and “high” as above average. Use the filter on the top right to change the type selection. Data Source: <a href=\"https://www.epo.org/searching-for-patents/business/patstat.html\" target=\"_blank\">Patstat - EPO dataset</a>",
+							"xAxis": {
+								"name": "organization",
+								"axisLabel": {
+									"width": 100,
+									"rotate": 45
+								}
+							},
+							"yAxis": {
+								"name": "patents"
+							},
+							"filters": [
+								{
+									"type": "select",
+									"indicatorFilterType": "keyword",
+									"multiple": false,
+									"fieldCode": "tag",
+									"name": "Type of patent",
+									"valueToAssignOnInitialLoad": "pioneer",
+									"required": true,
+									"values": [
+										{
+											"name": "Pioneers",
+											"value": "pioneer"
+										},
+										{
+											"name": "Adopters",
+											"value": "adopter"
+										},
+										{
+											"name": "Enablers",
+											"value": "enabler"
+										},
+										{
+											"name": "Maverics",
+											"value": "maverick"
+										}
+									]
+								}
+							],
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartShare": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"rawDataRequest": {
+								"keyField": "key",
+								"valueField": "value",
+								"order": {
+									"items": [ "-value" ]
+								},
+								"page": {
+									"offset": 0,
+									"size": 100
+								}
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Number of patents",
+										"labelKey": "key"
+									},
+									"values": {
+										"valueKey": "value",
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "dgid",
+										"value": [ "dg01" ]
+									},
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv06" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i12a" ]
+									}
+								]
+							}
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "pie",
+							"doughnut": false,
+							"radius": ["40%", "70%"],
+							"name": "",
+							"chartName": "Patents by Sector and Technological value",
+							"description": "The graph shows the number of patents by sector for different types of patents in the Agrifood domain, granted by the EPO and still valid in 2021-Q2, where at least one inventor or applicant is affiliated with an EU organization. There are four types of patents based on the average number of backward citations (BC) and forward citations (FC) to other patents. Adopters (low FC, high BC), enablers (high FC, high BC), pioneers (high FC, low BC) and mavericks (low FC, low BC), where “low” is defined as below average, and “high” as above average. Use the filter on the top right to change the type selection. <i>Data Source</i>: <a href=\"https://www.epo.org/searching-for-patents/business/patstat.html\" target=\"_blank\">Patstat - EPO dataset</a>",
+							"xAxis": {
+								"name": "sector"
+							},
+							"yAxis": {
+								"name": "patents"
+							},
+							"filters": [
+								{
+									"type": "select",
+									"indicatorFilterType": "keyword",
+									"multiple": false,
+									"fieldCode": "tag",
+									"name": "Type of patent",
+									"valueToAssignOnInitialLoad": "pioneer",
+									"required": true,
+									"values": [
+										{
+											"name": "Pioneers",
+											"value": "pioneer"
+										},
+										{
+											"name": "Adopters",
+											"value": "adopter"
+										},
+										{
+											"name": "Enablers",
+											"value": "enabler"
+										},
+										{
+											"name": "Maverics",
+											"value": "maverick"
+										}
+									]
+								}
+							],
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartShare": {},
+							"chartDownloadImage": {},
+							"legend": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"rawDataRequest": {
+								"keyField": "key",
+								"valueField": "value",
+								"order": {
+									"items": [ "-value" ]
+								}
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Number of patents",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "dgid",
+										"value": [ "dg01" ]
+									},
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv08" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i12a" ]
+									}
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Technological Impact Characteristics",
+					"charts": [
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "pie",
+							"name": "",
+							"chartName": "Patents by NACE code and by technological value",
+							"description": "The graph shows the number of patents by NACE (Nomenclature of Economic Activities) code for different types of patents in the Agrifood domain, granted by the EPO and still valid in 2021-Q2, where at least one inventor or applicant is affiliated with an EU organization. There are four types of patents based on the average number of backward citations (BC) and forward citations (FC) to other patents. Adopters (low FC, high BC), enablers (high FC, high BC), pioneers (high FC, low BC) and mavericks (low FC, low BC), where “low” is defined as below average, and “high” as above average. Use the filter on the top right to change the type selection. <i>Data Source</i>: <a href=\"https://www.epo.org/searching-for-patents/business/patstat.html\" target=\"_blank\">Patstat - EPO dataset</a>.",
+							"xAxis": {
+								"name": "NACE code"
+							},
+							"yAxis": {
+								"name": "patents"
+							},
+							"filters": [
+								{
+									"type": "select",
+									"indicatorFilterType": "keyword",
+									"multiple": false,
+									"fieldCode": "key",
+									"name": "Type of patent",
+									"valueToAssignOnInitialLoad": "pioneer",
+									"required": true,
+									"values": [
+										{
+											"name": "Pioneers",
+											"value": "pioneer"
+										},
+										{
+											"name": "Adopters",
+											"value": "adopter"
+										},
+										{
+											"name": "Enablers",
+											"value": "enabler"
+										},
+										{
+											"name": "Maverics",
+											"value": "maverick"
+										}
+									]
+								}
+							],
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartShare": {},
+							"chartDownloadImage": {},
+							"legend": {},
+							"rawDataRequest": {
+								"keyField": "metric_scope",
+								"valueField": "value",
+								"order": {
+									"items": [ "-value" ]
+								}
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Number of patents",
+										"labelKey": "metric_scope"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "dgid",
+										"value": [ "dg01" ]
+									},
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv07" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i12a" ]
+									}
+								]
+							}
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "bar",
+							"horizontal": true,
+							"dataZoom": {
+								"inside": true,
+								"slider": true,
+								"areaZoom": {
+									"start": 0,
+									"end": 20
+								}
+							},
+							"name": "",
+							"chartName": "Patents by IPC code (top 20 codes) and by technological value",
+							"description": "The graph shows the top IPC codes by number of patents, for different types of patents in the Agrifood domain, granted by the EPO and still valid in 2021-Q2, where at least one inventor or applicant is affiliated with an EU organization. There are four types of patents based on the average number of backward citations (BC) and forward citations (FC) to other patents. Adopters (low FC, high BC), enablers (high FC, high BC), pioneers (high FC, low BC) and mavericks (low FC, low BC), where “low” is defined as below average, and “high” as above average. Use the filter on the top right to change the type selection. <i>Data Source</i>: <a href=\"https://www.epo.org/searching-for-patents/business/patstat.html\" target=\"_blank\">Patstat - EPO dataset</a>.",
+							"xAxis": {
+								"name": "IPC code",
+								"axisLabel": {
+									"width": 100,
+									"rotate": 45
+								}
+							},
+							"yAxis": {
+								"name": "patents"
+							},
+							"filters": [
+								{
+									"type": "select",
+									"indicatorFilterType": "keyword",
+									"multiple": false,
+									"fieldCode": "tag",
+									"name": "Type of patent",
+									"valueToAssignOnInitialLoad": "pioneer",
+									"required": true,
+									"values": [
+										{
+											"name": "Pioneers",
+											"value": "pioneer"
+										},
+										{
+											"name": "Adopters",
+											"value": "adopter"
+										},
+										{
+											"name": "Enablers",
+											"value": "enabler"
+										},
+										{
+											"name": "Maverics",
+											"value": "maverick"
+										}
+									]
+								}
+							],
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartShare": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"rawDataRequest": {
+								"keyField": "key",
+								"valueField": "value",
+								"order": {
+									"items": [ "-value" ]
+								},
+								"page": {
+									"offset": 0,
+									"size": 100
+								}
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Number of patents",
+										"labelKey": "key"
+									},
+									"values": {
+										"valueKey": "value",
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "dgid",
+										"value": [ "dg01" ]
+									},
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv13" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i12a" ]
+									}
+								]
+							}
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "pie",
+							"roseType": "area",
+							"doughnut": true,
+							"name": "",
+							"chartName": "Patents by topic",
+							"description": "The graph shows the number of patents by topic for different types of patents in the Agrifood domain, granted by the EPO and still valid in 2021-Q2, where at least one inventor or applicant is affiliated with an EU organization. There are four types of patents based on the average number of backward citations (BC) and forward citations (FC) to other patents. Adopters (low FC, high BC), enablers (high FC, high BC), pioneers (high FC, low BC) and mavericks (low FC, low BC), where “low” is defined as below average, and “high” as above average. The topics are taken from Abbate, Centobelli, Cerchione (2023) (https://doi.org/10.1016/j.techfore.2022.122222) which we mapped to CPC codes. Use the filter on the top right to change the type selection. <i>Data Source</i>: <a href=\"https://www.epo.org/searching-for-patents/business/patstat.html\" target=\"_blank\">Patstat - EPO dataset</a>",
+							"xAxis": {
+								"name": ""
+							},
+							"yAxis": {
+								"name": ""
+							},
+							"filters": [
+								{
+									"type": "select",
+									"indicatorFilterType": "keyword",
+									"multiple": false,
+									"fieldCode": "tag",
+									"name": "Type of patent",
+									"valueToAssignOnInitialLoad": "pioneer",
+									"required": true,
+									"values": [
+										{
+											"name": "Pioneers",
+											"value": "pioneer"
+										},
+										{
+											"name": "Adopters",
+											"value": "adopter"
+										},
+										{
+											"name": "Enablers",
+											"value": "enabler"
+										},
+										{
+											"name": "Maverics",
+											"value": "maverick"
+										}
+									]
+								}
+							],
+							"rawDataRequest": {
+								"keyField": "key",
+								"valueField": "value",
+								"order": {
+									"items": [ "-value" ]
+								},
+								"page": {
+									"offset": 0,
+									"size": 1000
+								}
+							},
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartShare": {},
+							"chartDownloadImage": {},
+							"legend": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Number of patents",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "dgid",
+										"value": [ "dg01" ]
+									},
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv02" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i12a" ]
+									}
+								]
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Industry",
+			"chartGroups": [
+				{
+					"name": "",
+					"type": "gauge",
+					"gauges": [
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "value_card",
+							"name": "",
+							"description": "",
+							"metrics": [
+								{
+									"type": "Sum",
+									"field": "value"
+								}
+							],
+							"labelOverride": "Companies",
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv00" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i30aa" ]
+									}
+								]
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Publications",
+										"labelKey": "indid"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							]
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "value_card",
+							"name": "",
+							"description": "",
+							"metrics": [
+								{
+									"type": "Sum",
+									"field": "value"
+								}
+							],
+							"labelOverride": "Industry Publications",
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv00" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i31a" ]
+									}
+								]
+							},
+							"series": [
+								{
+
+									"label": {
+										"name": "Citations",
+										"labelKey": "indid"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							]
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "value_card",
+							"name": "",
+							"description": "",
+							"metrics": [
+								{
+									"type": "Sum",
+									"field": "value"
+								}
+							],
+							"labelOverride": "Industry Patents",
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv00" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i32a" ]
+									}
+								]
+							},
+							"series": [
+								{
+
+									"label": {
+										"name": "Citations",
+										"labelKey": "indid"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							]
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "value_card",
+							"name": "",
+							"description": "",
+							"metrics": [
+								{
+									"type": "Sum",
+									"field": "value"
+								}
+							],
+							"labelOverride": "Industry Trademarks",
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv00" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i33a" ]
+									}
+								]
+							},
+							"series": [
+								{
+
+									"label": {
+										"name": "Citations",
+										"labelKey": "indid"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Companies in Agrifood in EU",
+					"charts": [
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "bar",
+							"horizontal": true,
+							"dataZoom": {
+								"inside": true,
+								"slider": true,
+								"areaZoom": {
+									"start": 0,
+									"end": 10
+								}
+							},
+							"name": "",
+							"chartName": "Top Companies by Revenue per Employee",
+							"description": "The graph showcases the leading Agrifood companies in the EU, ranked according to their revenue per employee. To compile this list, we selected companies from Orbis using Agrifood-related NACE (Nomenclature of Economic Activities) codes. We refined the dataset by employing text mining techniques on their webpages to identify key agrifood terms. To calculate the revenue per employee, we utilized Orbis data by dividing the turnover by the number of employees. <i>Data Source</i>: <a href=\"https://www.bvdinfo.com/en-gb/our-products/data/international/orbis#:~:text=Orbis%20is%20the%20resource%20for,it%20covers%20listed%20companies%20too.\" target=\"_blank\">Orbis</a>",
+							"xAxis": {
+								"name": "company name",
+								"axisLabel": {
+									"width": 100,
+									"rotate": 45
+								}
+							},
+							"yAxis": {
+								"name": "revenue per employee"
+							},
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartShare": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								],
+								"bucketSort": {
+									"sortFields": [
+										{
+											"field": "value",
+											"metricAggregateType": "Sum",
+											"order": "DESC"
+										}
+									],
+									"paging": {
+										"offset": 0,
+										"size": 1000
+									}
+								}
+							},
+							"series": [
+								{
+									"label": {
+										"name": "revenue per employee",
+										"labelKey": "key"
+									},
+									"values": {
+										"valueKey": "value",
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "dgid",
+										"value": [ "dg01" ]
+									},
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i30a" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv00" ]
+									}
+								]
+							}
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "bar",
+							"horizontal": true,
+							"dataZoom": {
+								"inside": true,
+								"slider": true,
+								"areaZoom": {
+									"start": 0,
+									"end": 10
+								}
+							},
+							"name": "",
+							"chartName": "Top Companies by Revenue per Employee and by NACE Code",
+							"description": "The graph illustrates the EU's top Agrifood companies filtered by NACE code, ranked by their revenue per employee. Use the filter on the top right to change the NACE code selection. To compile the list, we selected companies from Orbis using Agrifood-related NACE (Nomenclature of Economic Activities) codes. We refined the dataset by employing text mining techniques on their webpages to identify key agrifood terms. To calculate the revenue per employee, we utilized Orbis data by dividing the turnover by the number of employees. <i>Data Source</i>: <a href=\"https://www.bvdinfo.com/en-gb/our-products/data/international/orbis#:~:text=Orbis%20is%20the%20resource%20for,it%20covers%20listed%20companies%20too.\" target=\"_blank\">Orbis</a>",
+							"xAxis": {
+								"name": "company name",
+								"axisLabel": {
+									"width": 100,
+									"rotate": 45
+								}
+							},
+							"yAxis": {
+								"name": "revenue per employee"
+							},
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartShare": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								],
+								"bucketSort": {
+									"sortFields": [
+										{
+											"field": "value",
+											"metricAggregateType": "Sum",
+											"order": "DESC"
+										}
+									],
+									"paging": {
+										"offset": 0,
+										"size": 1000
+									}
+								}
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Number of patents",
+										"labelKey": "key"
+									},
+									"values": {
+										"valueKey": "value",
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "dgid",
+										"value": [ "dg01" ]
+									},
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv07" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i30a" ]
+									}
+								]
+							}
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "bar",
+							"horizontal": true,
+							"dataZoom": {
+								"inside": true,
+								"slider": true,
+								"areaZoom": {
+									"start": 0,
+									"end": 45
+								}
+							},
+							"name": "",
+							"chartName": "Top Companies by Revenue per Employee and by Country",
+							"description": "The graph illustrates the top Agrifood companies filtered by EU country, ranked by their revenue per employee. Use the filter on the top right to change the country selection. To compile the list, we selected companies from Orbis using Agrifood-related NACE (Nomenclature of Economic Activities) codes. We refined the dataset by employing text mining techniques on their webpages to identify key agrifood terms. To calculate the revenue per employee, we utilized Orbis data by dividing the turnover by the number of employees. <i>Data Source</i>: <a href=\"https://www.bvdinfo.com/en-gb/our-products/data/international/orbis#:~:text=Orbis%20is%20the%20resource%20for,it%20covers%20listed%20companies%20too.\" target=\"_blank\">Orbis</a>",
+							"xAxis": {
+								"name": "company name",
+								"axisLabel": {
+									"width": 100,
+									"rotate": 45
+								}
+							},
+							"yAxis": {
+								"name": "revenue per employee"
+							},
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartShare": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								],
+								"bucketSort": {
+									"sortFields": [
+										{
+											"field": "value",
+											"metricAggregateType": "Sum",
+											"order": "DESC"
+										}
+									],
+									"paging": {
+										"offset": 0,
+										"size": 20
+									}
+								}
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Number of patents",
+										"labelKey": "key"
+									},
+									"values": {
+										"valueKey": "value",
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "dgid",
+										"value": [ "dg01" ]
+									},
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv09" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i30a" ]
+									}
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Company Distributions",
+					"charts": [
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "map",
+							"name": "",
+							"chartName": "Number of Companies by Country",
+							"description": "The graph shows the number of companies in Agrifood by EU country. We identified Agrifood companies using related NACE (Nomenclature of Economic Activities) codes, further refining the dataset by employing text mining techniques on company webpages to identify key agrifood terms. <i>Data Source</i>: <a href=\"https://www.bvdinfo.com/en-gb/our-products/data/international/orbis#:~:text=Orbis%20is%20the%20resource%20for,it%20covers%20listed%20companies%20too.\" target=\"_blank\">Orbis</a>",
+							"xAxis": {
+								"name": "country"
+							},
+							"yAxis": {
+								"name": "number of companies"
+							},
+							"countryNameMapping": {
+								"AT": "Austria",
+								"BE": "Belgium",
+								"BG": "Bulgaria",
+								"CY": "Cyprus",
+								"CZ": "Czech Rep.",
+								"DE": "Germany",
+								"DK": "Denmark",
+								"EE": "Estonia",
+								"ES": "Spain",
+								"FI": "Finland",
+								"FR": "France",
+								"GR": "Greece",
+								"HR": "Croatia",
+								"HU": "Hungary",
+								"IE": "Ireland",
+								"IT": "Italy",
+								"LT": "Lithuania",
+								"LU": "Luxembourg",
+								"LV": "Latvia",
+								"NL": "Netherlands",
+								"PL": "Poland",
+								"PT": "Portugal",
+								"RO": "Romania",
+								"SE": "Sweden",
+								"SI": "Slovenia",
+								"SK": "Slovakia"
+							},
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartShare": {},
+							"chartDownloadImage": {},
+							"mapChartConfig": {
+								"high": {
+									"text": "High",
+									"color": "#42c39a"
+								}
+							},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "dgid",
+										"value": [ "dg01" ]
+									},
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv09" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i30aa" ]
+									}
+								]
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Publications by Country",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							]
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "treemap",
+							"name": "",
+							"chartName": "Number of Companies by NACE",
+							"description": "The graph shows the number of companies in Agrifood by NACE (Nomenclature of Economic Activities) code. We identified Agrifood companies using related NACE codes, further refining the dataset by employing text mining techniques on company webpages to identify key agrifood terms. <i>Data Source</i>: <a href=\"https://www.bvdinfo.com/en-gb/our-products/data/international/orbis#:~:text=Orbis%20is%20the%20resource%20for,it%20covers%20listed%20companies%20too.\" target=\"_blank\">Orbis</a>",
+							"xAxis": {
+								"name": ""
+							},
+							"yAxis": {
+								"name": ""
+							},
+							"treeName": "Average publications by Development Goal ",
+							"toolTip": {
+								"name": "Average publications"
+							},
+							"treeColors": {
+								"1. No poverty": "#eb1c2c",
+								"2. Zero hunger": "#d3a029",
+								"3. Good health": "#279b47",
+								"4. Education": "#c21e32",
+								"5. Gender equality": "#ee402a",
+								"6. Clean water": "#00add8",
+								"7. Clean energy": "#fdb713",
+								"8. Economic growth": "#8f1838",
+								"9. Industry and infrastructure": "#f26c25FF",
+								"10. No inequality": "#e11484",
+								"11. Sustainability": "#f99d26",
+								"12. Responsible consumption": "#cf8d2a",
+								"13. Climate action": "#48773e",
+								"14. Life underwater": "#007cbc",
+								"15. Life on land": "#3eb049",
+								"16. Peace & justice": "#02548a"
+							},
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartShare": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Composite",
+								"field": "key",
+								"sources": [
+									{
+										"field": "key"
+									},
+									{
+										"field": "tag"
+									},
+									{
+										"field": "topicId"
+									}
+								],
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "dgid",
+										"value": [ "dg01" ]
+									},
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv07", "sv07b" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i30aa" ]
+									}
+								]
+							},
+
+							"series": [
+								{
+									"label": {
+										"name": "UN Sustainable Development Goal",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"treeNesting": {
+								"labelKey": "key",
+								"parentIdentifierKey": "tag",
+								"identifierKey": "topicId"
+							}
+						}
+					]
+				},
+				{
+					"name": "Company Innovativeness",
+					"charts": [
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "polar_bar",
+							"dataZoom": {
+								"inside": true,
+								"slider": true,
+								"areaZoom": {
+									"start": 0,
+									"end": 10
+								}
+							},
+							"legend": {},
+							"name": "",
+							"chartName": "Companies by Innovative Activity",
+							"xAxis": {
+								"name": "company",
+								"axisLabel": {
+									"width": 100,
+									"rotate": 45
+								}
+							},
+							"yAxis": {
+								"name": "publications"
+							},
+							"description": "The graph displays different types of innovative activities carried out by EU Agrifood companies. <i>Data Sources</i>: <a href=\\\"https://graph.openaire.eu/\\\" target=\\\"_blank\\\">OpenAIRE Graph</a>, <a href=\\\"https://www.epo.org/searching-for-patents/business/patstat.html\\\" target=\\\"_blank\\\">Patstat - EPO dataset</a>, <a href=\\https://euipo.europa.eu/ohimportal/en/web/guest/home\\\" target=\\\"_blank\\\">EUIPO</a>, <a href=\\\"https://www.bvdinfo.com/en-gb/our-products/data/international/orbis#:~:text=Orbis%20is%20the%20resource%20for,it%20covers%20listed%20companies%20too.\\\" target=\\\"_blank\\\">Orbis</a>",
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartShare": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Composite",
+								"field": "key",
+								"sources": [
+									{
+										"field": "key"
+									},
+									{
+										"field": "indid"
+									}
+								],
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "dgid",
+										"value": [ "dg01" ]
+									},
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv00" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i31", "i32", "i33" ]
+									}
+								]
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Publications over time",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										],
+										"groupTests": [
+											{
+												"indid": "i31"
+											}
+										]
+									}
+								},
+								{
+									"label": {
+										"name": "Citable international co-publications",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										],
+										"groupTests": [
+											{
+												"indid": "i32"
+											}
+										]
+									}
+								},
+								{
+									"label": {
+										"name": "International co-publications",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										],
+										"groupTests": [
+											{
+												"indid": "i33"
+											}
+										]
+									}
+								}
+							]
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "polar_bar",
+							"dataZoom": {
+								"inside": true,
+								"slider": true,
+								"areaZoom": {
+									"start": 0,
+									"end": 10
+								}
+							},
+							"legend": {},
+							"name": "",
+							"chartName": "Companies by Innovative Activity and by NACE 2-digit code",
+							"description": "The graph displays different types of innovative activities carried out by EU Agrifood companies filtered by NACE (Nomenclature of Economic Activities) 2-digit code. Use the filter on the top right to change the NACE code selection. <i>Data Sources</i>: <a href=\\\"https://graph.openaire.eu/\\\" target=\\\"_blank\\\">OpenAIRE Graph</a>, <a href=\\\"https://www.epo.org/searching-for-patents/business/patstat.html\\\" target=\\\"_blank\\\">Patstat - EPO dataset</a>, <a href=\\https://euipo.europa.eu/ohimportal/en/web/guest/home\\\" target=\\\"_blank\\\">EUIPO</a>, <a href=\\\"https://www.bvdinfo.com/en-gb/our-products/data/international/orbis#:~:text=Orbis%20is%20the%20resource%20for,it%20covers%20listed%20companies%20too.\\\" target=\\\"_blank\\\">Orbis</a>",
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartShare": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Composite",
+								"field": "key",
+								"sources": [
+									{
+										"field": "key"
+									},
+									{
+										"field": "indid"
+									}
+								],
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "dgid",
+										"value": [ "dg01" ]
+									},
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv07" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i31", "i32", "i33" ]
+									}
+								]
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Publications over time",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										],
+										"groupTests": [
+											{
+												"indid": "i31"
+											}
+										]
+									}
+								},
+								{
+									"label": {
+										"name": "Citable international co-publications",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										],
+										"groupTests": [
+											{
+												"indid": "i32"
+											}
+										]
+									}
+								},
+								{
+									"label": {
+										"name": "International co-publications",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										],
+										"groupTests": [
+											{
+												"indid": "i33"
+											}
+										]
+									}
+								}
+							]
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "polar_bar",
+							"dataZoom": {
+								"inside": true,
+								"slider": true,
+								"areaZoom": {
+									"start": 0,
+									"end": 10
+								}
+							},
+							"legend": {},
+							"name": "",
+							"chartName": "Companies by Innovative Activity and by NACE 4-digit code",
+							"description": "The graph displays different types of innovative activities carried out by EU Agrifood companies filtered by NACE (Nomenclature of Economic Activities) 4-digit code. Use the filter on the top right to change the NACE code selection. <i>Data Sources</i>: <a href=\\\"https://graph.openaire.eu/\\\" target=\\\"_blank\\\">OpenAIRE Graph</a>, <a href=\\\"https://www.epo.org/searching-for-patents/business/patstat.html\\\" target=\\\"_blank\\\">Patstat - EPO dataset</a>, <a href=\\https://euipo.europa.eu/ohimportal/en/web/guest/home\\\" target=\\\"_blank\\\">EUIPO</a>, <a href=\\\"https://www.bvdinfo.com/en-gb/our-products/data/international/orbis#:~:text=Orbis%20is%20the%20resource%20for,it%20covers%20listed%20companies%20too.\\\" target=\\\"_blank\\\">Orbis</a>",
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartShare": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Composite",
+								"field": "key",
+								"sources": [
+									{
+										"field": "key"
+									},
+									{
+										"field": "indid"
+									}
+								],
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "dgid",
+										"value": [ "dg01" ]
+									},
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv07b" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i31", "i32", "i33" ]
+									}
+								]
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Publications over time",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										],
+										"groupTests": [
+											{
+												"indid": "i31"
+											}
+										]
+									}
+								},
+								{
+									"label": {
+										"name": "Citable international co-publications",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										],
+										"groupTests": [
+											{
+												"indid": "i32"
+											}
+										]
+									}
+								},
+								{
+									"label": {
+										"name": "International co-publications",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										],
+										"groupTests": [
+											{
+												"indid": "i33"
+											}
+										]
+									}
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Industry Innovativeness - Publications",
+					"charts": [
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "line",
+							"dataZoom": {
+								"inside": true
+							},
+							"legend": {},
+							"name": "",
+							"chartName": "Industry Publications by Year and Topic",
+							"xAxis": {
+								"name": "year"
+							},
+							"yAxis": {
+								"name": "average # publications per company"
+							},
+							"labelSortKey": "year",
+							"description": "The graph displays the yearly average number of publications per company, in Agrifood in the EU, by the year and topic of publication. The assignment of topics is taken from Abbate, Centobelli, Cerchione (2023) (<a href=\\https://doi.org/10.1016/j.techfore.2022.122222\\\" target=\\\"_blank\\\">https://doi.org/10.1016/j.techfore.2022.122222</a>) which we enhanced and mapped to topics in our Fields of Science (FoS) publication classification system (<a href=\\\\http://doi.org/10.3389/frma.2023.1149834\\\\\\\" target=\\\\\\\"_blank\\\\\\\">http://doi.org/10.3389/frma.2023.1149834</a>). Data Sources: <a href=\\\\\\\"https://graph.openaire.eu/\\\\\\\" target=\\\\\\\"_blank\\\\\\\">OpenAIRE Graph</a>, <a href=\\\\\\\"https://www.bvdinfo.com/en-gb/our-products/data/international/orbis#:~:text=Orbis%20is%20the%20resource%20for,it%20covers%20listed%20companies%20too.\\\\\\\" target=\\\\\\\"_blank\\\\\\\">Orbis</a>",
+
+
+							"chartDownloadJson": {},
+							"chartShare": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Composite",
+								"field": "key",
+								"sources": [
+									{
+										"field": "key"
+									},
+									{
+										"field": "year"
+									}
+								],
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "dgid",
+										"value": [ "dg01" ]
+									},
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv02.01" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i31aa" ]
+									}
+								]
+							},
+							"series": [
+								{
+									"splitSeries": [
+										{
+											"key": "key"
+										}
+									],
+									"label": {
+										"name": "Topic",
+										"labelKey": "year"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"areaStyle": {},
+							"stack": "x"
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "treemap",
+							"name": "",
+							"chartName": "Industry Publications by SDG",
+							"description": "The graph displays the yearly average number of publications per company, in Agrifood in the EU, by SDG. Our SDG classification system uses deep learning techniques to assign a scientific publication to the SDGs that are related to it. <i>Data Sources</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a>, <a href=\"https://www.bvdinfo.com/en-gb/our-products/data/international/orbis#:~:text=Orbis%20is%20the%20resource%20for,it%20covers%20listed%20companies%20too.\" target=\"_blank\">Orbis</a>",
+							"xAxis": {
+								"name": "SDG"
+							},
+							"yAxis": {
+								"name": "average # publications per company"
+							},
+							"treeName": "Industry Publications by SDG",
+							"toolTip": {
+								"name": "Publications"
+							},
+							"treeColors": {
+								"1. No poverty": "#eb1c2c",
+								"2. Zero hunger": "#d3a029",
+								"3. Good health": "#279b47",
+								"4. Education": "#c21e32",
+								"5. Gender equality": "#ee402a",
+								"6. Clean water": "#00add8",
+								"7. Clean energy": "#fdb713",
+								"8. Economic growth": "#8f1838",
+								"9. Industry and infrastructure": "#f26c25FF",
+								"10. No inequality": "#e11484",
+								"11. Sustainability": "#f99d26",
+								"12. Responsible consumption": "#cf8d2a",
+								"13. Climate action": "#48773e",
+								"14. Life underwater": "#007cbc",
+								"15. Life on land": "#3eb049",
+								"16. Peace & justice": "#02548a"
+							},
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartShare": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "dgid",
+										"value": [ "dg01" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv05" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i31aa" ]
+									}
+								]
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Publicatios by SDG",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"stack": "x",
+							"areaStyle": {}
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "bar",
+							"horizontal": false,
+							"dataZoom": {
+								"inside": true,
+								"slider": true,
+								"areaZoom": {
+									"start": 0,
+									"end": 20
+								}
+							},
+							"name": "",
+							"chartName": "Industry Publications by Company Size",
+							"description": "The graph displays yearly average number of publications per company, in Agrifood in the EU, by number of employees. <i>Data Sources</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a>, <a href=\"https://www.bvdinfo.com/en-gb/our-products/data/international/orbis#:~:text=Orbis%20is%20the%20resource%20for,it%20covers%20listed%20companies%20too.\" target=\"_blank\">Orbis</a>",
+							"xAxis": {
+								"name": "number of employees",
+								"axisLabel": {
+									"width": 100,
+									"rotate": 45
+								}
+							},
+							"yAxis": {
+								"name": "average # publications per company"
+							},
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartShare": {},
+							"chartDownloadImage": {},
+							"filters": [],
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"rawDataRequest": {
+								"keyField": "key",
+								"valueField": "value",
+								"order": {
+									"items": [ "-value" ]
+								},
+								"page": {
+									"offset": 0,
+									"size": 100
+								}
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Average Number of citation",
+										"labelKey": "key"
+									},
+									"values": {
+										"valueKey": "value",
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "dgid",
+										"value": [ "dg01" ]
+									},
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i31aa" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv15" ]
+									}
+								]
+							}
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "map",
+							"name": "",
+							"chartName": "Industry Publications by Country",
+							"description": "The graph displays yearly average number of publications per company, in Agrifood in the EU, by country. <i>Data Sources</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a>, <a href=\"https://www.bvdinfo.com/en-gb/our-products/data/international/orbis#:~:text=Orbis%20is%20the%20resource%20for,it%20covers%20listed%20companies%20too.\" target=\"_blank\">Orbis</a>",
+							"xAxis": {
+								"name": "country",
+								"axisLabel": {
+									"width": 100,
+									"rotate": 45
+								}
+							},
+							"yAxis": {
+								"name": "average # publication per company"
+							},
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartShare": {},
+							"chartDownloadImage": {},
+							"mapChartConfig": {
+								"high": {
+									"text": "High",
+									"color": "#42c39a"
+								}
+							},
+							"countryNameMapping": {
+								"AT": "Austria",
+								"BE": "Belgium",
+								"BG": "Bulgaria",
+								"CY": "Cyprus",
+								"CZ": "Czech Rep.",
+								"DE": "Germany",
+								"DK": "Denmark",
+								"EE": "Estonia",
+								"ES": "Spain",
+								"FI": "Finland",
+								"FR": "France",
+								"GR": "Greece",
+								"HR": "Croatia",
+								"HU": "Hungary",
+								"IE": "Ireland",
+								"IT": "Italy",
+								"LT": "Lithuania",
+								"LU": "Luxembourg",
+								"LV": "Latvia",
+								"NL": "Netherlands",
+								"PL": "Poland",
+								"PT": "Portugal",
+								"RO": "Romania",
+								"SE": "Sweden",
+								"SI": "Slovenia",
+								"SK": "Slovakia"
+							},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "dgid",
+										"value": [ "dg01" ]
+									},
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv09" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i31aa" ]
+									}
+								]
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Publications by Country",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Industry Innovativeness - Patents",
+					"charts": [
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "line",
+							"dataZoom": {
+								"inside": true
+							},
+							"legend": {},
+							"name": "",
+							"chartName": "Industry Patents by Year and Topic",
+							"xAxis": {
+								"name": "year"
+							},
+							"yAxis": {
+								"name": "average # patents per company"
+							},
+							"labelSortKey": "year",
+							"description": "The graph displays the yearly average number of patents per company, in Agrifood in the EU, by the priority year and topic of patent. The topics are taken from Abbate, Centobelli, Cerchione (2023) (https://doi.org/10.1016/j.techfore.2022.122222) which we mapped to CPC codes. <i>Data Sources</i>: <a href=\"https://www.epo.org/searching-for-patents/business/patstat.html\" target=\"_blank\">Patstat - EPO dataset</a>, <a href=\"https://www.bvdinfo.com/en-gb/our-products/data/international/orbis#:~:text=Orbis%20is%20the%20resource%20for,it%20covers%20listed%20companies%20too.\" target=\"_blank\">Orbis</a>",
+
+
+							"chartDownloadJson": {},
+							"chartShare": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Composite",
+								"field": "key",
+								"sources": [
+									{
+										"field": "key"
+									},
+									{
+										"field": "year"
+									}
+								],
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "dgid",
+										"value": [ "dg01" ]
+									},
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv02.01" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i32aa" ]
+									}
+								]
+							},
+							"series": [
+								{
+									"splitSeries": [
+										{
+											"key": "key"
+										}
+									],
+									"label": {
+										"name": "Topic",
+										"labelKey": "year"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"areaStyle": {},
+							"stack": "x"
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "bar",
+							"horizontal": false,
+							"dataZoom": {
+								"inside": true,
+								"slider": true,
+								"areaZoom": {
+									"start": 0,
+									"end": 20
+								}
+							},
+							"name": "",
+							"chartName": "Industry Patents by Company Size",
+							"description": "The graph displays the yearly average number of patents per company, in Agrifood in the EU, by number of employees. <i>Data Sources</i>: <a href=\"https://www.epo.org/searching-for-patents/business/patstat.html\" target=\"_blank\">Patstat - EPO dataset</a>, <a href=\"https://www.bvdinfo.com/en-gb/our-products/data/international/orbis#:~:text=Orbis%20is%20the%20resource%20for,it%20covers%20listed%20companies%20too.\" target=\"_blank\">Orbis</a>",
+							"xAxis": {
+								"name": "number of employees",
+								"axisLabel": {
+									"width": 100,
+									"rotate": 45
+								}
+							},
+							"yAxis": {
+								"name": "average # patents per company"
+							},
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartShare": {},
+							"chartDownloadImage": {},
+							"filters": [
+								{
+									"type": "select",
+									"indicatorFilterType": "keyword",
+									"multiple": false,
+									"fieldCode": "indid",
+									"name": "Publications",
+									"valueToAssignOnInitialLoad": "i07",
+									"required": true,
+									"values": [
+										{
+											"name": "Total",
+											"value": "i07"
+										},
+										{
+											"name": "Multi disciplinary",
+											"value": "i28"
+										}
+									]
+								}
+							],
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"rawDataRequest": {
+								"keyField": "key",
+								"valueField": "value",
+								"order": {
+									"items": [ "-value" ]
+								},
+								"page": {
+									"offset": 0,
+									"size": 100
+								}
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Average Number of citation",
+										"labelKey": "key"
+									},
+									"values": {
+										"valueKey": "value",
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "dgid",
+										"value": [ "dg01" ]
+									},
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i32aa" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv15" ]
+									}
+								]
+							}
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "map",
+							"name": "",
+							"chartName": "Industry Patents by country",
+							"description": "The graph displays the yearly average number of patents per company, in Agrifood in the EU, by country. The graph displays the yearly average number of patents per company, in Agrifood in the EU, by country. <i>Data Sources</i>: <a href=\"https://www.epo.org/searching-for-patents/business/patstat.html\" target=\"_blank\">Patstat - EPO dataset</a>, <a href=\"https://www.bvdinfo.com/en-gb/our-products/data/international/orbis#:~:text=Orbis%20is%20the%20resource%20for,it%20covers%20listed%20companies%20too.\" target=\"_blank\">Orbis</a>",
+							"xAxis": {
+								"name": "country",
+								"axisLabel": {
+									"width": 100,
+									"rotate": 45
+								}
+							},
+							"yAxis": {
+								"name": "average # publication per company"
+							},
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartShare": {},
+							"chartDownloadImage": {},
+							"mapChartConfig": {
+								"high": {
+									"text": "High",
+									"color": "#42c39a"
+								}
+							},
+							"countryNameMapping": {
+								"AT": "Austria",
+								"BE": "Belgium",
+								"BG": "Bulgaria",
+								"CY": "Cyprus",
+								"CZ": "Czech Rep.",
+								"DE": "Germany",
+								"DK": "Denmark",
+								"EE": "Estonia",
+								"ES": "Spain",
+								"FI": "Finland",
+								"FR": "France",
+								"GR": "Greece",
+								"HR": "Croatia",
+								"HU": "Hungary",
+								"IE": "Ireland",
+								"IT": "Italy",
+								"LT": "Lithuania",
+								"LU": "Luxembourg",
+								"LV": "Latvia",
+								"NL": "Netherlands",
+								"PL": "Poland",
+								"PT": "Portugal",
+								"RO": "Romania",
+								"SE": "Sweden",
+								"SI": "Slovenia",
+								"SK": "Slovakia"
+							},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "dgid",
+										"value": [ "dg01" ]
+									},
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv09" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i32aa" ]
+									}
+								]
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Publications by Country",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Industry Innovativeness - Trademarks",
+					"charts": [
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "line",
+							"dataZoom": {
+								"inside": true,
+								"slider": true
+							},
+							"legend": {},
+							"name": "",
+							"chartName": "Industry Trademarks by Year",
+							"xAxis": {
+								"name": "year"
+							},
+							"yAxis": {
+								"name": "average # trademarks per company"
+							},
+							"labelSortKey": "key",
+							"description": "The graph displays the yearly average number of trademarks per company, in Agrifood in the EU, by year. <i>Data Sources</i>: <a href=\\https://euipo.europa.eu/ohimportal/en/web/guest/home\\\" target=\\\"_blank\\\">EUIPO</a>, <a href=\\\"https://www.bvdinfo.com/en-gb/our-products/data/international/orbis#:~:text=Orbis%20is%20the%20resource%20for,it%20covers%20listed%20companies%20too.\\\" target=\\\"_blank\\\">Orbis</a>",
+
+
+							"chartDownloadJson": {},
+							"chartShare": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Composite",
+								"field": "key",
+								"sources": [
+									{
+										"field": "key"
+									}
+								],
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "dgid",
+										"value": [ "dg01" ]
+									},
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv01" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i33aa" ]
+									}
+								]
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Topic",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"areaStyle": {}
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "pie",
+							"doughnut": true,
+							"radius": ["40%", "70%"],
+							"name": "",
+							"chartName": "Industry Trademarks by Type",
+							"description": "The graph displays the yearly average number of trademarks per company, in Agrifood in the EU, by trademark type. <i>Data Sources</i>: <a href=\\https://euipo.europa.eu/ohimportal/en/web/guest/home\\\" target=\\\"_blank\\\">EUIPO</a>, <a href=\\\"https://www.bvdinfo.com/en-gb/our-products/data/international/orbis#:~:text=Orbis%20is%20the%20resource%20for,it%20covers%20listed%20companies%20too.\\\" target=\\\"_blank\\\">Orbis</a>",
+							"xAxis": {
+								"name": ""
+							},
+							"yAxis": {
+								"name": "average # trademarks per company"
+							},
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartShare": {},
+							"chartDownloadImage": {},
+							"legend": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"rawDataRequest": {
+								"keyField": "key",
+								"valueField": "value",
+								"order": {
+									"items": [ "-value" ]
+								}
+							},
+							"series": [
+								{
+									"label": {
+										"name": "average # trademarks per company",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "dgid",
+										"value": [ "dg01" ]
+									},
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv21" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i33aa" ]
+									}
+								]
+							}
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "bar",
+							"horizontal": false,
+							"dataZoom": {
+								"inside": true,
+								"slider": true,
+								"areaZoom": {
+									"start": 0,
+									"end": 20
+								}
+							},
+							"name": "",
+							"chartName": "Industry Trademarks by Company Size",
+							"description": "The graph displays the yearly average number of trademarks per company, in Agrifood in the EU, by number of employees. <i>Data Sources</i>: <a href=\\https://euipo.europa.eu/ohimportal/en/web/guest/home\\\" target=\\\"_blank\\\">EUIPO</a>, <a href=\\\"https://www.bvdinfo.com/en-gb/our-products/data/international/orbis#:~:text=Orbis%20is%20the%20resource%20for,it%20covers%20listed%20companies%20too.\\\" target=\\\"_blank\\\">Orbis</a>",
+							"xAxis": {
+								"name": "number of employees",
+								"axisLabel": {
+									"width": 100,
+									"rotate": 45
+								}
+							},
+							"yAxis": {
+								"name": "average # trademarks per company"
+							},
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartShare": {},
+							"chartDownloadImage": {},
+							"filters": [
+								{
+									"type": "select",
+									"indicatorFilterType": "keyword",
+									"multiple": false,
+									"fieldCode": "indid",
+									"name": "Publications",
+									"valueToAssignOnInitialLoad": "i07",
+									"required": true,
+									"values": [
+										{
+											"name": "Total",
+											"value": "i07"
+										},
+										{
+											"name": "Multi disciplinary",
+											"value": "i28"
+										}
+									]
+								}
+							],
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"rawDataRequest": {
+								"keyField": "key",
+								"valueField": "value",
+								"order": {
+									"items": [ "-value" ]
+								},
+								"page": {
+									"offset": 0,
+									"size": 100
+								}
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Average Number of citation",
+										"labelKey": "key",
+										"show": false,
+        								"position": "center"
+									},
+									"values": {
+										"valueKey": "value",
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "dgid",
+										"value": [ "dg01" ]
+									},
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i33aa" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv15" ]
+									}
+								]
+							}
+						},
+						{
+							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
+							"type": "map",
+							"name": "",
+							"chartName": "Industry Trademarks by Country",
+							"description": "The graph displays the yearly average number of trademarks per company, in Agrifood in the EU, by country. <i>Data Sources</i>: <a href=\\https://euipo.europa.eu/ohimportal/en/web/guest/home\\\" target=\\\"_blank\\\">EUIPO</a>, <a href=\\\"https://www.bvdinfo.com/en-gb/our-products/data/international/orbis#:~:text=Orbis%20is%20the%20resource%20for,it%20covers%20listed%20companies%20too.\\\" target=\\\"_blank\\\">Orbis</a>",
+							"countryNameMapping": {
+								"AT": "Austria",
+								"BE": "Belgium",
+								"BG": "Bulgaria",
+								"CY": "Cyprus",
+								"CZ": "Czech Rep.",
+								"DE": "Germany",
+								"DK": "Denmark",
+								"EE": "Estonia",
+								"ES": "Spain",
+								"FI": "Finland",
+								"FR": "France",
+								"GR": "Greece",
+								"HR": "Croatia",
+								"HU": "Hungary",
+								"IE": "Ireland",
+								"IT": "Italy",
+								"LT": "Lithuania",
+								"LU": "Luxembourg",
+								"LV": "Latvia",
+								"NL": "Netherlands",
+								"PL": "Poland",
+								"PT": "Portugal",
+								"RO": "Romania",
+								"SE": "Sweden",
+								"SI": "Slovenia",
+								"SK": "Slovakia"
+							},
+							"xAxis": {
+								"name": "country",
+								"axisLabel": {
+									"width": 100,
+									"rotate": 45
+								}
+							},
+							"yAxis": {
+								"name": "average # trademarks per company"
+							},
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartShare": {},
+							"chartDownloadImage": {},
+							"mapChartConfig": {
+								"high": {
+									"text": "High",
+									"color": "#42c39a"
+								}
+							},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "dgid",
+										"value": [ "dg01" ]
+									},
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv09" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i32aa" ]
+									}
+								]
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Publications by Country",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "ESG Reports",
+			"chartGroups": []
+		},
+		{
+			"name": "Green Skills",
+			"chartGroups": []
+		},
+		{
+			"name": "Regulations",
+			"chartGroups": []
+		}
+	]
+}

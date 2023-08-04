@@ -42,5 +42,11 @@
 		"appName": "coreApp"
 	},
 	"portofolioConfigurationKey":"portofolio",
-	"dataTreeConfigurationKey":"myId"
+	"dataTreeConfigurationKey":"myId",
+	"availableForPresentation":[],
+	"availableForSearchPresentation":["Climate EU"],
+	"embeddedDashboardPath":"/embedded-dashboard",
+	"sharedExpirationInDays":30,
+	"sharedGraphPath":"/shared-graph",
+	"sharedDashboardPath":"/shared-dashboard"
 }

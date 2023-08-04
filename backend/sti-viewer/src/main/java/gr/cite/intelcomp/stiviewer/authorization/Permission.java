@@ -68,6 +68,13 @@ public final class Permission {
 	public static String EditDynamicPage = "EditDynamicPage";
 	public static String DeleteDynamicPage = "DeleteDynamicPage";
 
+	//ExternalToken
+	public static String BrowseExternalToken = "BrowseExternalToken";
+	public static String EditExternalToken = "EditExternalToken";
+	public static String DeleteExternalToken = "DeleteExternalToken";
+	public static String CreateChartExternalToken = "CreateChartExternalToken";
+	public static String CreateDashboardExternalToken = "CreateDashboardExternalToken";
+
 	//Tenant
 	public static String BrowseTenant = "BrowseTenant";
 	public static String EditTenant = "EditTenant";
@@ -148,5 +155,6 @@ public final class Permission {
 	public static String DownloadReport = "DownloadReport";
 	public static String ViewBlueprintTemplatePage = "ViewBlueprintTemplatePage";
 	public static String ViewDynamicPage = "ViewDynamicPage";
+	public static String ViewExternalTokenPage = "ViewExternalTokenPage";
 	
 }

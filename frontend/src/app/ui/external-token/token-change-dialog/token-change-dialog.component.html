@@ -1,0 +1,34 @@
+<ng-container class="col-12" *ngIf="formGroup">
+	<form  (ngSubmit)="formSubmit()" [formGroup]="formGroup">
+		<h3>
+			{{'APP.TOKEN-CHANGE-DIALOG.TITLE' | translate}}
+		</h3>
+
+
+		<h4>
+			{{'APP.TOKEN-CHANGE-DIALOG.CHANGE-TOKEN-WARNING' | translate}}
+		</h4>
+
+
+		<div *ngIf="token">
+			<mat-label>
+				{{'APP.TOKEN-CHANGE-DIALOG.NEW-TOKEN' | translate}}
+			</mat-label>
+			<button  type="button" mat-raised-button [cdkCopyToClipboard]="token">
+				<mat-icon>content_copy</mat-icon>
+				{{'APP.TOKEN-CHANGE-DIALOG.ACTIONS.COPY' | translate}}
+			</button>
+		</div>
+
+		<div class="row m-0 justify-content-end">
+			<button mat-raised-button type="button" (click)="close()">
+				{{'APP.TOKEN-CHANGE-DIALOG.ACTIONS.CLOSE' | translate}}
+			</button>
+			<button mat-raised-button *ngIf="!token" type="submit" (click)="save()">
+				{{'APP.TOKEN-CHANGE-DIALOG.ACTIONS.SUBMIT' | translate}}
+			</button>
+		</div>
+	</form>
+</ng-container>
+
+

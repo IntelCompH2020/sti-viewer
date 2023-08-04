@@ -12,6 +12,7 @@ import gr.cite.intelcomp.stiviewer.authorization.IndicatorRolesAuthorizationRequ
 import gr.cite.intelcomp.stiviewer.authorization.IndicatorRolesResource;
 import gr.cite.intelcomp.stiviewer.authorization.OwnedAuthorizationRequirement;
 import gr.cite.intelcomp.stiviewer.authorization.OwnedResource;
+import gr.cite.intelcomp.stiviewer.web.apikey.StiApiKeyFilter;
 import gr.cite.intelcomp.stiviewer.web.authorization.IndicatorRolesAuthorizationHandler;
 import gr.cite.intelcomp.stiviewer.web.authorization.OwnedAuthorizationHandler;
 import gr.cite.intelcomp.stiviewer.web.authorization.TimeOfDayAuthorizationHandler;
@@ -38,7 +39,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	private final WebSecurityProperties webSecurityProperties;
 	private final AuthenticationManagerResolver<HttpServletRequest> authenticationManagerResolver;
 	private final Filter apiKeyFilter;
-
 	private final TimeOfDayAuthorizationHandler timeOfDayAuthorizationHandler;
 	private final IndicatorRolesAuthorizationHandler indicatorRolesAuthorizationHandler;
 	private final OwnedAuthorizationHandler ownedAuthorizationHandler;
@@ -46,7 +46,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	@Autowired
 	public SecurityConfiguration(WebSecurityProperties webSecurityProperties,
 	                             @Qualifier("tokenAuthenticationResolver") AuthenticationManagerResolver<HttpServletRequest> authenticationManagerResolver,
-	                             @Qualifier("apiKeyFilter") Filter apiKeyFilter,
+								 //@Qualifier("apiKeyFilter") Filter apiKeyFilter,
+								 StiApiKeyFilter apiKeyFilter,
 	                             @Qualifier("timeOfDayAuthorizationHandler") TimeOfDayAuthorizationHandler timeOfDayAuthorizationHandler,
 	                             @Qualifier("indicatorRolesAuthorizationHandler") IndicatorRolesAuthorizationHandler indicatorRolesAuthorizationHandler,
 	                             @Qualifier("ownedAuthorizationHandler") OwnedAuthorizationHandler ownedAuthorizationHandler) {

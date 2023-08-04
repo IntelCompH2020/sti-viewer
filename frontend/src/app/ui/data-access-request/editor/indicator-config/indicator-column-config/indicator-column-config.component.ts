@@ -64,13 +64,13 @@ export class IndicatorColumnConfigComponent implements OnInit {
     }
     if (!changes['selectedIndicator']) { return; }
     if (!this.selectedIndicator.config) { return; }
-    if (!this.selectedIndicator.config.filterColumns) { return; }
+    if (!this.selectedIndicator.config?.accessRequestConfig?.filterColumns) { return; }
     this.getAvailableColumns();
 
   }
 
   getAvailableColumns(): void {
-    this.availableColumns = this.selectedIndicator.config.filterColumns.map(x => x.code).filter(x => {
+    this.availableColumns = this.selectedIndicator.config.accessRequestConfig.filterColumns.map(x => x.code).filter(x => {
       if (this.selectedColumns && this.selectedColumns.length > 0 && this.filterColumn.get('column').value != x) {
         return !this.selectedColumns.includes(x);
       }

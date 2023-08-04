@@ -1,29 +1,31 @@
-<div class="row">
+<div class="row m-0">
 
 
-	<div class="col-12" *ngIf="gaugeConfig?.name">
+	<div class="col-12 p-0" *ngIf="gaugeConfig?.name">
 		<h5>
 			{{gaugeConfig?.name}}
 		</h5>
 	</div>
 
 
-	<div class="col-12" *ngIf="(valueCards?.length && (uiMinimumTimePased$ | async)) else loading" [@listAnimationSequentialScaleIn]="valueCards?.length">
-		<app-value-card 
+	<div class="col-12 p-0" *ngIf="(valueCards?.length && (uiMinimumTimePased$ | async)) else loading" [@listAnimationSequentialScaleIn]="valueCards?.length">
+		<app-value-card
 			class="d-inline-block"
 			*ngFor="let card of valueCards"
+			(onShare)="shareGraph()"
 			[value]="card.value"
+			[chartShare]="gaugeConfig.chartShare"
 			[description]="card.title"
 		>
 		</app-value-card>
 	</div>
 
-	<div class="col-12" *ngIf="gaugeConfig?.description">
+	<div class="col-12 p-0" *ngIf="gaugeConfig?.description">
 		<p>
 			{{gaugeConfig?.description}}
 		</p>
 	</div>
-	<!-- <div class="col-12" *ngIf="gaugeConfig?.tags?.attachedTags?.length">	
+	<!-- <div class="col-12" *ngIf="gaugeConfig?.tags?.attachedTags?.length">
 		<small>
 			{{'APP.INDICATOR-DASHBOARD.CHART.TAGS' | translate}}:
 		</small>
@@ -47,9 +49,11 @@
 <!-- * TEMPLATES -->
 
 <ng-template #loading>
-	<div class="loading-container col-12" [@fadeOut]>
+	<div class="loading-container col-12 p-0" [@fadeOut]>
 		<ng-container *ngIf="!noDataFound else noDataFoundTemplate">
-			<mat-spinner *ngIf="!errorLoading else errorLoadingTemplate" ></mat-spinner>
+			<ng-container *ngIf="!errorLoading  else errorLoadingTemplate">
+				<mat-spinner  *ngIf="showSpinner"></mat-spinner>
+			</ng-container>
 			<ng-template #errorLoadingTemplate>
 				{{'COMMONS.ERRORS.DEFAULT' | translate}}
 			</ng-template>

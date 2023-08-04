@@ -2,13 +2,21 @@ package gr.cite.intelcomp.stiviewer.model.elasticreport;
 
 import gr.cite.intelcomp.stiviewer.elastic.query.lookup.IndicatorPointLookup;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.UUID;
 
 public class IndicatorPointReportLookup {
+	@Valid
+	@NotNull(message = "{validation.empty}")
 	private IndicatorPointLookup filters;
+	@Valid
 	private List<Metric> metrics;
+	@Valid
 	private Bucket bucket;
 	private Boolean isRawData;
+	@Valid
 	private RawDataRequest rawDataRequest;
 
 	public List<Metric> getMetrics() {
@@ -51,4 +59,3 @@ public class IndicatorPointReportLookup {
 		this.rawDataRequest = rawDataRequest;
 	}
 }
-

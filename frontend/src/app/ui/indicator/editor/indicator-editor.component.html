@@ -30,9 +30,9 @@
 							<mat-error *ngIf="formGroup.get('description').hasError('backendError')">
 								{{formGroup.get('description').getError('backendError')?.message}}</mat-error>
 						</mat-form-field>
-						
+
 						<app-access-request-config *ngIf="!isNew" class="mat-form-field col-md-12"
-							[form]="formGroup?.get('config')?.get('filterColumns')" [editorModel]="this.editorModel">
+							[form]="formGroup?.get('config')?.get('accessRequestConfig')?.get('filterColumns')" [editorModel]="this.editorModel">
 						</app-access-request-config>
 					</div>
 					<app-editor-actions-component

@@ -56,6 +56,9 @@ export class AuthService extends BaseService {
 	private _authState: boolean; // Boolean to indicate if a user if authorized. It's also used to sync the auth state across different tabs, using local storage.
 	private _selectedTenant: string;
 
+	private apiKey: string;
+	private apiKeyHeaderName: string;
+
 	constructor(
 		private installationConfiguration: InstallationConfigurationService,
 		private appPrincipalService: AppPrincipalService,
@@ -92,6 +95,8 @@ export class AuthService extends BaseService {
 	}
 
 	public clear(): void {
+		this.apiKey = undefined;
+		this.apiKeyHeaderName = undefined;
 		this.authState(false);
 		this.selectedTenant(null);
 		this.accessToken = undefined;
@@ -242,7 +247,7 @@ export class AuthService extends BaseService {
 			if(!isRefreshed){
 				return false;
 			}
-			
+
 			return this.prepareAuthRequest(from(this.keycloakService.getToken()), httpParams).pipe(takeUntil(this._destroyed))
 			.pipe(
 				map(
@@ -281,7 +286,7 @@ export class AuthService extends BaseService {
 	public hasPermission(permission: AppPermission): boolean {
 		if (!this.installationConfiguration.appServiceEnabled) { return true; } //TODO: maybe reconsider
 		return this.evaluatePermission(this.appAccount?.permissions || [], permission);
-		
+
 	}
 
 	public hasNotificationServicePermission(permission: NotificationServicePermission): boolean {
@@ -333,4 +338,19 @@ export class AuthService extends BaseService {
 	public isLoggedIn(): boolean {
 		return this.authState();
 	}
+
+	public setApiKey(header: string, key: string){
+		this.apiKey = key;
+		this.apiKeyHeaderName = header;
+	}
+
+
+	public getApiKey(): string{
+		return this.apiKey;
+	}
+
+	public getApiKeyHeaderName(): string{
+		return this.apiKeyHeaderName;
+	}
+
 }

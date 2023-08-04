@@ -138,6 +138,26 @@ export class InstallationConfigurationService extends BaseComponent {
 		return this._inAppNotificationsCountInterval || 3200;
 	}
 
+	private _embeddedDashboardPath: string;
+	get embeddedDashboardPath(): string{
+		return this._embeddedDashboardPath;
+	}
+
+	private _sharedGraphPath: string;
+	get sharedGraphPath(): string{
+		return this._sharedGraphPath;
+	}
+
+	private _sharedExpirationInDays: number;
+	get sharedExpirationInDays(): number{
+		return this._sharedExpirationInDays;
+	}
+
+	private _sharedDashboardPath: string;
+	get sharedDashboardPath(): string{
+		return this._sharedDashboardPath;
+	}
+
 
 	private _portofolioConfigurationKey:string;
 	get portofolioConfigurationKey(): string {
@@ -150,6 +170,16 @@ export class InstallationConfigurationService extends BaseComponent {
 		return this._dataTreeConfigurationKey;
 	}
 
+	private _availableForPresentation: string[];
+	get availableForPresentation(): string[]{
+		return this._availableForPresentation;
+	}
+
+	private _availableForSearchPresentation: string[];
+	get availableForSearchPresentation(): string[]{
+		return this._availableForSearchPresentation;
+	}
+
 	loadInstallationConfiguration(): Promise<any> {
 		return new Promise((r, e) => {
 
@@ -158,6 +188,7 @@ export class InstallationConfigurationService extends BaseComponent {
 			params.interceptorContext = {
 				excludedInterceptors: [
 					InterceptorType.AuthToken,
+					InterceptorType.ApiKeyInterceptor,
 					InterceptorType.TenantHeaderInterceptor,
 					InterceptorType.JSONContentType,
 					InterceptorType.Locale,
@@ -225,5 +256,11 @@ export class InstallationConfigurationService extends BaseComponent {
 
 		this._portofolioConfigurationKey = config.portofolioConfigurationKey;
 		this._dataTreeConfigurationKey = config.dataTreeConfigurationKey;
+		this._availableForPresentation = config.availableForPresentation;
+		this._availableForSearchPresentation = config.availableForSearchPresentation;
+		this._embeddedDashboardPath = config.embeddedDashboardPath;
+		this._sharedGraphPath = config.sharedGraphPath;
+		this._sharedExpirationInDays = config.sharedExpirationInDays;
+		this._sharedDashboardPath = config.sharedDashboardPath;
 	}
 }

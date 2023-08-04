@@ -37,7 +37,7 @@ export class IndicatorDashboardFiltersComponent implements OnInit, AfterViewInit
     private _dialogRef: MatDialogRef<IndicatorDashboardFiltersComponent>,
     indicatorPointService: IndicatorPointService
   ) {
-    this.bannedValues = this.params.bannedValues;
+    this.bannedValues = this.params.bannedValues ?? {};
     this.filters = this.params.config.filters.map(_=>({
       ..._, autoCompleteConfiguration : (() =>{
 

@@ -11,6 +11,7 @@ import java.util.UUID;
 public class UserLookup extends Lookup {
 	private String like;
 	private List<IsActive> isActive;
+	private List<String> subjectIds;
 	private List<UUID> ids;
 
 	public String getLike() {
@@ -37,10 +38,19 @@ public class UserLookup extends Lookup {
 		this.ids = ids;
 	}
 
+	public List<String> getSubjectIds() {
+		return subjectIds;
+	}
+
+	public void setSubjectIds(List<String> subjectIds) {
+		this.subjectIds = subjectIds;
+	}
+
 	public UserQuery enrich(QueryFactory queryFactory) {
 		UserQuery query = queryFactory.query(UserQuery.class);
 		if (this.like != null) query.like(this.like);
 		if (this.isActive != null) query.isActive(this.isActive);
+		if (this.subjectIds != null) query.subjectIds(this.subjectIds);
 		if (this.ids != null) query.ids(this.ids);
 
 		this.enrichCommon(query);

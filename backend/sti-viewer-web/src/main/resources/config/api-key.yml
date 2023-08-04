@@ -1,0 +1,8 @@
+sti-api-key:
+  enabled: false
+  api-key-header: x-sti-api-key
+  authorization-header: Authorization
+  idp-uri: ${IDP_APIKEY_IDP_URL}
+  client-id: ${IDP_APIKEY_CLIENT_ID}
+  client-secret: ${IDP_APIKEY_CLIENT_SECRET}
+  scope: ${IDP_APIKEY_SCOPE}

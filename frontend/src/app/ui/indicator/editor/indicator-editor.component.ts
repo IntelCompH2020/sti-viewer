@@ -87,8 +87,9 @@ export class IndicatorEditorComponent extends BaseEditor<IndicatorEditorModel, I
 			}
 			this.isDeleted = data ? data.isActive === IsActive.Inactive : false;
 			this.buildForm();
-		} catch {
-			this.logger.error('Could not parse Dataset: ' + data);
+		} catch (e){
+			console.error(e, data);
+            this.logger.error("Could not parse  Channel: " + JSON.stringify(data));
 			this.uiNotificationService.snackBarNotification(this.language.instant('COMMONS.ERRORS.DEFAULT'), SnackBarNotificationLevel.Error);
 		}
 	}

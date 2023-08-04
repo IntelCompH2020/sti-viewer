@@ -9,5 +9,5 @@ import java.util.List;
 public interface PortofolioConfigService {
 
 	List<PortofolioConfig> getMyConfigs(FieldSet fields) throws InvalidApplicationException;
-	PortofolioConfig getMyConfigByKey(String key, FieldSet fields);
+	PortofolioConfig getMyConfigByKey(String key, FieldSet fields) throws InvalidApplicationException;
 }

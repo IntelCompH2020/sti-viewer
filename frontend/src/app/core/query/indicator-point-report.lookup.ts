@@ -18,6 +18,8 @@ export interface IndicatorPointReportLookupFilter {
     filters: IndicatorPointLookup;
 	metrics: Metric[];
     bucket: Bucket;
+    isRawData?: boolean;
+    rawDataRequest?: RawDataRequest;
 }
 
 

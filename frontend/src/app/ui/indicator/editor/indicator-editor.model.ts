@@ -3,7 +3,7 @@ import { BackendErrorValidator } from '@common/forms/validation/custom-validator
 import { ValidationErrorModel } from '@common/forms/validation/error-model/validation-error-model';
 import { Validation, ValidationContext } from '@common/forms/validation/validation-context';
 import { BaseEditorModel } from '@common/base/base-editor.model';
-import { AccessRequestConfig, AccessRequestConfigPersist, FilterColumnConfigPersist, Indicator, IndicatorPersist } from '@app/core/model/indicator/indicator.model';
+import { AccessRequestConfig, AccessRequestConfigPersist, FilterColumnConfigPersist, Indicator, IndicatorConfig, IndicatorConfigPersist, IndicatorPersist } from '@app/core/model/indicator/indicator.model';
 import { IndicatorElastic } from '@app/core/model/indicator-elastic/indicator-elastic';
 import { IndicatorElasticBaseType } from '@app/core/enum/indicator-elastic-base-type.enum';
 
@@ -11,7 +11,7 @@ export class IndicatorEditorModel extends BaseEditorModel implements IndicatorPe
 	code: string;
 	name: string;
 	description: string;
-	config: AccessRequestConfigEditorModel = new AccessRequestConfigEditorModel();
+	config: IndicatorConfigEditorModel = new IndicatorConfigEditorModel();
 	indicatorElastic: IndicatorElastic
 
 	public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
@@ -27,7 +27,7 @@ export class IndicatorEditorModel extends BaseEditorModel implements IndicatorPe
 			this.code = item.code;
 			this.name = item.name;
 			this.description = item.description;
-			this.config = new AccessRequestConfigEditorModel().fromModel(item.config);
+			this.config = new IndicatorConfigEditorModel().fromModel(item.config);
 		}
 		return this;
 	}
@@ -61,20 +61,56 @@ export class IndicatorEditorModel extends BaseEditorModel implements IndicatorPe
 }
 
 
-export class AccessRequestConfigEditorModel extends BaseEditorModel implements AccessRequestConfigPersist {
+export class IndicatorConfigEditorModel implements IndicatorConfigPersist {
+
+
+	public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
+	protected formBuilder: UntypedFormBuilder = new UntypedFormBuilder();
+
+	accessRequestConfig: AccessRequestConfigEditorModel;
+
+	constructor() { }
+
+
+
+	public fromModel(item: IndicatorConfig): IndicatorConfigEditorModel {
+		this.accessRequestConfig = new AccessRequestConfigEditorModel().fromModel(item?.accessRequestConfig);
+		return this;
+	}
+
+	buildForm(context: ValidationContext = null, disabled: boolean = false): UntypedFormGroup {
+		if (context == null) { context = this.createValidationContext(); }
+
+		return this.formBuilder.group({
+			accessRequestConfig: this.accessRequestConfig.buildForm()
+		});
+	}
+
+	createValidationContext(): ValidationContext {
+		const baseContext: ValidationContext = new ValidationContext();
+		const baseValidationArray: Validation[] = new Array<Validation>();
+		baseValidationArray.push({ key: 'accessRequestConfig', validators: [BackendErrorValidator(this.validationErrorModel, 'AccessRequestConfig')] });
+
+		baseContext.validation = baseValidationArray;
+		return baseContext;
+	}
+}
+
+
+
+export class AccessRequestConfigEditorModel implements AccessRequestConfigPersist {
 
 
 	public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
 	protected formBuilder: UntypedFormBuilder = new UntypedFormBuilder();
 	filterColumns: FilterColumnConfigPersist[] = [];
 
-	constructor() { super(); }
+	constructor() { }
 
 
 
 	public fromModel(item: AccessRequestConfig): AccessRequestConfigEditorModel {
 		if (item) {
-			super.fromModel(item);
 			if (item.filterColumns) {
 				this.filterColumns = item.filterColumns.map(x => ({ code: x.code } as FilterColumnConfigPersist))
 			}

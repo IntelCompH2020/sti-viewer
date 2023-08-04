@@ -11,6 +11,7 @@ import gr.cite.intelcomp.stiviewer.common.enums.IndicatorFieldBaseType;
 import gr.cite.intelcomp.stiviewer.common.enums.IsActive;
 import gr.cite.intelcomp.stiviewer.common.enums.UserSettingsEntityType;
 import gr.cite.intelcomp.stiviewer.common.enums.UserSettingsType;
+import gr.cite.intelcomp.stiviewer.common.scope.tenant.TenantScope;
 import gr.cite.intelcomp.stiviewer.common.scope.user.UserScope;
 import gr.cite.intelcomp.stiviewer.common.types.datalastview.DataTreeLastViewConfigEntity;
 import gr.cite.intelcomp.stiviewer.common.types.datatreeconfig.*;
@@ -71,6 +72,7 @@ public class DataTreeConfigServiceImpl implements DataTreeConfigService {
 	private final JsonHandlingService jsonHandlingService;
 
 	private final IndicatorGroupService indicatorGroupService;
+	private final TenantScope tenantScope;
 	public DataTreeConfigServiceImpl(
 			TenantEntityManager entityManager,
 			QueryFactory queryFactory,
@@ -83,7 +85,8 @@ public class DataTreeConfigServiceImpl implements DataTreeConfigService {
 			MessageSource messageSource,
 			IndicatorConfigService indicatorConfigService,
 			JsonHandlingService jsonHandlingService,
-			IndicatorGroupService indicatorGroupService) {
+			IndicatorGroupService indicatorGroupService, 
+			TenantScope tenantScope) {
 		this.entityManager = entityManager;
 		this.queryFactory = queryFactory;
 		this.elasticsearchTemplate = elasticsearchTemplate;
@@ -96,27 +99,35 @@ public class DataTreeConfigServiceImpl implements DataTreeConfigService {
 		this.indicatorConfigService = indicatorConfigService;
 		this.jsonHandlingService = jsonHandlingService;
 		this.indicatorGroupService = indicatorGroupService;
+		this.tenantScope = tenantScope;
 	}
 
 	@Override
-	public List<DataTreeConfig> getMyConfigs(FieldSet fields) {
+	public List<DataTreeConfig> getMyConfigs(FieldSet fields) throws InvalidApplicationException {
 		List<DataTreeConfigEntity> browseDataTreeConfigEntities = this.getMyDataTreeConfigs();
 		return this.builderFactory.builder(BrowseDataTreeConfigBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(BaseFieldSet.build(fields, DataTreeConfig._id), browseDataTreeConfigEntities);
 	}
 
 	@Override
-	public List<DataTreeConfig> getMyConfigByKey(String key, FieldSet fields) {
+	public List<DataTreeConfig> getMyConfigByKey(String key, FieldSet fields) throws InvalidApplicationException {
 		if (this.conventionService.isNullOrEmpty(key)) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{key, UserSettingsEntity.class.getSimpleName()}, LocaleContextHolder.getLocale()));
-		UserSettingsEntity userSettingsEntity = this.queryFactory.query(UserSettingsQuery.class).types(UserSettingsType.BrowseDataTree).entityTypes(UserSettingsEntityType.Application).keys(key).firstAs(new BaseFieldSet().ensure(UserSettings._key).ensure(UserSettings._value));
+		
+		UserSettingsEntity userSettingsEntity = this.queryFactory.query(UserSettingsQuery.class).types(UserSettingsType.BrowseDataTree).entityTypes(UserSettingsEntityType.User).entityIds(this.userScope.getUserId()).keys(key).firstAs(new BaseFieldSet().ensure(UserSettings._key).ensure(UserSettings._value));
+		if (userSettingsEntity == null && this.tenantScope.isSet()) userSettingsEntity = this.queryFactory.query(UserSettingsQuery.class).types(UserSettingsType.BrowseDataTree).entityTypes(UserSettingsEntityType.Tenant).entityIds(this.tenantScope.getTenant()).keys(key).firstAs(new BaseFieldSet().ensure(UserSettings._key).ensure(UserSettings._value));
+		if (userSettingsEntity == null) userSettingsEntity =this.queryFactory.query(UserSettingsQuery.class).types(UserSettingsType.BrowseDataTree).entityTypes(UserSettingsEntityType.Application).keys(key).firstAs(new BaseFieldSet().ensure(UserSettings._key).ensure(UserSettings._value));
 		if (userSettingsEntity == null) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{key, UserSettingsEntity.class.getSimpleName()}, LocaleContextHolder.getLocale()));
+		
 		DataTreeConfigEntity[] dataTreeConfigs = this.jsonHandlingService.fromJsonSafe(DataTreeConfigEntity[].class, userSettingsEntity.getValue());
 		if (dataTreeConfigs == null) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{key, UserSettingsEntity.class.getSimpleName()}, LocaleContextHolder.getLocale()));
 
 		return this.builderFactory.builder(BrowseDataTreeConfigBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(BaseFieldSet.build(fields, DataTreeConfig._id), List.of(dataTreeConfigs));
 	}
 
-	private List<DataTreeConfigEntity> getMyDataTreeConfigs() {
-		List<UserSettingsEntity> userSettingsEntities = this.queryFactory.query(UserSettingsQuery.class).types(UserSettingsType.BrowseDataTree).entityTypes(UserSettingsEntityType.Application).collectAs(new BaseFieldSet().ensure(UserSettings._key).ensure(UserSettings._value));
+	private List<DataTreeConfigEntity> getMyDataTreeConfigs() throws InvalidApplicationException {
+		List<UserSettingsEntity> userSettingsEntities = this.queryFactory.query(UserSettingsQuery.class).types(UserSettingsType.BrowseDataTree).entityTypes(UserSettingsEntityType.User).entityIds(this.userScope.getUserId()).collectAs(new BaseFieldSet().ensure(UserSettings._key).ensure(UserSettings._value));
+		if ((userSettingsEntities == null || userSettingsEntities.isEmpty()) && this.tenantScope.isSet()) userSettingsEntities = this.queryFactory.query(UserSettingsQuery.class).types(UserSettingsType.BrowseDataTree).entityTypes(UserSettingsEntityType.Tenant).entityIds(this.tenantScope.getTenant()).collectAs(new BaseFieldSet().ensure(UserSettings._key).ensure(UserSettings._value));
+		if (userSettingsEntities == null || userSettingsEntities.isEmpty()) userSettingsEntities = this.queryFactory.query(UserSettingsQuery.class).types(UserSettingsType.BrowseDataTree).entityTypes(UserSettingsEntityType.Application).collectAs(new BaseFieldSet().ensure(UserSettings._key).ensure(UserSettings._value));
+		
 		List<DataTreeConfigEntity> browseDataTreeConfigEntities = new ArrayList<>();
 		if (userSettingsEntities != null) {
 			for (UserSettingsEntity userSettingsEntity : userSettingsEntities) {
@@ -175,7 +186,7 @@ public class DataTreeConfigServiceImpl implements DataTreeConfigService {
 	}
 
 	@Override
-	public DataTreeLevel getIndicatorReportLevel(IndicatorReportLevelLookup lookup, FieldSet fields) {
+	public DataTreeLevel getIndicatorReportLevel(IndicatorReportLevelLookup lookup, FieldSet fields) throws InvalidApplicationException {
 		List<DataTreeConfigEntity> browseDataTreeConfigEntities = this.getMyDataTreeConfigs();
 		DataTreeConfigEntity viewConfig = browseDataTreeConfigEntities.stream().filter(x -> x.getId().equals(lookup.getConfigId())).findFirst().orElse(null);
 		if (viewConfig == null) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{lookup.getConfigId(), DataTreeConfigEntity.class.getSimpleName()}, LocaleContextHolder.getLocale()));
@@ -207,7 +218,8 @@ public class DataTreeConfigServiceImpl implements DataTreeConfigService {
 			List<IndicatorEntity> indicators = this.queryFactory.query(IndicatorQuery.class).isActive(IsActive.ACTIVE).ids(indicatorGroupEntity == null ? null :indicatorGroupEntity.getIndicatorIds()).collectAs(new BaseFieldSet().ensure(Indicator._id));
 			indicatorIds = indicators.stream().map(x -> x.getId()).distinct().collect(Collectors.toList());
 		} else {
-			List<IndicatorAccessEntity> indicatorAccesses = this.queryFactory.query(IndicatorAccessQuery.class).isActive(IsActive.ACTIVE).indicatorIds(indicatorGroupEntity == null ? null :indicatorGroupEntity.getIndicatorIds()).collectAs(new BaseFieldSet().ensure(this.conventionService.asIndexer(IndicatorAccess._indicator, Indicator._id), IndicatorAccess._id));
+			List<IndicatorAccessEntity> indicatorAccesses = this.queryFactory.query(IndicatorAccessQuery.class).isActive(IsActive.ACTIVE).hasUser(false).indicatorIds(indicatorGroupEntity == null ? null :indicatorGroupEntity.getIndicatorIds()).collectAs(new BaseFieldSet().ensure(this.conventionService.asIndexer(IndicatorAccess._indicator, Indicator._id), IndicatorAccess._id));
+			indicatorAccesses.addAll(this.queryFactory.query(IndicatorAccessQuery.class).isActive(IsActive.ACTIVE).userIds(userScope.getUserId()).indicatorIds(indicatorGroupEntity == null ? null :indicatorGroupEntity.getIndicatorIds()).collectAs(new BaseFieldSet().ensure(this.conventionService.asIndexer(IndicatorAccess._indicator, Indicator._id), IndicatorAccess._id)));
 			indicatorIds = indicatorAccesses.stream().map(x -> x.getIndicatorId()).distinct().collect(Collectors.toList());
 		}
 

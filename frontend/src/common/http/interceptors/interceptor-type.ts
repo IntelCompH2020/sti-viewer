@@ -9,5 +9,6 @@ export enum InterceptorType {
 	UnauthorizedResponse = 5,
 	UserConsentInterceptor = 6,
 	ErrorHandlerInterceptor = 7,
-	TenantHeaderInterceptor = 8
+	TenantHeaderInterceptor = 8,
+	ApiKeyInterceptor = 8
 }

@@ -5,7 +5,7 @@
     flex-direction: column;
 
 
-    margin: 21px;
+    // margin: 21px;
 
     border: 1px solid rgba(0, 0, 0, .03);
     box-shadow:  -15px -14px 17px rgb(255 255 255 / 60%), 15px 15px 20px rgb(0 0 0 / 7%);
@@ -16,8 +16,42 @@
         align-items: flex-end;
         justify-content: center;
     }
+
+	.share-button {
+		position: absolute;
+		top: 0.5rem;
+		right: 0.5rem;
+		z-index: 999;
+		width: 20px;
+		height: 20px;
+    }
+	.share-button svg {
+		fill: transparent;
+		stroke: #6d6d6d;
+		stroke-width: 2;
+		&:hover{
+			stroke: #4fa1ca;
+			cursor: pointer;
+		}
+	}
+
+	[data-tooltip]::before {
+		position : absolute;
+		content : attr(data-tooltip);
+		opacity : 0;
+		z-index: 1;
+		color: #4fa1ca;
+		font-size: x-small;
+		top: 100%;
+		left: 50%;
+		margin-left: -10px;
+	}
+	[data-tooltip]:hover::before {
+		opacity : 1;
+	}
     .lower-card{
         flex: 1;
     }
+
 
 }

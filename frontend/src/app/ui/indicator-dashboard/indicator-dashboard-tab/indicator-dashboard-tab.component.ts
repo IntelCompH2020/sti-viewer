@@ -14,14 +14,13 @@ import { IndicatorQueryParams } from '../indicator-dashboard.component';
 })
 export class IndicatorDashboardTabComponent extends BaseComponent implements OnInit {
 
-	@Input() 
-	tabConfig: IndicatorDashboardTabConfig;
+	@Input()  tabConfig: IndicatorDashboardTabConfig;
 
-	@Input()
-	indicatorQueryParams:IndicatorQueryParams;
+	@Input() indicatorQueryParams:IndicatorQueryParams;
 
-	@Input()
-	dashboardConfig : IndicatorDashboardConfig;
+	@Input() dashboardConfig : IndicatorDashboardConfig;
+
+	@Input() token: string = null;
 
 
 	activeChartTags;

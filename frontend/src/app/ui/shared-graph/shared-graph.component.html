@@ -1,0 +1,18 @@
+<div *ngIf="chart && chartGroup" class="parent-root-container">
+	<mat-card class="w-100">
+		<mat-card-title>{{chartGroup.name}}</mat-card-title>
+		<app-indicator-dashboard-chart  appIndicatorCarouselItem [indicatorQueryParams]="indicatorQueryParams" [token]="this.token"  [chartConfig]="chart">
+		</app-indicator-dashboard-chart>
+	</mat-card>
+
+
+</div>
+<div *ngIf="gauge && chartGroup" class="parent-root-container">
+	<mat-card-title>{{chartGroup.name}}</mat-card-title>
+	<app-indicator-dashboard-gauge
+
+		[indicatorQueryParams]="indicatorQueryParams"
+		[token]="token"
+		[gaugeConfig]="gauge">
+	</app-indicator-dashboard-gauge>
+</div>

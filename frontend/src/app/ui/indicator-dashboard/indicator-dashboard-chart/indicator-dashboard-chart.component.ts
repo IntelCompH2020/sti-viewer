@@ -1,6 +1,6 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges, NgZone, ViewChild, ElementRef, HostListener, Optional } from '@angular/core';
 import { ChartBuilderService, GraphOptions, TreeMapData } from '@app/core/services/data-transform/charts-common.service';
-import { DataTransformService, StandAloneData } from '@app/core/services/data-transform/data-transform.service';
+import { ChartSerie, DataTransformService, StandAloneData } from '@app/core/services/data-transform/data-transform.service';
 import { IndicatorPointService } from '@app/core/services/http/indicator-point.service';
 import { GENERAL_ANIMATIONS } from '@app/animations';
 import { BaseComponent } from '@common/base/base.component';
@@ -23,6 +23,15 @@ const GRAPH_OPTIONS = require('./les-miserables.json') as GraphOptions;
 import { AuthService } from '@app/core/services/ui/auth.service';
 import { DashboardUITagsService } from '../ui-services/dashboard-tags.service';
 import { ChartLockZoomService } from '../ui-services/chart-lock-zoom.service';
+import { ExternalToken, IndicatorPointReportExternalTokenPersist } from '@app/core/model/external-token/external-token.model';
+import { ExternalTokenService } from '@app/core/services/http/external-token.service';
+import { Guid } from '@common/types/guid';
+import { PublicService } from '@app/core/services/http/public.service';
+import { AggregateResponseModel } from '@app/core/model/aggregate-response/aggregate-reponse.model';
+import { InstallationConfigurationService } from '@common/installation-configuration/installation-configuration.service';
+import { QueryParamsService } from '@app/core/services/ui/query-params.service';
+import { ChartHelperService } from '@app/core/services/ui/chart-helper.service';
+import { ShareDialogComponent, ShareDialogData } from '../share-dialog/share-dialog.component';
 // const TREE_MAP_DATA = require('./disk.tree.json');
 
 @Component({
@@ -34,8 +43,8 @@ import { ChartLockZoomService } from '../ui-services/chart-lock-zoom.service';
 export class IndicatorDashboardChartComponent extends BaseComponent implements OnInit, OnChanges {
 
 	@Input() chartConfig: BaseIndicatorDashboardChartConfig;
-	@Input()
-	indicatorQueryParams: IndicatorQueryParams;
+	@Input() indicatorQueryParams: IndicatorQueryParams;
+	@Input() token = null;
 	chartOptions: EChartsOption;
 
 
@@ -47,7 +56,7 @@ export class IndicatorDashboardChartComponent extends BaseComponent implements O
 	protected noDataFound: boolean = false;
 
 	private _extraFields: ExtraFilterField[] = [];
-	
+
 	protected get extraFields(){
 		return this._extraFields
 	}
@@ -63,7 +72,7 @@ export class IndicatorDashboardChartComponent extends BaseComponent implements O
 
 
 	private _chartTags$ = new BehaviorSubject<string[]>([]);
-	
+
 
 
 	tags$: Observable<ChartTag[]> = combineLatest([
@@ -88,47 +97,38 @@ export class IndicatorDashboardChartComponent extends BaseComponent implements O
 		private indicatorPointService: IndicatorPointService,
 		protected uiNotificationService: UiNotificationService,
 		protected httpErrorHandlingService: HttpErrorHandlingService,
-		private authService: AuthService,
 		private elementRef:ElementRef,
 		private dashboardTagsUIService: DashboardUITagsService,
+		private publicService: PublicService,
 		private _dialog: MatDialog,
+		private chartHelperService: ChartHelperService,
+		private dialog: MatDialog,
 		@Optional() private chartLockZoomService: ChartLockZoomService,
 
 		) {
 		super();
 
 
-		
+
 		this._initialize()
 
 
 	}
 	ngOnInit(): void {
 
-		
+
 	}
 	ngOnChanges(simpleChanges: SimpleChanges): void {
 		this._inputChanges$.next();
 
 		if(simpleChanges.chartConfig){
-			this._extraFields = this.chartConfig?.filters?.map(filter =>{
-	
-				if(!filter?.valueToAssignOnInitialLoad){
-					return null;
-				}
-				return {
-					fieldCode: filter.fieldCode,
-					value: filter.valueToAssignOnInitialLoad,
-					indicatorFilterType: filter.indicatorFilterType,
-					displayName: filter.values?.find(filterValue => filterValue.value === filter.valueToAssignOnInitialLoad)?.name
-				}
-			}).filter(x => !!x) ?? []
+			this._extraFields = this.chartHelperService.buildExtraFilterField(this.chartConfig)
 		}
 
 		if(this.chartConfig?.tags?.attachedTags?.length){
 			this._chartTags$.next(this.chartConfig.tags?.attachedTags);
 		}
-		
+
 	}
 
 	private _initialize(): void{
@@ -279,7 +279,7 @@ export class IndicatorDashboardChartComponent extends BaseComponent implements O
 			return;
 		}
 
-		
+
 		try {
 			const indicatorId = this.chartConfig?.indicatorId; ;
 
@@ -291,10 +291,22 @@ export class IndicatorDashboardChartComponent extends BaseComponent implements O
 
 			this.errorLoading = false;
 			this.noDataFound = false;
-			this.indicatorPointService.getIndicatorPointReport(
-				indicatorId, this._buildIndicatorLookup(),
-				true
-			)
+			let getIndicatorPointReportResult: Observable<AggregateResponseModel> = null;
+			if (this.token == null || this.token.length == 0) {
+				getIndicatorPointReportResult = this.indicatorPointService.getIndicatorPointReport(
+					indicatorId, this.chartHelperService.buildChartIndicatorLookup(this.chartConfig, this.indicatorQueryParams, this._extraFields),
+					true
+				);
+			} else {
+				getIndicatorPointReportResult = this.publicService.reportPublic({
+					dashboardId: this.indicatorQueryParams?.dashboard,
+					token: this.token,
+					indicatorId: Guid.parse(indicatorId),
+					chartId: this.chartConfig.chartId,
+					...this.chartHelperService.buildChartIndicatorLookup(this.chartConfig, this.indicatorQueryParams, this._extraFields)
+				});
+			}
+			getIndicatorPointReportResult
 			.pipe(
 				takeUntil(this._destroyed)
 			)
@@ -306,53 +318,53 @@ export class IndicatorDashboardChartComponent extends BaseComponent implements O
 						// * SANKEY
 						if(this.chartConfig.type === IndicatorDashboardChartType.Sankey){
 							const links = this.dataTransformService.aggregateResponseModelToConnections(response, this.chartConfig as IndicatorDashboardSankeyChartConfig);
-							
-							if(!links.length){
-								this.noDataFound = true;
-								return;
-							}
-	
+
+							// if(!links.length){
+							// 	this.noDataFound = true;
+							// 	return;
+							// }
+
 							function* spaceAppender(initialString: string = ''){
 								while(true){
 									initialString += ' ';
 									yield initialString
 								}
 							}
-	
+
 							const sourceSet = new Set(links.map(x => x.source));
 							const targetsSet = new Set(links.map(x => x.target));
-	
+
 							const cycles = [
-								...new Set<string>( 
+								...new Set<string>(
 									links.filter(x  => x.source === x.target)
 									.map(x => x.target)
 								)
 							];
-	
-	
-	
+
+
+
 							const targetReplacements = cycles?.reduce((aggr,cycle) =>{
 								const generator = spaceAppender(cycle);
-	
+
 								let nominee = generator.next().value as string;
-	
+
 								while(targetsSet.has(nominee) && sourceSet.has(nominee)){
 									nominee = generator.next().value as string;
 								}
-	
+
 								return [...aggr, {previous: cycle, current: nominee}];
-	
+
 							}, []) as {previous: string, current: string} [];
-	
-	
+
+
 							targetReplacements?.forEach(replacement =>{
 								links
 									.filter(link => link.target === replacement.previous)
 									.forEach(link => link.target = replacement.current);
 							});
-	
-	
-	
+
+
+
 							const data = [
 								...links.reduce((all, current) =>{
 									all.add(current.source);
@@ -360,33 +372,37 @@ export class IndicatorDashboardChartComponent extends BaseComponent implements O
 									return all;
 								} , new Set())
 							].map(x => ({name: x as string}))
-	
+
 							this.chartOptions = this.chartBuilderService.buildSankeyOptions({
-								config: this.chartConfig as IndicatorDashboardSankeyChartConfig, 
+								config: this.chartConfig as IndicatorDashboardSankeyChartConfig,
 								data: {
 									data,
 									links
+								},
+								onShare: () => {
+									this.shareGraph();
 								}});
-	
+
 							break buildConfiguration;
 						}
 						const {seriesData : sd, standAloneData} = this.dataTransformService.aggregateResponseModelToLineChartDataFromConfiguration(response, this.chartConfig); // TODO FIX THIS
-					
-	
+
+
 						const [seriesData] = sd;
-	
-						if(!seriesData.labels?.length){
-							this.noDataFound = true;
-							return;
+
+						if (!seriesData.labels?.length) {
+							//this.noDataFound = true;
+							//return;
+							seriesData.labels = [];
 						}
-	
+
 
 
 
 						//  * SCATTERER CHART
 						if (this.chartConfig.type === IndicatorDashboardChartType.Scatter) {
-							if (!seriesData?.series || !Object.keys(seriesData.series).length) {
-								console.warn('No series found for Scatter chart');
+							if (!seriesData) {
+								console.warn('No series found for line chart');
 								return;
 							}
 
@@ -401,8 +417,11 @@ export class IndicatorDashboardChartComponent extends BaseComponent implements O
 								onDownloadJSON: () =>{
 									this.downloadJsonData()
 								},
-								labels: seriesData.labels,
-								series: seriesData.series
+								onShare: () => {
+									this.shareGraph();
+								},
+								labels: seriesData?.labels ?? [],
+								series: seriesData?.series ?? {}
 							})
 							break buildConfiguration;
 						}
@@ -410,16 +429,16 @@ export class IndicatorDashboardChartComponent extends BaseComponent implements O
 
 						//  * RADAR CHART
 						if (this.chartConfig.type === IndicatorDashboardChartType.Radar) {
-							if (!seriesData?.series || !Object.keys(seriesData.series).length) {
-								console.warn('No series found for RADAR chart');
+							if (!seriesData) {
+								console.warn('No series found for line chart');
 								return;
 							}
-	
+
 							this.chartOptions = this.chartBuilderService.buildRadarOptions({
 								config: this.chartConfig as IndicatorDashboardRadarChartConfig,
 								// radarIndicatorOptions,
-								inputSeries: seriesData.series,
-								labels: seriesData.labels,
+								inputSeries: seriesData?.series ?? {},
+								labels: seriesData?.labels ?? [],
 								onFiltersOpen: () => {
 									this.openFilters();
 								},
@@ -429,21 +448,24 @@ export class IndicatorDashboardChartComponent extends BaseComponent implements O
 								onDownloadJSON: () =>{
 									this.downloadJsonData()
 								},
+								onShare: () => {
+									this.shareGraph();
+								},
 							})
 							break buildConfiguration;
 						}
-	
+
 						//  * LINE CHART
 						if (this.chartConfig.type === IndicatorDashboardChartType.Line) {
 							if (!seriesData) {
 								console.warn('No series found for line chart');
 								return;
 							}
-	
+
 							this.chartOptions = this.chartBuilderService.buildLine({
 								config: this.chartConfig as IndicatorDashboardLineChartConfig,
-								inputSeries: seriesData.series,
-								labels: seriesData.labels,
+								inputSeries: seriesData?.series ?? {},
+								labels: seriesData?.labels ?? [],
 								onFiltersOpen: () => {
 									this.openFilters();
 								},
@@ -453,11 +475,14 @@ export class IndicatorDashboardChartComponent extends BaseComponent implements O
 								onDownloadJSON: () =>{
 									this.downloadJsonData()
 								},
+								onShare: () => {
+									this.shareGraph();
+								},
 							});
 							break buildConfiguration;
 						}
-	
-	
+
+
 						// * BAR
 						if (this.chartConfig.type === IndicatorDashboardChartType.Bar) {
 							if (!seriesData) {
@@ -466,8 +491,8 @@ export class IndicatorDashboardChartComponent extends BaseComponent implements O
 							}
 							this.chartOptions = this.chartBuilderService.buildBar({
 								config: this.chartConfig as IndicatorDashboardBarChartConfig,
-								labels: seriesData.labels,
-								inputSeries: seriesData.series,
+								inputSeries: seriesData?.series ?? {},
+								labels: seriesData?.labels ?? [],
 								onDownload: () => {
 									this.downloadData();
 								},
@@ -477,10 +502,13 @@ export class IndicatorDashboardChartComponent extends BaseComponent implements O
 								onDownloadJSON: () =>{
 									this.downloadJsonData()
 								},
+								onShare: () => {
+									this.shareGraph();
+								},
 							});
 							break buildConfiguration;
 						}
-	
+
 						// * POLAR BAR
 						if (this.chartConfig.type === IndicatorDashboardChartType.PolarBar) {
 							if (!seriesData) {
@@ -489,36 +517,42 @@ export class IndicatorDashboardChartComponent extends BaseComponent implements O
 							}
 							this.chartOptions = this.chartBuilderService.buildPolarBar({
 								config: this.chartConfig as IndicatorDashboardPolarBarChartConfig,
-								labels: seriesData.labels,
-								inputSeries: seriesData.series,
+								inputSeries: seriesData?.series ?? {},
+								labels: seriesData?.labels ?? [],
 								onDownload: () => {
 									this.downloadData();
+								},
+								onFiltersOpen: () => {
+									this.openFilters();
 								},
 								onDownloadJSON: () =>{
 									this.downloadJsonData()
 								},
+								onShare: () => {
+									this.shareGraph();
+								},
 							});
 							break buildConfiguration;
 						}
-	
+
 						// * MAP
 						if (this.chartConfig.type === IndicatorDashboardChartType.Map) {
 							if (!seriesData) {
 								console.warn('No series found for line map');
 								return;
 							}
-							const {series, labels} = seriesData;
+							const { series, labels } = seriesData ?? { series: {} , labels: []};
 							registerMap('worldmap', mapGeo);
 							const seriesIds = Object.keys(series);
-	
+
 							const mapChartConfig = this.chartConfig as IndicatorDashboardMapChartConfig;
 							this.chartOptions =  this.chartBuilderService.buildGeoMap({
-	
+
 								config: mapChartConfig as IndicatorDashboardMapChartConfig,
 								data: seriesIds.map(sid => ({
 									data: series[sid].data.map((value, _index) => ({
-											value: value, 
-	
+											value: value,
+
 											// * give higher priortity to configurationMapping
 											name: mapChartConfig.countryNameMapping?.[labels[_index]] ?? MAP_GEO_DICTIONARY[labels[_index]]
 										})),
@@ -533,15 +567,18 @@ export class IndicatorDashboardChartComponent extends BaseComponent implements O
 								onDownloadJSON: () =>{
 									this.downloadJsonData()
 								},
+								onShare: () => {
+									this.shareGraph();
+								},
 							});
 							break buildConfiguration;
 						}
-	
+
 						// * TREE MAP
 						if(this.chartConfig.type === IndicatorDashboardChartType.TreeMap){
-	
-							const {series, labels} = seriesData;
-	
+
+							const { series, labels } = seriesData ?? { series: {} , labels: []};
+
 							const treeMapDataArray : TreeMapData[][] = Object.keys(series).map(key =>{
 								const data = series[key].data;
 								if(data.length !== labels.length){
@@ -550,57 +587,83 @@ export class IndicatorDashboardChartComponent extends BaseComponent implements O
 								}
 								return data.map((value, index) => ({name: labels[index], value: value}) )
 							}).filter(x => x);
-	
+
 							if(treeMapDataArray.length !== 1){
 								console.warn('More than one treemap data array. selecting first');
 							}
-							const treeMapdata = treeMapDataArray[0];
-	
-							this.chartOptions = this.chartBuilderService.buildTreeMap({ 
+							let treeMapdata = treeMapDataArray[0];
+
+							const relationshipResult = this.dataTransformService.getParentChildrenRelationships({
+								records: response,
+								relationShipConfig: (this.chartConfig as IndicatorDashboardTreeMapChartConfig)?.treeNesting
+							})
+
+							if(relationshipResult && relationshipResult?.codeMap?.size && relationshipResult?.relationShips?.size){
+
+								// map by labelValue
+								const map = new Map<string, Set<string>>();
+								for( const [code, params ] of relationshipResult.relationShips.entries()){
+									map.set(relationshipResult.codeMap.get(code), new Set(params.children.map(x => relationshipResult.codeMap.get(x))))
+								}
+
+								treeMapdata.forEach(item => {
+									item.children = treeMapdata.filter(x => map.get(item.name)?.has(x.name))
+								})
+								treeMapdata = treeMapdata.filter(x => x.children?.length)
+							}
+
+
+							this.chartOptions = this.chartBuilderService.buildTreeMap({
 								config: this.chartConfig as IndicatorDashboardTreeMapChartConfig,
 								data:treeMapdata,
 								onDownload: () => {
 									this.downloadData();
 								},
+								onFiltersOpen: () => {
+									this.openFilters();
+								},
 								onDownloadJSON: () =>{
 									this.downloadJsonData()
+								},
+								onShare: () => {
+									this.shareGraph();
 								},
 							});
 							break buildConfiguration;
 						}
-	
+
 						// * PIE CHART
 						if (this.chartConfig.type === IndicatorDashboardChartType.Pie) {
 							let standAloneDataFromSeries:StandAloneData[];
 							standAloneCheck: if (!standAloneData) {
 								console.warn('No Data found for pie');
-	
+
 								if(!seriesData) return;
-	
+
 								// * get unique sereis Key
-								const seriesKeys = Object.keys(seriesData.series);
+								const seriesKeys = Object.keys(seriesData?.series ?? {});
 								if(seriesKeys.length !== 1){
 									console.warn('Unique key for dataseries not found - chartpie');
 									break standAloneCheck;
 								}
 								const uniqueSeriesKey = seriesKeys[0];
-	
-								const labels = seriesData.labels;
-								const data = seriesData.series[uniqueSeriesKey]?.data;
-	
+
+								const labels = seriesData?.labels ?? [];
+								const data = seriesData?.series?.[uniqueSeriesKey]?.data;
+
 								if(labels.length !== data?.length){
 									console.warn('Arrays length misshmatch - chartpie');
 									break standAloneCheck;
 								}
-	
+
 								standAloneDataFromSeries = labels.map((label, index) => ({name: label, value: data[index]}));
 							}
-	
+
 							if(!standAloneData && !standAloneDataFromSeries){
 								console.warn('Standalone data from series not found')
 								return;
 							}
-	
+
 							this.chartOptions = this.chartBuilderService.buildPie({
 								config: this.chartConfig as any,
 								pieData: standAloneData ?? standAloneDataFromSeries,
@@ -613,6 +676,9 @@ export class IndicatorDashboardChartComponent extends BaseComponent implements O
 								onDownloadJSON: () =>{
 									this.downloadJsonData()
 								},
+								onShare: () => {
+									this.shareGraph();
+								},
 							});
 							break buildConfiguration;
 						}
@@ -620,16 +686,18 @@ export class IndicatorDashboardChartComponent extends BaseComponent implements O
 
 					this._registerChartLockObserver();
 
-				}catch{
+				}catch(errorInner){
 					this.errorLoading = true;
+					console.error(errorInner);
 				}
 
 			},
 			error => this.onLoadError(error));
-		} catch {
+		} catch(error) {
+			console.error(error);
 		}
 
-		
+
 	}
 
 
@@ -652,7 +720,10 @@ export class IndicatorDashboardChartComponent extends BaseComponent implements O
 		if (this.chartConfig.type === IndicatorDashboardChartType.Graph) {
 			return this.chartBuilderService.buildGraphOptions({
 				config: this.chartConfig as IndicatorDashboardGraphChartConfig,
-				graph: GRAPH_OPTIONS
+				graph: GRAPH_OPTIONS,
+				onShare: () => {
+					this.shareGraph();
+				}
 			});
 		}
 		// if(this.chartConfig.type === IndicatorDashboardChartType.Radar){
@@ -707,7 +778,7 @@ export class IndicatorDashboardChartComponent extends BaseComponent implements O
 		console.log('download data');
 
 		this.indicatorPointService
-			.exportXlsx(this.chartConfig.indicatorId, this._buildIndicatorLookup())
+			.exportXlsx(this.chartConfig.indicatorId, this.chartHelperService.buildChartIndicatorLookup(this.chartConfig, this.indicatorQueryParams, this._extraFields))
 			.pipe(
 				takeUntil(this._destroyed)
 			)
@@ -717,11 +788,39 @@ export class IndicatorDashboardChartComponent extends BaseComponent implements O
 
 				FileSaver.saveAs(response.body, filenametosave);
 			});
+	}
+
+	public shareGraph(): void {
+		const config: IndicatorPointReportExternalTokenPersist = {
+			name: this.indicatorQueryParams.dashboard + this.chartConfig.chartName, //TODO
+			lookups: [{
+				chartId: this.chartConfig.chartId,
+				dashboardId: this.indicatorQueryParams.dashboard,
+				indicatorId: Guid.parse(this.chartConfig.indicatorId),
+				lookup: this.chartHelperService.buildChartIndicatorLookup(this.chartConfig, this.indicatorQueryParams, this._extraFields)
+			}]
+		};
+		const data: ShareDialogData = {
+			config: config,
+			indicatorQueryParams: {
+				displayName: this.indicatorQueryParams.displayName,
+				dashboard: this.indicatorQueryParams.dashboard,
+				keywordFilters: []
+			},
+			chartId: this.chartConfig.chartId
+		}
+		this.dialog.open(ShareDialogComponent, {
+			width: '400px',
+			data: data
+		})
+			.afterClosed()
+			.subscribe(() => { });
+
 	}
 
 	public downloadJsonData(): void{
 		this.indicatorPointService
-			.exportJSON(this.chartConfig.indicatorId, this._buildIndicatorLookup())
+			.exportJSON(this.chartConfig.indicatorId, this.chartHelperService.buildChartIndicatorLookup(this.chartConfig, this.indicatorQueryParams, this._extraFields))
 			.pipe(
 				takeUntil(this._destroyed)
 			)
@@ -731,130 +830,6 @@ export class IndicatorDashboardChartComponent extends BaseComponent implements O
 
 				FileSaver.saveAs(response.body, filenametosave);
 			});
-	}
-
-
-
-	private _buildIndicatorLookup(): IndicatorPointReportLookup {
-
-		const {metrics, bucket} = this.dataTransformService.configurationToBucketsAndMetrics(this.chartConfig);
-
-		const lookup = new IndicatorPointReportLookup();
-
-		lookup.bucket = bucket;
-		lookup.metrics = metrics;
-
-		if (this.indicatorQueryParams?.keywordFilters?.length || this._extraFields.length || this.indicatorQueryParams?.groupHash) {
-			const indicatorPointLookup = new IndicatorPointLookup();
-
-			//query params
-			if (this.indicatorQueryParams?.keywordFilters?.length) {
-				
-				indicatorPointLookup.keywordFilters = this.indicatorQueryParams.keywordFilters;
-			}
-
-			if (this.indicatorQueryParams?.groupHash) {
-				indicatorPointLookup.groupHashes = [this.indicatorQueryParams.groupHash];
-			}
-			lookup.filters = indicatorPointLookup;
-
-
-			this._extraFields
-				.filter(extraField => extraField.value !== undefined && extraField.value !== null)
-				.forEach(extraField => {
-					const filterValue = extraField.value ?? [];
-
-
-					switch (extraField.indicatorFilterType) {
-						case IndicatorFilterType.KeywordFilter: {
-							const lookupKeywordFilters = lookup.filters.keywordFilters ?? [];
-
-							const fieldCodeFilter = lookupKeywordFilters.find(x => x.field === extraField.fieldCode) ?? {field: extraField.fieldCode, values: []};
-
-							const filterValueAsArray = Array.isArray(filterValue) ? filterValue :  [filterValue];
-
-							const uniqueValues = filterValueAsArray.filter(x => !fieldCodeFilter.values.includes(x));
-
-							fieldCodeFilter.values.push(
-								...uniqueValues
-							);
-							lookup.filters.keywordFilters = [
-								...lookupKeywordFilters.filter(x => x.field !== extraField.fieldCode),
-								fieldCodeFilter
-							];
-
-							break;
-						}
-						case IndicatorFilterType.DateRangeFilter: {
-							try {
-								const [startYear, endYear] = extraField.value;
-								const lookupDateRangeFilters = lookup.filters.dateRangeFilters ?? [];
-								lookup.filters.dateRangeFilters = [
-									...lookupDateRangeFilters,
-									{
-										field: extraField.fieldCode,
-										from: moment().year(startYear).startOf('year'),
-										to: moment().year(endYear).endOf('year'),
-									}
-								];
-
-
-							} catch {
-								console.log('%c Could not parse date range filter', 'color: yellow' );
-							}
-							break;
-						}
-					}
-
-			});
-
-
-
-
-		}
-		
-		// ** Replace/add keywords filters coming from dashboard configuration if any
-		const staticKeywordFilters = this.chartConfig?.staticFilters?.keywordsFilters;
-		if(staticKeywordFilters?.length){
-			const filters = lookup.filters ?? new IndicatorPointLookup();
-			const keywordFilters = filters.keywordFilters ?? [];
-
-			const dashboardFieldCodes = staticKeywordFilters.map(item => item.field);
-
-			// * remove keywords that are defined in dashboard config if any
-			filters.keywordFilters = keywordFilters.filter(filter => !dashboardFieldCodes.includes(filter.field));
-			// * add dashboardconfig filters if any
-			staticKeywordFilters.forEach(keywordFilter =>{
-				filters.keywordFilters.push({
-					field: keywordFilter.field,
-					values: keywordFilter.value
-				})
-			});
-
-			//* update lookup
-			lookup.filters = filters;
-		}
-
-		// * append ordering from backend ordering
-		rawDataBlock: if(this.chartConfig.rawDataRequest){
-
-			const {keyField, order, valueField, page} = this.chartConfig.rawDataRequest;
-
-			if(!keyField || !valueField || !order){
-				console.warn('Raw data not configured properly breaking out of sorting');
-				break rawDataBlock;
-			}
-			const rawDataRequest: RawDataRequest = {
-				keyField, order, valueField, page
-			};
-
-			lookup.isRawData = true;
-			// (lookup as any).rawData = true;
-			lookup.rawDataRequest = rawDataRequest;
-		}
-
-		return lookup;
-
 	}
 
 
@@ -893,7 +868,7 @@ interface ChartTag{
 
 export interface ExtraFilterField{
 	fieldCode: string;
-	value: any; 
+	value: any;
 	indicatorFilterType: IndicatorFilterType ;
 	displayName?: string;
 }

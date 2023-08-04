@@ -2,6 +2,6 @@ web:
   cors:
     enabled: true
     allowed-methods: [ HEAD, GET, POST, PUT, DELETE, PATCH ]
-    allowed-headers: [ Authorization, Cache-Control, Content-Type, Content-Disposition, x-tenant ]
+    allowed-headers: [ Authorization, Cache-Control, Content-Type, Content-Disposition, x-tenant, x-sti-api-key ]
     exposed-headers: [ Authorization, Cache-Control, Content-Type, Content-Disposition ]
     allow-credentials: false

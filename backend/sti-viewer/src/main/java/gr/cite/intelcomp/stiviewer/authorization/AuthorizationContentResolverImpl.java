@@ -103,8 +103,13 @@ public class AuthorizationContentResolverImpl implements AuthorizationContentRes
 		IndicatorRolesResource resource = new IndicatorRolesResource(userId);
 		if (userId == null) return resource;
 		List<IndicatorAccessEntity> indicatorAccesses = this.queryFactory.query(IndicatorAccessQuery.class).isActive(IsActive.ACTIVE).
-				indicatorIds(indicatorId).collectAs(new BaseFieldSet().ensure(IndicatorAccess._id).ensure(this.conventionService.asIndexer(IndicatorAccess._indicator, Indicator._id)).ensure(IndicatorAccess._user));
-
+				indicatorIds(indicatorId).hasUser(false).collectAs(new BaseFieldSet().ensure(IndicatorAccess._id).ensure(this.conventionService.asIndexer(IndicatorAccess._indicator, Indicator._id)).ensure(IndicatorAccess._user));
+		try {
+			indicatorAccesses.addAll(this.queryFactory.query(IndicatorAccessQuery.class).isActive(IsActive.ACTIVE).
+					indicatorIds(indicatorId).userIds(this.userScope.getUserId()).collectAs(new BaseFieldSet().ensure(IndicatorAccess._id).ensure(this.conventionService.asIndexer(IndicatorAccess._indicator, Indicator._id)).ensure(IndicatorAccess._user)));
+		} catch (InvalidApplicationException e) {
+			throw new RuntimeException(e);
+		}
 		List<UUID> indicatorIds = new ArrayList<>();
 		for (IndicatorAccessEntity indicatorAccessEntity : indicatorAccesses) {
 			if (indicatorAccessEntity.getUserId() == null || indicatorAccessEntity.getUserId().equals(userId)) {
@@ -129,7 +134,8 @@ public class AuthorizationContentResolverImpl implements AuthorizationContentRes
 			List<IndicatorAccessEntity> indicatorAccesses = null;
 			List<IndicatorEntity> indicators = null;
 			try {
-				indicatorAccesses = this.queryFactory.query(IndicatorAccessQuery.class).indicatorIds(indicatorIds).isActive(IsActive.ACTIVE).tenantIds(this.tenantScope.getTenant()).collectAs(new BaseFieldSet().ensure(IndicatorAccess._config).ensure(IndicatorAccess._indicator));
+				indicatorAccesses = this.queryFactory.query(IndicatorAccessQuery.class).indicatorIds(indicatorIds).hasUser(false).isActive(IsActive.ACTIVE).tenantIds(this.tenantScope.getTenant()).collectAs(new BaseFieldSet().ensure(IndicatorAccess._config).ensure(IndicatorAccess._indicator));
+				indicatorAccesses.addAll(this.queryFactory.query(IndicatorAccessQuery.class).indicatorIds(indicatorIds).userIds(this.userScope.getUserId()).isActive(IsActive.ACTIVE).tenantIds(this.tenantScope.getTenant()).collectAs(new BaseFieldSet().ensure(IndicatorAccess._config).ensure(IndicatorAccess._indicator)));
 				indicators = this.queryFactory.query(IndicatorQuery.class).ids(indicatorIds).isActive(IsActive.ACTIVE).collectAs(new BaseFieldSet().ensure(Indicator._id).ensure(Indicator._config));
 			} catch (InvalidApplicationException e) {
 				throw new RuntimeException(e);
@@ -244,7 +250,12 @@ public class AuthorizationContentResolverImpl implements AuthorizationContentRes
 		if (userId == null) return indicatorIds;
 		List<String> roles = claimExtractor.roles(this.currentPrincipalResolver.currentPrincipal());
 
-		List<IndicatorAccessEntity> indicatorAccesses = this.queryFactory.query(IndicatorAccessQuery.class).isActive(IsActive.ACTIVE).collectAs(new BaseFieldSet().ensure(IndicatorAccess._id).ensure(this.conventionService.asIndexer(IndicatorAccess._indicator, Indicator._id)).ensure(IndicatorAccess._user));
+		List<IndicatorAccessEntity> indicatorAccesses = this.queryFactory.query(IndicatorAccessQuery.class).isActive(IsActive.ACTIVE).hasUser(false).collectAs(new BaseFieldSet().ensure(IndicatorAccess._id).ensure(this.conventionService.asIndexer(IndicatorAccess._indicator, Indicator._id)).ensure(IndicatorAccess._user));
+		try {
+			indicatorAccesses.addAll(this.queryFactory.query(IndicatorAccessQuery.class).isActive(IsActive.ACTIVE).userIds(this.userScope.getUserId()).collectAs(new BaseFieldSet().ensure(IndicatorAccess._id).ensure(this.conventionService.asIndexer(IndicatorAccess._indicator, Indicator._id)).ensure(IndicatorAccess._user)));
+		} catch (InvalidApplicationException e) {
+			throw new RuntimeException(e);
+		}
 
 		for (IndicatorAccessEntity indicatorAccessEntity : indicatorAccesses) {
 			if (indicatorAccessEntity.getUserId() == null || indicatorAccessEntity.getUserId().equals(userId)) {

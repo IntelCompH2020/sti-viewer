@@ -7,7 +7,7 @@ import gr.cite.intelcomp.stiviewer.authorization.AuthorizationFlags;
 import gr.cite.intelcomp.stiviewer.authorization.HierarchyIndicatorColumnAccess;
 import gr.cite.intelcomp.stiviewer.authorization.Permission;
 import gr.cite.intelcomp.stiviewer.common.enums.IndicatorFieldBaseType;
-import gr.cite.intelcomp.stiviewer.common.scope.user.UserScope;
+import gr.cite.intelcomp.stiviewer.common.types.externaltoken.IndicatorPointQueryDefinitionEntity;
 import gr.cite.intelcomp.stiviewer.elastic.data.IndicatorDoubleMapEntity;
 import gr.cite.intelcomp.stiviewer.elastic.data.IndicatorIntegerMapEntity;
 import gr.cite.intelcomp.stiviewer.elastic.data.indicator.FieldEntity;
@@ -23,16 +23,16 @@ import gr.cite.tools.data.query.FieldResolver;
 import gr.cite.tools.data.query.QueryFactory;
 import gr.cite.tools.elastic.configuration.ElasticProperties;
 import gr.cite.tools.elastic.mapper.FieldBasedMapper;
+import gr.cite.tools.elastic.query.*;
+import gr.cite.tools.elastic.query.Aggregation.AggregateResponse;
+import gr.cite.tools.elastic.query.Aggregation.AggregationQuery;
 import gr.cite.tools.elastic.query.Aggregation.MetricAggregateType;
-import gr.cite.tools.elastic.query.ElasticField;
-import gr.cite.tools.elastic.query.ElasticFields;
-import gr.cite.tools.elastic.query.ElasticNestedQuery;
-import gr.cite.tools.elastic.query.ElasticQuery;
 import gr.cite.tools.exception.MyApplicationException;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.stereotype.Component;
 
 import javax.management.InvalidApplicationException;
@@ -45,6 +45,7 @@ import java.util.stream.Collectors;
 public class IndicatorPointQuery extends ElasticQuery<IndicatorPointEntity, UUID> {
 	private Collection<UUID> ids;
 	private Collection<UUID> indicatorIds;
+	private Collection<UUID> batchIds;
 	private Collection<IndicatorPointKeywordFilter> keywordFilters;
 	private Collection<IndicatorPointKeywordFilter> keywordExcludedFilters;
 	private Collection<IndicatorPointDateFilter> dateFilters;
@@ -56,20 +57,20 @@ public class IndicatorPointQuery extends ElasticQuery<IndicatorPointEntity, UUID
 	private Collection<String> groupHashes;
 	private IndicatorPointLikeFilter fieldLikeFilter;
 	private List<IndicatorConfigItem> indicatorConfigItems;
+	private IndicatorPointQueryDefinitionEntity indicatorPointQueryDefinitionEntity;
 
 	private final ElasticIndicatorService elasticIndicatorService;
 	private final IndicatorConfigService indicatorsConfigService;
 	private EnumSet<AuthorizationFlags> authorize = EnumSet.of(AuthorizationFlags.None);
-	private final UserScope userScope;
 	private final AuthorizationService authService;
 	private final AuthorizationContentResolver authorizationContentResolver;
 	private final QueryFactory queryFactory;
+	
 
 	public IndicatorPointQuery(
 			ElasticsearchRestTemplate elasticsearchRestTemplate,
 			ElasticIndicatorService elasticIndicatorService,
 			IndicatorConfigService indicatorsConfigService,
-			UserScope userScope,
 			AuthorizationService authService,
 			AuthorizationContentResolver authorizationContentResolver,
 			ElasticProperties elasticProperties,
@@ -77,7 +78,6 @@ public class IndicatorPointQuery extends ElasticQuery<IndicatorPointEntity, UUID
 		super(elasticsearchRestTemplate, elasticProperties);
 		this.elasticIndicatorService = elasticIndicatorService;
 		this.indicatorsConfigService = indicatorsConfigService;
-		this.userScope = userScope;
 		this.authService = authService;
 		this.authorizationContentResolver = authorizationContentResolver;
 		this.queryFactory = queryFactory;
@@ -129,6 +129,21 @@ public class IndicatorPointQuery extends ElasticQuery<IndicatorPointEntity, UUID
 
 	public IndicatorPointQuery ids(Collection<UUID> values) {
 		this.ids = values;
+		return this;
+	}
+
+	public IndicatorPointQuery batchIds(UUID value) {
+		this.batchIds = List.of(value);
+		return this;
+	}
+
+	public IndicatorPointQuery batchIds(UUID... value) {
+		this.batchIds = Arrays.asList(value);
+		return this;
+	}
+
+	public IndicatorPointQuery batchIds(Collection<UUID> values) {
+		this.batchIds = values;
 		return this;
 	}
 
@@ -285,9 +300,7 @@ public class IndicatorPointQuery extends ElasticQuery<IndicatorPointEntity, UUID
 				List<String> indexNames = new ArrayList<>();
 				for (UUID indicatorId : this.indicatorIds) indexNames.add(this.elasticIndicatorService.getIndexName(indicatorId));
 				return indexNames.toArray(new String[indexNames.size()]);
-			} catch (InvalidApplicationException e) {
-				throw new RuntimeException(e);
-			} catch (IOException e) {
+			} catch (InvalidApplicationException | IOException e) {
 				throw new RuntimeException(e);
 			}
 		} else {
@@ -310,30 +323,59 @@ public class IndicatorPointQuery extends ElasticQuery<IndicatorPointEntity, UUID
 
 	@Override
 	protected QueryBuilder applyAuthZ() {
-		if (this.authorize.contains(AuthorizationFlags.None)) return null;
-		if (this.authorize.contains(AuthorizationFlags.Permission) && this.authService.authorize(Permission.BrowseIndicatorPoint)) return null;
-		List<UUID> allowedIndicatorIds = null;
-		List<HierarchyIndicatorColumnAccess> indicatorColumnAccesses = null;
-		if (this.authorize.contains(AuthorizationFlags.Indicator)) allowedIndicatorIds = this.authorizationContentResolver.affiliatedIndicators(Permission.BrowseIndicatorPoint);
-		
-		if (this.indicatorIds != null) {
-			if (allowedIndicatorIds == null) {
-				this.indicatorIds(new ArrayList<>());
-			} else {
-				Set<UUID> result = this.indicatorIds.stream().distinct().filter(allowedIndicatorIds::contains).collect(Collectors.toSet());
-				this.indicatorIds(result);
-			}
-		} else {
-			this.indicatorIds(allowedIndicatorIds);
+		if (this.indicatorPointQueryDefinitionEntity == null){
+			if (this.authorize.contains(AuthorizationFlags.None)) return null;
+			if (this.authorize.contains(AuthorizationFlags.Permission) && this.authService.authorize(Permission.BrowseIndicatorPoint)) return null;
 		}
+		
+		List<UUID> allowedIndicatorIds = this.getAllowedIndicatorIds();
+		this.indicatorIds(this.intersectIndicatorIds(new ArrayList<>(this.indicatorIds), allowedIndicatorIds));
+		List<HierarchyIndicatorColumnAccess> indicatorColumnAccesses = this.getIndicatorColumnAccesses(allowedIndicatorIds);
 
-		if (this.authorize.contains(AuthorizationFlags.IndicatorAccess)) indicatorColumnAccesses = this.authorizationContentResolver.indicatorAllowedKeywords(this.indicatorIds != null ? indicatorIds.toArray(new UUID[this.indicatorIds.size()]) : null);
 		if (indicatorColumnAccesses != null && !indicatorColumnAccesses.isEmpty()) {
 			Map<String, List<HierarchyIndicatorColumnAccess>>  group = HierarchyIndicatorColumnAccess.groupByCode(indicatorColumnAccesses);
 			List<QueryBuilder> predicates =  this.buildHierarchyIndicatorColumnAccessQuery(indicatorColumnAccesses, new ArrayList<>(), new HashMap<>());
 			return this.or(predicates);
 		}
 		return null;
+	}
+	
+	public boolean appliesToIndicator(UUID indicatorId){
+		List<UUID> allowedIndicatorIds = this.getAllowedIndicatorIds();
+		return this.intersectIndicatorIds(new ArrayList<>(this.indicatorIds), allowedIndicatorIds).contains(indicatorId);
+	}
+	
+	private  List<UUID> getAllowedIndicatorIds(){
+		List<UUID> allowedIndicatorIds = null;
+		if (this.authorize.contains(AuthorizationFlags.Indicator)) {
+			allowedIndicatorIds = this.indicatorPointQueryDefinitionEntity == null ? this.authorizationContentResolver.affiliatedIndicators(Permission.BrowseIndicatorPoint) : this.indicatorPointQueryDefinitionEntity.getAllowedIndicatorIds();
+		}
+		return allowedIndicatorIds;
+	}
+
+	private  List<HierarchyIndicatorColumnAccess> getIndicatorColumnAccesses(List<UUID> allowedIndicatorIds){
+		List<HierarchyIndicatorColumnAccess> indicatorColumnAccesses = null;
+		if (this.authorize.contains(AuthorizationFlags.IndicatorAccess)) {
+			if (this.indicatorPointQueryDefinitionEntity == null) {
+				List<UUID> intersectIndicatorIds = this.intersectIndicatorIds(new ArrayList<>(this.indicatorIds), allowedIndicatorIds);
+				indicatorColumnAccesses = this.authorizationContentResolver.indicatorAllowedKeywords(intersectIndicatorIds != null ? intersectIndicatorIds.toArray(new UUID[intersectIndicatorIds.size()]) : null);
+			} else {
+				indicatorColumnAccesses = this.indicatorPointQueryDefinitionEntity.getIndicatorColumnAccesses();
+			}
+		}
+		return indicatorColumnAccesses;
+	}
+	
+	private List<UUID> intersectIndicatorIds(List<UUID> indicatorIds, List<UUID> allowedIndicatorIds){
+		if (indicatorIds != null) {
+			if (allowedIndicatorIds == null) {
+				return new ArrayList<>();
+			} else {
+				return indicatorIds.stream().distinct().filter(allowedIndicatorIds::contains).collect(Collectors.toList());
+			}
+		} else {
+			return allowedIndicatorIds;
+		}
 	}
 	
 	private List<QueryBuilder> buildHierarchyIndicatorColumnAccessQuery(List<HierarchyIndicatorColumnAccess> indicatorColumnAccesses, List<QueryBuilder> orItems, Map<String, String> andItems){
@@ -385,6 +427,10 @@ public class IndicatorPointQuery extends ElasticQuery<IndicatorPointEntity, UUID
 		List<QueryBuilder> predicates = new ArrayList<>();
 		if (ids != null) {
 			predicates.add(this.containsUUID(this.elasticFieldOf(IndicatorPointEntity.Fields.id), ids));
+		}
+
+		if (batchIds != null) {
+			predicates.add(this.containsUUID(this.elasticFieldOf(IndicatorPointEntity.Fields.batchId), batchIds));
 		}
 
 		if (groupHashes != null) {
@@ -504,6 +550,24 @@ public class IndicatorPointQuery extends ElasticQuery<IndicatorPointEntity, UUID
 		} else {
 			return null;
 		}
+	}
+
+	public org.springframework.data.elasticsearch.core.query.Query buildElasticQuery() {
+		ElasticQueryContext context = ElasticQueryContext.build(
+				new NativeSearchQueryBuilder());
+
+		if (this.isFalseQuery()) return null;
+
+		QueryBuilder filters = this.applyFilters();
+		QueryBuilder authZFilter = this.applyAuthZ();
+		this.combineFilters(context, filters, authZFilter);
+
+		this.applyOrdering(context);
+
+		org.springframework.data.elasticsearch.core.query.Query typedQuery = context.query.build();
+
+		this.applyPaging(typedQuery);
+		return typedQuery;
 	}
 
 
@@ -629,6 +693,51 @@ public class IndicatorPointQuery extends ElasticQuery<IndicatorPointEntity, UUID
 		return fieldEntity;
 	}
 
+	public IndicatorPointQueryDefinitionEntity toIndicatorPointQueryDefinitionEntity(){
+		IndicatorPointQueryDefinitionEntity item = new IndicatorPointQueryDefinitionEntity();
+		item.setIds(this.ids);
+		item.setIndicatorIds(this.indicatorIds);
+		item.setBatchIds(this.batchIds);
+		item.setKeywordFilters(this.keywordFilters);
+		item.setKeywordExcludedFilters(this.keywordExcludedFilters);
+		item.setDateFilters(this.dateFilters);
+		item.setIntegerFilters(this.integerFilters);
+		item.setDoubleFilters(this.doubleFilters);
+		item.setDateRangeFilters(this.dateRangeFilters);
+		item.setIntegerRangeFilters(this.integerRangeFilters);
+		item.setDoubleRangeFilters(this.doubleRangeFilters);
+		item.setGroupHashes(this.groupHashes);
+		item.setFieldLikeFilter(this.fieldLikeFilter);
 
+		List<UUID> allowedIndicatorIds =  this.getAllowedIndicatorIds();
+		List<HierarchyIndicatorColumnAccess> indicatorColumnAccesses = this.getIndicatorColumnAccesses(allowedIndicatorIds);
+		
+		item.setAllowedIndicatorIds(allowedIndicatorIds);
+		item.setIndicatorColumnAccesses(indicatorColumnAccesses);
+		return  item;
+	}
+	public static IndicatorPointQuery build(QueryFactory factory, IndicatorPointQueryDefinitionEntity definitionEntity){
+		IndicatorPointQuery item = factory.query(IndicatorPointQuery.class);
+
+		item.ids(definitionEntity.getIds());
+		item.indicatorIds(definitionEntity.getIndicatorIds());
+		item.batchIds(definitionEntity.getBatchIds());
+		item.keywordFilters(definitionEntity.getKeywordFilters());
+		item.keywordExcludedFilters(definitionEntity.getKeywordExcludedFilters());
+		item.dateFilters(definitionEntity.getDateFilters());
+		item.integerFilters(definitionEntity.getIntegerFilters());
+		item.doubleFilters(definitionEntity.getDoubleFilters());
+		item.dateRangeFilters(definitionEntity.getDateRangeFilters());
+		item.integerRangeFilters(definitionEntity.getIntegerRangeFilters());
+		item.doubleRangeFilters(definitionEntity.getDoubleRangeFilters());
+		item.groupHashes(definitionEntity.getGroupHashes());
+		item.fieldLikeFilter(definitionEntity.getFieldLikeFilter());
+		item.indicatorPointQueryDefinitionEntity = definitionEntity;
+		
+		return item;
+	}
+	public AggregateResponse collectAggregate(AggregationQuery aggregationMetric, IndicatorPointQueryDefinitionEntity definitionEntity) {
+		return this.collectAggregate(aggregationMetric);
+	}
 }
 

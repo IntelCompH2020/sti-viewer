@@ -574,7 +574,7 @@ public class DataAccessRequestServiceImpl implements DataAccessRequestService {
 	}
 	
 	private IndicatorGroupAccessConfigViewEntity addColumnAccessFromIndicatorAccessEntity(IndicatorGroupEntity indicatorGroupEntity, IndicatorGroupAccessConfigViewEntity indicatorGroupAccessConfigViewEntity){
-		List<IndicatorAccessEntity> indicatorAccesses = this.queryFactory.query(IndicatorAccessQuery.class).isActive(IsActive.ACTIVE).indicatorIds(indicatorGroupEntity.getIndicatorIds())
+		List<IndicatorAccessEntity> indicatorAccesses = this.queryFactory.query(IndicatorAccessQuery.class).isActive(IsActive.ACTIVE).hasUser(false).indicatorIds(indicatorGroupEntity.getIndicatorIds())
 				.collectAs(new BaseFieldSet().ensure(IndicatorAccess._config).ensure(IndicatorAccess._indicator));
 		for (IndicatorAccessEntity indicatorAccess: indicatorAccesses) {
 			IndicatorAccessConfigEntity indicatorAccessConfig = this.jsonHandlingService.fromJsonSafe(IndicatorAccessConfigEntity.class, indicatorAccess.getConfig());

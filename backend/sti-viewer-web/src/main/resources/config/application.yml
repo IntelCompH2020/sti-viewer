@@ -22,4 +22,6 @@ spring:
       optional:classpath:config/swagger.yml[.yml], optional:classpath:config/swagger-${spring.profiles.active}.yml[.yml], optional:file:../config/swagger-${spring.profiles.active}.yml[.yml],
       optional:classpath:config/data-access-request.yml[.yml], optional:classpath:config/data-access-request-${spring.profiles.active}.yml[.yml], optional:file:../config/data-access-request-${spring.profiles.active}.yml[.yml],
       optional:classpath:config/tenant-request.yml[.yml], optional:classpath:config/tenant-request-${spring.profiles.active}.yml[.yml], optional:file:../config/tenant-request-${spring.profiles.active}.yml[.yml],
+      optional:classpath:config/api-key.yml[.yml], optional:classpath:config/api-key-${spring.profiles.active}.yml[.yml], optional:file:../config/api-key-${spring.profiles.active}.yml[.yml],
+      optional:classpath:config/external-token.yml[.yml], optional:classpath:config/external-token-${spring.profiles.active}.yml[.yml], optional:file:../config/external-token-${spring.profiles.active}.yml[.yml],
       optional:classpath:config/indicator-point.yml[.yml], optional:classpath:config/indicator-point-${spring.profiles.active}.yml[.yml], optional:file:../config/indicator-point-${spring.profiles.active}.yml[.yml]

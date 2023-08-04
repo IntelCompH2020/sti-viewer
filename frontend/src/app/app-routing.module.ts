@@ -7,6 +7,18 @@ const appRoutes: Routes = [
 
 	{ path: '', redirectTo: 'home', pathMatch: 'full' },
 	{
+		path: 'embedded-dashboard',
+		loadChildren: () => import('@app/ui/embedded-dashboard/embedded-dashboard.module').then(m => m.EmbeddedDashboardModule)
+	},
+	{
+		path: 'shared-graph',
+		loadChildren: () => import('@app/ui/shared-graph/shared-graph.module').then(m => m.SharedGraphModule)
+	},
+	{
+		path: 'shared-dashboard',
+		loadChildren: () => import('@app/ui/shared-dashboard/shared-dashboard.module').then(m => m.SharedDashboardModule)
+	},
+	{
 		path: 'home',
 		canLoad: [AuthGuard],
 		loadChildren: () => import('@app/ui/home/home.module').then(m => m.HomeModule)
@@ -118,6 +130,16 @@ const appRoutes: Routes = [
 			}
 		},
 		loadChildren: () => import('@app/ui/tenant-request/tenant-request.module').then(m => m.TenantRequestModule)
+	},
+	{
+		path: 'external-tokens',
+		canLoad: [AuthGuard],
+		data: {
+			authContext: {
+				permissions: [AppPermission.ViewExternalTokenPage]
+			}
+		},
+		loadChildren: () => import('@app/ui/external-token/external-token.module').then(m => m.ExternalTokenModule)
 	},
 	{
 		path: "simple-page",

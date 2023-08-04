@@ -1,17 +1,18 @@
 package gr.cite.intelcomp.stiviewer.service.indicatorpoint;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import gr.cite.commons.web.authz.service.AuthorizationService;
 import gr.cite.intelcomp.stiviewer.authorization.AuthorizationContentResolver;
 import gr.cite.intelcomp.stiviewer.authorization.AuthorizationFlags;
 import gr.cite.intelcomp.stiviewer.authorization.Permission;
+import gr.cite.intelcomp.stiviewer.common.JsonHandlingService;
 import gr.cite.intelcomp.stiviewer.common.enums.IndicatorFieldBaseType;
 import gr.cite.intelcomp.stiviewer.common.enums.UserSettingsEntityType;
 import gr.cite.intelcomp.stiviewer.common.enums.UserSettingsType;
-import gr.cite.intelcomp.stiviewer.convention.ConventionService;
-import gr.cite.intelcomp.stiviewer.data.IndicatorEntity;
-import gr.cite.intelcomp.stiviewer.data.TenantEntityManager;
-import gr.cite.intelcomp.stiviewer.data.UserSettingsEntity;
+import gr.cite.intelcomp.stiviewer.common.scope.tenant.TenantScope;
+import gr.cite.intelcomp.stiviewer.common.scope.user.UserScope;
+import gr.cite.intelcomp.stiviewer.common.types.externaltoken.DefinitionEntity;
+import gr.cite.intelcomp.stiviewer.common.types.externaltoken.IndicatorPointQueryDefinitionEntity;
+import gr.cite.intelcomp.stiviewer.data.*;
 import gr.cite.intelcomp.stiviewer.elastic.data.IndicatorDoubleMapEntity;
 import gr.cite.intelcomp.stiviewer.elastic.data.IndicatorIntegerMapEntity;
 import gr.cite.intelcomp.stiviewer.elastic.data.indicator.FieldEntity;
@@ -19,27 +20,32 @@ import gr.cite.intelcomp.stiviewer.elastic.data.indicatorpoint.DataGroupInfoColu
 import gr.cite.intelcomp.stiviewer.elastic.data.indicatorpoint.DataGroupInfoEntity;
 import gr.cite.intelcomp.stiviewer.elastic.data.indicatorpoint.IndicatorPointEntity;
 import gr.cite.intelcomp.stiviewer.elastic.query.indicatorpoint.IndicatorPointQuery;
-import gr.cite.intelcomp.stiviewer.errorcode.ErrorThesaurusProperties;
 import gr.cite.intelcomp.stiviewer.model.Indicator;
 import gr.cite.intelcomp.stiviewer.model.UserSettings;
 import gr.cite.intelcomp.stiviewer.model.builder.elasticreport.AggregateResponseModelBuilder;
 import gr.cite.intelcomp.stiviewer.model.builder.indicatorpoint.IndicatorPointBuilder;
-import gr.cite.intelcomp.stiviewer.model.elasticreport.AggregateResponseModel;
-import gr.cite.intelcomp.stiviewer.model.elasticreport.Bucket;
-import gr.cite.intelcomp.stiviewer.model.elasticreport.IndicatorPointReportLookup;
-import gr.cite.intelcomp.stiviewer.model.elasticreport.RawDataRequest;
+import gr.cite.intelcomp.stiviewer.model.elasticreport.*;
 import gr.cite.intelcomp.stiviewer.model.indicatorpoint.IndicatorPoint;
 import gr.cite.intelcomp.stiviewer.model.persist.indicatorpoint.DataGroupInfoColumnPersist;
 import gr.cite.intelcomp.stiviewer.model.persist.indicatorpoint.IndicatorPointPersist;
+import gr.cite.intelcomp.stiviewer.model.shared.PublicIndicatorPointReportLookup;
 import gr.cite.intelcomp.stiviewer.query.UserSettingsQuery;
+import gr.cite.intelcomp.stiviewer.service.externaltoken.ExternalTokenService;
 import gr.cite.intelcomp.stiviewer.service.indicator.IndicatorConfigItem;
 import gr.cite.intelcomp.stiviewer.service.indicator.IndicatorConfigService;
-import gr.cite.intelcomp.stiviewer.service.indicator.IndicatorService;
 import gr.cite.intelcomp.stiviewer.service.indicatorelastic.ElasticIndicatorService;
 import gr.cite.tools.data.builder.BuilderFactory;
-import gr.cite.tools.data.deleter.DeleterFactory;
 import gr.cite.tools.data.query.QueryFactory;
 import gr.cite.tools.elastic.query.Aggregation.*;
+import gr.cite.tools.elastic.query.Aggregation.AggregationMetricHaving;
+import gr.cite.tools.elastic.query.Aggregation.AggregationMetricSort;
+import gr.cite.tools.elastic.query.Aggregation.AggregationMetricSortField;
+import gr.cite.tools.elastic.query.Aggregation.Composite;
+import gr.cite.tools.elastic.query.Aggregation.CompositeSource;
+import gr.cite.tools.elastic.query.Aggregation.DateHistogram;
+import gr.cite.tools.elastic.query.Aggregation.Metric;
+import gr.cite.tools.elastic.query.Aggregation.Nested;
+import gr.cite.tools.elastic.query.Aggregation.Terms;
 import gr.cite.tools.exception.MyApplicationException;
 import gr.cite.tools.exception.MyForbiddenException;
 import gr.cite.tools.exception.MyNotFoundException;
@@ -50,10 +56,6 @@ import gr.cite.tools.logging.LoggerService;
 import gr.cite.tools.logging.MapLogEntry;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.elasticsearch.action.bulk.BulkRequest;
-import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestHighLevelClient;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -62,16 +64,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
-import org.springframework.data.elasticsearch.core.convert.ElasticsearchConverter;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.RequestScope;
 
 import javax.management.InvalidApplicationException;
+import javax.naming.OperationNotSupportedException;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.validation.constraints.NotNull;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.*;
@@ -83,51 +88,55 @@ public class IndicatorPointServiceImpl implements IndicatorPointService {
 	private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(IndicatorPointServiceImpl.class));
 	private final TenantEntityManager entityManager;
 	private final AuthorizationService authorizationService;
-	private final DeleterFactory deleterFactory;
 	private final BuilderFactory builderFactory;
-	private final ConventionService conventionService;
-	private final ErrorThesaurusProperties errors;
 	private final MessageSource messageSource;
 	private final ElasticsearchRestTemplate elasticsearchTemplate;
-	private final IndicatorService indicatorService;
 	private final IndicatorConfigService indicatorConfigService;
 	private final AuthorizationContentResolver authorizationContentResolver;
 	private final ElasticIndicatorService elasticIndicatorService;
 	private final QueryFactory queryFactory;
 	private final IndicatorPointValidationService validationService;
 	private final IndicatorPointProperties indicatorPointProperties;
+	private final TenantScope tenantScope;
+	private final UserScope userScope;
+	private final JsonHandlingService jsonHandlingService;
+	private final ExternalTokenService externalTokenService;
+	
+	@PersistenceContext
+	private EntityManager globalEntityManager;
+	
 	@Autowired
 	public IndicatorPointServiceImpl(
 			TenantEntityManager entityManager,
 			AuthorizationService authorizationService,
-			DeleterFactory deleterFactory,
 			BuilderFactory builderFactory,
-			ConventionService conventionService,
-			ErrorThesaurusProperties errors,
 			MessageSource messageSource,
 			ElasticsearchRestTemplate elasticsearchTemplate,
-			IndicatorService indicatorService,
 			IndicatorConfigService indicatorConfigService,
 			AuthorizationContentResolver authorizationContentResolver,
 			ElasticIndicatorService elasticIndicatorService,
 			QueryFactory queryFactory,
-			IndicatorPointValidationServiceImpl validationService, 
-			IndicatorPointProperties indicatorPointProperties) {
+			IndicatorPointValidationServiceImpl validationService,
+			IndicatorPointProperties indicatorPointProperties,
+			TenantScope tenantScope,
+			UserScope userScope,
+			JsonHandlingService jsonHandlingService, 
+			ExternalTokenService externalTokenService) {
 		this.entityManager = entityManager;
 		this.authorizationService = authorizationService;
-		this.deleterFactory = deleterFactory;
 		this.builderFactory = builderFactory;
-		this.conventionService = conventionService;
-		this.errors = errors;
 		this.messageSource = messageSource;
 		this.elasticsearchTemplate = elasticsearchTemplate;
-		this.indicatorService = indicatorService;
 		this.indicatorConfigService = indicatorConfigService;
 		this.authorizationContentResolver = authorizationContentResolver;
 		this.elasticIndicatorService = elasticIndicatorService;
 		this.queryFactory = queryFactory;
 		this.validationService = validationService;
 		this.indicatorPointProperties = indicatorPointProperties;
+		this.tenantScope = tenantScope;
+		this.userScope = userScope;
+		this.jsonHandlingService = jsonHandlingService;
+		this.externalTokenService = externalTokenService;
 	}
 
 	public IndicatorPoint persist(UUID indicatorId, IndicatorPointPersist model, FieldSet fields) throws MyForbiddenException, MyValidationException, MyApplicationException, MyNotFoundException, InvalidApplicationException, IOException {
@@ -144,7 +153,7 @@ public class IndicatorPointServiceImpl implements IndicatorPointService {
 	}
 
 	public void persist(UUID indicatorId, List<IndicatorPointPersist> models) throws MyForbiddenException, MyValidationException, MyApplicationException, MyNotFoundException, InvalidApplicationException, IOException {
-		logger.debug(new MapLogEntry("persisting dataset").And("models", models));
+		logger.debug(new MapLogEntry("persisting indicator points").And("indicatorId", indicatorId));
 		this.authorizationService.authorizeAtLeastOneForce(List.of(this.authorizationContentResolver.indicatorAffiliation(indicatorId)), Permission.EditIndicatorPoint);
 
 		IndicatorConfigItem indicatorConfigItem = this.getIndicatorConfigItem(indicatorId);
@@ -154,6 +163,19 @@ public class IndicatorPointServiceImpl implements IndicatorPointService {
 			items.add(data);
 		}
 		this.saveToElasticInBatches(items, IndexCoordinates.of(this.elasticIndicatorService.getIndexName(indicatorId)));
+	}
+	
+	public void deleteBatch(UUID indicatorId, UUID batchId) throws InvalidApplicationException, IOException {
+		logger.debug(new MapLogEntry("delete batch").And("indicatorId", indicatorId).And("batchId", batchId));
+		this.authorizationService.authorizeForce(Permission.DeleteIndicatorPoint);
+		
+		IndicatorEntity indicatorEntity = this.entityManager.find(IndicatorEntity.class, indicatorId);
+		if (indicatorEntity == null) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{indicatorId, Indicator.class.getSimpleName()}, LocaleContextHolder.getLocale()));
+		
+		IndicatorPointQuery indicatorPointQuery = this.queryFactory.query(IndicatorPointQuery.class);
+		indicatorPointQuery = indicatorPointQuery.indicatorIds(indicatorId).batchIds(batchId).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicatorOrIndicatorAccess);
+
+		elasticsearchTemplate.delete(indicatorPointQuery.buildElasticQuery(), IndexCoordinates.of(this.elasticIndicatorService.getIndexName(indicatorId)));
 	}
 
 	private void saveToElasticInBatches(List<IndicatorPointEntity> items, IndexCoordinates indexCoordinates) {
@@ -314,6 +336,31 @@ public class IndicatorPointServiceImpl implements IndicatorPointService {
 		return model;
 	}
 
+	public AggregateResponseModel reportPublic(@NotNull UUID indicatorId, @NotNull PublicIndicatorPointReportLookup lookup, FieldSet fields) throws InvalidApplicationException, NoSuchAlgorithmException, OperationNotSupportedException {
+		logger.debug(new MapLogEntry("report" + IndicatorPoint.class.getSimpleName()).And("lookup", lookup).And("fieldSet", fields));
+
+		ExternalTokenEntity tokenEntity = this.externalTokenService.getValidForce(lookup.getToken());
+		DefinitionEntity definitionEntity = this.jsonHandlingService.fromJsonSafe(DefinitionEntity.class, tokenEntity.getDefinition());
+		if (definitionEntity == null)  throw new MyForbiddenException("Access is denied");
+		TenantEntity tenant = this.entityManager.find(TenantEntity.class, tokenEntity.getTenantId());
+		if (tenant == null) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{tokenEntity.getTenantId(), TenantEntity.class.getSimpleName()}, LocaleContextHolder.getLocale()));
+		
+		AggregateResponseModel model = null;
+		try {
+			this.tenantScope.setTempTenant(this.globalEntityManager, tenant.getId(), tenant.getCode());
+
+			IndicatorPointQueryDefinitionEntity queryDefinitionEntity = definitionEntity.getIndicatorPointQuery(List.of(lookup.getChartId(), lookup.getDashboardId()));
+			if (queryDefinitionEntity == null)  throw new MyForbiddenException("Access is denied");
+			
+			AggregateResponse aggregateResponse = this.report(indicatorId, lookup, queryDefinitionEntity);
+
+			model = this.builderFactory.builder(AggregateResponseModelBuilder.class).build(BaseFieldSet.build(fields, IndicatorPoint._id), aggregateResponse);
+		} finally {
+			this.tenantScope.removeTempTenant(this.globalEntityManager);
+		}
+		return model;
+	}
+
 	private AggregateResponse report(UUID indicatorId, IndicatorPointReportLookup lookup) throws InvalidApplicationException {
 		this.authorizationService.authorizeAtLeastOneForce(List.of(this.authorizationContentResolver.indicatorAffiliation(indicatorId)), Permission.BrowseIndicatorPoint);
 
@@ -322,10 +369,26 @@ public class IndicatorPointServiceImpl implements IndicatorPointService {
 
 		IndicatorConfigItem indicatorConfigItem = this.getIndicatorConfigItem(indicatorId);
 
-		boolean isRawData = lookup.getIsRawData() != null && lookup.getIsRawData();
-
 		IndicatorPointQuery indicatorPointQuery = lookup.getFilters() == null ? this.queryFactory.query(IndicatorPointQuery.class) : lookup.getFilters().enrich(this.queryFactory);
 		indicatorPointQuery = indicatorPointQuery.indicatorIds(indicatorId).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicatorOrIndicatorAccess);
+
+		return this.report(indicatorPointQuery, indicatorConfigItem, lookup);
+	}
+
+	private AggregateResponse report(UUID indicatorId, IndicatorPointReportLookup lookup, IndicatorPointQueryDefinitionEntity definitionEntity) throws InvalidApplicationException {
+		IndicatorPointQuery indicatorPointQuery = IndicatorPointQuery.build(this.queryFactory, definitionEntity).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicatorOrIndicatorAccess);
+		if (!indicatorPointQuery.appliesToIndicator(indicatorId)) throw new MyForbiddenException("Access is denied");
+		
+		IndicatorEntity indicatorEntity = this.entityManager.find(IndicatorEntity.class, indicatorId);
+		if (indicatorEntity == null) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{indicatorId, Indicator.class.getSimpleName()}, LocaleContextHolder.getLocale()));
+
+		IndicatorConfigItem indicatorConfigItem = this.getIndicatorConfigItem(indicatorId);
+		
+		return this.report(indicatorPointQuery, indicatorConfigItem, lookup);
+	}
+
+	private AggregateResponse report(IndicatorPointQuery indicatorPointQuery, IndicatorConfigItem indicatorConfigItem, IndicatorPointReportLookup lookup) {
+		boolean isRawData = lookup.getIsRawData() != null && lookup.getIsRawData();
 
 		AggregateResponse aggregateResponse = null;
 		if (!isRawData) {
@@ -788,6 +851,7 @@ public class IndicatorPointServiceImpl implements IndicatorPointService {
 					case Date:
 					case Keyword:
 						CompositeSource source = new CompositeSource(sourceModel.getField());
+						source.setMissingBucket(true);
 						if (sourceModel.getOrder() != null) source.setOrder(sourceModel.getOrder());
 						sources.add(source);
 						break;
@@ -883,13 +947,11 @@ public class IndicatorPointServiceImpl implements IndicatorPointService {
 	}
 
 	@Override
-	public String getGlobalSearchConfig(String key) {
+	public String getGlobalSearchConfig(String key) throws InvalidApplicationException {
 		this.authorizationService.authorizeForce(Permission.GetDashboard);
-		UserSettingsEntity userSetting = this.queryFactory
-				.query(UserSettingsQuery.class)
-				.types(UserSettingsType.GlobalSearch).keys(key)
-				.entityTypes(UserSettingsEntityType.Application)
-				.firstAs(new BaseFieldSet().ensure(UserSettings._key).ensure(UserSettings._value));
+		UserSettingsEntity userSetting = this.queryFactory.query(UserSettingsQuery.class).types(UserSettingsType.GlobalSearch).keys(key).entityTypes(UserSettingsEntityType.User).entityIds(this.userScope.getUserId()).firstAs(new BaseFieldSet().ensure(UserSettings._key).ensure(UserSettings._value));
+		if (userSetting == null && this.tenantScope.isSet()) userSetting = this.queryFactory.query(UserSettingsQuery.class).types(UserSettingsType.GlobalSearch).keys(key).entityTypes(UserSettingsEntityType.Tenant).entityIds(this.tenantScope.getTenant()).firstAs(new BaseFieldSet().ensure(UserSettings._key).ensure(UserSettings._value));
+		if (userSetting == null) userSetting = this.queryFactory.query(UserSettingsQuery.class).types(UserSettingsType.GlobalSearch).keys(key).entityTypes(UserSettingsEntityType.Application).firstAs(new BaseFieldSet().ensure(UserSettings._key).ensure(UserSettings._value));
 		if (userSetting == null) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{key, UserSettingsEntity.class.getSimpleName()}, LocaleContextHolder.getLocale()));
 		return userSetting.getValue();
 	}

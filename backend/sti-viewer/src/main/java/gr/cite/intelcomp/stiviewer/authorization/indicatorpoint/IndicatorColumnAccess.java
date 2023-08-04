@@ -2,7 +2,7 @@ package gr.cite.intelcomp.stiviewer.authorization.indicatorpoint;
 
 import java.util.List;
 
-public class IndicatorColumnAccess {
+public class  IndicatorColumnAccess {
 	private String field;
 	private List<String> values;
 

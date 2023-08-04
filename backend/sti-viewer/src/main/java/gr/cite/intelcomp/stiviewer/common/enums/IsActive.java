@@ -4,3 +4,4 @@ package gr.cite.intelcomp.stiviewer.common.enums;
 public enum IsActive {
 	INACTIVE, ACTIVE
 }
+

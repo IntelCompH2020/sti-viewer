@@ -23,10 +23,15 @@ import { TabChartGroupFilterPipe } from './indicator-dashboard-tab/chart-group-t
 import { ValueCardComponent } from './value-card/value-card.component';
 import { IndicatorDashboardGaugeComponent } from './indicator-dashboard-gauge/indicator-dashboard-gauge.component';
 import { MergeEchartOptionsPipe } from './indicator-dashboard-chart/merge-options.pipe';
+import { ShareDialogComponent } from './share-dialog/share-dialog.component';
+import { ClipboardModule } from '@angular/cdk/clipboard';
+import { MatDatetimepickerModule } from '@mat-datetimepicker/core';
 @NgModule({
-    imports: [
+	imports: [
+		ClipboardModule,
         CommonUiModule,
         CommonFormsModule,
+		MatDatetimepickerModule,
         ConfirmationDialogModule,
         ListingModule,
         TextFilterModule,
@@ -51,6 +56,7 @@ import { MergeEchartOptionsPipe } from './indicator-dashboard-chart/merge-option
         ValueCardComponent,
         IndicatorDashboardGaugeComponent,
 
+		ShareDialogComponent,
 
         //pipes
         TabChartGroupFilterPipe,
@@ -62,7 +68,8 @@ import { MergeEchartOptionsPipe } from './indicator-dashboard-chart/merge-option
     exports:[
         IndicatorDashboardChartComponent,
         IndicatorDashboardGaugeComponent,
-        ValueCardComponent
+		ValueCardComponent,
+		IndicatorDashboardComponent
     ]
 })
 export class IndicatorDashboardModule { }

@@ -26,6 +26,9 @@ import { ChartBuilderService } from './data-transform/charts-common.service';
 import { BookmarkService } from './http/bookmark.service';
 import { DynamicPageService } from './http/dynamic-page.service';
 import { DynamicPageProviderService } from './ui/dynamic-page.service';
+import { ExternalTokenService } from './http/external-token.service';
+import { PublicService } from './http/public.service';
+import { ChartHelperService } from './ui/chart-helper.service';
 
 //
 //
@@ -58,6 +61,8 @@ export class CoreAppServiceModule {
 				TenantRequestService,
 				FilterService,
 				DatasetService,
+				ExternalTokenService,
+				PublicService,
 				DynamicPageService,
 				BookmarkService,
 				IndicatorService,
@@ -68,6 +73,7 @@ export class CoreAppServiceModule {
 				MasterItemService,
 				AppPrincipalService,
 				QueryParamsService,
+				ChartHelperService,
 				DownloadReportService,
 				IndicatorPointService,
 				DataTransformService,

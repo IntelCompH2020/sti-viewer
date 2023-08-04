@@ -10,26 +10,26 @@
                 <input [disabled]="disabled" type="text" matInput [(ngModel)]="searchTerm" (ngModelChange)="searchTermChanged({text:$event,field: item?.field?.code })" >
             </mat-form-field>
             <ng-container *ngFor="let levelItem of item.items; let j = index">
-                <mat-card [matBadge]="'!'"  [matBadgeHidden]="levelItem.hasNewData !== true || disableNewDataIndicator === true" [matBadgePosition]="'after'" [matBadgeSize]="'small'" class="p-1 pl-3 pr-3 cursor-pointer item-preview" (click)="availableForPresentation.includes(levelItem.value) && onSelectIndicator(i,j)"
+                <mat-card [matBadge]="'!'"  [matBadgeHidden]="levelItem.hasNewData !== true || disableNewDataIndicator === true" [matBadgePosition]="'after'" [matBadgeSize]="'small'" class="p-1 pl-3 pr-3 cursor-pointer item-preview" (click)="isAvailableForPresentation(levelItem.value) && onSelectIndicator(i,j)"
                     [class.disabled]="disabled"
-                    [class.presentation-disabled]="!availableForPresentation.includes(levelItem.value)"
+                    [class.presentation-disabled]="!isAvailableForPresentation(levelItem.value)"
                     [class.background-accent]="i === selectedIindex && selectedJindex === j"
                     [class.text-white]="i === selectedIindex && selectedJindex === j">
-                    <div class="indicator-overview" [matTooltip]="!availableForPresentation.includes(levelItem.value)? 'Coming soon': ''" matTooltipShowDelay="800" [class.text-muted]="!availableForPresentation.includes(levelItem.value)">
+                    <div class="indicator-overview" [matTooltip]="!isAvailableForPresentation(levelItem.value)? 'Coming soon': ''" matTooltipShowDelay="800" [class.text-muted]="!isAvailableForPresentation(levelItem.value)">
                         <div class="indicator-info">
 							<div  >{{levelItem.value}}</div>
                             <ng-container *ngIf="(item?.supportedDashboards?.length || levelItem.supportedDashboards?.length) && item.supportSubLevel ">
                                 <br>
                                 <small>
                                     <i >
-                                        <a class="indicator-select-link" (click)="$event.stopPropagation(); availableForPresentation.includes(levelItem.value) && selectReport(i, j)">
+                                        <a class="indicator-select-link" (click)="$event.stopPropagation(); isAvailableForPresentation(levelItem.value) && selectReport(i, j)">
                                             Overview
                                         </a>
                                     </i>
                                 </small>
                             </ng-container>
                         </div>
-                        <div class="indicator-actions" *ngIf="supportsSubLevel(item, levelItem) && availableForPresentation.includes(levelItem.value)">
+                        <div class="indicator-actions" *ngIf="supportsSubLevel(item, levelItem) && isAvailableForPresentation(levelItem.value)">
                             <mat-icon>navigate_next</mat-icon>
                         </div>
                     </div>
@@ -44,7 +44,6 @@
 			[disableNewDataIndicator] = "disableNewDataIndicator"
             (goto)="onGoto($event)"
             [disabled]="disabled"
-            [availableForPresentation]="availableForPresentation"
             (onIndicatorExpanded)="onExpand()">
         </app-indicator-details>
     </div>

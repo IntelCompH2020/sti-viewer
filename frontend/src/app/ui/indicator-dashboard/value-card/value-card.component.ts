@@ -1,4 +1,7 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { ChartShareConfig } from '../indicator-dashboard-config';
+import { AuthService } from '@app/core/services/ui/auth.service';
+import { AppPermission } from '@app/core/enum/permission.enum';
 
 
 @Component({
@@ -10,10 +13,23 @@ import { Component, Input } from '@angular/core';
 })
 export class ValueCardComponent{
 
-    @Input()
-    value: string | number;
+    @Input() value: string | number;
 
-    @Input()
-    description: string;
-    
+    @Input() description: string;
+    @Input() chartShare: ChartShareConfig;
+
+	@Output() onShare = new EventEmitter<void>();
+
+	public canShare = false;
+	constructor(
+		public authService: AuthService
+	) {
+		this.canShare = this.authService.hasPermission(AppPermission.CreateChartExternalToken);
+	}
+
+	public shareGraph(): void {
+		if (this.canShare) {
+			this.onShare.emit();
+		}
+	}
 }

@@ -3,7 +3,7 @@
 		<button (click)="openFilters()" [matTooltip]="'APP.INDICATOR-DASHBOARD.CHART.FILTERS' | translate" *ngIf="chartConfig?.filters?.length" [disabled]="!(chartOptions && (uiMinimumTimePased$ | async))" mat-icon-button><mat-icon>filter_alt</mat-icon></button>
 		<button (click)="downloadData()" [matTooltip]="'APP.INDICATOR-DASHBOARD.CHART.DOWNLOAD-DATA' | translate" [disabled]="!(chartOptions && (uiMinimumTimePased$ | async))" mat-icon-button><mat-icon>cloud_download</mat-icon></button>
 	</div> -->
-	<div 
+	<div
 		*ngIf="(chartOptions && (uiMinimumTimePased$ | async)) else loading"
 		[merge]="merge | mergeEchartOption :extraFields "
 		[options]="chartOptions"
@@ -29,7 +29,7 @@
 
 	</ng-template>
 
-	<div class="col-12" *ngIf="chartConfig?.description">	
+	<div class="col-12" *ngIf="chartConfig?.description">
 		<p>
 			<b>
 				{{'APP.INDICATOR-DASHBOARD.CHART.DESCRIPTION' | translate}}
@@ -41,22 +41,22 @@
 
 
 	<div class="col-12 d-flex align-items-center text-muted" *ngIf="supportsZoom">
-		
-			<mat-icon>info_outline</mat-icon> 
+
+			<mat-icon>info_outline</mat-icon>
 			<small>
-				
+
 				<i>
 					{{'APP.INDICATOR-DASHBOARD.CHART.SCROLL-HINT-PART-ONE' | translate}}
-					
-					<mat-icon style="font-size: 1rem; width: 1rem; height: 1rem;">mouse</mat-icon> 
-	
+
+					<mat-icon style="font-size: 1rem; width: 1rem; height: 1rem;">mouse</mat-icon>
+
 					{{'APP.INDICATOR-DASHBOARD.CHART.SCROLL-HINT-PART-TWO' | translate}}
 				</i>
 			</small>
-		
+
 	</div>
 
-	<div class="col-12" *ngIf="chartConfig?.tags?.attachedTags?.length">	
+	<div class="col-12" *ngIf="chartConfig?.tags?.attachedTags?.length">
 		<small>
 			{{'APP.INDICATOR-DASHBOARD.CHART.TAGS' | translate}}:
 		</small>

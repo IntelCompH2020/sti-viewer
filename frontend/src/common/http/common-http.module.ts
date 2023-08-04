@@ -9,6 +9,7 @@ import { RequestTimingInterceptor } from '@common/http/interceptors/request-timi
 import { UnauthorizedResponseInterceptor } from '@common/http/interceptors/unauthorized-response.interceptor';
 import { UserConsentInterceptor } from '@common/http/interceptors/user-consent.interceptor';
 import { TenantHeaderInterceptor } from './interceptors/tenant-header.interceptor';
+import { ApiKeyInterceptor } from './interceptors/api-key.interceptor';
 
 @NgModule({
 	imports: [
@@ -24,6 +25,11 @@ import { TenantHeaderInterceptor } from './interceptors/tenant-header.intercepto
 		{
 			provide: HTTP_INTERCEPTORS,
 			useClass: AuthTokenInterceptor,
+			multi: true,
+		},
+		{
+			provide: HTTP_INTERCEPTORS,
+			useClass: ApiKeyInterceptor,
 			multi: true,
 		},
 		{

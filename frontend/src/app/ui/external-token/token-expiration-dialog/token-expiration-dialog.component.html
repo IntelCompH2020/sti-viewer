@@ -1,0 +1,28 @@
+<ng-container class="col-12" *ngIf="formGroup">
+	<form  (ngSubmit)="formSubmit()" [formGroup]="formGroup">
+		<h3>
+			{{'APP.TOKEN-EXPIRATION-DIALOG.TITLE' | translate}}
+		</h3>
+
+		<mat-form-field class="row" >
+			<mat-label>
+				{{'APP.TOKEN-EXPIRATION-DIALOG.EXPIRES-AT' | translate}}
+			</mat-label>
+			<mat-datetimepicker-toggle [for]="datetimePicker" matSuffix></mat-datetimepicker-toggle>
+			<mat-datetimepicker #datetimePicker type="datetime" openOnFocus="true" timeInterval="5"></mat-datetimepicker>
+			<input matInput [matDatetimepicker]="datetimePicker" autocomplete="false" [formControl]="formGroup.get('expiresAt')">
+			<mat-error *ngIf="formGroup.get('expiresAt').hasError('required')">{{'COMMONS.VALIDATION.REQUIRED' | translate}}</mat-error>
+		</mat-form-field>
+
+		<div class="row m-0 justify-content-end">
+			<button mat-raised-button type="button" (click)="cancel()">
+				{{'APP.TOKEN-EXPIRATION-DIALOG.ACTIONS.CANCEL' | translate}}
+			</button>
+			<button mat-raised-button  type="submit" (click)="save()">
+				{{'APP.TOKEN-EXPIRATION-DIALOG.ACTIONS.SUBMIT' | translate}}
+			</button>
+		</div>
+	</form>
+</ng-container>
+
+

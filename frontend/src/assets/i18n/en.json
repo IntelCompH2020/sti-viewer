@@ -34,7 +34,8 @@
 			"BLUEPRINT-TEMPLATES": "Blueprint Templates",
 			"DYNAMIC-PAGES": "Dynamic Pages",
 			"INDICATOR-REPORTS": "Browse Data",
-			"INDICATOR-DASHBOARD": "Indicator Dashboard"
+			"INDICATOR-DASHBOARD": "Indicator Dashboard",
+			"EXTERNAL-TOKENS": "Shared Graphs"
 		},
 		"HOME-COMPONENT": {
 			"TITLE": "Welcome to STI viewer",
@@ -70,6 +71,16 @@
 			"NEW-DATA":"New data are available",
 			"NEW-DATA-DISMISS":"OK",
 			"SEARCH":"Search"
+		},
+		"INDICATOR-SHARE-DIALOG":{
+			"TITLE":"Share",
+			"NAME":"Name",
+			"URL":"Shared url",
+			"EXPIRES-AT":"Expires At",
+			"OPEN-URL":"Open Url",
+			"COPY-URL":"Copy Url",
+			"CLOSE":"Close",
+			"SHARE":"Share"
 		},
 		"TENANT-CHOOSE-DIALOG": {
 			"TITLE": "Choose the tenant you wish to connect to",
@@ -137,6 +148,7 @@
 					"GENERAL-INFO-EDITOR":{
 						"CHART-TITLE":"Chart title",
 						"CHART-SUBTITLE":"Chart subtitle",
+						"CHART-ID":"Chart ID",
 						"INDICATOR-ID":"Indicator ID",
 						"DESCRIPTION":"Description",
 						"TAGS":"Tags",
@@ -745,6 +757,50 @@
 				"SHOW-INACTIVE": "Show Deleted"
 			}
 		},
+		"EXTERNAL-TOKEN-LISTING": {
+			"TITLE": "Shared Graphs",
+			"FIELDS": {
+				"NAME": "Name",
+				"EXPIRES-AT": "Expires At",
+				"SUBJECT-ID": "Subject id",
+				"FIRST-NAME": "First Name",
+				"LAST-NAME": "Last Name",
+				"CREATED-AT": "Created At"
+			},
+			"FILTER": {
+				"SEARCH-FILTER": "SEARCH FILTERS",
+				"ALL-FILTERS": "All the filters",
+				"NO-FILTERS": "No filter",
+				"MORE-FILTERS": "More Filters",
+				"LIKE": "search...",
+				"EXPIRES-AT-FROM": "Expires at from",
+				"EXPIRES-AT-TO": "Expires at to",
+				"SHOW-INACTIVE": "Show Deleted"
+			},
+			"ACTIONS": {
+				"RESCHEDULE": "Reschedule",
+				"TOKEN-CHANGE": "Change Token",
+				"DELETE": "Delete"
+			}
+		},
+		"TOKEN-EXPIRATION-DIALOG": {
+			"TITLE": "Reschedule",
+			"EXPIRES-AT": "Expires At",
+			"ACTIONS": {
+				"SUBMIT": "Submit",
+				"CANCEL": "Cancel"
+			}
+		},
+		"TOKEN-CHANGE-DIALOG": {
+			"TITLE": "Change Token",
+			"CHANGE-TOKEN-WARNING": "Previous token will be removed",
+			"NEW-TOKEN": "New Token: ",
+			"ACTIONS": {
+				"SUBMIT": "Change",
+				"COPY": "Copy",
+				"CLOSE": "Close"
+			}
+		},
 		"TENANT-REQUEST-EDITOR": {
 			"TITLE": {
 				"NEW": "New Tenant Request",
@@ -876,6 +932,7 @@
 		"INDICATOR-DASHBOARD": {
 			"BOOKMARK": "Add bookmark",
 			"UNBOOKMARK": "Remove bookmark",
+			"SHARE":"Share",
 			"AVAILABLE-TAGS":"Available tags",
 			"CHART": {
 				"DOWNLOAD-DATA": "Download data",

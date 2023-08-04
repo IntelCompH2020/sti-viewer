@@ -24,7 +24,7 @@
             </app-indicator-column-config>
         </div>
         <div class="col-md-12 text-center"
-            [hidden]="disabled || !this.selectedIndicator || !this.selectedIndicator.config || (this.selectedIndicator.config.filterColumns.length === this.selectedColumns.length)">
+            [hidden]="disabled || !this.selectedIndicator || !this.selectedIndicator.config || (this.selectedIndicator.config.accessRequestConfig.filterColumns.length === this.selectedColumns.length)">
             <button (click)='addNewColumn()' type="button" mat-flat-button>Add new
                 Colomn</button>
 

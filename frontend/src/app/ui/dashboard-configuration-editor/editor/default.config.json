@@ -96,8 +96,8 @@
 							},
 							"labelSortKey": "year",
 							"description": "The graph shows the evolution in the number of publications in different topics in the Energy domain, over time. The ontology of topics is taken from the technical annex of the Final Report of the [EU taxonomy for sustainable activities](<a href=\"https://finance.ec.europa.eu/sustainable-finance/tools-and-standards/eu-taxonomy-sustainable-activities_en#documents\" target=\"_blank\">https://finance.ec.europa.eu/sustainable-finance/tools-and-standards/eu-taxonomy-sustainable-activities_en#documents</a>) (Chapter 4. “Electricity, gas, steam and air conditioning supply,” p. 205). Our Fields of Science (FoS) classification system uses deep learning techniques to assign a scientific publication to different FoS classes, down to level 6, which we subsequently map to the ontology of topics in Energy.",
-							"chartDownloadData": {},
-							"chartDownloadImage": {},
+							"chartDownloadData": {},							"chartDownloadImage": {},
+							"chartDownloadJson": {}
 							"bucket": {
 								"type": "Composite",
 								"field": "key",

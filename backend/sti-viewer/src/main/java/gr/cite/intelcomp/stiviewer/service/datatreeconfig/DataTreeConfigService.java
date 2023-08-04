@@ -15,9 +15,9 @@ public interface DataTreeConfigService {
 
 	List<DataTreeConfig> getMyConfigs(FieldSet fields) throws InvalidApplicationException;
 
-	DataTreeLevel getIndicatorReportLevel(IndicatorReportLevelLookup lookup, FieldSet fields);
+	DataTreeLevel getIndicatorReportLevel(IndicatorReportLevelLookup lookup, FieldSet fields) throws InvalidApplicationException;
 
-	List<DataTreeConfig> getMyConfigByKey(String key, FieldSet fields);
+	List<DataTreeConfig> getMyConfigByKey(String key, FieldSet fields) throws InvalidApplicationException;
 
 	void updateLastAccess(String configId) throws InvalidApplicationException, JsonProcessingException;
 

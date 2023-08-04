@@ -9,7 +9,7 @@
 	</section>
 	<!-- <app-dashboard-config-chart-type-editor class="w-100" [formGroup]="formGroup"></app-dashboard-config-chart-type-editor> -->
 	<app-gauge-type-editor class="w-100" [formGroup]="formGroup"></app-gauge-type-editor>
-	
+
 	<br>
 	<mat-form-field appearance="legacy" class="col-md-auto">
 		<mat-label>
@@ -17,7 +17,13 @@
 		</mat-label>
 		<input type="text" matInput formControlName="labelOverride">
 	</mat-form-field>
-	
+	<mat-form-field appearance="legacy" class="col-md-auto">
+		<mat-label>
+			{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.CHART-ID' | translate}}
+		</mat-label>
+		<input type="text" matInput formControlName="chartId">
+	</mat-form-field>
+
 
 
 
@@ -28,7 +34,7 @@
 		</i>
 	</section>
 
-	
+
 
 	<mat-form-field appearance="legacy" class="col-md-auto">
 		<mat-label>
@@ -43,7 +49,7 @@
 		</mat-checkbox>
 	</div>
 
-	
+
 	<div class="col-12 pb-2">
 		<mat-checkbox [checked]="!!formGroup?.get('labelsTransform')?.value" (change)="onChange($event, ChangeField.LabelsTransform)">
 			{{'APP.DASHBOARD-CONFIGURATION.EDITOR.CHART-EDITOR.CHART-DISPLAY-EDITOR.LABEL-TRANSFORM' | translate}}

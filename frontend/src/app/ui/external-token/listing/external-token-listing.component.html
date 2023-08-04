@@ -1,0 +1,34 @@
+<div class="row external-token-listing m-0">
+	<div class="col-md-8 offset-md-2">
+
+		<h4>{{'APP.EXTERNAL-TOKEN-LISTING.TITLE' | translate}}</h4>
+
+		<div class="col-12 p-0 filter-row">
+			<app-user-settings-selector [key]="userSettingsKey" [lookup]="lookup"
+				(onSettingSelected)="changeSetting($event)" [autoSelectUserSettings]="autoSelectUserSettings">
+			</app-user-settings-selector>
+		</div>
+		<div class="col-12 p-0 filter-row">
+			<app-tenant-listing-filters [(filter)]="lookup" (filterChange)="filterChanged($event)">
+			</app-tenant-listing-filters>
+		</div>
+
+		<app-listing [rows]="gridRows" [columns]="gridColumns" [visibleColumns]="visibleColumns" [count]="totalElements"
+			[offset]="currentPageNumber" [limit]="lookup.page.size" [defaultSort]="lookup.order?.items"
+			[externalSorting]="true" (pageLoad)="alterPage($event)"
+			(columnSort)="onColumnSort($event)" (columnsChanged)="onColumnsChanged($event)">
+		</app-listing>
+
+		<ng-template #editActionColumnTemplate ngx-datatable-cell-template let-row="row">
+			<button *ngIf="authService.hasPermission(authService.permissionEnum.EditExternalToken)" mat-icon-button color="primary" class="mat-mdc-icon-border" (click)="persistExpiration(row)" matTooltip="{{'APP.EXTERNAL-TOKEN-LISTING.ACTIONS.RESCHEDULE' | translate}}">
+				<mat-icon class="mat-mdc-icon-size">schedule</mat-icon>
+			</button>
+			<button *ngIf="authService.hasPermission(authService.permissionEnum.EditExternalToken)" mat-icon-button color="primary" class="mat-mdc-icon-border" (click)="tokenChange(row)" matTooltip="{{'APP.EXTERNAL-TOKEN-LISTING.ACTIONS.TOKEN-CHANGE' | translate}}">
+				<mat-icon class="mat-mdc-icon-size">lock_reset</mat-icon>
+			</button>
+			<button *ngIf="authService.hasPermission(authService.permissionEnum.DeleteExternalToken)" mat-icon-button color="primary" class="mat-mdc-icon-border" (click)="delete(row)" matTooltip="{{'APP.EXTERNAL-TOKEN-LISTING.ACTIONS.DELETE' | translate}}">
+				<mat-icon class="mat-mdc-icon-size">delete</mat-icon>
+			</button>
+		</ng-template>
+	</div>
+</div>

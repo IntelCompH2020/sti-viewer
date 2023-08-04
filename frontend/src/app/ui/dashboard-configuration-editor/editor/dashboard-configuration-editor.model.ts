@@ -22,16 +22,16 @@ const FORM_BUILDER = new FormBuilder();
 
 export class DasboardConfigurationEditorModel implements IndicatorDashboardConfig{
 
-    public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
+	public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
 	protected formBuilder: UntypedFormBuilder = new UntypedFormBuilder();
 	constructor() { }
-    id: string;
-    tabs: IndicatorDashboardTabConfig[] = [];
+	id: string;
+	tabs: IndicatorDashboardTabConfig[] = [];
 
 	public fromModel(item: IndicatorDashboardConfig): DasboardConfigurationEditorModel {
 		if (item) {
-            this.id = item.id;
-            this.tabs = item.tabs ?? [];
+			this.id = item.id;
+			this.tabs = item.tabs ?? [];
 		}
 		return this;
 	}
@@ -41,10 +41,10 @@ export class DasboardConfigurationEditorModel implements IndicatorDashboardConfi
 		return this.formBuilder.group({
 			id: [{ value: this.id, disabled: disabled }, context.getValidation('id').validators],
 			tabs: this.formBuilder.array(
-                this.tabs.map(tab => new IndicatorDashboardTabConfigModelEditorModel().fromModel(tab).buildForm())  // todo validation
-            )
-            
-            
+				this.tabs.map(tab => new IndicatorDashboardTabConfigModelEditorModel().fromModel(tab).buildForm())  // todo validation
+			)
+
+
 		});
 	}
 
@@ -65,21 +65,21 @@ export class DasboardConfigurationEditorModel implements IndicatorDashboardConfi
 
 export class IndicatorDashboardTabConfigModelEditorModel implements IndicatorDashboardTabConfig{
 
-    public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
+	public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
 	protected formBuilder: UntypedFormBuilder = new UntypedFormBuilder();
 
 
-    name: string;
-    chartGroups: TabBlockConfig[] = [];
+	name: string;
+	chartGroups: TabBlockConfig[] = [];
 
 
 
-    public fromModel(item: IndicatorDashboardTabConfig): IndicatorDashboardTabConfigModelEditorModel {
+	public fromModel(item: IndicatorDashboardTabConfig): IndicatorDashboardTabConfigModelEditorModel {
 		if (item) {
 
 
-            this.name = item.name;
-            this.chartGroups = item.chartGroups ?? [];
+			this.name = item.name;
+			this.chartGroups = item.chartGroups ?? [];
 		}
 		return this;
 	}
@@ -89,7 +89,7 @@ export class IndicatorDashboardTabConfigModelEditorModel implements IndicatorDas
 		return this.formBuilder.group({
 			name: [{ value: this.name, disabled: disabled }, context.getValidation('name').validators],
 			chartGroups:this.formBuilder.array(
-                this.chartGroups.map( chartgroup => {
+				this.chartGroups.map( chartgroup => {
 
 					switch(chartgroup.type){
 						case TabBlockType.ChartGroup:
@@ -101,8 +101,7 @@ export class IndicatorDashboardTabConfigModelEditorModel implements IndicatorDas
 
 					}
 				}).filter(x => !!x)
-            )        
-            
+			)
 		});
 	}
 
@@ -120,18 +119,18 @@ export class IndicatorDashboardTabConfigModelEditorModel implements IndicatorDas
 // * DASHBOARD - GAUGE GROUP
 
 export class IndicatorDashboardGaugeGroupConfigEditorModel implements GaugesBlock{
-    name: string;
+	name: string;
 	type: TabBlockType.Gauge = TabBlockType.Gauge;
-    gauges: BaseIndicatorDashboardGaugeConfig[] = [];
+	gauges: BaseIndicatorDashboardGaugeConfig[] = [];
 
-    public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
+	public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
 	protected formBuilder: UntypedFormBuilder = new UntypedFormBuilder();
 
 
-    public fromModel(item: GaugesBlock): IndicatorDashboardGaugeGroupConfigEditorModel {
+	public fromModel(item: GaugesBlock): IndicatorDashboardGaugeGroupConfigEditorModel {
 		if (item) {
-            this.name = item.name;
-            this.gauges = item.gauges ?? [];
+			this.name = item.name;
+			this.gauges = item.gauges ?? [];
 		}
 		return this;
 	}
@@ -142,14 +141,14 @@ export class IndicatorDashboardGaugeGroupConfigEditorModel implements GaugesBloc
 			name: [{ value: this.name, disabled: disabled }, context.getValidation('name').validators],
 			type: [{ value: this.type, disabled: disabled }, context.getValidation('type').validators],
 			gauges: this.formBuilder.array(
-                this.gauges.map(chart => {
+				this.gauges.map(chart => {
 					switch(chart.type){
 						case GaugeType.ValueCard:
 						default:
 							return new BaseIndicatorDashboardGaugeConfigEditorModel().fromModel(chart).buildForm();
 					}
 				})
-            )
+			)
 		});
 	}
 
@@ -171,6 +170,7 @@ export class IndicatorDashboardGaugeGroupConfigEditorModel implements GaugesBloc
 export class BaseIndicatorDashboardGaugeConfigEditorModel implements BaseIndicatorDashboardGaugeConfig{
 	type: GaugeType;
 	name: string;
+	chartId: string;
 	description: string;
 
 
@@ -187,15 +187,15 @@ export class BaseIndicatorDashboardGaugeConfigEditorModel implements BaseIndicat
 	labelOverride?: string;
 
 
-    public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
+	public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
 	protected formBuilder: UntypedFormBuilder = new UntypedFormBuilder();
 
 
-    public fromModel(item: BaseIndicatorDashboardGaugeConfig): BaseIndicatorDashboardGaugeConfigEditorModel {
+	public fromModel(item: BaseIndicatorDashboardGaugeConfig): BaseIndicatorDashboardGaugeConfigEditorModel {
 		if (item) {
-			
+
 			this.series = item.series ?? []; // done
-            this.indicatorId = item.indicatorId;// done
+			this.indicatorId = item.indicatorId;// done
 			this.metrics = item.metrics; // done
 			this.bucket = item.bucket;// done
 			this.staticFilters = item.staticFilters; // done
@@ -205,8 +205,9 @@ export class BaseIndicatorDashboardGaugeConfigEditorModel implements BaseIndicat
 			this.labelsTransform = item.labelsTransform; // done //todo check
 			this.reverseValues = !!item.reverseValues; // done
 
-			this.type = item.type; 
+			this.type = item.type;
 			this.name = item.name;
+			this.chartId = item.chartId;
 			this.labelOverride = item.labelOverride;
 			this.description = item.description
 		}
@@ -219,6 +220,7 @@ export class BaseIndicatorDashboardGaugeConfigEditorModel implements BaseIndicat
 			// name: [{ value: this.name, disabled: disabled }, context.getValidation('name').validators],
 			type: [{ value: this.type, disabled: disabled }, context.getValidation('type').validators],
 			name: [{ value: this.name, disabled: disabled }, context.getValidation('name').validators],
+			chartId: [{ value: this.chartId, disabled: disabled }, context.getValidation('chartId').validators],
 			description: [{ value: this.description, disabled: disabled }, context.getValidation('description').validators],
 			labelOverride: [{ value: this.labelOverride, disabled: disabled }, context.getValidation('labelOverride').validators],
 
@@ -234,7 +236,7 @@ export class BaseIndicatorDashboardGaugeConfigEditorModel implements BaseIndicat
 
 		// * metrics
 		if(this.metrics){
-			form.addControl('metrics', 
+			form.addControl('metrics',
 				this.formBuilder.array(
 					this.metrics.map(metric => new MetricConfigEditorModel().fromModel(metric).buildForm())
 				)
@@ -264,7 +266,7 @@ export class BaseIndicatorDashboardGaugeConfigEditorModel implements BaseIndicat
 		// * static filters
 		if(this.staticFilters){
 			form.addControl(
-				'staticFilters', 
+				'staticFilters',
 				new BaseIndicatorDashboardChartStaticFilterConfigEditorModel().fromModel(this.staticFilters).buildForm()
 			)
 		}
@@ -289,6 +291,7 @@ export class BaseIndicatorDashboardGaugeConfigEditorModel implements BaseIndicat
 		baseValidationArray.push({ key: 'type', validators: [Validators.required] });
 		baseValidationArray.push({ key: 'description', validators: [] });
 		baseValidationArray.push({ key: 'name', validators: [] });
+		baseValidationArray.push({ key: 'chartId', validators: [] });
 		baseValidationArray.push({ key: 'labelOverride', validators: [] });
 		baseContext.validation = baseValidationArray;
 		return baseContext;
@@ -302,11 +305,11 @@ export class DashboardChartTagConfigEditorModel implements DashboardChartTagConf
 	attachedTags?:string[] = [];
 
 
-    public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
+	public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
 	protected formBuilder: UntypedFormBuilder = new UntypedFormBuilder();
 
 
-    public fromModel(item: DashboardChartTagConfig): DashboardChartTagConfigEditorModel {
+	public fromModel(item: DashboardChartTagConfig): DashboardChartTagConfigEditorModel {
 		if (item) {
 			this.attachedTags = item.attachedTags ?? [];
 		}
@@ -317,7 +320,7 @@ export class DashboardChartTagConfigEditorModel implements DashboardChartTagConf
 
 		const form =  this.formBuilder.group({
 			attachedTags: this.formBuilder.array(
-				this.attachedTags.map(		
+				this.attachedTags.map(
 					tag => this.formBuilder.control(tag)
 				)
 			)
@@ -341,18 +344,18 @@ export class DashboardChartTagConfigEditorModel implements DashboardChartTagConf
 // * DASHBOARD - CHART GROUP
 
 export class IndicatorDashboardChartGroupConfigEditorModel implements IndicatorDashboardChartGroupConfig{
-    name: string;
+	name: string;
 	type: TabBlockType.ChartGroup = TabBlockType.ChartGroup;
-    charts: IndicatorDashboardChart[] = [];
+	charts: IndicatorDashboardChart[] = [];
 
-    public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
+	public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
 	protected formBuilder: UntypedFormBuilder = new UntypedFormBuilder();
 
 
-    public fromModel(item: IndicatorDashboardChartGroupConfig): IndicatorDashboardChartGroupConfigEditorModel {
+	public fromModel(item: IndicatorDashboardChartGroupConfig): IndicatorDashboardChartGroupConfigEditorModel {
 		if (item) {
-            this.name = item.name;
-            this.charts = item.charts ?? [];
+			this.name = item.name;
+			this.charts = item.charts ?? [];
 		}
 		return this;
 	}
@@ -363,7 +366,7 @@ export class IndicatorDashboardChartGroupConfigEditorModel implements IndicatorD
 			name: [{ value: this.name, disabled: disabled }, context.getValidation('name').validators],
 			type: [{ value: this.type, disabled: disabled }, context.getValidation('type').validators],
 			charts: this.formBuilder.array(
-                this.charts.map(chart => {
+				this.charts.map(chart => {
 					switch(chart.type){
 						case IndicatorDashboardChartType.Line:
 							return new IndicatorDashboardLineChartConfigEditorModel().fromModel(chart as IndicatorDashboardLineChartConfig).buildForm();
@@ -379,11 +382,11 @@ export class IndicatorDashboardChartGroupConfigEditorModel implements IndicatorD
 							return new IndicatorDashboardPolarMapChartConfigEditorModel().fromModel(chart as IndicatorDashboardMapChartConfig).buildForm();
 						case IndicatorDashboardChartType.Sankey:
 							return new IndicatorDashboardSankeyChartConfigEditorModel().fromModel(chart as IndicatorDashboardSankeyChartConfig ).buildForm();
-						default: 
+						default:
 							return new BaseIndicatorDashboardChartConfigEditorModel().fromModel(chart).buildForm();
 					}
 				})
-            )
+			)
 		});
 	}
 
@@ -399,7 +402,7 @@ export class IndicatorDashboardChartGroupConfigEditorModel implements IndicatorD
 }
 
 
-// * CHARTS EDITORS -------     ------ - ---- -- -- 
+// * CHARTS EDITORS -------     ------ - ---- -- --
 
 
 
@@ -407,47 +410,49 @@ export class IndicatorDashboardChartGroupConfigEditorModel implements IndicatorD
 
 
 export class BaseIndicatorDashboardChartConfigEditorModel implements BaseIndicatorDashboardChartConfig{
-    indicatorId: string;
-    type: IndicatorDashboardChartType;
-    chartName?: string;
-    chartSubtitle?: string;
-    reverseValues?: boolean;
-    description: string;
-    metrics?: IndicatorConfigMetric[];
-    bucket?: IndicatorConfigBucket;
-    legend?: LegendConfig;
-    filters?: ChartFilter[] = [];
-    chartDownloadImage?: ChartDownloadImageConfig;
-    chartDownloadData?: ChartDownloadDataConfig;
-    staticFilters?: IndicatorDashboardStaticFilters;
-    rawDataRequest?: RawDataRequest;
-    labelSortKey: string;
-    labelsTransform?: FieldFormatterConfig;
+	indicatorId: string;
+	type: IndicatorDashboardChartType;
+	chartName?: string;
+	chartSubtitle?: string;
+	chartId?: string;
+	reverseValues?: boolean;
+	description: string;
+	metrics?: IndicatorConfigMetric[];
+	bucket?: IndicatorConfigBucket;
+	legend?: LegendConfig;
+	filters?: ChartFilter[] = [];
+	chartDownloadImage?: ChartDownloadImageConfig;
+	chartDownloadData?: ChartDownloadDataConfig;
+	staticFilters?: IndicatorDashboardStaticFilters;
+	rawDataRequest?: RawDataRequest;
+	labelSortKey: string;
+	labelsTransform?: FieldFormatterConfig;
 	series?: DashBoardSerieConfiguration[] = [];
 	tags?: DashboardChartTagConfig;
 
-    public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
+	public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
 	protected formBuilder: UntypedFormBuilder = new UntypedFormBuilder();
 
 
-    public fromModel(item: BaseIndicatorDashboardChartConfig): BaseIndicatorDashboardChartConfigEditorModel {
+	public fromModel(item: BaseIndicatorDashboardChartConfig): BaseIndicatorDashboardChartConfigEditorModel {
 		if (item) {
-            this.indicatorId = item.indicatorId;
-            this.type = item.type;
-            this.chartName = item.chartName;
-            this.chartSubtitle = item.chartSubtitle;
-            this.reverseValues = item.reverseValues;
-            this.description = item.description;
-            this.metrics = item.metrics;
-            this.bucket = item.bucket;
-            this.legend = item.legend ;
-            this.filters = item.filters ?? [];
-            this.chartDownloadImage = item.chartDownloadImage;
-            this.chartDownloadData = item.chartDownloadData;
-            this.staticFilters = item.staticFilters;
-            this.rawDataRequest = item.rawDataRequest;
-            this.labelSortKey = item.labelSortKey;
-            this.labelsTransform = item.labelsTransform;
+			this.indicatorId = item.indicatorId;
+			this.type = item.type;
+			this.chartName = item.chartName;
+			this.chartSubtitle = item.chartSubtitle;
+			this.chartId = item.chartId;
+			this.reverseValues = item.reverseValues;
+			this.description = item.description;
+			this.metrics = item.metrics;
+			this.bucket = item.bucket;
+			this.legend = item.legend ;
+			this.filters = item.filters ?? [];
+			this.chartDownloadImage = item.chartDownloadImage;
+			this.chartDownloadData = item.chartDownloadData;
+			this.staticFilters = item.staticFilters;
+			this.rawDataRequest = item.rawDataRequest;
+			this.labelSortKey = item.labelSortKey;
+			this.labelsTransform = item.labelsTransform;
 			this.series = item.series ?? [];
 			this.tags = item.tags;
 		}
@@ -463,6 +468,7 @@ export class BaseIndicatorDashboardChartConfigEditorModel implements BaseIndicat
 			type: [{ value: this.type, disabled: disabled }, context.getValidation('type').validators],
 			chartName: [{ value: this.chartName, disabled: disabled }, context.getValidation('chartName').validators],
 			chartSubtitle: [{ value: this.chartSubtitle, disabled: disabled }, context.getValidation('chartSubtitle').validators],
+			chartId: [{ value: this.chartId, disabled: disabled }, context.getValidation('chartId').validators],
 			reverseValues: [{ value: this.reverseValues, disabled: disabled }, context.getValidation('reverseValues').validators],
 			description: [{ value: this.description, disabled: disabled }, context.getValidation('description').validators],
 			// metrics: this.formBuilder.array(
@@ -471,17 +477,17 @@ export class BaseIndicatorDashboardChartConfigEditorModel implements BaseIndicat
 			// bucket: (() => {
 			// 	const x = this.bucket;
 			// 	switch(x?.type){
-            //         case BucketAggregateType.Composite:
-            //             return new CompositeBucketConfigEditorModel().fromModel(x as CompositeBucket ).buildForm();
-            //         case BucketAggregateType.DateHistogram:
-            //             return new DataHistogramBucketConfigEditorModel().fromModel(x as DataHistogramBucket ).buildForm();
-            //         case BucketAggregateType.Terms:
-            //             return new TermsBucketConfigEditorModel().fromModel(x as TermsBucket ).buildForm();
-            //         case BucketAggregateType.Nested:
-            //             return new NestedBucketConfigEditorModel().fromModel(x as NestedBucket ).buildForm();
-            //         default:
-            //             return new BaseBucketConfigEditorModel().fromModel(x).buildForm()
-            //     }
+			//         case BucketAggregateType.Composite:
+			//             return new CompositeBucketConfigEditorModel().fromModel(x as CompositeBucket ).buildForm();
+			//         case BucketAggregateType.DateHistogram:
+			//             return new DataHistogramBucketConfigEditorModel().fromModel(x as DataHistogramBucket ).buildForm();
+			//         case BucketAggregateType.Terms:
+			//             return new TermsBucketConfigEditorModel().fromModel(x as TermsBucket ).buildForm();
+			//         case BucketAggregateType.Nested:
+			//             return new NestedBucketConfigEditorModel().fromModel(x as NestedBucket ).buildForm();
+			//         default:
+			//             return new BaseBucketConfigEditorModel().fromModel(x).buildForm()
+			//     }
 			// })(),
 			legend: new BaseIndicatorDashboardLegendChartConfigEditorModel().fromModel(this.legend).buildForm(),
 			tags: new DashboardChartTagConfigEditorModel().fromModel(this.tags).buildForm(),
@@ -490,7 +496,7 @@ export class BaseIndicatorDashboardChartConfigEditorModel implements BaseIndicat
 			),
 			chartDownloadImage: [{ value: this.chartDownloadImage, disabled: disabled }, context.getValidation('chartDownloadImage').validators],
 			chartDownloadData: [{ value: this.chartDownloadData, disabled: disabled }, context.getValidation('chartDownloadData').validators],
-			
+
 			// staticFilters: new BaseIndicatorDashboardChartStaticFilterConfigEditorModel().fromModel(this.staticFilters).buildForm(),
 			// rawDataRequest: new BaseIndicatorDashboardChartRawDataRequestConfigEditorModel().fromModel(this.rawDataRequest).buildForm(),
 			labelSortKey: [{ value: this.labelSortKey, disabled: disabled }, context.getValidation('labelSortKey').validators],
@@ -502,7 +508,7 @@ export class BaseIndicatorDashboardChartConfigEditorModel implements BaseIndicat
 
 		// * metrics
 		if(this.metrics){
-			form.addControl('metrics', 
+			form.addControl('metrics',
 				this.formBuilder.array(
 					this.metrics.map(metric => new MetricConfigEditorModel().fromModel(metric).buildForm())
 				)
@@ -532,7 +538,7 @@ export class BaseIndicatorDashboardChartConfigEditorModel implements BaseIndicat
 		// * static filters
 		if(this.staticFilters){
 			form.addControl(
-				'staticFilters', 
+				'staticFilters',
 				new BaseIndicatorDashboardChartStaticFilterConfigEditorModel().fromModel(this.staticFilters).buildForm()
 			)
 		}
@@ -543,7 +549,7 @@ export class BaseIndicatorDashboardChartConfigEditorModel implements BaseIndicat
 				new BaseIndicatorDashboardChartRawDataRequestConfigEditorModel().fromModel(this.rawDataRequest).buildForm()
 			)
 		}
-		
+
 
 
 
@@ -560,6 +566,7 @@ export class BaseIndicatorDashboardChartConfigEditorModel implements BaseIndicat
 		baseValidationArray.push({ key: 'type', validators: [Validators.required] });
 		baseValidationArray.push({ key: 'chartName', validators: [] });
 		baseValidationArray.push({ key: 'chartSubtitle', validators: [] });
+		baseValidationArray.push({ key: 'chartId', validators: [] });
 		baseValidationArray.push({ key: 'reverseValues', validators: [] });
 		baseValidationArray.push({ key: 'description', validators: [] });
 		baseValidationArray.push({ key: 'chartDownloadImage', validators: [] });
@@ -579,11 +586,11 @@ export class BaseIndicatorDashboardChartStaticFilterConfigEditorModel implements
 
 	keywordsFilters?: IndicatorKeywordFilter[] = [];
 
-    public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
+	public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
 	protected formBuilder: UntypedFormBuilder = new UntypedFormBuilder();
 
 
-    public fromModel(item: IndicatorDashboardStaticFilters): BaseIndicatorDashboardChartStaticFilterConfigEditorModel {
+	public fromModel(item: IndicatorDashboardStaticFilters): BaseIndicatorDashboardChartStaticFilterConfigEditorModel {
 		if (item) {
 			this.keywordsFilters = item.keywordsFilters ?? [];
 		}
@@ -596,7 +603,7 @@ export class BaseIndicatorDashboardChartStaticFilterConfigEditorModel implements
 			keywordsFilters: this.formBuilder.array(
 				this.keywordsFilters.map(keywordFilter => new BaseIndicatorDashboardChartKeywordFilterConfigEditorModel().fromModel(keywordFilter).buildForm())
 			)
-		
+
 		});
 	}
 
@@ -616,14 +623,14 @@ export class BaseIndicatorDashboardChartKeywordFilterConfigEditorModel implement
 	value: string[] = [];
 
 
-    public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
+	public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
 	protected formBuilder: UntypedFormBuilder = new UntypedFormBuilder();
 
 
-    public fromModel(item: IndicatorKeywordFilter): BaseIndicatorDashboardChartKeywordFilterConfigEditorModel {
+	public fromModel(item: IndicatorKeywordFilter): BaseIndicatorDashboardChartKeywordFilterConfigEditorModel {
 		if (item) {
 			this.field = item.field;
-			this.value = item.value ?? [];		
+			this.value = item.value ?? [];
 		}
 		return this;
 	}
@@ -659,11 +666,11 @@ export class BaseIndicatorDashboardChartRawDataRequestConfigEditorModel implemen
 	page?: Lookup.Paging;
 	order: Lookup.Ordering;
 
-    public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
+	public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
 	protected formBuilder: UntypedFormBuilder = new UntypedFormBuilder();
 
 
-    public fromModel(item: RawDataRequest): BaseIndicatorDashboardChartRawDataRequestConfigEditorModel {
+	public fromModel(item: RawDataRequest): BaseIndicatorDashboardChartRawDataRequestConfigEditorModel {
 		if (item) {
 			this.keyField = item.keyField;
 			this.valueField = item.valueField;
@@ -703,11 +710,11 @@ export class PagingConfigEditorModel implements Lookup.Paging{
 	offset: number;
 	size: number;
 
-    public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
+	public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
 	protected formBuilder: UntypedFormBuilder = new UntypedFormBuilder();
 
 
-    public fromModel(item: Lookup.Paging): PagingConfigEditorModel {
+	public fromModel(item: Lookup.Paging): PagingConfigEditorModel {
 		if (item) {
 			this.offset = item.offset;
 			this.size = item.size;
@@ -741,13 +748,13 @@ export class PagingConfigEditorModel implements Lookup.Paging{
 export class OrderingConfigEditorModel implements Lookup.Ordering{
 	items: string[] = [];
 
-    public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
+	public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
 	protected formBuilder: UntypedFormBuilder = new UntypedFormBuilder();
 
 
-    public fromModel(item: Lookup.Ordering): OrderingConfigEditorModel {
+	public fromModel(item: Lookup.Ordering): OrderingConfigEditorModel {
 		if (item) {
-			this.items = item.items ?? [];	
+			this.items = item.items ?? [];
 		}
 		return this;
 	}
@@ -864,7 +871,7 @@ export class IndicatorDashboardLineChartConfigEditorModel extends BaseIndicatorD
 
 	}
 }
-	
+
 
 // * SANKEY CHART
 export class IndicatorDashboardSankeyChartConfigEditorModel extends BaseIndicatorDashboardChartConfigEditorModel implements IndicatorDashboardSankeyChartConfig{
@@ -929,7 +936,7 @@ export class IndicatorDashboardSankeyChartConfigEditorModel extends BaseIndicato
 
 	}
 }
-	
+
 // * PIE CHART
 export class IndicatorDashboardPieChartConfigEditorModel extends BaseIndicatorDashboardChartConfigEditorModel implements IndicatorDashboardPieChartConfig{
 	roseType?: string;
@@ -992,7 +999,7 @@ export class IndicatorDashboardPieChartConfigEditorModel extends BaseIndicatorDa
 		})
 
 	}
-	
+
 }
 
 
@@ -1000,7 +1007,7 @@ export class IndicatorDashboardPieChartConfigEditorModel extends BaseIndicatorDa
 export class IndicatorDashboardPolarBarChartConfigEditorModel extends BaseIndicatorDashboardChartConfigEditorModel implements IndicatorDashboardPolarBarChartConfig{
 	dataZoom?: DataZoom;
 	radiusAxis: PolarBarRadiusAxis;
-	
+
 
 	public static readonly ADDITIONAL_FIELDS: AdditionalFieldBuilder[] = [
 		{
@@ -1065,7 +1072,7 @@ export class IndicatorDashboardPolarBarChartConfigEditorModel extends BaseIndica
 		})
 
 	}
-	
+
 }
 
 // * TREE MAP
@@ -1143,7 +1150,7 @@ export class IndicatorDashboardPolarTreeMapChartConfigEditorModel extends BaseIn
 		})
 
 	}
-	
+
 }
 // * MAP
 export class IndicatorDashboardPolarMapChartConfigEditorModel extends BaseIndicatorDashboardChartConfigEditorModel implements IndicatorDashboardMapChartConfig{
@@ -1214,7 +1221,7 @@ export class IndicatorDashboardPolarMapChartConfigEditorModel extends BaseIndica
 		})
 
 	}
-	
+
 }
 
 export class ConnectionExtractorEditorModel implements ConnectionExtractor{
@@ -1224,12 +1231,12 @@ export class ConnectionExtractorEditorModel implements ConnectionExtractor{
 	valueTests?: Record<string, string> = {};
 	groupTests?: Record<string, string> = {};
 	limit?: ConnectionLimit;
-	
-    public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
+
+	public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
 	protected formBuilder: UntypedFormBuilder = new UntypedFormBuilder();
 
 
-    public fromModel(item: ConnectionExtractor): ConnectionExtractorEditorModel {
+	public fromModel(item: ConnectionExtractor): ConnectionExtractorEditorModel {
 		if (item) {
 			this.sourceKeyExtractor = item.sourceKeyExtractor;
 			this.targetKeyExtractor = item.targetKeyExtractor;
@@ -1253,7 +1260,7 @@ export class ConnectionExtractorEditorModel implements ConnectionExtractor{
 
 
 		if(this.limit){
-			form.addControl(nameof<ConnectionExtractorEditorModel>(x => x.limit), 
+			form.addControl(nameof<ConnectionExtractorEditorModel>(x => x.limit),
 			 new ConnectionLimitEditorModel().fromModel(this.limit).buildForm()
 			)
 		}
@@ -1281,12 +1288,12 @@ export class ConnectionLimitEditorModel implements ConnectionLimit{
 	type: ConnectionLimitType;
 	order: ConnectionLimitOrder;
 	count: number;
-	
-    public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
+
+	public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
 	protected formBuilder: UntypedFormBuilder = new UntypedFormBuilder();
 
 
-    public fromModel(item: ConnectionLimit): ConnectionLimitEditorModel {
+	public fromModel(item: ConnectionLimit): ConnectionLimitEditorModel {
 		if (item) {
 			this.type = item.type;
 			this.order = item.order;
@@ -1322,11 +1329,11 @@ export class ConnectionLimitEditorModel implements ConnectionLimit{
 export class IndicatorDashboardMapChartMapConfigItemEditorModel implements MapConfig{
 	high?: MapConfigLegentItem;
 	low?: MapConfigLegentItem;
-    public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
+	public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
 	protected formBuilder: UntypedFormBuilder = new UntypedFormBuilder();
 
 
-    public fromModel(item: MapConfig): IndicatorDashboardMapChartMapConfigItemEditorModel {
+	public fromModel(item: MapConfig): IndicatorDashboardMapChartMapConfigItemEditorModel {
 		if (item) {
 			this.high = item.high;
 			this.low =item.low;
@@ -1354,7 +1361,7 @@ export class IndicatorDashboardMapChartMapConfigItemEditorModel implements MapCo
 
 // * BAR CHART
 export class IndicatorDashboardBarChartConfigEditorModel extends IndicatorDashboardLineChartConfigEditorModel {
-	
+
 
 	public fromModel(item: IndicatorDashboardBarChartConfig): IndicatorDashboardBarChartConfigEditorModel {
 		super.fromModel(item);
@@ -1383,11 +1390,11 @@ export class BaseIndicatorDashboardFilterChartConfigEditorModel implements Chart
 	values: ChartFilterValue[] = [];
 	indicatorFilterType: IndicatorFilterType;
 
-    public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
+	public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
 	protected formBuilder: UntypedFormBuilder = new UntypedFormBuilder();
 
 
-    public fromModel(item: ChartFilterBase): BaseIndicatorDashboardFilterChartConfigEditorModel {
+	public fromModel(item: ChartFilterBase): BaseIndicatorDashboardFilterChartConfigEditorModel {
 		if (item) {
 			this.type = item.type;
 			this.name = item.name;
@@ -1430,11 +1437,11 @@ export class BaseIndicatorDashboardFilterChartConfigEditorModel implements Chart
 
 export class BaseIndicatorDashboardLegendChartConfigEditorModel implements LegendConfig{
 
-    public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
+	public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
 	protected formBuilder: UntypedFormBuilder = new UntypedFormBuilder();
 
 
-    public fromModel(item: LegendConfig): BaseIndicatorDashboardLegendChartConfigEditorModel {
+	public fromModel(item: LegendConfig): BaseIndicatorDashboardLegendChartConfigEditorModel {
 		if (item) {
 
 		}
@@ -1462,11 +1469,11 @@ export class BaseIndicatorDashboardBaseAxisChartConfigEditorModel implements Bas
 	name: string;
 	boundaryGap?: boolean;
 
-    public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
+	public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
 	protected formBuilder: UntypedFormBuilder = new UntypedFormBuilder();
 
 
-    public fromModel(item: BaseIndicatorDashboardChartAxisConfig): BaseIndicatorDashboardBaseAxisChartConfigEditorModel {
+	public fromModel(item: BaseIndicatorDashboardChartAxisConfig): BaseIndicatorDashboardBaseAxisChartConfigEditorModel {
 		if (item) {
 			this.name = item.name;
 			this.boundaryGap = item.boundaryGap;
@@ -1498,7 +1505,7 @@ export class BaseIndicatorDashboardBaseAxisChartConfigEditorModel implements Bas
 //*  yAxis
 export class BaseIndicatorDashboardYAxisChartConfigEditorModel extends BaseIndicatorDashboardBaseAxisChartConfigEditorModel implements IndicatorDashboardChartYAxisConfig{
 
-    public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
+	public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
 	protected formBuilder: UntypedFormBuilder = new UntypedFormBuilder();
 
 
@@ -1508,7 +1515,7 @@ export class BaseIndicatorDashboardYAxisChartConfigEditorModel extends BaseIndic
 //*  xAxis
 export class BaseIndicatorDashboardXAxisChartConfigEditorModel extends BaseIndicatorDashboardBaseAxisChartConfigEditorModel implements IndicatorDashboardChartXAxisConfig{
 	axisLabel?: AxisLabel;
-    public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
+	public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
 	protected formBuilder: UntypedFormBuilder = new UntypedFormBuilder();
 
 	public fromModel(item: IndicatorDashboardChartXAxisConfig): BaseIndicatorDashboardXAxisChartConfigEditorModel {
@@ -1520,7 +1527,7 @@ export class BaseIndicatorDashboardXAxisChartConfigEditorModel extends BaseIndic
 
 	public buildForm(context?: ValidationContext, disabled?: boolean): UntypedFormGroup {
 		const formGroup = super.buildForm(context, disabled);
-		
+
 
 		if(this.axisLabel){
 			const {rotate, width} =this.axisLabel;
@@ -1541,11 +1548,11 @@ export class BaseIndicatorDashboardDataZoomChartConfigEditorModel implements Dat
 	slider?: boolean;
 	areaZoom?: AreaZoom;
 
-    public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
+	public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
 	protected formBuilder: UntypedFormBuilder = new UntypedFormBuilder();
 
 
-    public fromModel(item: DataZoom): BaseIndicatorDashboardDataZoomChartConfigEditorModel {
+	public fromModel(item: DataZoom): BaseIndicatorDashboardDataZoomChartConfigEditorModel {
 		if (item) {
 			this.inside = !!item.inside;
 			this.slider = !!item.slider;
@@ -1557,7 +1564,7 @@ export class BaseIndicatorDashboardDataZoomChartConfigEditorModel implements Dat
 		if (context == null) { context = this.createValidationContext(); }
 
 		const formGroup =  this.formBuilder.group({
-			inside: [{ value: this.inside, disabled: disabled }, context.getValidation('inside').validators], 
+			inside: [{ value: this.inside, disabled: disabled }, context.getValidation('inside').validators],
 			slider: [{ value: this.slider, disabled: disabled }, context.getValidation('slider').validators],
 		});
 
@@ -1585,11 +1592,11 @@ export class BaseIndicatorDashboardDataZoomChartConfigEditorModel implements Dat
 
 export class BaseIndicatorDashboardDownloadImageChartConfigEditorModel implements ChartDownloadImageConfig{
 
-    public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
+	public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
 	protected formBuilder: UntypedFormBuilder = new UntypedFormBuilder();
 
 
-    public fromModel(item: ChartDownloadImageConfig): BaseIndicatorDashboardDownloadImageChartConfigEditorModel {
+	public fromModel(item: ChartDownloadImageConfig): BaseIndicatorDashboardDownloadImageChartConfigEditorModel {
 		if (item) {
 
 		}
@@ -1615,11 +1622,11 @@ export class BaseIndicatorDashboardDownloadImageChartConfigEditorModel implement
 // *  download DATA
 export class BaseIndicatorDashboardDownloadDataChartConfigEditorModel implements ChartDownloadDataConfig{
 
-    public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
+	public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
 	protected formBuilder: UntypedFormBuilder = new UntypedFormBuilder();
 
 
-    public fromModel(item: ChartDownloadDataConfig): BaseIndicatorDashboardDownloadDataChartConfigEditorModel {
+	public fromModel(item: ChartDownloadDataConfig): BaseIndicatorDashboardDownloadDataChartConfigEditorModel {
 		if (item) {
 
 		}
@@ -1648,11 +1655,11 @@ export class BaseIndicatorDashboardDownloadDataChartConfigEditorModel implements
 export class BaseIndicatorDashboardFieldFormatterChartConfigEditorModel implements FieldFormatterConfig{
 	type: FieldFormatterType;
 
-    public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
+	public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
 	protected formBuilder: UntypedFormBuilder = new UntypedFormBuilder();
 
 
-    public fromModel(item: FieldFormatterConfig): BaseIndicatorDashboardFieldFormatterChartConfigEditorModel {
+	public fromModel(item: FieldFormatterConfig): BaseIndicatorDashboardFieldFormatterChartConfigEditorModel {
 		if (item) {
 			this.type = item.type
 		}
@@ -1686,11 +1693,11 @@ export class BaseIndicatorDashboardSerieEditorModel implements DashBoardSerieCon
 	values: DashBoardSerieValues;
 	nested: DashBoardSerieConfigurationNested;
 
-    public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
+	public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
 	protected formBuilder: UntypedFormBuilder = new UntypedFormBuilder();
 
 
-    public fromModel(item: DashBoardSerieConfiguration): BaseIndicatorDashboardSerieEditorModel {
+	public fromModel(item: DashBoardSerieConfiguration): BaseIndicatorDashboardSerieEditorModel {
 		if (item) {
 			this.splitSeries = item.splitSeries ?? [];
 			this.label = item.label;
@@ -1729,11 +1736,11 @@ export class BaseIndicatorDashboardSerieLabelEditorModel implements DashBoardSer
 	labelKey: string;
 
 
-    public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
+	public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
 	protected formBuilder: UntypedFormBuilder = new UntypedFormBuilder();
 
 
-    public fromModel(item: DashBoardSerieLabel): BaseIndicatorDashboardSerieLabelEditorModel {
+	public fromModel(item: DashBoardSerieLabel): BaseIndicatorDashboardSerieLabelEditorModel {
 		if (item) {
 			this.color = item.color;
 			this.name = item.name;
@@ -1769,11 +1776,11 @@ export class BaseIndicatorDashboardSerieSplitSerieEditorModel implements DashBoa
 	key: string;
 
 
-    public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
+	public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
 	protected formBuilder: UntypedFormBuilder = new UntypedFormBuilder();
 
 
-    public fromModel(item: DashBoardSerieSplitSerie): BaseIndicatorDashboardSerieSplitSerieEditorModel {
+	public fromModel(item: DashBoardSerieSplitSerie): BaseIndicatorDashboardSerieSplitSerieEditorModel {
 		if (item) {
 			this.key = item.key
 		}
@@ -1790,7 +1797,7 @@ export class BaseIndicatorDashboardSerieSplitSerieEditorModel implements DashBoa
 	createValidationContext(): ValidationContext {
 		const baseContext: ValidationContext = new ValidationContext();
 		const baseValidationArray: Validation[] = new Array<Validation>();
-        //TODO
+		//TODO
 		baseValidationArray.push({ key: 'key', validators: [] });
 
 		baseContext.validation = baseValidationArray;
@@ -1809,11 +1816,11 @@ export class BaseIndicatorDashboardSerieValuesEditorModel implements DashBoardSe
 	groupTests?: Record<string, string>[] = [];
 
 
-    public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
+	public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
 	protected formBuilder: UntypedFormBuilder = new UntypedFormBuilder();
 
 
-    public fromModel(item: DashBoardSerieValues): BaseIndicatorDashboardSerieValuesEditorModel {
+	public fromModel(item: DashBoardSerieValues): BaseIndicatorDashboardSerieValuesEditorModel {
 		if (item) {
 			this.formatter = item.formatter;
 			this.valueKey = item.valueKey;
@@ -1856,11 +1863,11 @@ export class BaseIndicatorDashboardSerieValuesEditorModel implements DashBoardSe
 export class BaseIndicatorDashboardSerieValuesNestedEditorModel implements DashBoardSerieConfigurationNested{
 	type?: DashBoardSerieConfigurationNestedType;
 
-    public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
+	public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
 	protected formBuilder: UntypedFormBuilder = new UntypedFormBuilder();
 
 
-    public fromModel(item: DashBoardSerieConfigurationNested): BaseIndicatorDashboardSerieValuesNestedEditorModel {
+	public fromModel(item: DashBoardSerieConfigurationNested): BaseIndicatorDashboardSerieValuesNestedEditorModel {
 		if (item) {
 			this.type = item.type;
 		}
@@ -1871,7 +1878,7 @@ export class BaseIndicatorDashboardSerieValuesNestedEditorModel implements DashB
 
 		return this.formBuilder.group({
 			type: [{ value: this.type, disabled: disabled }, context.getValidation('type').validators],
-			
+
 		});
 	}
 
@@ -1880,7 +1887,7 @@ export class BaseIndicatorDashboardSerieValuesNestedEditorModel implements DashB
 		const baseValidationArray: Validation[] = new Array<Validation>();
 
 		baseValidationArray.push({ key: 'type', validators: [] });
-		
+
 
 		baseContext.validation = baseValidationArray;
 		return baseContext;
@@ -1895,11 +1902,11 @@ export class BaseIndicatorDashboardSerieValuesNumberFormatterEditorModel impleme
 
 	public static readonly ADDITIONAL_FIELDS: string[] = ['decimalAccuracy'];
 
-    public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
+	public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
 	protected formBuilder: UntypedFormBuilder = new UntypedFormBuilder();
 
 
-    public fromModel(item: SeriesValueNumberFormatter): BaseIndicatorDashboardSerieValuesNumberFormatterEditorModel {
+	public fromModel(item: SeriesValueNumberFormatter): BaseIndicatorDashboardSerieValuesNumberFormatterEditorModel {
 		if (item) {
 			this.decimalAccuracy = item.decimalAccuracy;
 		}
@@ -1929,28 +1936,28 @@ export class BaseIndicatorDashboardSerieValuesNumberFormatterEditorModel impleme
 
 		if(!formGroup) return;
 
-        const value = formGroup.value;
-        const valueKeys = Object.keys(value);
+		const value = formGroup.value;
+		const valueKeys = Object.keys(value);
 		const formBuilder = new FormBuilder();
 
-        BaseIndicatorDashboardSerieValuesNumberFormatterEditorModel.ADDITIONAL_FIELDS.forEach(field => {
-            if(!valueKeys.includes(field)){
-                formGroup.addControl(field, formBuilder.control(null)) // todo maybe validators
-            }
-        })
+		BaseIndicatorDashboardSerieValuesNumberFormatterEditorModel.ADDITIONAL_FIELDS.forEach(field => {
+			if(!valueKeys.includes(field)){
+				formGroup.addControl(field, formBuilder.control(null)) // todo maybe validators
+			}
+		})
 	}
 
 	public static cleanUpNumberFormatterControls(formGroup: FormGroup):void {
 		if(!formGroup) return;
 
-        const value = formGroup.value;
-        const valueKeys = Object.keys(value);
+		const value = formGroup.value;
+		const valueKeys = Object.keys(value);
 
-        BaseIndicatorDashboardSerieValuesNumberFormatterEditorModel.ADDITIONAL_FIELDS.forEach(field => {
-            if(valueKeys.includes(field)){
-                formGroup.removeControl(field)
-            }
-        })
+		BaseIndicatorDashboardSerieValuesNumberFormatterEditorModel.ADDITIONAL_FIELDS.forEach(field => {
+			if(valueKeys.includes(field)){
+				formGroup.removeControl(field)
+			}
+		})
 	}
 
 }
@@ -1960,11 +1967,11 @@ export class BaseIndicatorDashboardSerieValuesNumberFormatterEditorModel impleme
 export class BaseIndicatorDashboardSerieValuesFormatterEditorModel implements SeriesValueFormatter{
 	type: SeriesValueFormatterType;
 
-    public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
+	public validationErrorModel: ValidationErrorModel = new ValidationErrorModel();
 	protected formBuilder: UntypedFormBuilder = new UntypedFormBuilder();
 
 
-    public fromModel(item: SeriesValueFormatter): BaseIndicatorDashboardSerieValuesFormatterEditorModel {
+	public fromModel(item: SeriesValueFormatter): BaseIndicatorDashboardSerieValuesFormatterEditorModel {
 		if (item) {
 			this.type = item.type;
 		}

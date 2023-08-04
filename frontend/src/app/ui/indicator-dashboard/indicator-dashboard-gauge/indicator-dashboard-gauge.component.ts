@@ -14,6 +14,16 @@ import { IndicatorPointReportLookup, RawDataRequest } from '@app/core/query/indi
 import { IndicatorPointLookup } from '@app/core/query/indicator-point.lookup';
 import moment from 'moment';
 import { DashboardUITagsService } from '../ui-services/dashboard-tags.service';
+import { AggregateResponseModel } from '@app/core/model/aggregate-response/aggregate-reponse.model';
+import { Guid } from '@common/types/guid';
+import { PublicService } from '@app/core/services/http/public.service';
+import { ChartHelperService } from '@app/core/services/ui/chart-helper.service';
+import { IndicatorPointReportExternalTokenPersist } from '@app/core/model/external-token/external-token.model';
+import { InstallationConfigurationService } from '@common/installation-configuration/installation-configuration.service';
+import { QueryParamsService } from '@app/core/services/ui/query-params.service';
+import { ExternalTokenService } from '@app/core/services/http/external-token.service';
+import { ShareDialogComponent, ShareDialogData } from '../share-dialog/share-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
     templateUrl:'./indicator-dashboard-gauge.component.html',
@@ -25,11 +35,10 @@ import { DashboardUITagsService } from '../ui-services/dashboard-tags.service';
 })
 export class IndicatorDashboardGaugeComponent extends BaseComponent implements OnInit, OnChanges {
 
-	@Input() 
-    gaugeConfig: BaseIndicatorDashboardGaugeConfig;
-
-	@Input()
-	indicatorQueryParams: IndicatorQueryParams;
+	@Input()  gaugeConfig: BaseIndicatorDashboardGaugeConfig;
+	@Input() indicatorQueryParams: IndicatorQueryParams;
+	@Input() showSpinner: boolean = false;
+	@Input() token: string = null;
 
 	private _observer: IntersectionObserver;
 	private _previewSubject$ = new BehaviorSubject<boolean>(false);
@@ -37,7 +46,6 @@ export class IndicatorDashboardGaugeComponent extends BaseComponent implements O
 
 	protected noDataFound: boolean = false;
 
-	private _extraFields: {fieldCode: string, value: any, indicatorFilterType: IndicatorFilterType  }[] = [];
 	private _ComponentInitializedSubject$ = new BehaviorSubject<boolean>(false);
 	public errorLoading = false;
 
@@ -64,33 +72,35 @@ export class IndicatorDashboardGaugeComponent extends BaseComponent implements O
 	valueCards: ValueCard[];
 
 	constructor(
-		private chartBuilderService: ChartBuilderService,
 		private dataTransformService: DataTransformService,
 		private indicatorPointService: IndicatorPointService,
+		private dialog: MatDialog,
 		protected uiNotificationService: UiNotificationService,
 		protected httpErrorHandlingService: HttpErrorHandlingService,
-		private elementRef:ElementRef,
+		private publicService: PublicService,
+		private elementRef: ElementRef,
+		private chartHelperService: ChartHelperService,
 		private dashboardTagsUIService: DashboardUITagsService,
 		) {
 		super();
 
 
-		
+
 		this._initialize()
 
 
 	}
 	ngOnInit(): void {
 
-		
+
 	}
 	ngOnChanges(): void {
 		this._inputChanges$.next();
-
+		console.log(this.gaugeConfig);
 		if(this.gaugeConfig?.tags?.attachedTags?.length){
 			this._chartTags$.next(this.gaugeConfig.tags?.attachedTags);
 		}
-		
+
 	}
 
 	private _initialize(): void{
@@ -161,17 +171,29 @@ export class IndicatorDashboardGaugeComponent extends BaseComponent implements O
 
 				this.errorLoading = false;
 				this.noDataFound = false;
-				this.indicatorPointService.getIndicatorPointReport(
-					indicatorId, this._buildIndicatorLookup(),
-					true
-				)
-				.pipe(
+				let getIndicatorPointReportResult: Observable<AggregateResponseModel> = null;
+				if (this.token == null || this.token.length == 0) {
+					getIndicatorPointReportResult =
+					this.indicatorPointService.getIndicatorPointReport(
+						indicatorId, this.chartHelperService.buildGaugeIndicatorLookup(this.gaugeConfig, this.indicatorQueryParams),
+						true
+					);
+				} else {
+					getIndicatorPointReportResult = this.publicService.reportPublic({
+						dashboardId: this.indicatorQueryParams?.dashboard,
+						token: this.token,
+						indicatorId: Guid.parse(indicatorId),
+						chartId: this.gaugeConfig.chartId,
+						...this.chartHelperService.buildGaugeIndicatorLookup(this.gaugeConfig, this.indicatorQueryParams)
+					});
+				}
+				getIndicatorPointReportResult.pipe(
 					takeUntil(this._destroyed)
 				)
 				.subscribe((response) => {
 					try{
 						const {seriesData : sd, standAloneData} = this.dataTransformService.aggregateResponseModelToLineChartDataFromConfiguration(response, this.gaugeConfig); // TODO FIX THIS
-					
+
 
 						const [seriesData] = sd;
 
@@ -181,8 +203,8 @@ export class IndicatorDashboardGaugeComponent extends BaseComponent implements O
 						}
 
 						if(this.gaugeConfig.type === GaugeType.ValueCard){
-							
-                            
+
+
                             // console.log({ seriesData });
 
 							if(!seriesData) return;
@@ -219,7 +241,7 @@ export class IndicatorDashboardGaugeComponent extends BaseComponent implements O
 			}
 
 			return;
-		}		
+		}
 	}
 
 
@@ -232,124 +254,33 @@ export class IndicatorDashboardGaugeComponent extends BaseComponent implements O
 		this.errorLoading = true;
 	}
 
-	private _buildIndicatorLookup(): IndicatorPointReportLookup {
-
-		const {metrics, bucket} = this.dataTransformService.configurationToBucketsAndMetrics(this.gaugeConfig);
-
-		const lookup = new IndicatorPointReportLookup();
-
-		lookup.bucket = bucket;
-		lookup.metrics = metrics;
-
-		if (this.indicatorQueryParams?.keywordFilters?.length || this._extraFields.length || this.indicatorQueryParams?.groupHash) {
-			const indicatorPointLookup = new IndicatorPointLookup();
-
-			//query params
-			if (this.indicatorQueryParams?.keywordFilters?.length) {
-				
-				indicatorPointLookup.keywordFilters = this.indicatorQueryParams.keywordFilters;
-			}
-
-			if (this.indicatorQueryParams?.groupHash) {
-				indicatorPointLookup.groupHashes = [this.indicatorQueryParams.groupHash];
-			}
-			lookup.filters = indicatorPointLookup;
-
-
-			this._extraFields
-				.filter(extraField => extraField.value !== undefined && extraField.value !== null)
-				.forEach(extraField => {
-					const filterValue = extraField.value ?? [];
-
-
-					switch (extraField.indicatorFilterType) {
-						case IndicatorFilterType.KeywordFilter: {
-							const lookupKeywordFilters = lookup.filters.keywordFilters ?? [];
-
-							const fieldCodeFilter = lookupKeywordFilters.find(x => x.field === extraField.fieldCode) ?? {field: extraField.fieldCode, values: []};
-
-							const filterValueAsArray = Array.isArray(filterValue) ? filterValue :  [filterValue];
-
-							const uniqueValues = filterValueAsArray.filter(x => !fieldCodeFilter.values.includes(x));
-
-							fieldCodeFilter.values.push(
-								...uniqueValues
-							);
-							lookup.filters.keywordFilters = [
-								...lookupKeywordFilters.filter(x => x.field !== extraField.fieldCode),
-								fieldCodeFilter
-							];
-
-							break;
-						}
-						case IndicatorFilterType.DateRangeFilter: {
-							try {
-								const [startYear, endYear] = extraField.value;
-								const lookupDateRangeFilters = lookup.filters.dateRangeFilters ?? [];
-								lookup.filters.dateRangeFilters = [
-									...lookupDateRangeFilters,
-									{
-										field: extraField.fieldCode,
-										from: moment().year(startYear).startOf('year'),
-										to: moment().year(endYear).endOf('year'),
-									}
-								];
-
-
-							} catch {
-								console.log('%c Could not parse date range filter', 'color: yellow' );
-							}
-							break;
-						}
-					}
-
-			});
-
+	public shareGraph(): void {
+		const config: IndicatorPointReportExternalTokenPersist = {
+			name: this.indicatorQueryParams.dashboard + this.gaugeConfig.labelOverride, //TODO
+			lookups: [{
+				chartId: this.gaugeConfig.chartId,
+				dashboardId: this.indicatorQueryParams.dashboard,
+				indicatorId: Guid.parse(this.gaugeConfig.indicatorId),
+				lookup: this.chartHelperService.buildGaugeIndicatorLookup(this.gaugeConfig, this.indicatorQueryParams)
+			}]
+		};
+		const data: ShareDialogData = {
+			config: config,
+			indicatorQueryParams: {
+				displayName: this.indicatorQueryParams.displayName,
+				dashboard: this.indicatorQueryParams.dashboard,
+				keywordFilters: []
+			},
+			chartId: this.gaugeConfig.chartId
 		}
-		
-		// ** Replace/add keywords filters coming from dashboard configuration if any
-		const staticKeywordFilters = this.gaugeConfig?.staticFilters?.keywordsFilters;
-		if(staticKeywordFilters?.length){
-			const filters = lookup.filters ?? new IndicatorPointLookup();
-			const keywordFilters = filters.keywordFilters ?? [];
-
-			const dashboardFieldCodes = staticKeywordFilters.map(item => item.field);
-
-			// * remove keywords that are defined in dashboard config if any
-			filters.keywordFilters = keywordFilters.filter(filter => !dashboardFieldCodes.includes(filter.field));
-			// * add dashboardconfig filters if any
-			staticKeywordFilters.forEach(keywordFilter =>{
-				filters.keywordFilters.push({
-					field: keywordFilter.field,
-					values: keywordFilter.value
-				})
-			});
-
-			//* update lookup
-			lookup.filters = filters;
-		}
-
-		// * append ordering from backend ordering
-		rawDataBlock: if(this.gaugeConfig.rawDataRequest){
-
-			const {keyField, order, valueField, page} = this.gaugeConfig.rawDataRequest;
-
-			if(!keyField || !valueField || !order){
-				console.warn('Raw data not configured properly breaking out of sorting');
-				break rawDataBlock;
-			}
-			const rawDataRequest: RawDataRequest = {
-				keyField, order, valueField, page
-			};
-
-			lookup.isRawData = true;
-			// (lookup as any).rawData = true;
-			lookup.rawDataRequest = rawDataRequest;
-		}
-
-		return lookup;
-
+		this.dialog.open(ShareDialogComponent, {
+			width: '400px',
+			data: data
+		})
+			.afterClosed()
+			.subscribe(() => { });
 	}
+
 
 }
 
@@ -361,5 +292,5 @@ interface ChartTag{
 
 interface ValueCard{
 	title: string,
-	value: string | number 
+	value: string | number
 }

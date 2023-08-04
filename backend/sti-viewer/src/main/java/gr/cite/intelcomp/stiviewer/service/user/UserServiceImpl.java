@@ -16,8 +16,10 @@ import gr.cite.intelcomp.stiviewer.model.builder.UserBuilder;
 import gr.cite.intelcomp.stiviewer.model.deleter.UserDeleter;
 import gr.cite.intelcomp.stiviewer.model.persist.UserPersist;
 import gr.cite.intelcomp.stiviewer.model.persist.UserTouchedIntegrationEventPersist;
+import gr.cite.intelcomp.stiviewer.query.UserQuery;
 import gr.cite.tools.data.builder.BuilderFactory;
 import gr.cite.tools.data.deleter.DeleterFactory;
+import gr.cite.tools.data.query.QueryFactory;
 import gr.cite.tools.exception.MyApplicationException;
 import gr.cite.tools.exception.MyForbiddenException;
 import gr.cite.tools.exception.MyNotFoundException;
@@ -46,6 +48,7 @@ public class UserServiceImpl implements UserService {
 	private final AuthorizationService authorizationService;
 	private final DeleterFactory deleterFactory;
 	private final BuilderFactory builderFactory;
+	private final QueryFactory queryFactory;
 	private final ConventionService conventionService;
 	private final ErrorThesaurusProperties errors;
 	private final MessageSource messageSource;
@@ -58,6 +61,7 @@ public class UserServiceImpl implements UserService {
 			AuthorizationService authorizationService,
 			DeleterFactory deleterFactory,
 			BuilderFactory builderFactory,
+			QueryFactory queryFactory, 
 			ConventionService conventionService,
 			ErrorThesaurusProperties errors,
 			MessageSource messageSource,
@@ -68,6 +72,7 @@ public class UserServiceImpl implements UserService {
 		this.authorizationService = authorizationService;
 		this.deleterFactory = deleterFactory;
 		this.builderFactory = builderFactory;
+		this.queryFactory = queryFactory;
 		this.conventionService = conventionService;
 		this.errors = errors;
 		this.messageSource = messageSource;
@@ -92,6 +97,8 @@ public class UserServiceImpl implements UserService {
 			data.setId(UUID.randomUUID());
 			data.setIsActive(IsActive.ACTIVE);
 			data.setCreatedAt(Instant.now());
+			UserEntity userWithSameSubject = this.conventionService.isNullOrEmpty(model.getSubjectId()) ? null : this.queryFactory.query(UserQuery.class).subjectIds(model.getSubjectId()).first();
+			if (userWithSameSubject != null) throw new MyForbiddenException("Subject" + model.getSubjectId() + " already in use");
 		}
 		String previousSubjectId = data.getSubjectId();
 

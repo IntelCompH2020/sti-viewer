@@ -5,26 +5,41 @@ export interface Indicator extends BaseEntity {
   code: string;
   name: string;
   description: string;
-  config: AccessRequestConfig;
+  config: IndicatorConfig;
 }
-export interface AccessRequestConfig extends BaseEntity {
-  filterColumns: FilterColumnConfig[];
+export interface IndicatorConfig  {
+	accessRequestConfig: AccessRequestConfig;
 }
 
-export interface FilterColumnConfig extends BaseEntity {
+export interface AccessRequestConfig  {
+	filterColumns: FilterColumnConfig[];
+}
+
+export interface FilterColumnConfig {
+  	code: string;
+  	dependsOnCode: string;
+}
+
+
+export interface FilterColumnConfig  {
   code: string;
 }
-export interface IndicatorPersist extends BaseEntityPersist {
+export interface IndicatorPersist  {
   code: string;
   name: string;
   description: string;
-  config: AccessRequestConfigPersist;
+  config: IndicatorConfigPersist;
 }
 
-export interface AccessRequestConfigPersist extends BaseEntityPersist {
-  filterColumns: FilterColumnConfigPersist[];
+export interface IndicatorConfigPersist  {
+	accessRequestConfig: AccessRequestConfigPersist;
 }
 
-export interface FilterColumnConfigPersist extends BaseEntityPersist {
-  code: string;
+export interface AccessRequestConfigPersist {
+	filterColumns: FilterColumnConfigPersist[];
+}
+
+export interface FilterColumnConfigPersist {
+  	code: string;
+  	dependsOnCode: string;
 }

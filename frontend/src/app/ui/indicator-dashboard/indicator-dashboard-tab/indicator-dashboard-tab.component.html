@@ -7,14 +7,17 @@
 
 
 			<!-- * GAUGE -->
-			<div *ngSwitchCase="TabBlockType.Gauge" class="col-12">
+			<div *ngSwitchCase="TabBlockType.Gauge" class="col-12 p-0">
 
 				<h4>{{chartGroup?.name}}</h4>
-				<app-indicator-dashboard-gauge 
-					*ngFor="let gauge of chartGroup.gauges" 
-					[indicatorQueryParams]="indicatorQueryParams" 
-					[gaugeConfig]="gauge">
-				</app-indicator-dashboard-gauge>
+				<div class="d-flex gap-1 flex-wrap">
+					<app-indicator-dashboard-gauge
+						*ngFor="let gauge of chartGroup.gauges"
+						[indicatorQueryParams]="indicatorQueryParams"
+						[token]="token"
+						[gaugeConfig]="gauge">
+					</app-indicator-dashboard-gauge>
+				</div>
 			</div>
 
 
@@ -23,12 +26,13 @@
 			<mat-card class="w-100" *ngSwitchCase="TabBlockType.ChartGroup">
 
 				<mat-card-title>{{chartGroup.name}}</mat-card-title>
-				
+
 				<app-indicator-carousel>
-					<app-indicator-dashboard-chart 
-						*ngFor="let chart of chartGroup.charts" 
-						appIndicatorCarouselItem 
-						[indicatorQueryParams]="indicatorQueryParams" 
+					<app-indicator-dashboard-chart
+						*ngFor="let chart of chartGroup.charts"
+						appIndicatorCarouselItem
+						[indicatorQueryParams]="indicatorQueryParams"
+						[token]="token"
 						[chartConfig]="chart">
 					</app-indicator-dashboard-chart>
 				</app-indicator-carousel>
@@ -46,12 +50,12 @@
 	<!-- <mat-card class="w-100" *ngFor="let chartGroup of tabConfig | tabChartGroupFilter : activeChartTags">
 
 		<mat-card-title>{{chartGroup.name}}</mat-card-title>
-		
+
 		<app-indicator-carousel>
-			<app-indicator-dashboard-chart 
-				*ngFor="let chart of chartGroup.charts" 
-				appIndicatorCarouselItem 
-				[indicatorQueryParams]="indicatorQueryParams" 
+			<app-indicator-dashboard-chart
+				*ngFor="let chart of chartGroup.charts"
+				appIndicatorCarouselItem
+				[indicatorQueryParams]="indicatorQueryParams"
 				[chartConfig]="chart">
 			</app-indicator-dashboard-chart>
 		</app-indicator-carousel>

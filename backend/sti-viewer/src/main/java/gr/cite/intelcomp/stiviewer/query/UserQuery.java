@@ -26,6 +26,7 @@ public class UserQuery extends QueryBase<UserEntity> {
 
 	private String like;
 	private Collection<UUID> ids;
+	private Collection<String> subjectIds;
 	private Collection<IsActive> isActives;
 
 	private EnumSet<AuthorizationFlags> authorize = EnumSet.of(AuthorizationFlags.None);
@@ -58,6 +59,21 @@ public class UserQuery extends QueryBase<UserEntity> {
 
 	public UserQuery ids(Collection<UUID> values) {
 		this.ids = values;
+		return this;
+	}
+
+	public UserQuery subjectIds(String value) {
+		this.subjectIds = List.of(value);
+		return this;
+	}
+
+	public UserQuery subjectIds(String... value) {
+		this.subjectIds = Arrays.asList(value);
+		return this;
+	}
+
+	public UserQuery subjectIds(Collection<String> values) {
+		this.subjectIds = values;
 		return this;
 	}
 
@@ -116,6 +132,11 @@ public class UserQuery extends QueryBase<UserEntity> {
 		if (this.ids != null) {
 			CriteriaBuilder.In<UUID> inClause = queryContext.CriteriaBuilder.in(queryContext.Root.get(UserEntity._id));
 			for (UUID item : this.ids) inClause.value(item);
+			predicates.add(inClause);
+		}
+		if (this.subjectIds != null) {
+			CriteriaBuilder.In<String> inClause = queryContext.CriteriaBuilder.in(queryContext.Root.get(UserEntity._subjectId));
+			for (String item : this.subjectIds) inClause.value(item);
 			predicates.add(inClause);
 		}
 		if (this.like != null && !this.like.isEmpty()) {

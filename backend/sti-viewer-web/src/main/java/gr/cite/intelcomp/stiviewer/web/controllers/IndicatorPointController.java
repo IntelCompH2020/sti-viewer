@@ -203,7 +203,7 @@ public class IndicatorPointController {
 	@PostMapping("{indicatorId}/bulk-persist")
 	@Transactional
 	public void bulkPersist(@PathVariable("indicatorId") UUID indicatorId, @MyValidate @RequestBody List<IndicatorPointPersist> models) throws MyApplicationException, MyForbiddenException, MyNotFoundException, InvalidApplicationException, IOException {
-		logger.debug(new MapLogEntry("persisting" + IndicatorPoint.class.getSimpleName()).And("model", models));
+		logger.debug(new MapLogEntry("persisting" + IndicatorPoint.class.getSimpleName()));
 
 		this.indicatorPointService.persist(indicatorId, models);
 
@@ -214,9 +214,21 @@ public class IndicatorPointController {
 		return;
 	}
 
+	@DeleteMapping("{indicatorId}/batch/{batchId}")
+	public void report(@PathVariable("indicatorId") UUID indicatorId, @PathVariable("batchId") UUID batchId) throws InvalidApplicationException, IOException {
+		logger.debug(new MapLogEntry("deleting" + IndicatorPoint.class.getSimpleName()).And("indicatorId", indicatorId).And("batchId", batchId));
+
+		this.indicatorPointService.deleteBatch(indicatorId, batchId);
+
+		this.auditService.track(AuditableAction.Indicator_Point_Delete_Batch, Map.ofEntries(
+				new AbstractMap.SimpleEntry<String, Object>("indicatorId", indicatorId),
+				new AbstractMap.SimpleEntry<String, Object>("batchId", batchId)
+		));
+		return;
+	}
 
 	@GetMapping("global-search-config-by-key/{key}")
-	public String getGlobalSearchConfig(@PathVariable("key") String key) throws MyApplicationException, MyForbiddenException, MyNotFoundException {
+	public String getGlobalSearchConfig(@PathVariable("key") String key) throws MyApplicationException, MyForbiddenException, MyNotFoundException, InvalidApplicationException {
 		logger.debug(new MapLogEntry("retrieving" + Indicator.class.getSimpleName()).And("key", key));
 
 		String model = this.indicatorPointService.getGlobalSearchConfig(key);

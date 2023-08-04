@@ -4,7 +4,7 @@ import { BucketAggregateType } from "@app/core/enum/bucket-aggregate-type.enum";
 import { AggregateResponseModel } from "@app/core/model/aggregate-response/aggregate-reponse.model";
 import { Bucket, CompositeBucket, DataHistogramBucket, NestedBucket, TermsBucket } from "@app/core/model/bucket/bucket.model";
 import { Metric } from "@app/core/model/metic/metric.model";
-import { DateFieldFormatterConfig, FieldFormatterType, IndicatorConfigBucket, IndicatorConfigCompositeBucket, IndicatorConfigDataHistogramBucket, IndicatorConfigMetric, IndicatorConfigNestedBucket, IndicatorConfigTermsBucket, IndicatorDashboardSankeyChartConfig, ConnectionLimitOrder, ConnectionLimitType, SeriesValueFormatterType, SeriesValueNumberFormatter, CommonDashboardItemConfiguration, BaseServerFetchConfiguration } from "@app/ui/indicator-dashboard/indicator-dashboard-config";
+import { DateFieldFormatterConfig, FieldFormatterType, IndicatorConfigBucket, IndicatorConfigCompositeBucket, IndicatorConfigDataHistogramBucket, IndicatorConfigMetric, IndicatorConfigNestedBucket, IndicatorConfigTermsBucket, IndicatorDashboardSankeyChartConfig, ConnectionLimitOrder, ConnectionLimitType, SeriesValueFormatterType, SeriesValueNumberFormatter, CommonDashboardItemConfiguration, BaseServerFetchConfiguration, ChildParentRelationShipConfig } from "@app/ui/indicator-dashboard/indicator-dashboard-config";
 
 @Injectable()
 export class DataTransformService {
@@ -215,6 +215,48 @@ export class DataTransformService {
 		return Object.keys(test).every(key => test[key] === value?.[key]);
 	} 
 
+
+
+	
+	public getParentChildrenRelationships(params: {
+		records: AggregateResponseModel,
+		relationShipConfig: ChildParentRelationShipConfig
+	}): RelationShipResult | null{
+
+		const {relationShipConfig, records}  = params;
+
+		const {identifierKey, labelKey, parentIdentifierKey} = relationShipConfig ??{}
+
+
+		if([identifierKey, labelKey, parentIdentifierKey].some(x => !x)){
+			console.warn('Parent child key misconfiguration. Exiting');
+			return;
+		}
+
+		const map = new Map<string, {children: string[] }>();
+
+		const codeMap = new Map<string, string>();
+
+		records?.items?.forEach(record =>{
+			const labelValue = record.group.items[labelKey];
+			const indentifier = record.group.items[identifierKey];
+			const parentIdentifier = record.group.items[parentIdentifierKey];
+
+			codeMap.set(indentifier, labelValue);
+
+			if(parentIdentifier && (parentIdentifier !== indentifier)){// is a child of smoe identifier
+				const parent = map.get(parentIdentifier) ?? {children: [] };
+				parent.children.push(indentifier);
+				map.set(parentIdentifier, parent);
+			}
+		});
+
+		return {
+			relationShips: map, 
+			codeMap
+		}
+	}
+
 	//!! BAD NAMING CHANGE IT TO SOMETHING MORE SUITABLE
 	public aggregateResponseModelToLineChartDataFromConfiguration(
 		records: AggregateResponseModel,
@@ -261,7 +303,9 @@ export class DataTransformService {
 				name: serieConfiguration.label.name, //* name of the serie
 				color: serieConfiguration.label.color, //*  color preffered color of the serie
 				splitSeriesData: serieConfiguration.splitSeries?.reduce((aggr, current) => ({...aggr, [current.key]: {}}) , {}), // * if serie has split series store them here
-				type: serieConfiguration.nested?.type
+				type: serieConfiguration.nested?.type,
+				show: serieConfiguration.label.show != null ? serieConfiguration.label.show : null,
+				position: serieConfiguration.label.position,
 			}));
 
 			
@@ -621,3 +665,10 @@ interface ChartConnection{
 
 					// 	}
 					// )
+
+
+
+export interface RelationShipResult{
+	relationShips: Map<string, {children: string[]}>
+	codeMap: Map<string, string>;
+}

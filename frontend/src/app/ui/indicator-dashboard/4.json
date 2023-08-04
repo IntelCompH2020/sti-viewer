@@ -7,7 +7,7 @@
 				{
 					"name": "Scientific Production Testing gauges",
 					"type": "gauge",
-					"charts": [
+					"gauges": [
 						{
 							"indicatorId": "664de786-2879-4b65-82c7-df5d0d30be84",
 							"type": "value_card",

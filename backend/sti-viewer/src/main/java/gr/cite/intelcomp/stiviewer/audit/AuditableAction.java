@@ -28,7 +28,7 @@ public class AuditableAction {
 	public static final EventId Indicator_ElasticPersist = new EventId(3012, "Indicator_ElasticPersist");
 	public static final EventId Indicator_ElasticDelete = new EventId(3013, "Indicator_ElasticDelete");
 	public static final EventId Indicator_ElasticReset = new EventId(3014, "Indicator_ElasticReset");
-
+	
 	public static final EventId Data_Access_Request_Query = new EventId(3020, "Data_Access_Request_Query");
 	public static final EventId Data_Access_Request_Lookup = new EventId(3021, "Data_Access_Request_Lookup");
 	public static final EventId Data_Access_Request_Persist = new EventId(3022, "Data_Access_Request_Persist");
@@ -95,7 +95,8 @@ public class AuditableAction {
 	public static final EventId Indicator_Point_ExportXlsx = new EventId(15007, "Indicator_Point_ExportXlsx");
 	public static final EventId Indicator_Point_GetGlobalSearchConfig = new EventId(15008, "Indicator_Point_GetGlobalSearchConfig");
 	public static final EventId Indicator_Point_ExportJson = new EventId(15009, "Indicator_Point_ExportJson");
-
+	public static final EventId Indicator_Point_Delete_Batch = new EventId(15010, "Indicator_Point_Delete_Batch");
+	
 	public static final EventId Indicator_Elastic_Query = new EventId(16000, "Indicator_Elastic_Query");
 
 	public static final EventId DataTreeConfig_MyConfigs = new EventId(17000, "DataTreeConfig_MyConfigs");
@@ -136,13 +137,23 @@ public class AuditableAction {
 	public static final EventId Scheduled_Event_Run = new EventId(22005, "Scheduled_Event_Run");
 
 	public static final EventId PortofolioConfig_GetMyConfigs = new EventId(230000, "PortofolioConfig_GetMyConfigs");
-	public static final EventId PortofolioConfig_GetMyConfigByKey = new EventId(230001, "PortofolioConfig_GetMyConfigByKey");
+	public static final EventId PortofolioConfig_GetMyConfigByKey = new EventId(23001, "PortofolioConfig_GetMyConfigByKey");
 	
-	public static final EventId DynamicPage_Query = new EventId(240000, "Page_Query");
-	public static final EventId DynamicPage_Lookup = new EventId(240001, "Page_Lookup");
-	public static final EventId DynamicPage_Persist = new EventId(240002, "Page_Persist");
-	public static final EventId DynamicPage_Delete = new EventId(240003, "Page_Delete");
-	public static final EventId DynamicPage_AllowedPageMenuItems = new EventId(240004, "Page_AllowedPageMenuItems");
-	public static final EventId DynamicPage_GetPageContent = new EventId(240005, "Page_GetPageContent");
+	public static final EventId DynamicPage_Query = new EventId(24000, "Page_Query");
+	public static final EventId DynamicPage_Lookup = new EventId(24001, "Page_Lookup");
+	public static final EventId DynamicPage_Persist = new EventId(24002, "Page_Persist");
+	public static final EventId DynamicPage_Delete = new EventId(24003, "Page_Delete");
+	public static final EventId DynamicPage_AllowedPageMenuItems = new EventId(24004, "Page_AllowedPageMenuItems");
+	public static final EventId DynamicPage_GetPageContent = new EventId(24005, "Page_GetPageContent");
+
+	public static final EventId Indicator_Access_UserAddAccessToIndicatorColumn = new EventId(25001, "Indicator_Access_UserAddAccessToIndicatorColumn");
+
+
+	public static final EventId ExternalToken_Query = new EventId(26000, "ExternalToken_Query");
+	public static final EventId ExternalToken_Lookup = new EventId(26001, "ExternalToken_Lookup");
+	public static final EventId ExternalToken_Persist = new EventId(26002, "ExternalToken_Persist");
+	public static final EventId ExternalToken_Delete = new EventId(26003, "ExternalToken_Delete");
+	
+	public static final EventId Public_Indicator_Point_Report = new EventId(27000, "Public_Indicator_Point_Report");
 
 }

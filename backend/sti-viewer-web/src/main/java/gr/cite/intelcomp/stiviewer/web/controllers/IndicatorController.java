@@ -8,6 +8,7 @@ import gr.cite.intelcomp.stiviewer.elastic.query.indicator.IndicatorElasticQuery
 import gr.cite.intelcomp.stiviewer.elastic.query.lookup.IndicatorElasticLookup;
 import gr.cite.intelcomp.stiviewer.event.EventBroker;
 import gr.cite.intelcomp.stiviewer.model.Indicator;
+import gr.cite.intelcomp.stiviewer.model.IndicatorAccess;
 import gr.cite.intelcomp.stiviewer.model.IndicatorElastic;
 import gr.cite.intelcomp.stiviewer.model.builder.IndicatorBuilder;
 import gr.cite.intelcomp.stiviewer.model.builder.IndicatorElasticBuilder;
@@ -16,9 +17,11 @@ import gr.cite.intelcomp.stiviewer.model.censorship.indicatorelastic.IndicatorEl
 import gr.cite.intelcomp.stiviewer.model.persist.IndicatorElasticPersist;
 import gr.cite.intelcomp.stiviewer.model.persist.IndicatorPersist;
 import gr.cite.intelcomp.stiviewer.model.persist.ResetIndicatorElasticPersist;
+import gr.cite.intelcomp.stiviewer.model.persist.UserAddAccessToIndicatorColumn;
 import gr.cite.intelcomp.stiviewer.query.IndicatorQuery;
 import gr.cite.intelcomp.stiviewer.query.lookup.IndicatorLookup;
 import gr.cite.intelcomp.stiviewer.service.indicator.IndicatorService;
+import gr.cite.intelcomp.stiviewer.service.indicatoraccess.IndicatorAccessService;
 import gr.cite.intelcomp.stiviewer.service.indicatorelastic.ElasticIndicatorService;
 import gr.cite.intelcomp.stiviewer.web.model.QueryResult;
 import gr.cite.tools.auditing.AuditService;
@@ -56,9 +59,6 @@ public class IndicatorController {
 	private final QueryFactory queryFactory;
 	private final MessageSource messageSource;
 	private final ElasticIndicatorService elasticIndicatorService;
-	private final EventBroker eventBroker;
-
-	private final ApplicationContext applicationContext;
 
 	@Autowired
 	public IndicatorController(
@@ -68,10 +68,7 @@ public class IndicatorController {
 			CensorFactory censorFactory,
 			QueryFactory queryFactory,
 			MessageSource messageSource,
-			ElasticIndicatorService elasticIndicatorService,
-			EventBroker eventBroker,
-			ApplicationContext applicationContext
-	) {
+			ElasticIndicatorService elasticIndicatorService) {
 		this.builderFactory = builderFactory;
 		this.auditService = auditService;
 		this.indicatorService = indicatorService;
@@ -79,8 +76,6 @@ public class IndicatorController {
 		this.queryFactory = queryFactory;
 		this.messageSource = messageSource;
 		this.elasticIndicatorService = elasticIndicatorService;
-		this.eventBroker = eventBroker;
-		this.applicationContext = applicationContext;
 	}
 
 	@PostMapping("query")

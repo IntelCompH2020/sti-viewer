@@ -10,6 +10,14 @@ cache:
         expireAfterWriteMinutes: 10
         expireAfterAccessMinutes: 10
         refreshAfterWriteMinutes: 10
+      - names: [ stiApikey ]
+        allowNullValues: true
+        initialCapacity: 100
+        maximumSize: 500
+        enableRecordStats: false
+        expireAfterWriteMinutes: 10
+        expireAfterAccessMinutes: 10
+        refreshAfterWriteMinutes: 10
       - names: [ tenantByCode ]
         allowNullValues: true
         initialCapacity: 100
@@ -89,6 +97,9 @@ cache:
   apiKey:
     name: apikey
     keyPattern: resolve_$keyhash$:v0
+  stiApiKey:
+    name: stiApiKey
+    keyPattern: sti_api_key_$keyhash$:v0
   userBySubjectId:
     name: userBySubjectId
     keyPattern: user_by_subject_$subject$:v0

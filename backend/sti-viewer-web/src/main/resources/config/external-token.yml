@@ -1,0 +1,5 @@
+external-token:
+  enabled: ${EXTERNAL_TOKEN_ENABLED}
+  expirationInMinutes: 43200
+  passwordLength: 64
+  allowedSpecialChars: '!"#$%&()*+,-./:;<=>?@[\]^_`{|}~'

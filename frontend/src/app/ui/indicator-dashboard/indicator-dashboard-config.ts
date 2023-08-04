@@ -109,12 +109,13 @@ export interface IndicatorDashboardRadarChartConfig extends BaseIndicatorDashboa
 }
 export interface IndicatorDashboardGraphChartConfig extends BaseIndicatorDashboardChartConfig, Omit <BaseIndicatorDashboardChartConfig, 'type'>{
 	type: IndicatorDashboardChartType.Graph;
-	
+
 }
 export interface IndicatorDashboardPieChartConfig extends BaseIndicatorDashboardChartConfig, Omit <BaseIndicatorDashboardChartConfig, 'type'>{
 	// type: IndicatorDashboardChartType.Pie;
 	roseType?:string;
 	doughnut?: boolean; // TODO PUT IN EDITOR
+	radius?: string[]; // TODO PUT IN EDITOR
 }
 export interface IndicatorDashboardPolarBarChartConfig extends BaseIndicatorDashboardChartConfig, Omit <BaseIndicatorDashboardChartConfig, 'type'>{
 	// type: IndicatorDashboardChartType.PolarBar;
@@ -133,6 +134,15 @@ export interface IndicatorDashboardTreeMapChartConfig extends BaseIndicatorDashb
 	treeName?: string;
 	toolTip?: TreeMapToolTip;
 	treeColors?: Record<string, string>;
+
+	treeNesting?: ChildParentRelationShipConfig; // TODO ADD IN CONFIGURATION EDITOR
+}
+
+
+export interface ChildParentRelationShipConfig{ // TODO ADD IN CONFIGURATION EDITOR
+	labelKey: string; // same as series label key
+	parentIdentifierKey: string; // where to look for parent info
+	identifierKey: string; // my record current identity
 }
 
 export interface TreeMapToolTip{
@@ -175,6 +185,11 @@ export interface ChartDownloadJSONConfig{ // todo add in editor
 }
 
 
+export interface ChartShareConfig{ // todo add in editor
+
+}
+
+
 export interface DashboardChartTagConfig{
 	attachedTags?: string[];
 }
@@ -204,11 +219,11 @@ export interface BaseTransformConfiguration{
 	reverseValues?: boolean;
 }
 
-export interface CommonDashboardItemConfiguration extends 
+export interface CommonDashboardItemConfiguration extends
 	BaseSeriesConfiguration,
 	BaseServerFetchConfiguration,
 	BaseTagConfiguration,
-	BaseTransformConfiguration 
+	BaseTransformConfiguration
 {
 
 }
@@ -217,13 +232,15 @@ export interface BaseIndicatorDashboardChartConfig extends CommonDashboardItemCo
 	type: IndicatorDashboardChartType;
 	chartName?: string;
 	chartSubtitle?: string;
-	
+	chartId?: string;
+
 	description: string;
 	legend?: LegendConfig;
 	filters?: ChartFilter[];
 	chartDownloadImage?:ChartDownloadImageConfig;
 	chartDownloadData?:ChartDownloadDataConfig;
 	chartDownloadJson?: ChartDownloadJSONConfig;// todo add in editor
+	chartShare?: ChartShareConfig;// todo add in editor
 }
 
 
@@ -234,8 +251,10 @@ export enum GaugeType{
 export interface BaseIndicatorDashboardGaugeConfig extends CommonDashboardItemConfiguration{
 	type: GaugeType,
 	name: string,
+	chartId: string,
 	labelOverride?: string,
 	description: string,
+	chartShare?: ChartShareConfig;// todo add in editor
 }
 
 export interface IndicatorDashboardStaticFilters{
@@ -260,7 +279,7 @@ export interface DashBoardSerieConfiguration{
 	nested?:DashBoardSerieConfigurationNested;
 	splitSeries?: DashBoardSerieSplitSerie[];
 
-	// * describe where to find x axis data (labels) 
+	// * describe where to find x axis data (labels)
 	label:DashBoardSerieLabel;
 
 	// * describe how to extract value from values
@@ -274,6 +293,8 @@ export interface DashBoardSerieLabel{
 	color?:string; //* color for the serie produced (not taken into account if there are split series)
 	name: string; // * name of serie produced (not taken into account if there is splitseries defined)
 	labelKey: string; //* key with which we are extracting label from group.items
+	show?: boolean; // TODO ADD IT ON EDITOR
+    position?: string; // TODO ADD IT ON EDITOR
 }
 
 export interface DashBoardSerieValues{
@@ -346,7 +367,7 @@ export interface ChartFilterValue{
 	name: string;
 	value: any;
 }
-export interface LegendConfig{ 
+export interface LegendConfig{
 
 	//TODO IMPLEMENT
 
@@ -422,7 +443,7 @@ export interface IndicatorConfigNestedBucket extends NestedBucket {
 }
 export interface IndicatorConfigCompositeBucket extends CompositeBucket {
 	metrics: IndicatorConfigMetric[];
-	
+
 }
 export interface IndicatorConfigDataHistogramBucket extends DataHistogramBucket {
 	metrics: IndicatorConfigMetric[];

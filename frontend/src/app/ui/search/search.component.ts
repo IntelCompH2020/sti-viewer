@@ -13,6 +13,7 @@ import { combineLatest, Observable } from 'rxjs';
 import {filter, map, takeUntil} from 'rxjs/operators';
 import { IndicatorQueryParams } from '../indicator-dashboard/indicator-dashboard.component';
 import { SearchConfiguration, SearchViewConfigType } from './search-config.model';
+import { InstallationConfigurationService } from '@common/installation-configuration/installation-configuration.service';
 
 
 @Injectable()
@@ -56,10 +57,10 @@ export class SearchComponent extends BaseComponent implements OnInit{
 	protected totalResultsCount = 0;
 
 
-	private availableForPresentation = ['Climate EU'];
 
 	constructor(
 		private indicatorPointService: IndicatorPointService,
+		private installationConfigurationService: InstallationConfigurationService,
 		private router: Router,
 		private queryParamsService: QueryParamsService,
 		private activeRoute: ActivatedRoute
@@ -283,7 +284,7 @@ export class SearchComponent extends BaseComponent implements OnInit{
 				subtitle: subtitles,
 				text,
 				title:titles,
-				availableForPresentation: this.availableForPresentation.includes(titles.map(x => x.textValue)?.join(''))
+				availableForPresentation: this.installationConfigurationService.availableForSearchPresentation?.includes(titles.map(x => x.textValue)?.join(''))
 			};
 		});
 

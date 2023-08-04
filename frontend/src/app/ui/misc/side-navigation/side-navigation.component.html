@@ -82,6 +82,15 @@
         <a class="navigation-description" [class.d-none]="!expanded" mat-button>{{'APP.NAVIGATION.MASTER-ITEMS' |
             translate}}</a>
     </a>
+	<a (click)="handleNavigation()" routerLink="external-tokens"
+        routerLinkActive="text-accent" class="navigation-item"
+        *ngIf="authService.hasPermission(authService.permissionEnum.ViewExternalTokenPage)">
+        <div>
+            <mat-icon class="item-icon">share</mat-icon>
+        </div>
+        <a class="navigation-description" [class.d-none]="!expanded" mat-button>{{'APP.NAVIGATION.EXTERNAL-TOKENS' |
+            translate}}</a>
+    </a>
 	<div *ngFor="let dynamicMenuItem of (dynamicMenuItems || [])">
 		<a *ngIf="pageTypeEnumValues.Simple === dynamicMenuItem.type" routerLink="{{this.getSimplePageUrl(dynamicMenuItem)}}" routerLinkActive="text-accent" (click)="handleNavigation()" class="navigation-item">
 			<div>

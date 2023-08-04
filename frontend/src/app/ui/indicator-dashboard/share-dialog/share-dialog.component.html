@@ -1,0 +1,47 @@
+<ng-container class="col-12" *ngIf="formGroup" [formGroup]="formGroup">
+    <h3>
+        {{'APP.INDICATOR-SHARE-DIALOG.TITLE' | translate}}
+    </h3>
+
+    <mat-form-field class="row">
+        <mat-label>
+            {{'APP.INDICATOR-SHARE-DIALOG.NAME' | translate}}
+        </mat-label>
+        <input type="text" matInput formControlName="name" required>
+		<mat-error *ngIf="formGroup.get('name').hasError('required')">{{'COMMONS.VALIDATION.REQUIRED' | translate}}</mat-error>
+    </mat-form-field>
+
+	<mat-form-field class="row" >
+		<mat-label>
+            {{'APP.INDICATOR-SHARE-DIALOG.EXPIRES-AT' | translate}}
+        </mat-label>
+		<mat-datetimepicker-toggle [for]="datetimePicker" matSuffix></mat-datetimepicker-toggle>
+		<mat-datetimepicker #datetimePicker type="datetime" openOnFocus="true" timeInterval="5"></mat-datetimepicker>
+		<input matInput [matDatetimepicker]="datetimePicker" autocomplete="false" [formControl]="formGroup.get('expiresAt')">
+		<mat-error *ngIf="formGroup.get('expiresAt').hasError('required')">{{'COMMONS.VALIDATION.REQUIRED' | translate}}</mat-error>
+	</mat-form-field>
+
+	<div class="row" *ngIf="url">
+		<label class="col-12">{{'APP.INDICATOR-SHARE-DIALOG.URL' | translate}}</label>
+		<button *ngIf="url"mat-raised-button (click)="openUrl()">
+			<mat-icon>open_in_new</mat-icon>
+			{{'APP.INDICATOR-SHARE-DIALOG.OPEN-URL' | translate}}
+		</button>
+		<button *ngIf="url" mat-raised-button [cdkCopyToClipboard]="url">
+			<mat-icon>content_copy</mat-icon>
+			{{'APP.INDICATOR-SHARE-DIALOG.COPY-URL' | translate}}
+		</button>
+	</div>
+
+    <div class="row m-0 justify-content-end">
+        <button mat-raised-button (click)="close()">
+            {{'APP.INDICATOR-SHARE-DIALOG.CLOSE' | translate}}
+        </button>
+		<button *ngIf="!this.url" mat-raised-button (click)="share()">
+            {{'APP.INDICATOR-SHARE-DIALOG.SHARE' | translate}}
+        </button>
+    </div>
+
+</ng-container>
+
+

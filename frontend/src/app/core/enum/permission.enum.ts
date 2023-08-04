@@ -3,15 +3,31 @@ export enum AppPermission {
 	//DataAccessRequest
 	BrowseDataAccessRequest = "BrowseDataAccessRequest",
 	EditDataAccessRequest = "EditDataAccessRequest",
-	CreateDataAccessRequest = "CreateDataAccessRequest",
-	ApproveDataAccessRequest = "ApproveDataAccessRequest",
-	RejectDataAccessRequest = "RejectDataAccessRequest",
+	CreateDataAccessRequest = "CreateTenantRequest",
+	ApproveDataAccessRequest = "ApproveTenantRequest",
+	RejectDataAccessRequest = "RejectTenantRequest",
 	DeleteDataAccessRequest = "DeleteDataAccessRequest",
 
 	//Indicator
 	BrowseIndicator = "BrowseIndicator",
 	EditIndicator = "EditIndicator",
+	ResetIndicator = "ResetIndicator",
 	DeleteIndicator = "DeleteIndicator",
+	BrowseIndicatorReportConfig = "BrowseIndicatorReportConfig",
+
+	//Bookmark
+	BrowseBookmark = "BrowseBookmark",
+	EditBookmark = "EditBookmark",
+	DeleteBookmark = "DeleteBookmark",
+
+	//Indicator Elastic
+	BrowseIndicatorElastic = "BrowseIndicatorElastic",
+
+
+	//IndicatorAccess
+	BrowseIndicatorAccess = "BrowseIndicatorAccess",
+	EditIndicatorAccess = "EditIndicatorAccess",
+	DeleteIndicatorAccess = "DeleteIndicatorAccess",
 
 	//User
 	BrowseUser = "BrowseUser",
@@ -28,10 +44,34 @@ export enum AppPermission {
 	EditUserInvitation = "EditUserInvitation",
 	DeleteUserInvitation = "DeleteUserInvitation",
 
+	//BrowseDataTree
+	BrowseBrowseDataTreeConfig = "BrowseBrowseDataTreeConfig",
+	BrowseBrowseDataTree = "BrowseBrowseDataTree",
+
+	//PortofolioConfig
+	BrowsePortofolioConfig = "BrowsePortofolioConfig",
+
+	//Dashboard
+	GetDashboard = "GetDashboard",
+
+
 	//User
 	BrowseUserSettings = "BrowseUserSettings",
 	EditUserSettings = "EditUserSettings",
 	DeleteUserSettings = "DeleteUserSettings",
+
+
+	//DynamicPage
+	BrowseDynamicPage = "BrowseDynamicPage",
+	EditDynamicPage = "EditDynamicPage",
+	DeleteDynamicPage = "DeleteDynamicPage",
+
+	//ExternalToken
+	BrowseExternalToken = "BrowseExternalToken",
+	EditExternalToken = "EditExternalToken",
+	DeleteExternalToken = "DeleteExternalToken",
+	CreateChartExternalToken = "CreateChartExternalToken",
+	CreateDashboardExternalToken = "CreateDashboardExternalToken",
 
 	//Tenant
 	BrowseTenant = "BrowseTenant",
@@ -55,11 +95,6 @@ export enum AppPermission {
 	BrowseDataset = "BrowseDataset",
 	EditDataset = "EditDataset",
 	DeleteDataset = "DeleteDataset",
-
-	//DynamicPage
-	BrowseDynamicPage = "BrowseDynamicPage",
-	EditDynamicPage = "EditDynamicPage",
-	DeleteDynamicPage = "DeleteDynamicPage",
 	//DetailItem
 	BrowseDetailItem = "BrowseDetailItem",
 	EditDetailItem = "EditDetailItem",
@@ -68,6 +103,16 @@ export enum AppPermission {
 	BrowseMasterItem = "BrowseMasterItem",
 	EditMasterItem = "EditMasterItem",
 	DeleteMasterItem = "DeleteMasterItem",
+	//IndicatorPoint
+	BrowseIndicatorPoint = "BrowseIndicatorPoint",
+	EditIndicatorPoint = "EditIndicatorPoint",
+	DeleteIndicatorPoint = "DeleteIndicatorPoint",
+	//DataGroupRequest
+	BrowseDataGroupRequest = "BrowseDataGroupRequest",
+	EditDataGroupRequest = "EditDataGroupRequest",
+	DeleteDataGroupRequest = "DeleteDataGroupRequest",
+	CreateDataGroupRequest = "CreateDataGroupRequest",
+
 
 	//Blueprint Request
 	BrowseBlueprintRequest = "BrowseBlueprintRequest",
@@ -77,6 +122,9 @@ export enum AppPermission {
 
 	//Create Blueprint
 	CreateBlueprint = "CreateBlueprint",
+
+	//Notification
+	EditNotification = "EditNotification",
 
 	// UI Pages
 	ViewDatasetPage = "ViewDatasetPage",
@@ -105,5 +153,6 @@ export enum AppPermission {
 	DownloadReport = "DownloadReport",
 	ViewBlueprintTemplatePage = "ViewBlueprintTemplatePage",
 	ViewDynamicPage = "ViewDynamicPage",
+	ViewExternalTokenPage = "ViewExternalTokenPage",
 }
 

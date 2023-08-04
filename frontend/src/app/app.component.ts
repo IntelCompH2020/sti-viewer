@@ -1,7 +1,7 @@
 import { OverlayContainer } from '@angular/cdk/overlay';
 import { AfterViewInit, Component, HostBinding, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { ChildrenOutletContexts } from '@angular/router';
+import { ActivatedRoute, ChildrenOutletContexts, Router } from '@angular/router';
 import { ThemeType } from '@app/core/enum/theme-type.enum';
 import { AuthService, LoginStatus } from '@app/core/services/ui/auth.service';
 import { ThemingService } from '@app/core/services/ui/theming.service';
@@ -17,6 +17,7 @@ import { BehaviorSubject } from 'rxjs';
 import { debounceTime, takeUntil } from 'rxjs/operators';
 import { PrincipalService } from './core/services/http/principal.service';
 import { ROUTING_ANIMATIONS } from './routing-animation';
+import { Location } from '@angular/common';
 
 @Component({
 	selector: 'app-root',
@@ -29,14 +30,17 @@ export class AppComponent extends BaseComponent implements OnInit, AfterViewInit
 
 
 	private EXPANDED_LOCAL_STORAGE_KEY = 'expand_panel';
-	expanded = localStorage.getItem(this.EXPANDED_LOCAL_STORAGE_KEY)=== 'false' ? false : true;
+	expanded = localStorage.getItem(this.EXPANDED_LOCAL_STORAGE_KEY) === 'false' ? false : true;
 
 	_contentHover$ = new BehaviorSubject<boolean>(false);
 	contentHover$ = this._contentHover$.asObservable().pipe(debounceTime(600), takeUntil(this._destroyed));
 
+	isPublicMode = false;
+
 	getRouteAnimationData() {
 		return this.contexts.getContext('primary')?.route?.url;
 	}
+
 	constructor(
 		private installationConfiguration: InstallationConfigurationService,
 		private authService: AuthService,
@@ -48,7 +52,9 @@ export class AppComponent extends BaseComponent implements OnInit, AfterViewInit
 		private cultureService: CultureService,
 		private timezoneService: TimezoneService,
 		private logger: LoggingService,
-		private contexts: ChildrenOutletContexts
+		private contexts: ChildrenOutletContexts,
+		private route: ActivatedRoute,
+		private location: Location
 	) {
 		super();
 
@@ -62,6 +68,15 @@ export class AppComponent extends BaseComponent implements OnInit, AfterViewInit
 	}
 
 	ngOnInit() {
+		if (this.location.path().startsWith(this.installationConfiguration.embeddedDashboardPath)) {
+			this.isPublicMode = true;
+		} else if (this.location.path().startsWith(this.installationConfiguration.sharedGraphPath)) {
+			this.isPublicMode = true;
+		} else if (this.location.path().startsWith(this.installationConfiguration.sharedDashboardPath)) {
+			this.isPublicMode = true;
+		} else {
+			this.isPublicMode = false;
+		}
 	}
 
 	ngAfterViewInit() {
@@ -148,28 +163,28 @@ export class AppComponent extends BaseComponent implements OnInit, AfterViewInit
 	public isAuthenticated(): boolean {
 		return this.authService.currentAccountIsAuthenticated();
 	}
-	toggleExpanded(val: boolean): void{
+	toggleExpanded(val: boolean): void {
 		this._setExpanded(val);
 	}
-	
-	expandItems(): void{
+
+	expandItems(): void {
 		// this.expanded = true;
 		this._setExpanded(true);
 	}
-	collapseItems(): void{
+	collapseItems(): void {
 		// this.expanded = false;
 		this._setExpanded(false);
 	}
 
-	onNavigationMouseEnter():void{
+	onNavigationMouseEnter(): void {
 		this._contentHover$.next(true);
 	}
-	onNavigationMouseLeave(): void{
+	onNavigationMouseLeave(): void {
 		this._contentHover$.next(false);
 	}
 
 
-	private _setExpanded(value: boolean):void{
+	private _setExpanded(value: boolean): void {
 		this.expanded = !!value;
 		localStorage.setItem(this.EXPANDED_LOCAL_STORAGE_KEY, `${value}`);
 	}

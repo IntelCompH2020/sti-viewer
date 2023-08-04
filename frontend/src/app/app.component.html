@@ -1,4 +1,4 @@
-<div class="container-fluid p-0">
+<div class="container-fluid p-0" *ngIf="!isPublicMode">
 	<app-navigation [expanded]="expanded" (onToggleNav)="toggleExpanded($event)"></app-navigation>
 	<div class="main-app-content">
 		<div class="side-panel background-primary pt-3 d-none d-md-block" [class.side-panel-expanded]="expanded || (contentHover$ | async)">
@@ -11,4 +11,11 @@
 		</div>
 	</div>
 	<app-ui-notification></app-ui-notification>
+</div>
+<div class="container-fluid p-0" *ngIf="isPublicMode">
+	<div class="main-app-content">
+		<div class="content col p-0" id="navigation-content-container">
+			<router-outlet></router-outlet>
+		</div>
+	</div>
 </div>
