@@ -1,34 +1,31 @@
-import { Component, Inject, OnInit } from "@angular/core";
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
-import { MatDialogRef, MAT_DIALOG_DATA, MatDialog } from "@angular/material/dialog";
-import { ExternalToken, ExternalTokenChangePersist, IndicatorPointReportExternalTokenPersist } from "@app/core/model/external-token/external-token.model";
-import { ExternalTokenService } from "@app/core/services/http/external-token.service";
-import { BaseComponent } from "@common/base/base.component";
-import { delayWhen, filter, map, takeUntil } from 'rxjs/operators';
-import { QueryParamsService } from "@app/core/services/ui/query-params.service";
-import { InstallationConfigurationService } from "@common/installation-configuration/installation-configuration.service";
-import { Guid } from "@common/types/guid";
-import { ExternalTokenChangeDialogEditorModel } from "./token-change-dialog.model";
-import { BaseEditor } from "@common/base/base-editor";
-import { ActivatedRoute, Router } from "@angular/router";
 import { DatePipe } from "@angular/common";
-import { FilterService } from "@common/modules/text-filter/filter-service";
+import { HttpErrorResponse } from "@angular/common/http";
+import { Component, Inject, OnInit } from "@angular/core";
+import { FormGroup } from "@angular/forms";
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from "@angular/material/dialog";
+import { ActivatedRoute, Router } from "@angular/router";
+import { IsActive } from "@app/core/enum/is-active.enum";
+import { AppPermission } from "@app/core/enum/permission.enum";
+import { ExternalToken } from "@app/core/model/external-token/external-token.model";
+import { ExternalTokenService } from "@app/core/services/http/external-token.service";
+import { AuthService } from "@app/core/services/ui/auth.service";
+import { BaseComponent } from "@common/base/base.component";
+import { FormService } from "@common/forms/form-service";
+import { LoggingService } from "@common/logging/logging-service";
 import { HttpError, HttpErrorHandlingService } from "@common/modules/errors/error-handling/http-error-handling.service";
 import { SnackBarNotificationLevel, UiNotificationService } from "@common/modules/notification/ui-notification-service";
-import { FormService } from "@common/forms/form-service";
+import { FilterService } from "@common/modules/text-filter/filter-service";
+import { Guid } from "@common/types/guid";
 import { TranslateService } from "@ngx-translate/core";
-import { IsActive } from "@app/core/enum/is-active.enum";
-import { LoggingService } from "@common/logging/logging-service";
-import { AuthService } from "@app/core/services/ui/auth.service";
-import { AppPermission } from "@app/core/enum/permission.enum";
-import { HttpErrorResponse } from "@angular/common/http";
+import { map, takeUntil } from 'rxjs/operators';
 import { TokenChangeDialogResolver } from "./token-change-dialog..resolver";
+import { ExternalTokenChangeDialogEditorModel } from "./token-change-dialog.model";
 
 @Component({
-    templateUrl: './token-Change-dialog.component.html'
+	templateUrl: './token-change-dialog.component.html'
 })
-export class TokenChangeDialogComponent extends BaseComponent implements OnInit{
-    formGroup: FormGroup
+export class TokenChangeDialogComponent extends BaseComponent implements OnInit {
+	formGroup: FormGroup
 	token: string = null;
 	isNew = true;
 	isDeleted = false;
@@ -72,9 +69,9 @@ export class TokenChangeDialogComponent extends BaseComponent implements OnInit{
 			this.editorModel = data ? new ExternalTokenChangeDialogEditorModel().fromModel(data) : new ExternalTokenChangeDialogEditorModel();
 			this.isDeleted = data ? data.isActive === IsActive.Inactive : false;
 			this.buildForm();
-		} catch (e){
+		} catch (e) {
 			console.error(e, data);
-            this.logger.error("Could not parse  Channel: " + JSON.stringify(data));
+			this.logger.error("Could not parse  Channel: " + JSON.stringify(data));
 			this.uiNotificationService.snackBarNotification(this.language.instant('COMMONS.ERRORS.DEFAULT'), SnackBarNotificationLevel.Error);
 		}
 	}
@@ -136,12 +133,12 @@ export class TokenChangeDialogComponent extends BaseComponent implements OnInit{
 		this.formService.validateAllFormFields(this.formGroup);
 	}
 
-    close(): void{
-        this.dialogRef.close(this.token != null);
+	close(): void {
+		this.dialogRef.close(this.token != null);
 	}
 
 }
 
-export class TokenChangeData{
+export class TokenChangeData {
 	id: Guid;
 }
