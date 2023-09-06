@@ -1,7 +1,6 @@
 package gr.cite.intelcomp.stiviewer.elastic.query;
 
 import gr.cite.intelcomp.stiviewer.elastic.data.IndicatorIntegerMapEntity;
-import gr.cite.intelcomp.stiviewer.service.indicatorelastic.ElasticIndicatorService;
 import gr.cite.tools.data.query.FieldResolver;
 import gr.cite.tools.elastic.configuration.ElasticProperties;
 import gr.cite.tools.elastic.mapper.FieldBasedMapper;
@@ -20,104 +19,106 @@ import java.util.*;
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class IndicatorIntegerMapQuery extends ElasticNestedQuery<IndicatorIntegerMapQuery, IndicatorIntegerMapEntity, String> {
 
-	private String nestedPath;
-	private Collection<String> keys;
+    private String nestedPath;
+    private Collection<String> keys;
 
-	public IndicatorIntegerMapQuery keys(String value) {
-		this.keys = List.of(value);
-		return this;
-	}
+    public IndicatorIntegerMapQuery keys(String value) {
+        this.keys = List.of(value);
+        return this;
+    }
 
-	public IndicatorIntegerMapQuery keys(String... value) {
-		this.keys = Arrays.asList(value);
-		return this;
-	}
+    public IndicatorIntegerMapQuery keys(String... value) {
+        this.keys = Arrays.asList(value);
+        return this;
+    }
 
-	public IndicatorIntegerMapQuery keys(Collection<String> values) {
-		this.keys = values;
-		return this;
-	}
+    public IndicatorIntegerMapQuery keys(Collection<String> values) {
+        this.keys = values;
+        return this;
+    }
 
-	@Override
-	public IndicatorIntegerMapQuery nestedPath(String nestedPath) {
-		this.nestedPath = nestedPath;
-		return this;
-	}
+    @Override
+    public IndicatorIntegerMapQuery nestedPath(String nestedPath) {
+        this.nestedPath = nestedPath;
+        return this;
+    }
 
-	public IndicatorIntegerMapQuery(
-			ElasticsearchRestTemplate elasticsearchRestTemplate,
-			ElasticIndicatorService elasticIndicatorService,
-			ElasticProperties elasticProperties) {
-		super(elasticsearchRestTemplate, elasticProperties);
-	}
+    public IndicatorIntegerMapQuery(
+            ElasticsearchRestTemplate elasticsearchRestTemplate,
+            ElasticProperties elasticProperties) {
+        super(elasticsearchRestTemplate, elasticProperties);
+    }
 
-	@Override
-	protected Class<IndicatorIntegerMapEntity> entityClass() {
-		return IndicatorIntegerMapEntity.class;
-	}
+    @Override
+    protected Class<IndicatorIntegerMapEntity> entityClass() {
+        return IndicatorIntegerMapEntity.class;
+    }
 
-	@Override
-	protected Boolean isFalseQuery() {
-		return this.isEmpty(this.keys);
-	}
+    @Override
+    protected Boolean isFalseQuery() {
+        return this.isEmpty(this.keys);
+    }
 
-	@Override
-	protected QueryBuilder applyAuthZ() {
-		return null;
-	}
+    @Override
+    protected QueryBuilder applyAuthZ() {
+        return null;
+    }
 
-	@Override
-	protected QueryBuilder applyFilters() {
-		List<QueryBuilder> predicates = new ArrayList<>();
-		if (keys != null) {
-			predicates.add(this.containsString(this.elasticFieldOf(IndicatorIntegerMapEntity.Fields.key), keys));
-		}
+    @Override
+    protected QueryBuilder applyFilters() {
+        List<QueryBuilder> predicates = new ArrayList<>();
+        if (keys != null) {
+            predicates.add(this.containsString(this.elasticFieldOf(IndicatorIntegerMapEntity.Fields.key), keys));
+        }
 
-		if (predicates.size() > 0) {
-			return this.and(predicates);
-		} else {
-			return null;
-		}
-	}
+        if (!predicates.isEmpty()) {
+            return this.and(predicates);
+        } else {
+            return null;
+        }
+    }
 
-	@Override
-	public IndicatorIntegerMapEntity convert(Map<String, Object> rawData, Set<String> columns) {
-		IndicatorIntegerMapEntity mocDoc = new IndicatorIntegerMapEntity();
-		if (columns.contains(IndicatorIntegerMapEntity.Fields.key)) mocDoc.setKey(FieldBasedMapper.shallowSafeConversion(rawData.get(IndicatorIntegerMapEntity.Fields.key), String.class));
-		if (columns.contains(IndicatorIntegerMapEntity.Fields.val)) mocDoc.setVal(FieldBasedMapper.shallowSafeConversion(rawData.get(IndicatorIntegerMapEntity.Fields.val), Integer.class));
-		return mocDoc;
-	}
+    @Override
+    public IndicatorIntegerMapEntity convert(Map<String, Object> rawData, Set<String> columns) {
+        IndicatorIntegerMapEntity mocDoc = new IndicatorIntegerMapEntity();
+        if (columns.contains(IndicatorIntegerMapEntity.Fields.key))
+            mocDoc.setKey(FieldBasedMapper.shallowSafeConversion(rawData.get(IndicatorIntegerMapEntity.Fields.key), String.class));
+        if (columns.contains(IndicatorIntegerMapEntity.Fields.val))
+            mocDoc.setVal(FieldBasedMapper.shallowSafeConversion(rawData.get(IndicatorIntegerMapEntity.Fields.val), Integer.class));
+        return mocDoc;
+    }
 
-	@Override
-	protected ElasticField fieldNameOf(FieldResolver item) {
-		if (item.match(IndicatorIntegerMapEntity.Fields.key)) return this.elasticFieldOf(IndicatorIntegerMapEntity.Fields.key);
-		else if (item.match(IndicatorIntegerMapEntity.Fields.val)) return this.elasticFieldOf(IndicatorIntegerMapEntity.Fields.val);
-		else return null;
-	}
+    @Override
+    protected ElasticField fieldNameOf(FieldResolver item) {
+        if (item.match(IndicatorIntegerMapEntity.Fields.key))
+            return this.elasticFieldOf(IndicatorIntegerMapEntity.Fields.key);
+        else if (item.match(IndicatorIntegerMapEntity.Fields.val))
+            return this.elasticFieldOf(IndicatorIntegerMapEntity.Fields.val);
+        else return null;
+    }
 
-	@Override
-	protected String getNestedPath() {
-		return this.nestedPath;
-	}
+    @Override
+    protected String getNestedPath() {
+        return this.nestedPath;
+    }
 
-	@Override
-	protected Boolean supportsMetricAggregate(MetricAggregateType metricAggregateType, FieldResolver item) {
-		if (item.match(IndicatorIntegerMapEntity.Fields.val)) return true;
-		return false;
-	}
+    @Override
+    protected Boolean supportsMetricAggregate(MetricAggregateType metricAggregateType, FieldResolver item) {
+        return item.match(IndicatorIntegerMapEntity.Fields.val);
+    }
 
-	@Override
-	protected String toKey(String key) {
-		return key;
-	}
+    @Override
+    protected String toKey(String key) {
+        return key;
+    }
 
-	@Override
-	protected ElasticField getKeyField() {
-		return this.elasticFieldOf(IndicatorIntegerMapEntity.Fields.key);
-	}
+    @Override
+    protected ElasticField getKeyField() {
+        return this.elasticFieldOf(IndicatorIntegerMapEntity.Fields.key);
+    }
 
-	@Override
-	protected ElasticNestedQuery<?, ?, ?> nestedQueryOf(FieldResolver item) {
-		return null;
-	}
+    @Override
+    protected ElasticNestedQuery<?, ?, ?> nestedQueryOf(FieldResolver item) {
+        return null;
+    }
 }

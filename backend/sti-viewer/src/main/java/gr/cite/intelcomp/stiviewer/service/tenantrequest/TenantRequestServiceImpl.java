@@ -4,7 +4,6 @@ import gr.cite.commons.web.authz.service.AuthorizationService;
 import gr.cite.intelcomp.stiviewer.authorization.AuthorizationFlags;
 import gr.cite.intelcomp.stiviewer.authorization.Permission;
 import gr.cite.intelcomp.stiviewer.common.JsonHandlingService;
-import gr.cite.intelcomp.stiviewer.common.enums.ContactInfoType;
 import gr.cite.intelcomp.stiviewer.common.enums.IsActive;
 import gr.cite.intelcomp.stiviewer.common.enums.TenantRequestStatus;
 import gr.cite.intelcomp.stiviewer.common.enums.UserContactType;
@@ -209,7 +208,7 @@ public class TenantRequestServiceImpl implements TenantRequestService {
 		tenant.setName(model.getTenantName());
 
 		try {
-			this.tenantScope.setTempTenant(this.globalEntityManager, tenant.getId(), tenant.getCode());
+			this.tenantScope.setTempTenant(this.globalEntityManager, tenant.getId());
 
 			this.entityManager.persist(tenant);
 

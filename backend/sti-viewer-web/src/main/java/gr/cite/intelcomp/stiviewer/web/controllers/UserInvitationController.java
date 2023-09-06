@@ -1,6 +1,5 @@
 package gr.cite.intelcomp.stiviewer.web.controllers;
 
-import gr.cite.commons.web.oidc.principal.extractor.ClaimExtractor;
 import gr.cite.intelcomp.stiviewer.audit.AuditableAction;
 import gr.cite.intelcomp.stiviewer.authorization.AuthorizationFlags;
 import gr.cite.intelcomp.stiviewer.data.UserInvitationEntity;
@@ -37,82 +36,80 @@ import java.util.*;
 @RequestMapping(path = "api/user-invitation")
 public class UserInvitationController {
 
-	private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(UserInvitationController.class));
+    private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(UserInvitationController.class));
 
-	private final BuilderFactory builderFactory;
-	private final AuditService auditService;
-	private final UserInvitationService userInvitationService;
-	private final CensorFactory censorFactory;
-	private final QueryFactory queryFactory;
-	private final MessageSource messageSource;
-	private final ClaimExtractor claimExtractor;
+    private final BuilderFactory builderFactory;
+    private final AuditService auditService;
+    private final UserInvitationService userInvitationService;
+    private final CensorFactory censorFactory;
+    private final QueryFactory queryFactory;
+    private final MessageSource messageSource;
 
-	@Autowired
-	public UserInvitationController(
-			BuilderFactory builderFactory,
-			AuditService auditService,
-			UserInvitationService userInvitationService,
-			CensorFactory censorFactory,
-			QueryFactory queryFactory,
-			MessageSource messageSource,
-			ClaimExtractor claimExtractor) {
-		this.builderFactory = builderFactory;
-		this.auditService = auditService;
-		this.userInvitationService = userInvitationService;
-		this.censorFactory = censorFactory;
-		this.queryFactory = queryFactory;
-		this.messageSource = messageSource;
-		this.claimExtractor = claimExtractor;
-	}
+    @Autowired
+    public UserInvitationController(
+            BuilderFactory builderFactory,
+            AuditService auditService,
+            UserInvitationService userInvitationService,
+            CensorFactory censorFactory,
+            QueryFactory queryFactory,
+            MessageSource messageSource) {
+        this.builderFactory = builderFactory;
+        this.auditService = auditService;
+        this.userInvitationService = userInvitationService;
+        this.censorFactory = censorFactory;
+        this.queryFactory = queryFactory;
+        this.messageSource = messageSource;
+    }
 
-	@PostMapping("query")
-	public QueryResult<UserInvitation> Query(@RequestBody UserInvitationLookup lookup) throws MyApplicationException, MyForbiddenException {
-		logger.debug("querying {}", UserInvitation.class.getSimpleName());
-		this.censorFactory.censor(UserInvitationCensor.class).censor(lookup.getProject());
-		UserInvitationQuery query = lookup.enrich(this.queryFactory);
-		List<UserInvitationEntity> data = query.collectAs(lookup.getProject());
-		List<UserInvitation> models = this.builderFactory.builder(UserInvitationBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(lookup.getProject(), data);
-		long count = (lookup.getMetadata() != null && lookup.getMetadata().getCountAll()) ? query.count() : models.size();
+    @PostMapping("query")
+    public QueryResult<UserInvitation> Query(@RequestBody UserInvitationLookup lookup) throws MyApplicationException, MyForbiddenException {
+        logger.debug("querying {}", UserInvitation.class.getSimpleName());
+        this.censorFactory.censor(UserInvitationCensor.class).censor(lookup.getProject());
+        UserInvitationQuery query = lookup.enrich(this.queryFactory);
+        List<UserInvitationEntity> data = query.collectAs(lookup.getProject());
+        List<UserInvitation> models = this.builderFactory.builder(UserInvitationBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(lookup.getProject(), data);
+        long count = (lookup.getMetadata() != null && lookup.getMetadata().getCountAll()) ? query.count() : models.size();
 
-		this.auditService.track(AuditableAction.User_Invitation_Query, "lookup", lookup);
-		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
+        this.auditService.track(AuditableAction.User_Invitation_Query, "lookup", lookup);
+        //this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
 
-		return new QueryResult<>(models, count);
-	}
+        return new QueryResult<>(models, count);
+    }
 
-	@GetMapping("{id}")
-	@Transactional
-	public UserInvitation Get(@PathVariable("id") UUID id, FieldSet fieldSet, Locale locale) throws MyApplicationException, MyForbiddenException, MyNotFoundException {
-		logger.debug(new MapLogEntry("retrieving" + UserInvitation.class.getSimpleName()).And("id", id).And("fields", fieldSet));
+    @GetMapping("{id}")
+    @Transactional
+    public UserInvitation Get(@PathVariable("id") UUID id, FieldSet fieldSet, Locale locale) throws MyApplicationException, MyForbiddenException, MyNotFoundException {
+        logger.debug(new MapLogEntry("retrieving" + UserInvitation.class.getSimpleName()).And("id", id).And("fields", fieldSet));
 
-		this.censorFactory.censor(UserInvitationCensor.class).censor(fieldSet);
+        this.censorFactory.censor(UserInvitationCensor.class).censor(fieldSet);
 
-		UserInvitationQuery query = this.queryFactory.query(UserInvitationQuery.class).ids(id);
-		UserInvitation model = this.builderFactory.builder(UserInvitationBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(fieldSet, query.firstAs(fieldSet));
-		if (model == null) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{id, UserInvitation.class.getSimpleName()}, LocaleContextHolder.getLocale()));
+        UserInvitationQuery query = this.queryFactory.query(UserInvitationQuery.class).ids(id);
+        UserInvitation model = this.builderFactory.builder(UserInvitationBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(fieldSet, query.firstAs(fieldSet));
+        if (model == null)
+            throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{id, UserInvitation.class.getSimpleName()}, LocaleContextHolder.getLocale()));
 
-		this.auditService.track(AuditableAction.User_Invitation_Lookup, Map.ofEntries(
-				new AbstractMap.SimpleEntry<String, Object>("id", id),
-				new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
-		));
-		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
+        this.auditService.track(AuditableAction.User_Invitation_Lookup, Map.ofEntries(
+                new AbstractMap.SimpleEntry<String, Object>("id", id),
+                new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
+        ));
+        //this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
 
-		return model;
-	}
+        return model;
+    }
 
-	@PostMapping("persist")
-	@Transactional
-	public UserInvitation Persist(@MyValidate @RequestBody UserInvitationPersist model, FieldSet fieldSet) throws MyApplicationException, MyForbiddenException, MyNotFoundException, InvalidApplicationException {
-		logger.debug(new MapLogEntry("persisting" + UserInvitation.class.getSimpleName()).And("model", model).And("fieldSet", fieldSet));
+    @PostMapping("persist")
+    @Transactional
+    public UserInvitation Persist(@MyValidate @RequestBody UserInvitationPersist model, FieldSet fieldSet) throws MyApplicationException, MyForbiddenException, MyNotFoundException, InvalidApplicationException {
+        logger.debug(new MapLogEntry("persisting" + UserInvitation.class.getSimpleName()).And("model", model).And("fieldSet", fieldSet));
 
-		UserInvitation persisted = this.userInvitationService.persist(model, fieldSet);
+        UserInvitation persisted = this.userInvitationService.persist(model, fieldSet);
 
-		this.auditService.track(AuditableAction.User_Invitation_Persist, Map.ofEntries(
-				new AbstractMap.SimpleEntry<String, Object>("model", model),
-				new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
-		));
-		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
-		return persisted;
-	}
+        this.auditService.track(AuditableAction.User_Invitation_Persist, Map.ofEntries(
+                new AbstractMap.SimpleEntry<String, Object>("model", model),
+                new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
+        ));
+        //this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
+        return persisted;
+    }
 
 }

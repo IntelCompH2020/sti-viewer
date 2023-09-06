@@ -76,6 +76,7 @@ import javax.validation.constraints.NotNull;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.time.ZonedDateTime;
@@ -148,8 +149,7 @@ public class IndicatorPointServiceImpl implements IndicatorPointService {
 		IndicatorPointEntity data = this.build(indicatorId, indicatorConfigItem, model, Date.from(Instant.now()));
 
 		data = elasticsearchTemplate.save(data, IndexCoordinates.of(this.elasticIndicatorService.getIndexName(indicatorId)));
-		IndicatorPoint persisted = this.builderFactory.builder(IndicatorPointBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(BaseFieldSet.build(fields, IndicatorPoint._id), data);
-		return persisted;
+        return this.builderFactory.builder(IndicatorPointBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(BaseFieldSet.build(fields, IndicatorPoint._id), data);
 	}
 
 	public void persist(UUID indicatorId, List<IndicatorPointPersist> models) throws MyForbiddenException, MyValidationException, MyApplicationException, MyNotFoundException, InvalidApplicationException, IOException {
@@ -180,7 +180,7 @@ public class IndicatorPointServiceImpl implements IndicatorPointService {
 
 	private void saveToElasticInBatches(List<IndicatorPointEntity> items, IndexCoordinates indexCoordinates) {
 		int batchingFactor = this.indicatorPointProperties.getIndicatorPointImportBatchSize();
-		int batch = (int) (items.size() / batchingFactor);
+		int batch = items.size() / batchingFactor;
 		int remaining = items.size() - (batch * batchingFactor);
 		for (int i = 0; i < batch; i += 1) {
 			int from = i * batchingFactor;
@@ -224,7 +224,6 @@ public class IndicatorPointServiceImpl implements IndicatorPointService {
 		if (model.getProperties() != null && indicatorConfigItem.getExtraProps() != null) {
 			this.validationService.checkIfMissingRequiredFields(model.getProperties(), indicatorConfigItem.getExtraProps());
 			Map<String, Object> properties = new HashMap<>();
-			List<Map.Entry<String, List<String>>> validationErrors = new ArrayList<>();
 			for (Map.Entry<String, Object> prop : model.getProperties().entrySet()) {
 				if (indicatorConfigItem.getExtraProps().containsKey(prop.getKey())) {
 					FieldEntity fieldEntity = indicatorConfigItem.getExtraProps().get(prop.getKey());
@@ -232,63 +231,35 @@ public class IndicatorPointServiceImpl implements IndicatorPointService {
 					switch (fieldEntity.getBaseType()) {
 						case String:
 						case Keyword:
-							try {
-								if (prop.getValue() == null) {
-									properties.put(prop.getKey(), (Map<String, Double>) null);
-								} else {
-									properties.put(prop.getKey(), String.class.cast(prop.getValue()));
-								}
-							} catch (Exception e) {
-								throw e;
-							}
-							break;
+                        case Integer:
+                        case IntegerArray:
+                        case DoubleArray:
+                        case KeywordArray:
+                            if (prop.getValue() == null) {
+                                properties.put(prop.getKey(), null);
+                            } else {
+                                properties.put(prop.getKey(), prop.getValue());
+                            }
+                            break;
 						case Date:
 							if (prop.getValue() == null) {
-								properties.put(prop.getKey(), (Date) null);
+								properties.put(prop.getKey(), null);
 							} else {
-								ZonedDateTime zonedDateTime = ZonedDateTime.parse(String.class.cast(prop.getValue()));
+								ZonedDateTime zonedDateTime = ZonedDateTime.parse((String) prop.getValue());
 								properties.put(prop.getKey(), new Date(zonedDateTime.toInstant().toEpochMilli()));
 							}
 							break;
 						case Double:
 							if (prop.getValue() == null) {
-								properties.put(prop.getKey(), (Double) null);
+								properties.put(prop.getKey(), null);
 							} else {
-								if (prop.getValue().getClass().equals(Integer.class)) properties.put(prop.getKey(), Double.valueOf(Integer.class.cast(prop.getValue())));
-								else properties.put(prop.getKey(), Double.class.cast(prop.getValue()));
+								if (prop.getValue().getClass().equals(Integer.class)) properties.put(prop.getKey(), Double.valueOf((Integer) prop.getValue()));
+								else properties.put(prop.getKey(), prop.getValue());
 							}
 							break;
-						case Integer:
+                        case DoubleMap: {
 							if (prop.getValue() == null) {
-								properties.put(prop.getKey(), (Integer) null);
-							} else {
-								properties.put(prop.getKey(), Integer.class.cast(prop.getValue()));
-							}
-							break;
-						case IntegerArray:
-							if (prop.getValue() == null) {
-								properties.put(prop.getKey(), (List<Integer>) null);
-							} else {
-								properties.put(prop.getKey(), (List<Integer>) prop.getValue());
-							}
-							break;
-						case DoubleArray:
-							if (prop.getValue() == null) {
-								properties.put(prop.getKey(), (List<Double>) null);
-							} else {
-								properties.put(prop.getKey(), (List<Double>) prop.getValue());
-							}
-							break;
-						case KeywordArray:
-							if (prop.getValue() == null) {
-								properties.put(prop.getKey(), (List<String>) null);
-							} else {
-								properties.put(prop.getKey(), (List<String>) prop.getValue());
-							}
-							break;
-						case DoubleMap: {
-							if (prop.getValue() == null) {
-								properties.put(prop.getKey(), (IndicatorDoubleMapEntity) null);
+								properties.put(prop.getKey(), null);
 							} else {
 								List<IndicatorDoubleMapEntity> values = new ArrayList<>();
 								for (Map.Entry<String, Double> textItem : ((HashMap<String, Double>) prop.getValue()).entrySet()) {
@@ -303,7 +274,7 @@ public class IndicatorPointServiceImpl implements IndicatorPointService {
 						}
 						case IntegerMap: {
 							if (prop.getValue() == null) {
-								properties.put(prop.getKey(), (IndicatorIntegerMapEntity) null);
+								properties.put(prop.getKey(), null);
 							} else {
 								List<IndicatorIntegerMapEntity> values = new ArrayList<>();
 								for (Map.Entry<String, Integer> textItem : ((HashMap<String, Integer>) prop.getValue()).entrySet()) {
@@ -322,7 +293,7 @@ public class IndicatorPointServiceImpl implements IndicatorPointService {
 				}
 			}
 			this.validationService.validateModel();
-			if (properties.size() > 0) data.setProperties(properties);
+			if (!properties.isEmpty()) data.setProperties(properties);
 		}
 		return data;
 	}
@@ -332,8 +303,7 @@ public class IndicatorPointServiceImpl implements IndicatorPointService {
 
 		AggregateResponse aggregateResponse = this.report(indicatorId, lookup);
 
-		AggregateResponseModel model = this.builderFactory.builder(AggregateResponseModelBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicatorOrIndicatorAccess).build(BaseFieldSet.build(fields, IndicatorPoint._id), aggregateResponse);
-		return model;
+        return this.builderFactory.builder(AggregateResponseModelBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicatorOrIndicatorAccess).build(BaseFieldSet.build(fields, IndicatorPoint._id), aggregateResponse);
 	}
 
 	public AggregateResponseModel reportPublic(@NotNull UUID indicatorId, @NotNull PublicIndicatorPointReportLookup lookup, FieldSet fields) throws InvalidApplicationException, NoSuchAlgorithmException, OperationNotSupportedException {
@@ -345,9 +315,9 @@ public class IndicatorPointServiceImpl implements IndicatorPointService {
 		TenantEntity tenant = this.entityManager.find(TenantEntity.class, tokenEntity.getTenantId());
 		if (tenant == null) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{tokenEntity.getTenantId(), TenantEntity.class.getSimpleName()}, LocaleContextHolder.getLocale()));
 		
-		AggregateResponseModel model = null;
+		AggregateResponseModel model;
 		try {
-			this.tenantScope.setTempTenant(this.globalEntityManager, tenant.getId(), tenant.getCode());
+			this.tenantScope.setTempTenant(this.globalEntityManager, tenant.getId());
 
 			IndicatorPointQueryDefinitionEntity queryDefinitionEntity = definitionEntity.getIndicatorPointQuery(List.of(lookup.getChartId(), lookup.getDashboardId()));
 			if (queryDefinitionEntity == null)  throw new MyForbiddenException("Access is denied");
@@ -390,7 +360,7 @@ public class IndicatorPointServiceImpl implements IndicatorPointService {
 	private AggregateResponse report(IndicatorPointQuery indicatorPointQuery, IndicatorConfigItem indicatorConfigItem, IndicatorPointReportLookup lookup) {
 		boolean isRawData = lookup.getIsRawData() != null && lookup.getIsRawData();
 
-		AggregateResponse aggregateResponse = null;
+		AggregateResponse aggregateResponse;
 		if (!isRawData) {
 			AggregationQuery aggregationQuery = new AggregationQuery();
 			aggregationQuery.setMetrics(this.buildMetricsForQuery(f -> this.getIndicatorFieldBaseType(indicatorConfigItem, f), lookup.getMetrics()));
@@ -447,7 +417,7 @@ public class IndicatorPointServiceImpl implements IndicatorPointService {
 						throw new MyApplicationException("invalid type " + keyFieldBaseType);
 				}
 			}
-			HashMap keyMap = new HashMap<>();
+			HashMap<String, String> keyMap = new HashMap<>();
 			keyMap.put(keyField, keyValue);
 			AggregateResponseItem aggregateResponseItem = new AggregateResponseItem(new AggregateResponseGroup(keyMap));
 			aggregateResponseItem.getValues().add(new AggregateResponseValue(MetricAggregateType.Sum, valueField, value));
@@ -469,7 +439,6 @@ public class IndicatorPointServiceImpl implements IndicatorPointService {
 		Workbook workbook = new XSSFWorkbook();
 
 		int sheetIndex = 1;
-		gr.cite.intelcomp.stiviewer.model.elasticreport.Bucket bucket = lookup.getBucket();
 		if (lookup.getBucket() != null) {
 			if (lookup.getBucket().getType() == BucketAggregateType.Nested) {
 				gr.cite.intelcomp.stiviewer.model.elasticreport.Nested nested = (gr.cite.intelcomp.stiviewer.model.elasticreport.Nested) lookup.getBucket();
@@ -634,7 +603,7 @@ public class IndicatorPointServiceImpl implements IndicatorPointService {
 		JSONArray  metricJsonArrayBuilder = this.createJsonFromMetric(indicatorConfigItem, lookup.getMetrics(), aggregateResponse);
 		if (metricJsonArrayBuilder != null)  objectBuilder.put("metric", metricJsonArrayBuilder);
 		String jsonText = JSONValue.toJSONString(objectBuilder);
-		return jsonText.getBytes("UTF-8");
+		return jsonText.getBytes(StandardCharsets.UTF_8);
 	}
 	
 	private JSONArray createJsonFromMetric(IndicatorConfigItem indicatorConfigItem, List<gr.cite.intelcomp.stiviewer.model.elasticreport.Metric> metrics, AggregateResponse aggregateResponse) {
@@ -821,16 +790,16 @@ public class IndicatorPointServiceImpl implements IndicatorPointService {
 		switch (indicatorFieldBaseTypeFunction.apply(bucket.getField())) {
 			case DoubleMap: {
 				Nested nested = new Nested(bucket.getField());
-				nested.setMetrics(this.buildMetricsForQuery(f -> this.getDoubleMapFieldBaseType(f), bucket.getMetrics()));
-				nested.setBucketAggregate(this.buildBucketAggregate(f -> this.getDoubleMapFieldBaseType(f), bucket.getBucket()));
+				nested.setMetrics(this.buildMetricsForQuery(this::getDoubleMapFieldBaseType, bucket.getMetrics()));
+				nested.setBucketAggregate(this.buildBucketAggregate(this::getDoubleMapFieldBaseType, bucket.getBucket()));
 				nested.setHaving(this.buildHaving(bucket.getHaving()));
 				nested.setBucketSort(this.buildMetricSort(bucket.getBucketSort()));
 				return nested;
 			}
 			case IntegerMap: {
 				Nested nested = new Nested(bucket.getField());
-				nested.setMetrics(this.buildMetricsForQuery(f -> this.getIntegerMapFieldBaseType(f), bucket.getMetrics()));
-				nested.setBucketAggregate(this.buildBucketAggregate(f -> this.getIntegerMapFieldBaseType(f), bucket.getBucket()));
+				nested.setMetrics(this.buildMetricsForQuery(this::getIntegerMapFieldBaseType, bucket.getMetrics()));
+				nested.setBucketAggregate(this.buildBucketAggregate(this::getIntegerMapFieldBaseType, bucket.getBucket()));
 				nested.setHaving(this.buildHaving(bucket.getHaving()));
 				nested.setBucketSort(this.buildMetricSort(bucket.getBucketSort()));
 				return nested;
@@ -862,18 +831,17 @@ public class IndicatorPointServiceImpl implements IndicatorPointService {
 		}
 		DateHistogram dateHistogram = null;
 		if (bucket.getDateHistogramSource() != null) {
-			switch (indicatorFieldBaseTypeFunction.apply(bucket.getDateHistogramSource().getField())) {
-				case Date:
-					dateHistogram = new DateHistogram(bucket.getDateHistogramSource().getField(), bucket.getDateHistogramSource().getInterval());
-					dateHistogram.setMetrics(this.buildMetricsForQuery(indicatorFieldBaseTypeFunction, bucket.getMetrics()));
-					dateHistogram.setBucketAggregate(this.buildBucketAggregate(indicatorFieldBaseTypeFunction, bucket.getBucket()));
-					dateHistogram.setHaving(this.buildHaving(bucket.getHaving()));
-					dateHistogram.setBucketSort(this.buildMetricSort(bucket.getBucketSort()));
-					if (bucket.getDateHistogramSource().getOrder() != null) dateHistogram.setOrder(bucket.getDateHistogramSource().getOrder());
-					break;
-				default:
-					throw new MyApplicationException("invalid date bucket field " + bucket.getDateHistogramSource().getField());
-			}
+            if (Objects.requireNonNull(indicatorFieldBaseTypeFunction.apply(bucket.getDateHistogramSource().getField())) == IndicatorFieldBaseType.Date) {
+                dateHistogram = new DateHistogram(bucket.getDateHistogramSource().getField(), bucket.getDateHistogramSource().getInterval());
+                dateHistogram.setMetrics(this.buildMetricsForQuery(indicatorFieldBaseTypeFunction, bucket.getMetrics()));
+                dateHistogram.setBucketAggregate(this.buildBucketAggregate(indicatorFieldBaseTypeFunction, bucket.getBucket()));
+                dateHistogram.setHaving(this.buildHaving(bucket.getHaving()));
+                dateHistogram.setBucketSort(this.buildMetricSort(bucket.getBucketSort()));
+                if (bucket.getDateHistogramSource().getOrder() != null)
+                    dateHistogram.setOrder(bucket.getDateHistogramSource().getOrder());
+            } else {
+                throw new MyApplicationException("invalid date bucket field " + bucket.getDateHistogramSource().getField());
+            }
 		}
 
 		Composite composite = new Composite(sources, bucket.getAfterKey());
@@ -887,19 +855,17 @@ public class IndicatorPointServiceImpl implements IndicatorPointService {
 
 	private BucketAggregate buildDateHistogramBucketAggregate(Function<String, IndicatorFieldBaseType> indicatorFieldBaseTypeFunction, gr.cite.intelcomp.stiviewer.model.elasticreport.DateHistogram bucket) {
 		if (bucket == null) return null;
-		switch (indicatorFieldBaseTypeFunction.apply(bucket.getField())) {
-			case Date:
-				DateHistogram dateHistogram = new DateHistogram(bucket.getField(), bucket.getInterval());
-				dateHistogram.setMetrics(this.buildMetricsForQuery(indicatorFieldBaseTypeFunction, bucket.getMetrics()));
-				dateHistogram.setBucketAggregate(this.buildBucketAggregate(indicatorFieldBaseTypeFunction, bucket.getBucket()));
-				dateHistogram.setHaving(this.buildHaving(bucket.getHaving()));
-				dateHistogram.setBucketSort(this.buildMetricSort(bucket.getBucketSort()));
-				if (bucket.getOrder() != null) dateHistogram.setOrder(bucket.getOrder());
-				return dateHistogram;
-			default:
-				throw new MyApplicationException("invalid date bucket field " + bucket.getField());
-		}
-	}
+        if (Objects.requireNonNull(indicatorFieldBaseTypeFunction.apply(bucket.getField())) == IndicatorFieldBaseType.Date) {
+            DateHistogram dateHistogram = new DateHistogram(bucket.getField(), bucket.getInterval());
+            dateHistogram.setMetrics(this.buildMetricsForQuery(indicatorFieldBaseTypeFunction, bucket.getMetrics()));
+            dateHistogram.setBucketAggregate(this.buildBucketAggregate(indicatorFieldBaseTypeFunction, bucket.getBucket()));
+            dateHistogram.setHaving(this.buildHaving(bucket.getHaving()));
+            dateHistogram.setBucketSort(this.buildMetricSort(bucket.getBucketSort()));
+            if (bucket.getOrder() != null) dateHistogram.setOrder(bucket.getOrder());
+            return dateHistogram;
+        }
+        throw new MyApplicationException("invalid date bucket field " + bucket.getField());
+    }
 
 	private List<Metric> buildMetricsForQuery(Function<String, IndicatorFieldBaseType> indicatorFieldBaseTypeFunction, List<gr.cite.intelcomp.stiviewer.model.elasticreport.Metric> metricModels) {
 		if (metricModels == null) return null;

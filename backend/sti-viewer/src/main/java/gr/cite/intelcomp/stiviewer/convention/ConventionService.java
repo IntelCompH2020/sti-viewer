@@ -8,35 +8,37 @@ import java.util.UUID;
 import java.util.function.Function;
 
 public interface ConventionService {
-	Boolean isValidId(Integer id);
+    Boolean isValidId(Integer id);
 
-	Boolean isValidGuid(UUID guid);
+    Boolean isValidGuid(UUID guid);
 
-	Boolean isValidUUID(String str);
-	Boolean isValidEmail(String str);
-	UUID parseUUIDSafe(String str);
+    Boolean isValidUUID(String str);
 
-	Boolean isValidHash(String hash);
+    Boolean isValidEmail(String str);
 
-	String hashValue(Object value) throws MyApplicationException;
+    UUID parseUUIDSafe(String str);
 
-	String limit(String text, int maxLength);
+    Boolean isValidHash(String hash);
 
-	String truncate(String text, int maxLength);
+    String hashValue(Object value) throws MyApplicationException;
 
-	UUID getEmptyUUID();
+    String limit(String text, int maxLength);
 
-	boolean isNullOrEmpty(String value);
+    String truncate(String text, int maxLength);
 
-	boolean isListNullOrEmpty(List value);
+    UUID getEmptyUUID();
 
-	String stringEmpty();
+    boolean isNullOrEmpty(String value);
 
-	String asPrefix(String name);
+    boolean isListNullOrEmpty(List<?> value);
 
-	String asIndexerPrefix(String part);
+    String stringEmpty();
 
-	String asIndexer(String... names);
+    String asPrefix(String name);
 
-	<K, V> Map<K, List<V>> toDictionaryOfList(List<V> items, Function<V, K> keySelector);
+    String asIndexerPrefix(String part);
+
+    String asIndexer(String... names);
+
+    <K, V> Map<K, List<V>> toDictionaryOfList(List<V> items, Function<V, K> keySelector);
 }

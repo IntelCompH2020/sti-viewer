@@ -8,7 +8,6 @@ import gr.cite.intelcomp.stiviewer.common.scope.tenant.TenantScope;
 import gr.cite.intelcomp.stiviewer.data.DataGroupRequestEntity;
 import gr.cite.intelcomp.stiviewer.data.ScheduledEventEntity;
 import gr.cite.intelcomp.stiviewer.data.TenantEntity;
-import gr.cite.intelcomp.stiviewer.errorcode.ErrorThesaurusProperties;
 import gr.cite.intelcomp.stiviewer.eventscheduler.processing.EventProcessingStatus;
 import gr.cite.intelcomp.stiviewer.model.Tenant;
 import gr.cite.intelcomp.stiviewer.query.DataGroupRequestQuery;
@@ -22,7 +21,6 @@ import gr.cite.tools.logging.LoggerService;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -40,22 +38,16 @@ public class CreateDataGroupScheduledEventHandlerImpl implements CreateDataGroup
 	private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(CreateDataGroupScheduledEventHandlerImpl.class));
 	private final JsonHandlingService jsonHandlingService;
 	protected final ApplicationContext applicationContext;
-	private final ErrorThesaurusProperties errors;
-	private final MessageSource messageSource;
 
 	@PersistenceContext
 	public EntityManager entityManager;
 
 	public CreateDataGroupScheduledEventHandlerImpl(
 			JsonHandlingService jsonHandlingService,
-			ApplicationContext applicationContext,
-			ErrorThesaurusProperties errors,
-			MessageSource messageSource
+			ApplicationContext applicationContext
 	) {
 		this.jsonHandlingService = jsonHandlingService;
 		this.applicationContext = applicationContext;
-		this.errors = errors;
-		this.messageSource = messageSource;
 	}
 
 
@@ -63,11 +55,11 @@ public class CreateDataGroupScheduledEventHandlerImpl implements CreateDataGroup
 	public EventProcessingStatus handle(ScheduledEventEntity scheduledEvent) {
 		CreateDataGroupScheduledEventData eventData = this.jsonHandlingService.fromJsonSafe(CreateDataGroupScheduledEventData.class, scheduledEvent.getData());
 		if (eventData == null) return EventProcessingStatus.Postponed;
-		EventProcessingStatus status = EventProcessingStatus.Error;
+		EventProcessingStatus status;
 
 		EntityManager entityManager = null;
 		EntityTransaction transaction = null;
-		try (FakeRequestScope fakeRequestScope = new FakeRequestScope()) {
+		try (FakeRequestScope ignored = new FakeRequestScope()) {
 			try {
 				EntityManagerFactory entityManagerFactory = this.applicationContext.getBean(EntityManagerFactory.class);
 				entityManager = entityManagerFactory.createEntityManager();
@@ -87,13 +79,11 @@ public class CreateDataGroupScheduledEventHandlerImpl implements CreateDataGroup
 						TenantEntity tenant = queryFactory.query(TenantQuery.class).ids(dataGroupRequest.getTenantId()).firstAs(new BaseFieldSet().ensure(Tenant._id).ensure(Tenant._code));
 						if (tenant == null) {
 							logger.error("missing tenant from event message");
-							status = EventProcessingStatus.Error;
 							throw new MyApplicationException("missing tenant from event message");
 						}
 						scope.setTenant(dataGroupRequest.getTenantId(), tenant.getCode());
 					} else if (scope.isMultitenant()) {
 						logger.error("missing tenant from event message");
-						status = EventProcessingStatus.Error;
 						throw new MyApplicationException("missing tenant from event message");
 
 					}
@@ -116,7 +106,6 @@ public class CreateDataGroupScheduledEventHandlerImpl implements CreateDataGroup
 
 					} catch (Exception e) {
 						transaction.rollback();
-						status = EventProcessingStatus.Error;
 						throw e;
 					}
 				} else {
@@ -126,18 +115,18 @@ public class CreateDataGroupScheduledEventHandlerImpl implements CreateDataGroup
 
 				transaction.commit();
 			} catch (OptimisticLockException ex) {
-				this.logger.debug("Concurrency exception getting scheduled event. Skipping: {} ", ex.getMessage());
+				logger.debug("Concurrency exception getting scheduled event. Skipping: {} ", ex.getMessage());
 				if (transaction != null) transaction.rollback();
 				status = EventProcessingStatus.Error;
 			} catch (Exception ex) {
-				this.logger.error("Problem getting scheduled event. Skipping: {}", ex.getMessage(), ex);
+				logger.error("Problem getting scheduled event. Skipping: {}", ex.getMessage(), ex);
 				if (transaction != null) transaction.rollback();
 				status = EventProcessingStatus.Error;
 			} finally {
 				if (entityManager != null) entityManager.close();
 			}
 		} catch (Exception ex) {
-			this.logger.error("Problem getting scheduled event. Skipping: {}", ex.getMessage(), ex);
+			logger.error("Problem getting scheduled event. Skipping: {}", ex.getMessage(), ex);
 			status = EventProcessingStatus.Error;
 		}
 		return status;
@@ -152,7 +141,7 @@ public class CreateDataGroupScheduledEventHandlerImpl implements CreateDataGroup
 		try {
 			for (DataGroupRequestEntity item : dataGroupRequests) {
 				TenantEntity tenant = queryFactory.query(TenantQuery.class).ids(dataGroupRequest.getTenantId()).firstAs(new BaseFieldSet().ensure(Tenant._id).ensure(Tenant._code));
-				scope.setTempTenant(this.entityManager, tenant.getId(), tenant.getCode());
+				scope.setTempTenant(this.entityManager, tenant.getId());
 
 				item.setStatus(status);
 				item.setUpdatedAt(Instant.now());

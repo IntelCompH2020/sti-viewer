@@ -11,74 +11,80 @@ import org.springframework.web.context.annotation.RequestScope;
 import javax.management.InvalidApplicationException;
 import javax.persistence.EntityManager;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Component
 @RequestScope
 public class TenantScope {
-	public static final String TenantReplaceParameter = "::TenantCode::";
-	public static final String TenantCodesClaimName = "TenantCodes";
-	public static final String TenantClaimName = "x-tenant";
+    public static final String TenantReplaceParameter = "::TenantCode::";
+    public static final String TenantCodesClaimName = "TenantCodes";
+    public static final String TenantClaimName = "x-tenant";
 
-	private MultitenancyProperties multitenancy;
-	private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(TenantScope.class));
-	private UUID tenant = null;
-	private String tenantCode = null;
-	private UUID initialTenant = null;
-	private String initialTenantCode = null;
+    private final MultitenancyProperties multitenancy;
+    private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(TenantScope.class));
+    private final AtomicReference<UUID> tenant = new AtomicReference<>();
+    private final AtomicReference<String> tenantCode = new AtomicReference<>();
+    private final AtomicReference<UUID> initialTenant = new AtomicReference<>();
+    private final AtomicReference<String> initialTenantCode = new AtomicReference<>();
 
-	@Autowired
-	public TenantScope(MultitenancyProperties multitenancy) {
-		this.multitenancy = multitenancy;
-	}
+    @Autowired
+    public TenantScope(MultitenancyProperties multitenancy) {
+        this.multitenancy = multitenancy;
+    }
 
-	public Boolean isMultitenant() {
-		return multitenancy.isMultitenant();
-	}
+    public Boolean isMultitenant() {
+        return multitenancy.isMultitenant();
+    }
 
-	public Boolean isSet() {
-		if (!this.isMultitenant()) return true;
-		return this.tenant != null;
-	}
+    public Boolean isSet() {
+        if (!this.isMultitenant())
+            return Boolean.TRUE;
+        return this.tenant.get() != null;
+    }
 
-	public UUID getTenant() throws InvalidApplicationException {
-		if (!this.isMultitenant()) return null;
-		if (this.tenant == null) throw new InvalidApplicationException("tenant not set");
-		return this.tenant;
-	}
+    public UUID getTenant() throws InvalidApplicationException {
+        if (!this.isMultitenant())
+            return null;
+        if (this.tenant.get() == null)
+            throw new InvalidApplicationException("tenant not set");
+        return this.tenant.get();
+    }
 
-	public String getTenantCode() throws InvalidApplicationException {
-		if (!this.isMultitenant()) return null;
-		if (this.tenant == null) throw new InvalidApplicationException("tenant not set");
-		return this.tenantCode;
-	}
+    public String getTenantCode() throws InvalidApplicationException {
+        if (!this.isMultitenant())
+            return null;
+        if (this.tenant.get() == null)
+            throw new InvalidApplicationException("tenant not set");
+        return this.tenantCode.get();
+    }
 
-	public void setTempTenant(EntityManager  entityManager, UUID tenant, String tenantCode) {
-		this.tenant = tenant;
+    public void setTempTenant(EntityManager entityManager, UUID tenant) {
+        this.tenant.set(tenant);
 
-		if(this.tenant != null) {
-			entityManager
-					.unwrap(Session.class)
-					.enableFilter(TenantScopedBaseEntity.tenantFilter).setParameter(TenantScopedBaseEntity.tenantFilterTenantParam, this.tenant.toString());
-		}
-	}
+        if (this.tenant.get() != null) {
+            entityManager
+                    .unwrap(Session.class)
+                    .enableFilter(TenantScopedBaseEntity.tenantFilter).setParameter(TenantScopedBaseEntity.tenantFilterTenantParam, this.tenant.get().toString());
+        }
+    }
 
-	public void removeTempTenant(EntityManager  entityManager) {
-		this.tenant = this.initialTenant;
-		this.tenantCode = this.initialTenantCode;
-		if(this.initialTenant != null) {
-			entityManager
-					.unwrap(Session.class)
-					.enableFilter(TenantScopedBaseEntity.tenantFilter).setParameter(TenantScopedBaseEntity.tenantFilterTenantParam, this.initialTenant.toString());
-		}
-	}
+    public void removeTempTenant(EntityManager entityManager) {
+        this.tenant.set(this.initialTenant.get());
+        this.tenantCode.set(this.initialTenantCode.get());
+        if (this.initialTenant.get() != null) {
+            entityManager
+                    .unwrap(Session.class)
+                    .enableFilter(TenantScopedBaseEntity.tenantFilter).setParameter(TenantScopedBaseEntity.tenantFilterTenantParam, this.initialTenant.get().toString());
+        }
+    }
 
-	public void setTenant(UUID tenant, String tenantCode) {
-		if (this.isMultitenant()) {
-			this.tenant = tenant;
-			this.initialTenant = tenant;
-			this.tenantCode = tenantCode;
-			this.initialTenantCode = tenantCode;
-		}
-	}
+    public void setTenant(UUID tenant, String tenantCode) {
+        if (this.isMultitenant()) {
+            this.tenant.set(tenant);
+            this.initialTenant.set(tenant);
+            this.tenantCode.set(tenantCode);
+            this.initialTenantCode.set(tenantCode);
+        }
+    }
 }
 

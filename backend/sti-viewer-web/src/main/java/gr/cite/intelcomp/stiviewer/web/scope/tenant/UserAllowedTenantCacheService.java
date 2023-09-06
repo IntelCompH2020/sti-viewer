@@ -14,77 +14,77 @@ import java.util.UUID;
 @Service
 public class UserAllowedTenantCacheService extends CacheService<UserAllowedTenantCacheService.UserAllowedTenantCacheValue> {
 
-	public static class UserAllowedTenantCacheValue {
+    public static class UserAllowedTenantCacheValue {
 
-		public UserAllowedTenantCacheValue() {
-		}
+        public UserAllowedTenantCacheValue() {
+        }
 
-		public UserAllowedTenantCacheValue(UUID userId, UUID tenantId, boolean isAllowed) {
-			this.userId = userId;
-			this.tenantId = tenantId;
-			this.isAllowed = isAllowed;
-		}
+        public UserAllowedTenantCacheValue(UUID userId, UUID tenantId, boolean isAllowed) {
+            this.userId = userId;
+            this.tenantId = tenantId;
+            this.isAllowed = isAllowed;
+        }
 
-		private UUID userId;
+        private UUID userId;
 
-		public UUID getUserId() {
-			return userId;
-		}
+        public UUID getUserId() {
+            return userId;
+        }
 
-		public void setUserId(UUID userId) {
-			this.userId = userId;
-		}
+        public void setUserId(UUID userId) {
+            this.userId = userId;
+        }
 
-		private UUID tenantId;
+        private UUID tenantId;
 
-		public UUID getTenantId() {
-			return tenantId;
-		}
+        public UUID getTenantId() {
+            return tenantId;
+        }
 
-		public void setTenantId(UUID tenantId) {
-			this.tenantId = tenantId;
-		}
+        public void setTenantId(UUID tenantId) {
+            this.tenantId = tenantId;
+        }
 
-		private boolean isAllowed;
+        private boolean isAllowed;
 
-		public boolean isAllowed() {
-			return isAllowed;
-		}
+        public boolean isAllowed() {
+            return isAllowed;
+        }
 
-		public void setAllowed(boolean allowed) {
-			isAllowed = allowed;
-		}
-	}
+        public void setAllowed(boolean allowed) {
+            isAllowed = allowed;
+        }
+    }
 
-	@Autowired
-	public UserAllowedTenantCacheService(UserAllowedTenantCacheOptions options) {
-		super(options);
-	}
+    @Autowired
+    public UserAllowedTenantCacheService(UserAllowedTenantCacheOptions options) {
+        super(options);
+    }
 
-	@EventListener
-	public void handleUserRemovedFromTenantEvent(UserRemovedFromTenantEvent event) {
-		this.evict(this.buildKey(event.getUserId(), event.getTenantId()));
-	}
+    @EventListener
+    public void handleUserRemovedFromTenantEvent(UserRemovedFromTenantEvent event) {
+        this.evict(this.buildKey(event.getUserId(), event.getTenantId()));
+    }
 
-	@EventListener
-	public void handleUserAddedToTenantEvent(UserAddedToTenantEvent event) {
-		this.evict(this.buildKey(event.getUserId(), event.getTenantId()));
-	}
+    @EventListener
+    public void handleUserAddedToTenantEvent(UserAddedToTenantEvent event) {
+        this.evict(this.buildKey(event.getUserId(), event.getTenantId()));
+    }
 
-	@Override
-	protected Class<UserAllowedTenantCacheValue> valueClass() {
-		return UserAllowedTenantCacheValue.class;
-	}
+    @Override
+    protected Class<UserAllowedTenantCacheValue> valueClass() {
+        return UserAllowedTenantCacheValue.class;
+    }
 
-	@Override
-	public String keyOf(UserAllowedTenantCacheValue value) {
-		return this.buildKey(value.getUserId(), value.getTenantId());
-	}
+    @Override
+    public String keyOf(UserAllowedTenantCacheValue value) {
+        return this.buildKey(value.getUserId(), value.getTenantId());
+    }
 
-	public String buildKey(UUID userId, UUID tenantId) {
-		return this.generateKey(new HashMap<>() {{
-			put("$user_id$", userId.toString().toLowerCase(Locale.ROOT));
-			put("$tenant_id$", tenantId.toString().toLowerCase(Locale.ROOT));
-		}});
-	}
+    public String buildKey(UUID userId, UUID tenantId) {
+        HashMap<String, String> keyParts = new HashMap<>();
+        keyParts.put("$user_id$", userId.toString().toLowerCase(Locale.ROOT));
+        keyParts.put("$tenant_id$", tenantId.toString().toLowerCase(Locale.ROOT));
+        return this.generateKey(keyParts);
+    }
 }

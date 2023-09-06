@@ -14,63 +14,64 @@ import java.util.UUID;
 @Service
 public class TenantByIdCacheService extends CacheService<TenantByIdCacheService.TenantByIdCacheValue> {
 
-	public static class TenantByIdCacheValue {
+    public static class TenantByIdCacheValue {
 
-		public TenantByIdCacheValue() {
-		}
+        public TenantByIdCacheValue() {
+        }
 
-		public TenantByIdCacheValue(String tenantCode, UUID tenantId) {
-			this.tenantCode = tenantCode;
-			this.tenantId = tenantId;
-		}
+        public TenantByIdCacheValue(String tenantCode, UUID tenantId) {
+            this.tenantCode = tenantCode;
+            this.tenantId = tenantId;
+        }
 
-		private String tenantCode;
+        private String tenantCode;
 
-		public String getTenantCode() {
-			return tenantCode;
-		}
+        public String getTenantCode() {
+            return tenantCode;
+        }
 
-		public void setTenantCode(String tenantCode) {
-			this.tenantCode = tenantCode;
-		}
+        public void setTenantCode(String tenantCode) {
+            this.tenantCode = tenantCode;
+        }
 
-		private UUID tenantId;
+        private UUID tenantId;
 
-		public UUID getTenantId() {
-			return tenantId;
-		}
+        public UUID getTenantId() {
+            return tenantId;
+        }
 
-		public void setTenantId(UUID tenantId) {
-			this.tenantId = tenantId;
-		}
-	}
+        public void setTenantId(UUID tenantId) {
+            this.tenantId = tenantId;
+        }
+    }
 
-	private final ConventionService conventionService;
+    private final ConventionService conventionService;
 
-	@Autowired
-	public TenantByIdCacheService(TenantByIdCacheOptions options, ConventionService conventionService) {
-		super(options);
-		this.conventionService = conventionService;
-	}
+    @Autowired
+    public TenantByIdCacheService(TenantByIdCacheOptions options, ConventionService conventionService) {
+        super(options);
+        this.conventionService = conventionService;
+    }
 
-	@EventListener
-	public void handleTenantTouchedEvent(TenantTouchedEvent event) {
-		if (!this.conventionService.isNullOrEmpty(event.getTenantCode())) this.evict(this.buildKey(event.getTenantId()));
-	}
+    @EventListener
+    public void handleTenantTouchedEvent(TenantTouchedEvent event) {
+        if (!this.conventionService.isNullOrEmpty(event.getTenantCode()))
+            this.evict(this.buildKey(event.getTenantId()));
+    }
 
-	@Override
-	protected Class<TenantByIdCacheValue> valueClass() {
-		return TenantByIdCacheValue.class;
-	}
+    @Override
+    protected Class<TenantByIdCacheValue> valueClass() {
+        return TenantByIdCacheValue.class;
+    }
 
-	@Override
-	public String keyOf(TenantByIdCacheValue value) {
-		return this.buildKey(value.getTenantId());
-	}
+    @Override
+    public String keyOf(TenantByIdCacheValue value) {
+        return this.buildKey(value.getTenantId());
+    }
 
-	public String buildKey(UUID id) {
-		return this.generateKey(new HashMap<>() {{
-			put("$tenantId$", id.toString().toLowerCase(Locale.ROOT));
-		}});
-	}
+    public String buildKey(UUID id) {
+        HashMap<String, String> keyParts = new HashMap<>();
+        keyParts.put("$tenantId$", id.toString().toLowerCase(Locale.ROOT));
+        return this.generateKey(keyParts);
+    }
 }

@@ -119,7 +119,7 @@ public class ExternalTokenServiceImpl implements ExternalTokenService {
 		
 		Boolean isUpdate = this.conventionService.isValidGuid(model.getId());
 
-		ExternalTokenEntity data = null;
+		ExternalTokenEntity data;
 		if (isUpdate) {
 			data = this.entityManager.find(ExternalTokenEntity.class, model.getId());
 			if (data == null) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{model.getId(), ExternalToken.class.getSimpleName()}, LocaleContextHolder.getLocale()));
@@ -139,7 +139,7 @@ public class ExternalTokenServiceImpl implements ExternalTokenService {
 			if (shouldChangeTenant) {
 				this.authorizationService.authorizeForce(Permission.AllowNoTenant);
 				TenantEntity tenant = this.entityManager.find(TenantEntity.class, data.getTenantId());
-				this.tenantScope.setTempTenant(this.globalEntityManager, tenant.getId(), tenant.getCode());
+				this.tenantScope.setTempTenant(this.globalEntityManager, tenant.getId());
 			}
 			this.entityManager.merge(data);
 			this.entityManager.flush();
@@ -157,7 +157,7 @@ public class ExternalTokenServiceImpl implements ExternalTokenService {
 		
 		Boolean isUpdate = this.conventionService.isValidGuid(model.getId());
 
-		ExternalTokenEntity data = null;
+		ExternalTokenEntity data;
 		if (isUpdate) {
 			data = this.entityManager.find(ExternalTokenEntity.class, model.getId());
 			if (data == null) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{model.getId(), ExternalToken.class.getSimpleName()}, LocaleContextHolder.getLocale()));
@@ -180,7 +180,7 @@ public class ExternalTokenServiceImpl implements ExternalTokenService {
 			if (shouldChangeTenant) {
 				this.authorizationService.authorizeForce(Permission.AllowNoTenant);
 				TenantEntity tenant = this.entityManager.find(TenantEntity.class, data.getTenantId());
-				this.tenantScope.setTempTenant(this.globalEntityManager, tenant.getId(), tenant.getCode());
+				this.tenantScope.setTempTenant(this.globalEntityManager, tenant.getId());
 			}
 			this.entityManager.merge(data);
 			this.entityManager.flush();
@@ -281,9 +281,9 @@ public class ExternalTokenServiceImpl implements ExternalTokenService {
 			if (shouldChangeTenant) {
 				this.authorizationService.authorizeForce(Permission.AllowNoTenant);
 				TenantEntity tenant = this.entityManager.find(TenantEntity.class, data.getTenantId());
-				this.tenantScope.setTempTenant(this.globalEntityManager, tenant.getId(), tenant.getCode());
+				this.tenantScope.setTempTenant(this.globalEntityManager, tenant.getId());
 			}
-			this.deleterFactory.deleter(ExternalTokenDeleter.class).deleteAndSaveByIds(Arrays.asList(new UUID[]{id}));
+			this.deleterFactory.deleter(ExternalTokenDeleter.class).deleteAndSaveByIds(Collections.singletonList(id));
 		} finally {
 			if (shouldChangeTenant) this.tenantScope.removeTempTenant(this.globalEntityManager);
 		}

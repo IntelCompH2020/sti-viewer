@@ -44,98 +44,99 @@ import java.util.Map;
 @RequestMapping(path = "api/user-contact-info")
 public class UserContactInfoController {
 
-	private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(IndicatorController.class));
+    private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(UserContactInfoController.class));
 
-	private final BuilderFactory builderFactory;
-	private final AuditService auditService;
-	private final UserContactInfoService contactInfoService;
-	private final CensorFactory censorFactory;
-	private final QueryFactory queryFactory;
-	private final MessageSource messageSource;
-	private final ClaimExtractor claimExtractor;
+    private final BuilderFactory builderFactory;
+    private final AuditService auditService;
+    private final UserContactInfoService contactInfoService;
+    private final CensorFactory censorFactory;
+    private final QueryFactory queryFactory;
+    private final MessageSource messageSource;
+    private final ClaimExtractor claimExtractor;
 
-	@Autowired
-	public UserContactInfoController(
-			BuilderFactory builderFactory,
-			AuditService auditService,
-			UserContactInfoService contactInfoService,
-			CensorFactory censorFactory,
-			QueryFactory queryFactory,
-			MessageSource messageSource,
-			ClaimExtractor claimExtractor) {
-		this.builderFactory = builderFactory;
-		this.auditService = auditService;
-		this.contactInfoService = contactInfoService;
-		this.censorFactory = censorFactory;
-		this.queryFactory = queryFactory;
-		this.messageSource = messageSource;
-		this.claimExtractor = claimExtractor;
-	}
+    @Autowired
+    public UserContactInfoController(
+            BuilderFactory builderFactory,
+            AuditService auditService,
+            UserContactInfoService contactInfoService,
+            CensorFactory censorFactory,
+            QueryFactory queryFactory,
+            MessageSource messageSource,
+            ClaimExtractor claimExtractor) {
+        this.builderFactory = builderFactory;
+        this.auditService = auditService;
+        this.contactInfoService = contactInfoService;
+        this.censorFactory = censorFactory;
+        this.queryFactory = queryFactory;
+        this.messageSource = messageSource;
+        this.claimExtractor = claimExtractor;
+    }
 
-	@PostMapping("query")
-	public QueryResult<UserContactInfo> Query(@RequestBody UserContactInfoLookup lookup) throws MyApplicationException, MyForbiddenException {
-		logger.debug("querying {}", UserContactInfo.class.getSimpleName());
-		this.censorFactory.censor(UserContactInfoCensor.class).censor(lookup.getProject(), null);
-		UserContactInfoQuery query = lookup.enrich(this.queryFactory).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator);
-		List<UserContactInfoEntity> data = query.collectAs(lookup.getProject());
-		List<UserContactInfo> models = this.builderFactory.builder(UserContactInfoBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(lookup.getProject(), data);
-		long count = (lookup.getMetadata() != null && lookup.getMetadata().getCountAll()) ? query.count() : models.size();
+    @PostMapping("query")
+    public QueryResult<UserContactInfo> Query(@RequestBody UserContactInfoLookup lookup) throws MyApplicationException, MyForbiddenException {
+        logger.debug("querying {}", UserContactInfo.class.getSimpleName());
+        this.censorFactory.censor(UserContactInfoCensor.class).censor(lookup.getProject(), null);
+        UserContactInfoQuery query = lookup.enrich(this.queryFactory).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator);
+        List<UserContactInfoEntity> data = query.collectAs(lookup.getProject());
+        List<UserContactInfo> models = this.builderFactory.builder(UserContactInfoBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(lookup.getProject(), data);
+        long count = (lookup.getMetadata() != null && lookup.getMetadata().getCountAll()) ? query.count() : models.size();
 
-		this.auditService.track(AuditableAction.User_Contact_Info_Query, "lookup", lookup);
-		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
+        this.auditService.track(AuditableAction.User_Contact_Info_Query, "lookup", lookup);
+        //this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
 
-		return new QueryResult<>(models, count);
-	}
+        return new QueryResult<>(models, count);
+    }
 
-	@GetMapping("{type}")
-	@Transactional
-	public UserContactInfo Get(@PathVariable("type") UserContactType type, FieldSet fieldSet, Locale locale) throws MyApplicationException, MyForbiddenException, MyNotFoundException {
-		logger.debug(new MapLogEntry("retrieving" + User.class.getSimpleName()).And("type", type).And("fields", fieldSet));
+    @GetMapping("{type}")
+    @Transactional
+    public UserContactInfo Get(@PathVariable("type") UserContactType type, FieldSet fieldSet, Locale locale) throws MyApplicationException, MyForbiddenException, MyNotFoundException {
+        logger.debug(new MapLogEntry("retrieving" + User.class.getSimpleName()).And("type", type).And("fields", fieldSet));
 
-		this.censorFactory.censor(UserContactInfoCensor.class).censor(fieldSet, null);
+        this.censorFactory.censor(UserContactInfoCensor.class).censor(fieldSet, null);
 
-		UserContactInfoPersist.ID id = new UserContactInfoPersist.ID();
-		id.setUserId(claimExtractor.subjectUUID((MyPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal()));
-		id.setType(type);
-		UserContactInfoQuery query = this.queryFactory.query(UserContactInfoQuery.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).ids(id);
-		UserContactInfo model = this.builderFactory.builder(UserContactInfoBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(fieldSet, query.firstAs(fieldSet));
-		if (model == null) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{id, UserContactInfo.class.getSimpleName()}, LocaleContextHolder.getLocale()));
+        UserContactInfoPersist.ID id = new UserContactInfoPersist.ID();
+        id.setUserId(claimExtractor.subjectUUID((MyPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal()));
+        id.setType(type);
+        UserContactInfoQuery query = this.queryFactory.query(UserContactInfoQuery.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).ids(id);
+        UserContactInfo model = this.builderFactory.builder(UserContactInfoBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(fieldSet, query.firstAs(fieldSet));
+        if (model == null)
+            throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{id, UserContactInfo.class.getSimpleName()}, LocaleContextHolder.getLocale()));
 
-		this.auditService.track(AuditableAction.User_Contact_Info_Lookup, Map.ofEntries(
-				new AbstractMap.SimpleEntry<String, Object>("id", id),
-				new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
-		));
-		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
+        this.auditService.track(AuditableAction.User_Contact_Info_Lookup, Map.ofEntries(
+                new AbstractMap.SimpleEntry<String, Object>("id", id),
+                new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
+        ));
+        //this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
 
-		return model;
-	}
+        return model;
+    }
 
-	@PostMapping("persist")
-	@Transactional
-	public UserContactInfo Persist(@MyValidate @RequestBody UserContactInfoPersist model, FieldSet fieldSet) throws MyApplicationException, MyForbiddenException, MyNotFoundException, InvalidApplicationException {
-		logger.debug(new MapLogEntry("persisting" + UserContactInfo.class.getSimpleName()).And("model", model).And("fieldSet", fieldSet));
+    @PostMapping("persist")
+    @Transactional
+    public UserContactInfo Persist(@MyValidate @RequestBody UserContactInfoPersist model, FieldSet fieldSet) throws MyApplicationException, MyForbiddenException, MyNotFoundException, InvalidApplicationException {
+        logger.debug(new MapLogEntry("persisting" + UserContactInfo.class.getSimpleName()).And("model", model).And("fieldSet", fieldSet));
 
-		UserContactInfo persisted = this.contactInfoService.persist(model, fieldSet);
+        UserContactInfo persisted = this.contactInfoService.persist(model, fieldSet);
 
-		this.auditService.track(AuditableAction.User_Contact_Info_Persist, Map.ofEntries(
-				new AbstractMap.SimpleEntry<String, Object>("model", model),
-				new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
-		));
-		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
-		return persisted;
-	}
+        this.auditService.track(AuditableAction.User_Contact_Info_Persist, Map.ofEntries(
+                new AbstractMap.SimpleEntry<String, Object>("model", model),
+                new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
+        ));
+        //this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
+        return persisted;
+    }
 
-	@DeleteMapping("{type}")
-	@Transactional
-	public void Delete(@PathVariable("type") UserContactType type) throws MyForbiddenException, InvalidApplicationException {
-		logger.debug(new MapLogEntry("retrieving" + UserContactInfo.class.getSimpleName()).And("type", type));
+    @DeleteMapping("{type}")
+    @Transactional
+    public void Delete(@PathVariable("type") UserContactType type) throws MyForbiddenException, InvalidApplicationException {
+        logger.debug(new MapLogEntry("retrieving" + UserContactInfo.class.getSimpleName()).And("type", type));
 
-		UserContactInfoPersist.ID id = new UserContactInfoPersist.ID();
-		id.setType(type);
-		this.contactInfoService.deleteAndSave(id);
+        UserContactInfoPersist.ID id = new UserContactInfoPersist.ID();
+        id.setType(type);
+        this.contactInfoService.deleteAndSave(id);
 
-		this.auditService.track(AuditableAction.User_Delete, "id", id);
-		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
-	}
+        this.auditService.track(AuditableAction.User_Delete, "id", id);
+        //this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
+    }
 
 }

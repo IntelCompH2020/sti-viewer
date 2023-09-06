@@ -1,6 +1,5 @@
 package gr.cite.intelcomp.stiviewer.web.controllers;
 
-import gr.cite.commons.web.oidc.principal.extractor.ClaimExtractor;
 import gr.cite.intelcomp.stiviewer.audit.AuditableAction;
 import gr.cite.intelcomp.stiviewer.authorization.AuthorizationFlags;
 import gr.cite.intelcomp.stiviewer.data.UserSettingsEntity;
@@ -45,7 +44,6 @@ public class UserSettingsController {
 	private final CensorFactory censorFactory;
 	private final QueryFactory queryFactory;
 	private final MessageSource messageSource;
-	private final ClaimExtractor claimExtractor;
 
 	@Autowired
 	public UserSettingsController(
@@ -54,15 +52,13 @@ public class UserSettingsController {
 			UserSettingsService settingsService,
 			CensorFactory censorFactory,
 			QueryFactory queryFactory,
-			MessageSource messageSource,
-			ClaimExtractor claimExtractor) {
+			MessageSource messageSource) {
 		this.builderFactory = builderFactory;
 		this.auditService = auditService;
 		this.settingsService = settingsService;
 		this.censorFactory = censorFactory;
 		this.queryFactory = queryFactory;
 		this.messageSource = messageSource;
-		this.claimExtractor = claimExtractor;
 	}
 
 	@PostMapping("query")

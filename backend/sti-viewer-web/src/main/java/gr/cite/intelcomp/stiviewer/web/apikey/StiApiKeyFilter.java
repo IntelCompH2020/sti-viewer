@@ -1,4 +1,5 @@
 package gr.cite.intelcomp.stiviewer.web.apikey;
+
 import gr.cite.commons.web.oidc.configuration.filter.MutableHttpServletRequest;
 import gr.cite.commons.web.oidc.token.ApiKeyAccessToken;
 import gr.cite.intelcomp.stiviewer.convention.ConventionService;
@@ -51,16 +52,18 @@ public class StiApiKeyFilter implements Filter {
 
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         if (!config.isEnabled()) filterChain.doFilter(servletRequest, servletResponse);
-        
+
         HttpServletRequest httpRequest = ((HttpServletRequest) servletRequest);
         String apiKey = httpRequest.getHeader(config.getApiKeyHeader());
         if (!this.conventionService.isNullOrEmpty(apiKey) && !this.conventionService.isListNullOrEmpty(this.config.getApiKeys())) {
-            StiApiKeyFilterOptions.ApiKey key = this.config.getApiKeys().stream().filter(x-> apiKey.equals(x.getKey())).findFirst().orElse(null);
-            if (key == null)  filterChain.doFilter(servletRequest, servletResponse);
-            MutableHttpServletRequest mutableRequest = new MutableHttpServletRequest(httpRequest);
-            ApiKeyAccessToken accessToken = this.getAccessTokenFor(key);
-            mutableRequest.putHeader(config.getAuthorizationHeader(),  "Bearer " + accessToken.getAccessToken());
-            filterChain.doFilter(mutableRequest, servletResponse);
+            StiApiKeyFilterOptions.ApiKey key = this.config.getApiKeys().stream().filter(x -> apiKey.equals(x.getKey())).findFirst().orElse(null);
+            if (key == null) filterChain.doFilter(servletRequest, servletResponse);
+            else {
+                MutableHttpServletRequest mutableRequest = new MutableHttpServletRequest(httpRequest);
+                ApiKeyAccessToken accessToken = this.getAccessTokenFor(key);
+                mutableRequest.putHeader(config.getAuthorizationHeader(), "Bearer " + accessToken.getAccessToken());
+                filterChain.doFilter(mutableRequest, servletResponse);
+            }
         } else {
             filterChain.doFilter(servletRequest, servletResponse);
         }

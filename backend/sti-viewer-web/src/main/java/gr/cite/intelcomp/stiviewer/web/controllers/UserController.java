@@ -2,9 +2,7 @@ package gr.cite.intelcomp.stiviewer.web.controllers;
 
 import gr.cite.intelcomp.stiviewer.audit.AuditableAction;
 import gr.cite.intelcomp.stiviewer.authorization.AuthorizationFlags;
-import gr.cite.intelcomp.stiviewer.common.scope.tenant.TenantScope;
 import gr.cite.intelcomp.stiviewer.data.UserEntity;
-import gr.cite.intelcomp.stiviewer.integrationevent.outbox.notification.NotificationIntegrationEventHandler;
 import gr.cite.intelcomp.stiviewer.model.User;
 import gr.cite.intelcomp.stiviewer.model.builder.UserBuilder;
 import gr.cite.intelcomp.stiviewer.model.censorship.UserCensor;
@@ -32,103 +30,102 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.management.InvalidApplicationException;
 import javax.transaction.Transactional;
-import java.util.*;
+import java.util.AbstractMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping(path = "api/user")
 public class UserController {
-	private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(UserController.class));
+    private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(UserController.class));
 
-	private final BuilderFactory builderFactory;
-	private final AuditService auditService;
-	private final UserService userService;
-	private final CensorFactory censorFactory;
-	private final QueryFactory queryFactory;
-	private final MessageSource messageSource;
+    private final BuilderFactory builderFactory;
+    private final AuditService auditService;
+    private final UserService userService;
+    private final CensorFactory censorFactory;
+    private final QueryFactory queryFactory;
+    private final MessageSource messageSource;
 
-	@Autowired
-	private TenantScope tenantScope;
-	@Autowired
-	private NotificationIntegrationEventHandler notificationIntegrationEventHandler;
+    @Autowired
+    public UserController(
+            BuilderFactory builderFactory,
+            AuditService auditService,
+            UserService userService,
+            CensorFactory censorFactory,
+            QueryFactory queryFactory,
+            MessageSource messageSource
 
-	@Autowired
-	public UserController(
-			BuilderFactory builderFactory,
-			AuditService auditService,
-			UserService userService,
-			CensorFactory censorFactory,
-			QueryFactory queryFactory,
-			MessageSource messageSource
+    ) {
+        this.builderFactory = builderFactory;
+        this.auditService = auditService;
+        this.userService = userService;
+        this.censorFactory = censorFactory;
+        this.queryFactory = queryFactory;
+        this.messageSource = messageSource;
+    }
 
-	) {
-		this.builderFactory = builderFactory;
-		this.auditService = auditService;
-		this.userService = userService;
-		this.censorFactory = censorFactory;
-		this.queryFactory = queryFactory;
-		this.messageSource = messageSource;
-	}
+    @PostMapping("query")
+    public QueryResult<User> Query(@RequestBody UserLookup lookup) throws MyApplicationException, MyForbiddenException {
+        logger.debug("querying {}", User.class.getSimpleName());
+        this.censorFactory.censor(UserCensor.class).censor(lookup.getProject(), null);
+        UserQuery query = lookup.enrich(this.queryFactory).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator);
+        List<UserEntity> datas = query.collectAs(lookup.getProject());
+        List<User> models = this.builderFactory.builder(UserBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(lookup.getProject(), datas);
+        long count = (lookup.getMetadata() != null && lookup.getMetadata().getCountAll()) ? query.count() : models.size();
 
-	@PostMapping("query")
-	public QueryResult<User> Query(@RequestBody UserLookup lookup) throws MyApplicationException, MyForbiddenException {
-		logger.debug("querying {}", User.class.getSimpleName());
-		this.censorFactory.censor(UserCensor.class).censor(lookup.getProject(), null);
-		UserQuery query = lookup.enrich(this.queryFactory).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator);
-		List<UserEntity> datas = query.collectAs(lookup.getProject());
-		List<User> models = this.builderFactory.builder(UserBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(lookup.getProject(), datas);
-		long count = (lookup.getMetadata() != null && lookup.getMetadata().getCountAll()) ? query.count() : models.size();
+        this.auditService.track(AuditableAction.User_Query, "lookup", lookup);
+        //this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
 
-		this.auditService.track(AuditableAction.User_Query, "lookup", lookup);
-		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
+        return new QueryResult<>(models, count);
+    }
 
-		return new QueryResult(models, count);
-	}
+    @GetMapping("{id}")
+    @Transactional
+    public User Get(@PathVariable("id") UUID id, FieldSet fieldSet) throws MyApplicationException, MyForbiddenException, MyNotFoundException {
+        logger.debug(new MapLogEntry("retrieving" + User.class.getSimpleName()).And("id", id).And("fields", fieldSet));
 
-	@GetMapping("{id}")
-	@Transactional
-	public User Get(@PathVariable("id") UUID id, FieldSet fieldSet, Locale locale) throws MyApplicationException, MyForbiddenException, MyNotFoundException {
-		logger.debug(new MapLogEntry("retrieving" + User.class.getSimpleName()).And("id", id).And("fields", fieldSet));
+        this.censorFactory.censor(UserCensor.class).censor(fieldSet, id);
 
-		this.censorFactory.censor(UserCensor.class).censor(fieldSet, id);
+        UserQuery query = this.queryFactory.query(UserQuery.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).ids(id);
+        User model = this.builderFactory.builder(UserBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(fieldSet, query.firstAs(fieldSet));
+        if (model == null)
+            throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{id, User.class.getSimpleName()}, LocaleContextHolder.getLocale()));
 
-		UserQuery query = this.queryFactory.query(UserQuery.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).ids(id);
-		User model = this.builderFactory.builder(UserBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(fieldSet, query.firstAs(fieldSet));
-		if (model == null) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{id, User.class.getSimpleName()}, LocaleContextHolder.getLocale()));
+        this.auditService.track(AuditableAction.User_Lookup, Map.ofEntries(
+                new AbstractMap.SimpleEntry<String, Object>("id", id),
+                new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
+        ));
+        //this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
 
-		this.auditService.track(AuditableAction.User_Lookup, Map.ofEntries(
-				new AbstractMap.SimpleEntry<String, Object>("id", id),
-				new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
-		));
-		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
+        return model;
+    }
 
-		return model;
-	}
+    @PostMapping("persist")
+    @Transactional
+    public User Persist(@MyValidate @RequestBody UserPersist model, FieldSet fieldSet) throws MyApplicationException, MyForbiddenException, MyNotFoundException, InvalidApplicationException {
+        logger.debug(new MapLogEntry("persisting" + User.class.getSimpleName()).And("model", model).And("fieldSet", fieldSet));
 
-	@PostMapping("persist")
-	@Transactional
-	public User Persist(@MyValidate @RequestBody UserPersist model, FieldSet fieldSet) throws MyApplicationException, MyForbiddenException, MyNotFoundException, InvalidApplicationException {
-		logger.debug(new MapLogEntry("persisting" + User.class.getSimpleName()).And("model", model).And("fieldSet", fieldSet));
+        User persisted = this.userService.persist(model, fieldSet);
 
-		User persisted = this.userService.persist(model, fieldSet);
+        this.auditService.track(AuditableAction.User_Persist, Map.ofEntries(
+                new AbstractMap.SimpleEntry<String, Object>("model", model),
+                new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
+        ));
+        //this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
+        return persisted;
+    }
 
-		this.auditService.track(AuditableAction.User_Persist, Map.ofEntries(
-				new AbstractMap.SimpleEntry<String, Object>("model", model),
-				new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
-		));
-		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
-		return persisted;
-	}
+    @DeleteMapping("{id}")
+    @Transactional
+    public void Delete(@PathVariable("id") UUID id) throws MyForbiddenException, InvalidApplicationException {
+        logger.debug(new MapLogEntry("retrieving" + User.class.getSimpleName()).And("id", id));
 
-	@DeleteMapping("{id}")
-	@Transactional
-	public void Delete(@PathVariable("id") UUID id) throws MyForbiddenException, InvalidApplicationException {
-		logger.debug(new MapLogEntry("retrieving" + User.class.getSimpleName()).And("id", id));
+        this.userService.deleteAndSave(id);
 
-		this.userService.deleteAndSave(id);
-
-		this.auditService.track(AuditableAction.User_Delete, "id", id);
-		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
-	}
+        this.auditService.track(AuditableAction.User_Delete, "id", id);
+        //this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
+    }
 
 
 }

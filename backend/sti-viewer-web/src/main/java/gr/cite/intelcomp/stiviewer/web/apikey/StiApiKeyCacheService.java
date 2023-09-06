@@ -17,27 +17,32 @@ import java.util.HashMap;
 @Service
 public class StiApiKeyCacheService extends CacheService<StiApiKeyCacheService.AccessKey> {
 
-    public static class AccessKey{
+    public static class AccessKey {
 
-        public AccessKey(){}
+        public AccessKey() {
+        }
 
-        public AccessKey(ApiKeyAccessToken token, Instant expiration){
+        public AccessKey(ApiKeyAccessToken token, Instant expiration) {
             this.token = token;
             this.expiration = expiration;
         }
 
         private ApiKeyAccessToken token;
+
         public ApiKeyAccessToken getToken() {
             return token;
         }
+
         public void setToken(ApiKeyAccessToken token) {
             this.token = token;
         }
 
         private Instant expiration;
+
         public Instant getExpiration() {
             return expiration;
         }
+
         public void setExpiration(Instant expiration) {
             this.expiration = expiration;
         }
@@ -49,7 +54,7 @@ public class StiApiKeyCacheService extends CacheService<StiApiKeyCacheService.Ac
     }
 
     @EventListener
-    public void handleApiKeyStale(ApiKeyStaleEvent event){
+    public void handleApiKeyStale(ApiKeyStaleEvent event) {
         this.evict(event.getApiKey());
     }
 
@@ -61,9 +66,9 @@ public class StiApiKeyCacheService extends CacheService<StiApiKeyCacheService.Ac
     @Override
     public AccessKey lookup(String key) {
         String generatedKey = this.buildKey(key);
-        AccessKey token =super.lookup(generatedKey);
-        if(token == null) return null;
-        if(token.getExpiration().isBefore(Instant.now())){
+        AccessKey token = super.lookup(generatedKey);
+        if (token == null) return null;
+        if (token.getExpiration().isBefore(Instant.now())) {
             this.evict(key);
             return null;
         }
@@ -92,10 +97,10 @@ public class StiApiKeyCacheService extends CacheService<StiApiKeyCacheService.Ac
         throw new UnsupportedOperationException("key generation not supported");
     }
 
-    private String buildKey(String apiKey){
-        return this.generateKey(new HashMap<>(){{
-            put("$keyhash$", StiApiKeyCacheService.getHash(apiKey));
-        }});
+    private String buildKey(String apiKey) {
+        HashMap<String, String> keyParts = new HashMap<>();
+        keyParts.put("$keyhash$", StiApiKeyCacheService.getHash(apiKey));
+        return this.generateKey(keyParts);
     }
 
     private static String getHash(String apiKey) {

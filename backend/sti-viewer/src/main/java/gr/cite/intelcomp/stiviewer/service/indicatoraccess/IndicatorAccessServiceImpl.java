@@ -4,7 +4,6 @@ import gr.cite.commons.web.authz.service.AuthorizationService;
 import gr.cite.intelcomp.stiviewer.authorization.AuthorizationFlags;
 import gr.cite.intelcomp.stiviewer.authorization.Permission;
 import gr.cite.intelcomp.stiviewer.common.JsonHandlingService;
-import gr.cite.intelcomp.stiviewer.common.enums.DataAccessRequestStatus;
 import gr.cite.intelcomp.stiviewer.common.enums.IsActive;
 import gr.cite.intelcomp.stiviewer.common.scope.tenant.TenantScope;
 import gr.cite.intelcomp.stiviewer.common.types.indicatoraccess.FilterColumnConfigEntity;
@@ -96,7 +95,7 @@ public class IndicatorAccessServiceImpl implements IndicatorAccessService {
 
 		Boolean isUpdate = this.conventionService.isValidGuid(model.getId());
 
-		IndicatorAccessEntity data = null;
+		IndicatorAccessEntity data;
 		if (isUpdate) {
 			data = this.entityManager.find(IndicatorAccessEntity.class, model.getId());
 			if (data == null) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{model.getId(), IndicatorAccess.class.getSimpleName()}, LocaleContextHolder.getLocale()));
@@ -118,8 +117,7 @@ public class IndicatorAccessServiceImpl implements IndicatorAccessService {
 
 		this.entityManager.flush();
 
-		IndicatorAccess persisted = this.builderFactory.builder(IndicatorAccessBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(BaseFieldSet.build(fields, IndicatorAccess._id, IndicatorAccess._hash), data);
-		return persisted;
+        return this.builderFactory.builder(IndicatorAccessBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(BaseFieldSet.build(fields, IndicatorAccess._id, IndicatorAccess._hash), data);
 	}
 
 	public IndicatorAccess persist(UserAddAccessToIndicatorColumn model, FieldSet fields) throws MyForbiddenException, MyValidationException, MyApplicationException, MyNotFoundException, InvalidApplicationException {
@@ -130,18 +128,18 @@ public class IndicatorAccessServiceImpl implements IndicatorAccessService {
 		if (tenantScope.isSet() && !model.getTenantId().equals(tenantScope.getTenant())) throw  new MyForbiddenException("tenant is not allowed by user");
 		boolean shouldChangeTenant = !tenantScope.isSet();
 
-		IndicatorAccess persisted = null;
+		IndicatorAccess persisted;
 		try {
 
 			if (shouldChangeTenant) {
 				this.authorizationService.authorizeForce(Permission.AllowNoTenant);
 				TenantEntity tenant = this.entityManager.find(TenantEntity.class, model.getTenantId());
-				this.tenantScope.setTempTenant(this.globalEntityManager, tenant.getId(), tenant.getCode());
+				this.tenantScope.setTempTenant(this.globalEntityManager, tenant.getId());
 			}
 
 			IndicatorAccessEntity data = this.queryFactory.query(IndicatorAccessQuery.class).indicatorIds(model.getIndicatorId()).userIds(model.getUserId()).isActive(IsActive.ACTIVE).first();
 
-			Boolean isUpdate = data != null;
+			boolean isUpdate = data != null;
 
 			if (!isUpdate) {
 				data = new IndicatorAccessEntity();
@@ -245,6 +243,6 @@ public class IndicatorAccessServiceImpl implements IndicatorAccessService {
 
 		this.authorizationService.authorizeForce(Permission.DeleteIndicatorAccess);
 
-		this.deleterFactory.deleter(IndicatorAccessDeleter.class).deleteAndSaveByIds(Arrays.asList(new UUID[]{id}));
+		this.deleterFactory.deleter(IndicatorAccessDeleter.class).deleteAndSaveByIds(Collections.singletonList(id));
 	}
 }
