@@ -3,6 +3,7 @@ package gr.cite.intelcomp.stiviewer.model.builder;
 import gr.cite.intelcomp.stiviewer.authorization.AuthorizationFlags;
 import gr.cite.intelcomp.stiviewer.convention.ConventionService;
 import gr.cite.intelcomp.stiviewer.data.TenantUserEntity;
+import gr.cite.intelcomp.stiviewer.data.tenant.TenantScopedBaseEntity;
 import gr.cite.intelcomp.stiviewer.model.Tenant;
 import gr.cite.intelcomp.stiviewer.model.TenantUser;
 import gr.cite.intelcomp.stiviewer.model.User;
@@ -28,111 +29,120 @@ import java.util.stream.Collectors;
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class TenantUserBuilder extends BaseBuilder<TenantUser, TenantUserEntity> {
 
-	private final BuilderFactory builderFactory;
-	private final QueryFactory queryFactory;
+    private final BuilderFactory builderFactory;
+    private final QueryFactory queryFactory;
 
-	private EnumSet<AuthorizationFlags> authorize = EnumSet.of(AuthorizationFlags.None);
+    private EnumSet<AuthorizationFlags> authorize = EnumSet.of(AuthorizationFlags.None);
 
-	@Autowired
-	public TenantUserBuilder(
-			ConventionService conventionService,
-			BuilderFactory builderFactory,
-			QueryFactory queryFactory
-	) {
-		super(conventionService, new LoggerService(LoggerFactory.getLogger(TenantUserBuilder.class)));
-		this.builderFactory = builderFactory;
-		this.queryFactory = queryFactory;
-	}
+    @Autowired
+    public TenantUserBuilder(
+            ConventionService conventionService,
+            BuilderFactory builderFactory,
+            QueryFactory queryFactory
+    ) {
+        super(conventionService, new LoggerService(LoggerFactory.getLogger(TenantUserBuilder.class)));
+        this.builderFactory = builderFactory;
+        this.queryFactory = queryFactory;
+    }
 
-	public TenantUserBuilder authorize(EnumSet<AuthorizationFlags> values) {
-		this.authorize = values;
-		return this;
-	}
+    public TenantUserBuilder authorize(EnumSet<AuthorizationFlags> values) {
+        this.authorize = values;
+        return this;
+    }
 
-	@Override
-	public List<TenantUser> build(FieldSet fields, List<TenantUserEntity> datas) throws MyApplicationException {
-		this.logger.debug("building for {} items requesting {} fields", Optional.ofNullable(datas).map(e -> e.size()).orElse(0), Optional.ofNullable(fields).map(e -> e.getFields()).map(e -> e.size()).orElse(0));
-		this.logger.trace(new DataLogEntry("requested fields", fields));
-		if (fields == null || fields.isEmpty()) return new ArrayList<>();
+    @Override
+    public List<TenantUser> build(FieldSet fields, List<TenantUserEntity> data) throws MyApplicationException {
+        this.logger.debug("building for {} items requesting {} fields", Optional.ofNullable(data).map(List::size).orElse(0), Optional.ofNullable(fields).map(FieldSet::getFields).map(Set::size).orElse(0));
+        this.logger.trace(new DataLogEntry("requested fields", fields));
+        if (fields == null || fields.isEmpty())
+            return new ArrayList<>();
 
-		FieldSet userFields = fields.extractPrefixed(this.asPrefix(TenantUser._user));
-		Map<UUID, User> userMap = this.collectUsers(userFields, datas);
+        FieldSet userFields = fields.extractPrefixed(this.asPrefix(TenantUser._user));
+        Map<UUID, User> userMap = this.collectUsers(userFields, data);
 
-		FieldSet tenantFields = fields.extractPrefixed(this.asPrefix(TenantUser._tenant));
-		Map<UUID, Tenant> tenantMap = this.collectTenants(tenantFields, datas);
+        FieldSet tenantFields = fields.extractPrefixed(this.asPrefix(TenantUser._tenant));
+        Map<UUID, Tenant> tenantMap = this.collectTenants(tenantFields, data);
 
-		List<TenantUser> models = new ArrayList<>();
+        List<TenantUser> models = new ArrayList<>(100);
 
-		for (TenantUserEntity d : datas) {
-			TenantUser m = new TenantUser();
-			if (fields.hasField(this.asIndexer(TenantUser._id))) m.setId(d.getId());
-			if (fields.hasField(this.asIndexer(TenantUser._hash))) m.setHash(this.hashValue(d.getUpdatedAt()));
-			if (fields.hasField(this.asIndexer(TenantUser._createdAt))) m.setCreatedAt(d.getCreatedAt());
-			if (fields.hasField(this.asIndexer(TenantUser._updatedAt))) m.setUpdatedAt(d.getUpdatedAt());
-			if (fields.hasField(this.asIndexer(TenantUser._isActive))) m.setIsActive(d.getIsActive());
-			if (!userFields.isEmpty() && userMap != null && userMap.containsKey(d.getUserId())) m.setUser(userMap.get(d.getUserId()));
-			if (!tenantFields.isEmpty() && tenantMap != null && tenantMap.containsKey(d.getTenantId())) m.setTenant(tenantMap.get(d.getTenantId()));
-			models.add(m);
-		}
-		this.logger.debug("build {} items", Optional.ofNullable(models).map(e -> e.size()).orElse(0));
-		return models;
-	}
+        if (data == null) return models;
+        for (TenantUserEntity d : data) {
+            TenantUser m = new TenantUser();
+            if (fields.hasField(this.asIndexer(TenantUser._id)))
+                m.setId(d.getId());
+            if (fields.hasField(this.asIndexer(TenantUser._hash)))
+                m.setHash(this.hashValue(d.getUpdatedAt()));
+            if (fields.hasField(this.asIndexer(TenantUser._createdAt)))
+                m.setCreatedAt(d.getCreatedAt());
+            if (fields.hasField(this.asIndexer(TenantUser._updatedAt)))
+                m.setUpdatedAt(d.getUpdatedAt());
+            if (fields.hasField(this.asIndexer(TenantUser._isActive)))
+                m.setIsActive(d.getIsActive());
+            if (!userFields.isEmpty() && userMap != null && userMap.containsKey(d.getUserId()))
+                m.setUser(userMap.get(d.getUserId()));
+            if (!tenantFields.isEmpty() && tenantMap != null && tenantMap.containsKey(d.getTenantId()))
+                m.setTenant(tenantMap.get(d.getTenantId()));
+            models.add(m);
+        }
+        this.logger.debug("build {} items", Optional.of(models).map(List::size).orElse(0));
+        return models;
+    }
 
-	private Map<UUID, User> collectUsers(FieldSet fields, List<TenantUserEntity> datas) throws MyApplicationException {
-		if (fields.isEmpty() || datas.isEmpty()) return null;
-		this.logger.debug("checking related - {}", User.class.getSimpleName());
+    private Map<UUID, User> collectUsers(FieldSet fields, List<TenantUserEntity> datas) throws MyApplicationException {
+        if (fields.isEmpty() || datas.isEmpty()) return null;
+        this.logger.debug("checking related - {}", User.class.getSimpleName());
 
-		Map<UUID, User> itemMap = null;
-		if (!fields.hasOtherField(this.asIndexer(User._id))) {
-			itemMap = this.asEmpty(
-					datas.stream().map(x -> x.getUserId()).distinct().collect(Collectors.toList()),
-					x -> {
-						User item = new User();
-						item.setId(x);
-						return item;
-					},
-					x -> x.getId());
-		} else {
-			FieldSet clone = new BaseFieldSet(fields.getFields()).ensure(User._id);
-			UserQuery q = this.queryFactory.query(UserQuery.class).authorize(this.authorize).ids(datas.stream().map(x -> x.getUserId()).distinct().collect(Collectors.toList()));
-			itemMap = this.builderFactory.builder(UserBuilder.class).authorize(this.authorize).asForeignKey(q, clone, x -> x.getId());
-		}
-		if (!fields.hasField(User._id)) {
-			itemMap.values().stream().filter(x -> x != null).map(x -> {
-				x.setId(null);
-				return x;
-			}).collect(Collectors.toList());
-		}
+        Map<UUID, User> itemMap;
+        if (!fields.hasOtherField(this.asIndexer(User._id))) {
+            itemMap = this.asEmpty(
+                    datas.stream().map(TenantUserEntity::getUserId).distinct().collect(Collectors.toList()),
+                    x -> {
+                        User item = new User();
+                        item.setId(x);
+                        return item;
+                    },
+                    User::getId);
+        } else {
+            FieldSet clone = new BaseFieldSet(fields.getFields()).ensure(User._id);
+            UserQuery q = this.queryFactory.query(UserQuery.class).authorize(this.authorize).ids(datas.stream().map(TenantUserEntity::getUserId).distinct().collect(Collectors.toList()));
+            itemMap = this.builderFactory.builder(UserBuilder.class).authorize(this.authorize).asForeignKey(q, clone, User::getId);
+        }
+        if (!fields.hasField(User._id)) {
+            itemMap.forEach((id, user) -> {
+                if (user != null)
+                    user.setId(null);
+            });
+        }
 
-		return itemMap;
-	}
+        return itemMap;
+    }
 
-	private Map<UUID, Tenant> collectTenants(FieldSet fields, List<TenantUserEntity> datas) throws MyApplicationException {
-		if (fields.isEmpty() || datas.isEmpty()) return null;
-		this.logger.debug("checking related - {}", Tenant.class.getSimpleName());
+    private Map<UUID, Tenant> collectTenants(FieldSet fields, List<TenantUserEntity> datas) throws MyApplicationException {
+        if (fields.isEmpty() || datas.isEmpty()) return null;
+        this.logger.debug("checking related - {}", Tenant.class.getSimpleName());
 
-		Map<UUID, Tenant> itemMap = null;
-		if (!fields.hasOtherField(this.asIndexer(Tenant._id))) {
-			itemMap = this.asEmpty(
-					datas.stream().map(x -> x.getTenantId()).distinct().collect(Collectors.toList()),
-					x -> {
-						Tenant item = new Tenant();
-						item.setId(x);
-						return item;
-					},
-					x -> x.getId());
-		} else {
-			FieldSet clone = new BaseFieldSet(fields.getFields()).ensure(Tenant._id);
-			TenantQuery q = this.queryFactory.query(TenantQuery.class).authorize(this.authorize).ids(datas.stream().map(x -> x.getTenantId()).distinct().collect(Collectors.toList()));
-			itemMap = this.builderFactory.builder(TenantBuilder.class).authorize(this.authorize).asForeignKey(q, clone, x -> x.getId());
-		}
-		if (!fields.hasField(Tenant._id)) {
-			itemMap.values().stream().filter(x -> x != null).map(x -> {
-				x.setId(null);
-				return x;
-			}).collect(Collectors.toList());
-		}
+        Map<UUID, Tenant> itemMap;
+        if (!fields.hasOtherField(this.asIndexer(Tenant._id))) {
+            itemMap = this.asEmpty(
+                    datas.stream().map(TenantScopedBaseEntity::getTenantId).distinct().collect(Collectors.toList()),
+                    x -> {
+                        Tenant item = new Tenant();
+                        item.setId(x);
+                        return item;
+                    },
+                    Tenant::getId);
+        } else {
+            FieldSet clone = new BaseFieldSet(fields.getFields()).ensure(Tenant._id);
+            TenantQuery q = this.queryFactory.query(TenantQuery.class).authorize(this.authorize).ids(datas.stream().map(TenantScopedBaseEntity::getTenantId).distinct().collect(Collectors.toList()));
+            itemMap = this.builderFactory.builder(TenantBuilder.class).authorize(this.authorize).asForeignKey(q, clone, Tenant::getId);
+        }
+        if (!fields.hasField(Tenant._id)) {
+            itemMap.forEach((id, tenant) -> {
+                if (tenant != null)
+                    tenant.setId(null);
+            });
+        }
 
-		return itemMap;
-	}
+        return itemMap;
+    }
 }

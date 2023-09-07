@@ -19,45 +19,47 @@ import org.springframework.stereotype.Component;
 import java.util.*;
 
 @Component
-//Like in C# make it transient
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class SchemaBuilder extends BaseBuilder<Schema, IndicatorSchemaEntity> {
-	private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(SchemaBuilder.class));
 
-	private final BuilderFactory builderFactory;
+    private final BuilderFactory builderFactory;
 
-	private EnumSet<AuthorizationFlags> authorize = EnumSet.of(AuthorizationFlags.None);
+    private EnumSet<AuthorizationFlags> authorize = EnumSet.of(AuthorizationFlags.None);
 
-	@Autowired
-	public SchemaBuilder(ConventionService conventionService, BuilderFactory builderFactory) {
-		super(conventionService, logger);
+    @Autowired
+    public SchemaBuilder(ConventionService conventionService, BuilderFactory builderFactory) {
+        super(conventionService, new LoggerService(LoggerFactory.getLogger(SchemaBuilder.class)));
+        this.builderFactory = builderFactory;
+    }
 
-		this.builderFactory = builderFactory;
+    public SchemaBuilder authorize(EnumSet<AuthorizationFlags> values) {
+        this.authorize = values;
+        return this;
+    }
 
-	}
+    @Override
+    public List<Schema> build(FieldSet fields, List<IndicatorSchemaEntity> data) throws MyApplicationException {
+        this.logger.debug("building for {} items requesting {} fields", Optional.ofNullable(data).map(List::size).orElse(0), Optional.ofNullable(fields).map(FieldSet::getFields).map(Set::size).orElse(0));
+        this.logger.trace(new DataLogEntry("requested fields", fields));
+        if (fields == null || fields.isEmpty())
+            return new ArrayList<>();
 
-	public SchemaBuilder authorize(EnumSet<AuthorizationFlags> values) {
-		this.authorize = values;
-		return this;
-	}
+        FieldSet fieldsFields = fields.extractPrefixed(this.asPrefix(Schema._fields));
 
-	@Override
-	public List<Schema> build(FieldSet fields, List<IndicatorSchemaEntity> datas) throws MyApplicationException {
-		this.logger.debug("building for {} items requesting {} fields", Optional.ofNullable(datas).map(e -> e.size()).orElse(0), Optional.ofNullable(fields).map(e -> e.getFields()).map(e -> e.size()).orElse(0));
-		this.logger.trace(new DataLogEntry("requested fields", fields));
-		if (fields == null || fields.isEmpty()) return new ArrayList<>();
+        List<Schema> schemas = new ArrayList<>(100);
 
-		FieldSet fieldsFields = fields.extractPrefixed(this.asPrefix(Schema._fields));
+        if (data == null)
+            return schemas;
+        for (IndicatorSchemaEntity d : data) {
+            Schema m = new Schema();
+            if (fields.hasField(this.asIndexer(Schema._id)))
+                m.setId(d.getId());
+            if (!fieldsFields.isEmpty() && d.getFields() != null)
+                m.setFields(this.builderFactory.builder(FieldBuilder.class).authorize(this.authorize).build(fieldsFields, d.getFields()));
 
-		List<Schema> schemas = new LinkedList<>();
-		for (IndicatorSchemaEntity d : datas) {
-			Schema m = new Schema();
-			if (fields.hasField(this.asIndexer(Schema._id))) m.setId(d.getId());
-			if (!fieldsFields.isEmpty() && d.getFields() != null) m.setFields(this.builderFactory.builder(FieldBuilder.class).authorize(this.authorize).build(fieldsFields, d.getFields()));
+            schemas.add(m);
+        }
 
-			schemas.add(m);
-		}
-
-		return schemas;
-	}
+        return schemas;
+    }
 }

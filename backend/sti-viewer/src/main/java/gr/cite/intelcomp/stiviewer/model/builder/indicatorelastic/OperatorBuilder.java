@@ -18,37 +18,36 @@ import org.springframework.stereotype.Component;
 import java.util.*;
 
 @Component
-//Like in C# make it transient
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class OperatorBuilder extends BaseBuilder<Operator, OperationEntity> {
-	private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(OperatorBuilder.class));
 
-	private EnumSet<AuthorizationFlags> authorize = EnumSet.of(AuthorizationFlags.None);
+    @Autowired
+    public OperatorBuilder(ConventionService conventionService) {
+        super(conventionService, new LoggerService(LoggerFactory.getLogger(OperatorBuilder.class)));
+    }
 
-	@Autowired
-	public OperatorBuilder(ConventionService conventionService) {
-		super(conventionService, logger);
-	}
+    public OperatorBuilder authorize(EnumSet<AuthorizationFlags> values) {
+        return this;
+    }
 
-	public OperatorBuilder authorize(EnumSet<AuthorizationFlags> values) {
-		this.authorize = values;
-		return this;
-	}
+    @Override
+    public List<Operator> build(FieldSet fields, List<OperationEntity> data) throws MyApplicationException {
+        this.logger.debug("building for {} items requesting {} fields", Optional.ofNullable(data).map(List::size).orElse(0), Optional.ofNullable(fields).map(FieldSet::getFields).map(Set::size).orElse(0));
+        this.logger.trace(new DataLogEntry("requested fields", fields));
+        if (fields == null || fields.isEmpty()) return new ArrayList<>();
 
-	@Override
-	public List<Operator> build(FieldSet fields, List<OperationEntity> datas) throws MyApplicationException {
-		this.logger.debug("building for {} items requesting {} fields", Optional.ofNullable(datas).map(e -> e.size()).orElse(0), Optional.ofNullable(fields).map(e -> e.getFields()).map(e -> e.size()).orElse(0));
-		this.logger.trace(new DataLogEntry("requested fields", fields));
-		if (fields == null || fields.isEmpty()) return new ArrayList<>();
+        List<Operator> operators = new LinkedList<>();
 
-		List<Operator> operators = new LinkedList<>();
-		for (OperationEntity d : datas) {
-			Operator m = new Operator();
-			if (fields.hasField(this.asIndexer(Operator._op))) m.setOp(d.getOp());
+        if (data == null)
+            return operators;
+        for (OperationEntity d : data) {
+            Operator m = new Operator();
+            if (fields.hasField(this.asIndexer(Operator._op)))
+                m.setOp(d.getOp());
 
-			operators.add(m);
-		}
+            operators.add(m);
+        }
 
-		return operators;
-	}
+        return operators;
+    }
 }

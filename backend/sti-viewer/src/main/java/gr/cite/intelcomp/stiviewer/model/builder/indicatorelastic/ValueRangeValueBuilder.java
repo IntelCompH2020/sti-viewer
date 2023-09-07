@@ -18,38 +18,39 @@ import org.springframework.stereotype.Component;
 import java.util.*;
 
 @Component
-//Like in C# make it transient
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class ValueRangeValueBuilder extends BaseBuilder<ValueRangeValue, ValueRangeValueEntity> {
-	private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(ValueRangeValueBuilder.class));
 
-	private EnumSet<AuthorizationFlags> authorize = EnumSet.of(AuthorizationFlags.None);
+    @Autowired
+    public ValueRangeValueBuilder(ConventionService conventionService) {
+        super(conventionService, new LoggerService(LoggerFactory.getLogger(ValueRangeValueBuilder.class)));
+    }
 
-	@Autowired
-	public ValueRangeValueBuilder(ConventionService conventionService) {
-		super(conventionService, logger);
-	}
+    public ValueRangeValueBuilder authorize(EnumSet<AuthorizationFlags> values) {
+        return this;
+    }
 
-	public ValueRangeValueBuilder authorize(EnumSet<AuthorizationFlags> values) {
-		this.authorize = values;
-		return this;
-	}
+    @Override
+    public List<ValueRangeValue> build(FieldSet fields, List<ValueRangeValueEntity> data) throws MyApplicationException {
+        this.logger.debug("building for {} items requesting {} fields", Optional.ofNullable(data).map(List::size).orElse(0), Optional.ofNullable(fields).map(FieldSet::getFields).map(Set::size).orElse(0));
+        this.logger.trace(new DataLogEntry("requested fields", fields));
+        if (fields == null || fields.isEmpty())
+            return new ArrayList<>();
 
-	@Override
-	public List<ValueRangeValue> build(FieldSet fields, List<ValueRangeValueEntity> datas) throws MyApplicationException {
-		this.logger.debug("building for {} items requesting {} fields", Optional.ofNullable(datas).map(e -> e.size()).orElse(0), Optional.ofNullable(fields).map(e -> e.getFields()).map(e -> e.size()).orElse(0));
-		this.logger.trace(new DataLogEntry("requested fields", fields));
-		if (fields == null || fields.isEmpty()) return new ArrayList<>();
+        List<ValueRangeValue> valueRangeValues = new ArrayList<>(100);
 
-		List<ValueRangeValue> valueRangeValues = new LinkedList<>();
-		for (ValueRangeValueEntity d : datas) {
-			ValueRangeValue m = new ValueRangeValue();
-			if (fields.hasField(this.asIndexer(ValueRangeValue._value))) m.setValue(d.getValue());
-			if (fields.hasField(this.asIndexer(ValueRangeValue._label))) m.setLabel(d.getLabel());
+        if (data == null)
+            return valueRangeValues;
+        for (ValueRangeValueEntity d : data) {
+            ValueRangeValue m = new ValueRangeValue();
+            if (fields.hasField(this.asIndexer(ValueRangeValue._value)))
+                m.setValue(d.getValue());
+            if (fields.hasField(this.asIndexer(ValueRangeValue._label)))
+                m.setLabel(d.getLabel());
 
-			valueRangeValues.add(m);
-		}
+            valueRangeValues.add(m);
+        }
 
-		return valueRangeValues;
-	}
+        return valueRangeValues;
+    }
 }
