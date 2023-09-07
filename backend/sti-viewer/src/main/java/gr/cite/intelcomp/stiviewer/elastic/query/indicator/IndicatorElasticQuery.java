@@ -25,98 +25,100 @@ import java.util.*;
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class IndicatorElasticQuery extends ElasticQuery<IndicatorElasticEntity, UUID> {
 
-	private Collection<UUID> ids;
-	private EnumSet<AuthorizationFlags> authorize = EnumSet.of(AuthorizationFlags.None);
+    private Collection<UUID> ids;
+    private EnumSet<AuthorizationFlags> authorize = EnumSet.of(AuthorizationFlags.None);
 
-	public IndicatorElasticQuery ids(UUID value) {
-		this.ids = List.of(value);
-		return this;
-	}
+    public IndicatorElasticQuery ids(UUID value) {
+        this.ids = List.of(value);
+        return this;
+    }
 
-	public IndicatorElasticQuery ids(UUID... value) {
-		this.ids = Arrays.asList(value);
-		return this;
-	}
+    public IndicatorElasticQuery ids(UUID... value) {
+        this.ids = Arrays.asList(value);
+        return this;
+    }
 
-	public IndicatorElasticQuery ids(Collection<UUID> values) {
-		this.ids = values;
-		return this;
-	}
+    public IndicatorElasticQuery ids(Collection<UUID> values) {
+        this.ids = values;
+        return this;
+    }
 
-	public IndicatorElasticQuery authorize(EnumSet<AuthorizationFlags> values) {
-		this.authorize = values;
-		return this;
-	}
+    public IndicatorElasticQuery authorize(EnumSet<AuthorizationFlags> values) {
+        this.authorize = values;
+        return this;
+    }
 
-	private final QueryFactory queryFactory;
-	private final AppElasticProperties appElasticProperties;
+    private final QueryFactory queryFactory;
+    private final AppElasticProperties appElasticProperties;
 
-	@Autowired()
-	public IndicatorElasticQuery(ElasticsearchRestTemplate elasticsearchRestTemplate, ElasticProperties elasticProperties, QueryFactory queryFactory, AppElasticProperties appElasticProperties) {
-		super(elasticsearchRestTemplate, elasticProperties);
-		this.queryFactory = queryFactory;
-		this.appElasticProperties = appElasticProperties;
-	}
+    @Autowired()
+    public IndicatorElasticQuery(ElasticsearchRestTemplate elasticsearchRestTemplate, ElasticProperties elasticProperties, QueryFactory queryFactory, AppElasticProperties appElasticProperties) {
+        super(elasticsearchRestTemplate, elasticProperties);
+        this.queryFactory = queryFactory;
+        this.appElasticProperties = appElasticProperties;
+    }
 
-	@Override
-	protected Boolean isFalseQuery() {
-		return this.isEmpty(this.ids);
-	}
+    @Override
+    protected Boolean isFalseQuery() {
+        return this.isEmpty(this.ids);
+    }
 
-	@Override
-	protected Class<IndicatorElasticEntity> entityClass() {
-		return IndicatorElasticEntity.class;
-	}
+    @Override
+    protected Class<IndicatorElasticEntity> entityClass() {
+        return IndicatorElasticEntity.class;
+    }
 
-	@Override
-	protected QueryBuilder applyFilters() {
-		List<QueryBuilder> predicates = new ArrayList<>();
-		if (ids != null) {
-			predicates.add(this.containsUUID(this.elasticFieldOf(IndicatorElasticEntity.Fields.id), ids));
-		}
+    @Override
+    protected QueryBuilder applyFilters() {
+        List<QueryBuilder> predicates = new ArrayList<>();
+        if (ids != null) {
+            predicates.add(this.containsUUID(this.elasticFieldOf(IndicatorElasticEntity.Fields.id), ids));
+        }
 
-		if (predicates.size() > 0) {
-			return this.and(predicates);
-		} else {
-			return null;
-		}
-	}
+        if (!predicates.isEmpty()) {
+            return this.and(predicates);
+        } else {
+            return null;
+        }
+    }
 
-	@Override
-	public IndicatorElasticEntity convert(Map<String, Object> rawData, Set<String> columns) {
-		IndicatorElasticEntity mocDoc = new IndicatorElasticEntity();
-		if (columns.contains(IndicatorElasticEntity.Fields.id)) mocDoc.setId(FieldBasedMapper.shallowSafeConversion(rawData.get(IndicatorElasticEntity.Fields.id), UUID.class));
-		mocDoc.setSchema(this.convertInnerObject(rawData, columns, this.queryFactory.query(IndicatorSchemaQuery.class), IndicatorElasticEntity.Fields.schema, null));
-		mocDoc.setMetadata(this.convertInnerObject(rawData, columns, this.queryFactory.query(IndicatorMetadataQuery.class), IndicatorElasticEntity.Fields.metadata, null));
-		return mocDoc;
-	}
+    @Override
+    public IndicatorElasticEntity convert(Map<String, Object> rawData, Set<String> columns) {
+        IndicatorElasticEntity mocDoc = new IndicatorElasticEntity();
+        if (columns.contains(IndicatorElasticEntity.Fields.id))
+            mocDoc.setId(FieldBasedMapper.shallowSafeConversion(rawData.get(IndicatorElasticEntity.Fields.id), UUID.class));
+        mocDoc.setSchema(this.convertInnerObject(rawData, columns, this.queryFactory.query(IndicatorSchemaQuery.class), IndicatorElasticEntity.Fields.schema, null));
+        mocDoc.setMetadata(this.convertInnerObject(rawData, columns, this.queryFactory.query(IndicatorMetadataQuery.class), IndicatorElasticEntity.Fields.metadata, null));
+        return mocDoc;
+    }
 
-	@Override
-	protected ElasticField fieldNameOf(FieldResolver item) {
-		if (item.match(IndicatorElastic._id)) return this.elasticFieldOf(IndicatorElasticEntity.Fields.id);
-		else if (item.prefix(IndicatorElastic._schema)) return this.queryFactory.query(IndicatorSchemaQuery.class).innerPath(IndicatorElasticEntity.Fields.schema).fieldNameOf(this.extractPrefixed(item, IndicatorElastic._schema));
-		else return null;
-	}
+    @Override
+    protected ElasticField fieldNameOf(FieldResolver item) {
+        if (item.match(IndicatorElastic._id)) return this.elasticFieldOf(IndicatorElasticEntity.Fields.id);
+        else if (item.prefix(IndicatorElastic._schema))
+            return this.queryFactory.query(IndicatorSchemaQuery.class).innerPath(IndicatorElasticEntity.Fields.schema).fieldNameOf(this.extractPrefixed(item, IndicatorElastic._schema));
+        else return null;
+    }
 
-	@Override
-	protected String[] getIndex() {
-		List<String> indexNames = new ArrayList<>();
-		indexNames.add(this.appElasticProperties.getIndicatorIndexName());
-		return indexNames.toArray(new String[indexNames.size()]);
-	}
+    @Override
+    protected String[] getIndex() {
+        List<String> indexNames = new ArrayList<>();
+        indexNames.add(this.appElasticProperties.getIndicatorIndexName());
+        return indexNames.toArray(new String[0]);
+    }
 
-	@Override
-	protected UUID toKey(String key) {
-		return UUID.fromString(key);
-	}
+    @Override
+    protected UUID toKey(String key) {
+        return UUID.fromString(key);
+    }
 
-	@Override
-	protected ElasticField getKeyField() {
-		return this.elasticFieldOf(IndicatorElasticEntity.Fields.id);
-	}
+    @Override
+    protected ElasticField getKeyField() {
+        return this.elasticFieldOf(IndicatorElasticEntity.Fields.id);
+    }
 
-	@Override
-	protected ElasticNestedQuery<?, ?, ?> nestedQueryOf(FieldResolver item) {
-		return null;
-	}
+    @Override
+    protected ElasticNestedQuery<?, ?, ?> nestedQueryOf(FieldResolver item) {
+        return null;
+    }
 }

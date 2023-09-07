@@ -15,8 +15,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -24,85 +22,88 @@ import java.util.Set;
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class DataGroupInfoQuery extends ElasticInnerObjectQuery<DataGroupInfoQuery, DataGroupInfoEntity, String> {
 
-	private String innerPath;
+    private String innerPath;
 
-	private final QueryFactory queryFactory;
+    private final QueryFactory queryFactory;
 
-	public DataGroupInfoQuery innerPath(String value) {
-		this.innerPath = value;
-		return this;
-	}
+    public DataGroupInfoQuery innerPath(String value) {
+        this.innerPath = value;
+        return this;
+    }
 
-	private final ConventionService conventionService;
+    private final ConventionService conventionService;
 
-	public DataGroupInfoQuery(
-			ElasticsearchRestTemplate elasticsearchRestTemplate,
-			ElasticProperties elasticProperties,
-			QueryFactory queryFactory,
-			ConventionService conventionService
-	) {
-		super(elasticsearchRestTemplate, elasticProperties);
-		this.queryFactory = queryFactory;
-		this.conventionService = conventionService;
-	}
+    public DataGroupInfoQuery(
+            ElasticsearchRestTemplate elasticsearchRestTemplate,
+            ElasticProperties elasticProperties,
+            QueryFactory queryFactory,
+            ConventionService conventionService
+    ) {
+        super(elasticsearchRestTemplate, elasticProperties);
+        this.queryFactory = queryFactory;
+        this.conventionService = conventionService;
+    }
 
-	@Override
-	protected Class<DataGroupInfoEntity> entityClass() {
-		return DataGroupInfoEntity.class;
-	}
+    @Override
+    protected Class<DataGroupInfoEntity> entityClass() {
+        return DataGroupInfoEntity.class;
+    }
 
-	@Override
-	protected Boolean isFalseQuery() {
-		return false;
-	}
+    @Override
+    protected Boolean isFalseQuery() {
+        return Boolean.FALSE;
+    }
 
-	@Override
-	protected QueryBuilder applyAuthZ() {
-		return null;
-	}
+    @Override
+    protected QueryBuilder applyAuthZ() {
+        return null;
+    }
 
-	@Override
-	protected QueryBuilder applyFilters() {
-		List<QueryBuilder> predicates = new ArrayList<>();
+    @Override
+    protected QueryBuilder applyFilters() {
+//		List<QueryBuilder> predicates = new ArrayList<>();
+//
+//		if (predicates.size() > 0) {
+//			return this.and(predicates);
+//		} else {
+//			return null;
+//		}
+        return null;
+    }
 
-		if (predicates.size() > 0) {
-			return this.and(predicates);
-		} else {
-			return null;
-		}
-	}
-
-	@Override
-	public DataGroupInfoEntity convert(Map<String, Object> rawData, Set<String> columns) {
-		DataGroupInfoEntity mocDoc = new DataGroupInfoEntity();
-		mocDoc.setColumns(this.convertNested(rawData, columns, this.queryFactory.query(DataGroupInfoColumnQuery.class), DataGroupInfoEntity.Fields.columns, this.getInnerPath()));
-		return mocDoc;
-	}
+    @Override
+    public DataGroupInfoEntity convert(Map<String, Object> rawData, Set<String> columns) {
+        DataGroupInfoEntity mocDoc = new DataGroupInfoEntity();
+        mocDoc.setColumns(this.convertNested(rawData, columns, this.queryFactory.query(DataGroupInfoColumnQuery.class), DataGroupInfoEntity.Fields.columns, this.getInnerPath()));
+        return mocDoc;
+    }
 
 
-	@Override
-	protected ElasticField fieldNameOf(FieldResolver item) {
-		if (item.prefix(DataGroupInfo._columns)) return this.queryFactory.query(DataGroupInfoColumnQuery.class).nestedPath(this.conventionService.asIndexer(this.getInnerPath(), DataGroupInfoEntity.Fields.columns)).fieldNameOf(this.extractPrefixed(item, DataGroupInfo._columns));
-		else return null;
-	}
+    @Override
+    protected ElasticField fieldNameOf(FieldResolver item) {
+        if (item.prefix(DataGroupInfo._columns))
+            return this.queryFactory.query(DataGroupInfoColumnQuery.class).nestedPath(this.conventionService.asIndexer(this.getInnerPath(), DataGroupInfoEntity.Fields.columns)).fieldNameOf(this.extractPrefixed(item, DataGroupInfo._columns));
+        else
+            return null;
+    }
 
-	@Override
-	protected String getInnerPath() {
-		return this.innerPath;
-	}
+    @Override
+    protected String getInnerPath() {
+        return this.innerPath;
+    }
 
-	@Override
-	protected String toKey(String key) {
-		return key;
-	}
+    @Override
+    protected String toKey(String key) {
+        return key;
+    }
 
-	@Override
-	protected ElasticField getKeyField() {
-		return null;
-	}
+    @Override
+    protected ElasticField getKeyField() {
+        return null;
+    }
 
-	@Override
-	protected ElasticNestedQuery<?, ?, ?> nestedQueryOf(FieldResolver item) {
-		return null;
-	}
+    @Override
+    protected ElasticNestedQuery<?, ?, ?> nestedQueryOf(FieldResolver item) {
+        return null;
+    }
 }

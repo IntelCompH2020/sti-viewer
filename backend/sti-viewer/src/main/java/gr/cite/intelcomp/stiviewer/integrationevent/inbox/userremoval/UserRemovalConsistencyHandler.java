@@ -11,16 +11,15 @@ import org.springframework.stereotype.Component;
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class UserRemovalConsistencyHandler implements ConsistencyHandler<UserRemovalConsistencyPredicates> {
 
-	private final QueryFactory queryFactory;
+    private final QueryFactory queryFactory;
 
-	public UserRemovalConsistencyHandler(QueryFactory queryFactory) {
-		this.queryFactory = queryFactory;
-	}
+    public UserRemovalConsistencyHandler(QueryFactory queryFactory) {
+        this.queryFactory = queryFactory;
+    }
 
-	@Override
-	public Boolean isConsistent(UserRemovalConsistencyPredicates consistencyPredicates) {
-		long count = this.queryFactory.query(UserQuery.class).ids(consistencyPredicates.getUserId()).count();
-		if (count == 0) return false;
-		return true;
-	}
+    @Override
+    public Boolean isConsistent(UserRemovalConsistencyPredicates consistencyPredicates) {
+        long count = this.queryFactory.query(UserQuery.class).ids(consistencyPredicates.getUserId()).count();
+        return count != 0;
+    }
 }

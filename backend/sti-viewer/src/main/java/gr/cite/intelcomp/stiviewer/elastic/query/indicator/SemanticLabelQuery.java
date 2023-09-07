@@ -23,81 +23,81 @@ import java.util.Set;
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class SemanticLabelQuery extends ElasticNestedQuery<SemanticLabelQuery, SemanticLabelEntity, String> {
 
-	private String nestedPath;
+    private String nestedPath;
 
-	@Override
-	public SemanticLabelQuery nestedPath(String value) {
-		this.nestedPath = value;
-		return this;
-	}
+    @Override
+    public SemanticLabelQuery nestedPath(String value) {
+        this.nestedPath = value;
+        return this;
+    }
 
-	private final ConventionService conventionService;
+    public SemanticLabelQuery(
+            ElasticsearchRestTemplate elasticsearchRestTemplate,
+            ElasticProperties elasticProperties
+    ) {
+        super(elasticsearchRestTemplate, elasticProperties);
+    }
 
-	public SemanticLabelQuery(
-			ElasticsearchRestTemplate elasticsearchRestTemplate,
-			ElasticProperties elasticProperties,
-			ConventionService conventionService
-	) {
-		super(elasticsearchRestTemplate, elasticProperties);
-		this.conventionService = conventionService;
-	}
+    @Override
+    protected Class<SemanticLabelEntity> entityClass() {
+        return SemanticLabelEntity.class;
+    }
 
-	@Override
-	protected Class<SemanticLabelEntity> entityClass() {
-		return SemanticLabelEntity.class;
-	}
+    @Override
+    protected Boolean isFalseQuery() {
+        return Boolean.FALSE;
+    }
 
-	@Override
-	protected Boolean isFalseQuery() {
-		return false;
-	}
+    @Override
+    protected QueryBuilder applyAuthZ() {
+        return null;
+    }
 
-	@Override
-	protected QueryBuilder applyAuthZ() {
-		return null;
-	}
+    @Override
+    protected QueryBuilder applyFilters() {
+//		List<QueryBuilder> predicates = new ArrayList<>();
+//
+//		if (predicates.size() > 0) {
+//			return this.and(predicates);
+//		} else {
+//			return null;
+//		}
+        return null;
+    }
 
-	@Override
-	protected QueryBuilder applyFilters() {
-		List<QueryBuilder> predicates = new ArrayList<>();
+    @Override
+    public SemanticLabelEntity convert(Map<String, Object> rawData, Set<String> columns) {
+        SemanticLabelEntity mocDoc = new SemanticLabelEntity();
+        if (columns.contains(SemanticLabelEntity.Fields.label))
+            mocDoc.setLabel(FieldBasedMapper.shallowSafeConversion(rawData.get(SemanticLabelEntity.Fields.label), String.class));
+        return mocDoc;
+    }
 
-		if (predicates.size() > 0) {
-			return this.and(predicates);
-		} else {
-			return null;
-		}
-	}
+    @Override
+    protected ElasticField fieldNameOf(FieldResolver item) {
+        if (item.match(SemanticsLabel._label))
+            return this.elasticFieldOf(SemanticLabelEntity.Fields.label).disableInfer(true);
+        else
+            return null;
+    }
 
-	@Override
-	public SemanticLabelEntity convert(Map<String, Object> rawData, Set<String> columns) {
-		SemanticLabelEntity mocDoc = new SemanticLabelEntity();
-		if (columns.contains(SemanticLabelEntity.Fields.label)) mocDoc.setLabel(FieldBasedMapper.shallowSafeConversion(rawData.get(SemanticLabelEntity.Fields.label), String.class));
-		return mocDoc;
-	}
+    @Override
+    protected String getNestedPath() {
+        return this.nestedPath;
+    }
 
-	@Override
-	protected ElasticField fieldNameOf(FieldResolver item) {
-		if (item.match(SemanticsLabel._label)) return this.elasticFieldOf(SemanticLabelEntity.Fields.label).disableInfer(true);
-		else return null;
-	}
+    @Override
+    protected String toKey(String key) {
+        return key;
+    }
 
-	@Override
-	protected String getNestedPath() {
-		return this.nestedPath;
-	}
+    @Override
+    protected ElasticField getKeyField() {
+        return null;
+    }
 
-	@Override
-	protected String toKey(String key) {
-		return key;
-	}
-
-	@Override
-	protected ElasticField getKeyField() {
-		return null;
-	}
-
-	@Override
-	protected ElasticNestedQuery<?, ?, ?> nestedQueryOf(FieldResolver item) {
-		return null;
-	}
+    @Override
+    protected ElasticNestedQuery<?, ?, ?> nestedQueryOf(FieldResolver item) {
+        return null;
+    }
 }

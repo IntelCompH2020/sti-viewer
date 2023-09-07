@@ -13,21 +13,22 @@ import org.springframework.stereotype.Component;
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class CreateDataGroupConsistencyHandler implements ConsistencyHandler<CreateDataGroupConsistencyPredicates> {
 
-	private final QueryFactory queryFactory;
+    private final QueryFactory queryFactory;
 
-	public CreateDataGroupConsistencyHandler(QueryFactory queryFactory) {
-		this.queryFactory = queryFactory;
-	}
+    public CreateDataGroupConsistencyHandler(QueryFactory queryFactory) {
+        this.queryFactory = queryFactory;
+    }
 
-	@Override
-	public Boolean isConsistent(CreateDataGroupConsistencyPredicates consistencyPredicates) {
-		if (consistencyPredicates.getGroupHash() == null) return false;
-		long count = this.queryFactory.query(DataGroupRequestQuery.class).groupHashes(consistencyPredicates.getGroupHash()).ids(consistencyPredicates.getRequestId()).count();
-		if (count == 0) return false;
+    @Override
+    public Boolean isConsistent(CreateDataGroupConsistencyPredicates consistencyPredicates) {
+        if (consistencyPredicates.getGroupHash() == null)
+            return Boolean.FALSE;
+        long count = this.queryFactory.query(DataGroupRequestQuery.class).groupHashes(consistencyPredicates.getGroupHash()).ids(consistencyPredicates.getRequestId()).count();
+        if (count == 0)
+            return Boolean.FALSE;
 
-		DataGroupRequestEntity item = this.queryFactory.query(DataGroupRequestQuery.class).groupHashes(consistencyPredicates.getGroupHash()).ids(consistencyPredicates.getRequestId()).first();
+        DataGroupRequestEntity item = this.queryFactory.query(DataGroupRequestQuery.class).groupHashes(consistencyPredicates.getGroupHash()).ids(consistencyPredicates.getRequestId()).first();
 
-		if (item.getStatus() != DataGroupRequestStatus.PENDING) return false;
-		return true;
-	}
+        return item.getStatus() == DataGroupRequestStatus.PENDING;
+    }
 }

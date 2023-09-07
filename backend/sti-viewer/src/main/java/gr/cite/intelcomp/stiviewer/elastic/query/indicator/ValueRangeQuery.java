@@ -23,89 +23,96 @@ import java.util.*;
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class ValueRangeQuery extends ElasticInnerObjectQuery<ValueRangeQuery, ValueRangeEntity, UUID> {
 
-	private String innerPath;
+    private String innerPath;
 
-	private final QueryFactory queryFactory;
+    private final QueryFactory queryFactory;
 
-	@Override
-	public ValueRangeQuery innerPath(String value) {
-		this.innerPath = value;
-		return this;
-	}
+    @Override
+    public ValueRangeQuery innerPath(String value) {
+        this.innerPath = value;
+        return this;
+    }
 
-	private final ConventionService conventionService;
+    private final ConventionService conventionService;
 
-	public ValueRangeQuery(
-			ElasticsearchRestTemplate elasticsearchRestTemplate,
-			ElasticProperties elasticProperties,
-			QueryFactory queryFactory,
-			ConventionService conventionService
-	) {
-		super(elasticsearchRestTemplate, elasticProperties);
-		this.queryFactory = queryFactory;
-		this.conventionService = conventionService;
-	}
+    public ValueRangeQuery(
+            ElasticsearchRestTemplate elasticsearchRestTemplate,
+            ElasticProperties elasticProperties,
+            QueryFactory queryFactory,
+            ConventionService conventionService
+    ) {
+        super(elasticsearchRestTemplate, elasticProperties);
+        this.queryFactory = queryFactory;
+        this.conventionService = conventionService;
+    }
 
-	@Override
-	protected Class<ValueRangeEntity> entityClass() {
-		return ValueRangeEntity.class;
-	}
+    @Override
+    protected Class<ValueRangeEntity> entityClass() {
+        return ValueRangeEntity.class;
+    }
 
-	@Override
-	protected Boolean isFalseQuery() {
-		return false;
-	}
+    @Override
+    protected Boolean isFalseQuery() {
+        return Boolean.FALSE;
+    }
 
-	@Override
-	protected QueryBuilder applyAuthZ() {
-		return null;
-	}
+    @Override
+    protected QueryBuilder applyAuthZ() {
+        return null;
+    }
 
-	@Override
-	protected QueryBuilder applyFilters() {
-		List<QueryBuilder> predicates = new ArrayList<>();
+    @Override
+    protected QueryBuilder applyFilters() {
+//		List<QueryBuilder> predicates = new ArrayList<>();
+//
+//		if (predicates.size() > 0) {
+//			return this.and(predicates);
+//		} else {
+//			return null;
+//		}
+        return null;
+    }
 
-		if (predicates.size() > 0) {
-			return this.and(predicates);
-		} else {
-			return null;
-		}
-	}
+    @Override
+    public ValueRangeEntity convert(Map<String, Object> rawData, Set<String> columns) {
+        ValueRangeEntity mocDoc = new ValueRangeEntity();
+        if (columns.contains(ValueRangeEntity.Fields.min))
+            mocDoc.setMin(FieldBasedMapper.shallowSafeConversion(rawData.get(ValueRangeEntity.Fields.min), Double.class));
+        if (columns.contains(ValueRangeEntity.Fields.max))
+            mocDoc.setMax(FieldBasedMapper.shallowSafeConversion(rawData.get(ValueRangeEntity.Fields.max), Double.class));
+        mocDoc.setValues(this.convertNested(rawData, columns, this.queryFactory.query(ValueRangeValueQuery.class), ValueRangeEntity.Fields.values, this.getInnerPath()));
+        return mocDoc;
+    }
 
-	@Override
-	public ValueRangeEntity convert(Map<String, Object> rawData, Set<String> columns) {
-		ValueRangeEntity mocDoc = new ValueRangeEntity();
-		if (columns.contains(ValueRangeEntity.Fields.min)) mocDoc.setMin(FieldBasedMapper.shallowSafeConversion(rawData.get(ValueRangeEntity.Fields.min), Double.class));
-		if (columns.contains(ValueRangeEntity.Fields.max)) mocDoc.setMax(FieldBasedMapper.shallowSafeConversion(rawData.get(ValueRangeEntity.Fields.max), Double.class));
-		mocDoc.setValues(this.convertNested(rawData, columns, this.queryFactory.query(ValueRangeValueQuery.class), ValueRangeEntity.Fields.values, this.getInnerPath()));
-		return mocDoc;
-	}
+    @Override
+    protected ElasticField fieldNameOf(FieldResolver item) {
+        if (item.match(ValueRange._min))
+            return this.elasticFieldOf(ValueRangeEntity.Fields.min).disableInfer(true);
+        else if (item.match(ValueRange._max))
+            return this.elasticFieldOf(ValueRangeEntity.Fields.max).disableInfer(true);
+        else if (item.prefix(ValueRange._values))
+            return this.queryFactory.query(ValueRangeValueQuery.class).nestedPath(this.conventionService.asIndexer(this.getInnerPath(), ValueRangeEntity.Fields.values)).fieldNameOf(this.extractPrefixed(item, ValueRange._values));
+        else
+            return null;
+    }
 
-	@Override
-	protected ElasticField fieldNameOf(FieldResolver item) {
-		if (item.match(ValueRange._min)) return this.elasticFieldOf(ValueRangeEntity.Fields.min).disableInfer(true);
-		else if (item.match(ValueRange._max)) return this.elasticFieldOf(ValueRangeEntity.Fields.max).disableInfer(true);
-		else if (item.prefix(ValueRange._values)) return this.queryFactory.query(ValueRangeValueQuery.class).nestedPath(this.conventionService.asIndexer(this.getInnerPath(), ValueRangeEntity.Fields.values)).fieldNameOf(this.extractPrefixed(item, ValueRange._values));
-		else return null;
-	}
+    @Override
+    protected String getInnerPath() {
+        return this.innerPath;
+    }
 
-	@Override
-	protected String getInnerPath() {
-		return this.innerPath;
-	}
+    @Override
+    protected UUID toKey(String key) {
+        return UUID.fromString(key);
+    }
 
-	@Override
-	protected UUID toKey(String key) {
-		return UUID.fromString(key);
-	}
+    @Override
+    protected ElasticField getKeyField() {
+        return this.elasticFieldOf(IndicatorIntegerMapEntity.Fields.key);
+    }
 
-	@Override
-	protected ElasticField getKeyField() {
-		return this.elasticFieldOf(IndicatorIntegerMapEntity.Fields.key);
-	}
-
-	@Override
-	protected ElasticNestedQuery<?, ?, ?> nestedQueryOf(FieldResolver item) {
-		return null;
-	}
+    @Override
+    protected ElasticNestedQuery<?, ?, ?> nestedQueryOf(FieldResolver item) {
+        return null;
+    }
 }
