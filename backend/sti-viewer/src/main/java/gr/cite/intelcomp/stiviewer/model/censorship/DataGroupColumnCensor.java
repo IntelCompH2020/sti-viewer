@@ -20,26 +20,28 @@ import java.util.UUID;
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class DataGroupColumnCensor extends BaseCensor {
 
-	private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(DataGroupColumnCensor.class));
+    private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(DataGroupColumnCensor.class));
 
-	protected final AuthorizationService authService;
-	protected final CensorFactory censorFactory;
+    protected final AuthorizationService authService;
 
-	@Autowired
-	public DataGroupColumnCensor(
-			ConventionService conventionService,
-			AuthorizationService authService,
-			CensorFactory censorFactory
-	) {
-		super(conventionService);
-		this.authService = authService;
-		this.censorFactory = censorFactory;
-	}
+    protected final CensorFactory censorFactory;
 
-	public void censor(FieldSet fields, UUID userId) throws MyForbiddenException {
-		logger.debug(new DataLogEntry("censoring fields", fields));
-		if (this.isEmpty(fields)) return;
-		this.authService.authorizeForce(Permission.BrowseDataGroupRequest);
-	}
+    @Autowired
+    public DataGroupColumnCensor(
+            ConventionService conventionService,
+            AuthorizationService authService,
+            CensorFactory censorFactory
+    ) {
+        super(conventionService);
+        this.authService = authService;
+        this.censorFactory = censorFactory;
+    }
+
+    public void censor(FieldSet fields, UUID userId) throws MyForbiddenException {
+        logger.debug(new DataLogEntry("censoring fields", fields));
+        if (this.isEmpty(fields))
+            return;
+        this.authService.authorizeForce(Permission.BrowseDataGroupRequest);
+    }
 
 }

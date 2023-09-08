@@ -23,47 +23,50 @@ import java.util.UUID;
 @Component
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class DetailItemDeleter implements Deleter {
-	private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(DetailItemDeleter.class));
 
-	private final TenantEntityManager entityManager;
-	protected final QueryFactory queryFactory;
+    private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(DetailItemDeleter.class));
 
-	@Autowired
-	public DetailItemDeleter(
-			TenantEntityManager entityManager, QueryFactory queryFactory
-	) {
-		this.entityManager = entityManager;
-		this.queryFactory = queryFactory;
-	}
+    private final TenantEntityManager entityManager;
 
-	public void deleteAndSaveByIds(List<UUID> ids) throws InvalidApplicationException {
-		logger.debug(new MapLogEntry("collecting to delete").And("count", Optional.ofNullable(ids).map(e -> e.size()).orElse(0)).And("ids", ids));
-		List<DetailItemEntity> datas = this.queryFactory.query(DetailItemQuery.class).ids(ids).collect();
-		logger.trace("retrieved {} items", Optional.ofNullable(datas).map(e -> e.size()).orElse(0));
-		this.deleteAndSave(datas);
-	}
+    protected final QueryFactory queryFactory;
 
-	public void deleteAndSave(List<DetailItemEntity> datas) throws InvalidApplicationException {
-		logger.debug("will delete {} items", Optional.ofNullable(datas).map(e -> e.size()).orElse(0));
-		this.delete(datas);
-		logger.trace("saving changes");
-		this.entityManager.flush();
-		logger.trace("changes saved");
-	}
+    @Autowired
+    public DetailItemDeleter(
+            TenantEntityManager entityManager, QueryFactory queryFactory
+    ) {
+        this.entityManager = entityManager;
+        this.queryFactory = queryFactory;
+    }
 
-	public void delete(List<DetailItemEntity> datas) throws InvalidApplicationException {
-		logger.debug("will delete {} items", Optional.ofNullable(datas).map(x -> x.size()).orElse(0));
-		if (datas == null || datas.isEmpty()) return;
+    public void deleteAndSaveByIds(List<UUID> ids) throws InvalidApplicationException {
+        logger.debug(new MapLogEntry("collecting to delete").And("count", Optional.ofNullable(ids).map(List::size).orElse(0)).And("ids", ids));
+        List<DetailItemEntity> data = this.queryFactory.query(DetailItemQuery.class).ids(ids).collect();
+        logger.trace("retrieved {} items", Optional.ofNullable(data).map(List::size).orElse(0));
+        this.deleteAndSave(data);
+    }
 
-		Instant now = Instant.now();
+    public void deleteAndSave(List<DetailItemEntity> data) throws InvalidApplicationException {
+        logger.debug("will delete {} items", Optional.ofNullable(data).map(List::size).orElse(0));
+        this.delete(data);
+        logger.trace("saving changes");
+        this.entityManager.flush();
+        logger.trace("changes saved");
+    }
 
-		for (DetailItemEntity item : datas) {
-			logger.trace("deleting item {}", item.getId());
-			item.setIsActive(IsActive.INACTIVE);
-			item.setUpdatedAt(now);
-			logger.trace("updating item");
-			this.entityManager.merge(item);
-			logger.trace("updated item");
-		}
-	}
+    public void delete(List<DetailItemEntity> data) throws InvalidApplicationException {
+        logger.debug("will delete {} items", Optional.ofNullable(data).map(List::size).orElse(0));
+        if (data == null || data.isEmpty())
+            return;
+
+        Instant now = Instant.now();
+
+        for (DetailItemEntity item : data) {
+            logger.trace("deleting item {}", item.getId());
+            item.setIsActive(IsActive.INACTIVE);
+            item.setUpdatedAt(now);
+            logger.trace("updating item");
+            this.entityManager.merge(item);
+            logger.trace("updated item");
+        }
+    }
 }

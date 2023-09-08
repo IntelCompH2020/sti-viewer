@@ -66,12 +66,18 @@ public class DynamicPageContentLookup extends Lookup {
 
     public DynamicPageContentQuery enrich(QueryFactory queryFactory) {
         DynamicPageContentQuery query = queryFactory.query(DynamicPageContentQuery.class);
-        if (this.like != null) query.like(this.like);
-        if (this.ids != null) query.ids(this.ids);
-        if (this.pageIds != null) query.pageIds(this.pageIds);
-        if (this.languages != null) query.languages(this.languages);
-        if (this.isActives != null) query.isActive(this.isActives);
-        if (this.excludedIds != null) query.excludedIds(this.excludedIds);
+        if (this.like != null)
+            query.like(this.like);
+        if (this.ids != null)
+            query.ids(this.ids);
+        if (this.pageIds != null)
+            query.pageIds(this.pageIds);
+        if (this.languages != null)
+            query.languages(this.languages);
+        if (this.isActives != null)
+            query.isActive(this.isActives);
+        if (this.excludedIds != null)
+            query.excludedIds(this.excludedIds);
 
         this.enrichCommon(query);
 

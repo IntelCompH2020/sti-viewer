@@ -172,16 +172,19 @@ public class ScheduledEventQuery extends QueryBase<ScheduledEventEntity> {
 		if (this.createdAfter != null) {
 			predicates.add(queryContext.CriteriaBuilder.greaterThan(queryContext.Root.get(ScheduledEventEntity._createdAt), this.createdAfter));
 		}
+
 		if (this.isActives != null) {
 			CriteriaBuilder.In<IsActive> inClause = queryContext.CriteriaBuilder.in(queryContext.Root.get(ScheduledEventEntity._isActive));
 			for (IsActive item : this.isActives) inClause.value(item);
 			predicates.add(inClause);
 		}
+
 		if (this.keyTypes != null) {
 			CriteriaBuilder.In<String> inClause = queryContext.CriteriaBuilder.in(queryContext.Root.get(ScheduledEventEntity._keyType));
 			for (String item : this.keyTypes) inClause.value(item);
 			predicates.add(inClause);
 		}
+
 		if (this.keys != null) {
 			CriteriaBuilder.In<String> inClause = queryContext.CriteriaBuilder.in(queryContext.Root.get(ScheduledEventEntity._key));
 			for (String item : this.keys) inClause.value(item);
@@ -199,7 +202,7 @@ public class ScheduledEventQuery extends QueryBase<ScheduledEventEntity> {
 					queryContext.CriteriaBuilder.lessThanOrEqualTo(queryContext.Root.get(ScheduledEventEntity._retryCount), this.retryThreshold)));
 		}
 
-		if (predicates.size() > 0) {
+		if (!predicates.isEmpty()) {
 			Predicate[] predicatesArray = predicates.toArray(new Predicate[0]);
 			return queryContext.CriteriaBuilder.and(predicatesArray);
 		} else {
@@ -217,7 +220,6 @@ public class ScheduledEventQuery extends QueryBase<ScheduledEventEntity> {
 		item.setCreatorId(QueryBase.convertSafe(tuple, columns, ScheduledEventEntity._creatorId, UUID.class));
 		item.setKeyType(QueryBase.convertSafe(tuple, columns, ScheduledEventEntity._keyType, String.class));
 		item.setData(QueryBase.convertSafe(tuple, columns, ScheduledEventEntity._data, String.class));
-		item.setCreatedAt(QueryBase.convertSafe(tuple, columns, ScheduledEventEntity._createdAt, Instant.class));
 		item.setIsActive(QueryBase.convertSafe(tuple, columns, ScheduledEventEntity._isActive, IsActive.class));
 		item.setStatus(QueryBase.convertSafe(tuple, columns, ScheduledEventEntity._status, ScheduledEventStatus.class));
 		item.setRetryCount(QueryBase.convertSafe(tuple, columns, ScheduledEventEntity._retryCount, Integer.class));
@@ -228,19 +230,31 @@ public class ScheduledEventQuery extends QueryBase<ScheduledEventEntity> {
 
 	@Override
 	protected String fieldNameOf(FieldResolver item) {
-		if (item.match(ScheduledEventEntity._id)) return ScheduledEventEntity._id;
-		else if (item.match(ScheduledEventEntity._createdAt)) return ScheduledEventEntity._createdAt;
-		else if (item.match(ScheduledEventEntity._key)) return ScheduledEventEntity._key;
-		else if (item.match(ScheduledEventEntity._eventType)) return ScheduledEventEntity._eventType;
-		else if (item.match(ScheduledEventEntity._runAt)) return ScheduledEventEntity._runAt;
-		else if (item.match(ScheduledEventEntity._creatorId)) return ScheduledEventEntity._creatorId;
-		else if (item.match(ScheduledEventEntity._keyType)) return ScheduledEventEntity._keyType;
-		else if (item.match(ScheduledEventEntity._data)) return ScheduledEventEntity._data;
-		else if (item.match(ScheduledEventEntity._isActive)) return ScheduledEventEntity._isActive;
-		else if (item.match(ScheduledEventEntity._status)) return ScheduledEventEntity._status;
-		else if (item.match(ScheduledEventEntity._retryCount)) return ScheduledEventEntity._retryCount;
-		else if (item.match(ScheduledEventEntity._createdAt)) return ScheduledEventEntity._createdAt;
-		else if (item.match(ScheduledEventEntity._updatedAt)) return ScheduledEventEntity._updatedAt;
-		else return null;
+		if (item.match(ScheduledEventEntity._id))
+			return ScheduledEventEntity._id;
+		else if (item.match(ScheduledEventEntity._key))
+			return ScheduledEventEntity._key;
+		else if (item.match(ScheduledEventEntity._eventType))
+			return ScheduledEventEntity._eventType;
+		else if (item.match(ScheduledEventEntity._runAt))
+			return ScheduledEventEntity._runAt;
+		else if (item.match(ScheduledEventEntity._creatorId))
+			return ScheduledEventEntity._creatorId;
+		else if (item.match(ScheduledEventEntity._keyType))
+			return ScheduledEventEntity._keyType;
+		else if (item.match(ScheduledEventEntity._data))
+			return ScheduledEventEntity._data;
+		else if (item.match(ScheduledEventEntity._isActive))
+			return ScheduledEventEntity._isActive;
+		else if (item.match(ScheduledEventEntity._status))
+			return ScheduledEventEntity._status;
+		else if (item.match(ScheduledEventEntity._retryCount))
+			return ScheduledEventEntity._retryCount;
+		else if (item.match(ScheduledEventEntity._createdAt))
+			return ScheduledEventEntity._createdAt;
+		else if (item.match(ScheduledEventEntity._updatedAt))
+			return ScheduledEventEntity._updatedAt;
+		else
+			return null;
 	}
 }

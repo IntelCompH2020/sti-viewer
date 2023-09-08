@@ -20,7 +20,9 @@ import gr.cite.intelcomp.stiviewer.common.types.indicatorgroup.IndicatorGroupAcc
 import gr.cite.intelcomp.stiviewer.common.types.indicatorgroup.IndicatorGroupAccessColumnConfigViewEntity;
 import gr.cite.intelcomp.stiviewer.common.types.indicatorgroup.IndicatorGroupAccessConfigViewEntity;
 import gr.cite.intelcomp.stiviewer.common.types.indicatorgroup.IndicatorGroupEntity;
-import gr.cite.intelcomp.stiviewer.common.types.notification.*;
+import gr.cite.intelcomp.stiviewer.common.types.notification.DataType;
+import gr.cite.intelcomp.stiviewer.common.types.notification.FieldInfo;
+import gr.cite.intelcomp.stiviewer.common.types.notification.NotificationFieldData;
 import gr.cite.intelcomp.stiviewer.convention.ConventionService;
 import gr.cite.intelcomp.stiviewer.data.*;
 import gr.cite.intelcomp.stiviewer.errorcode.ErrorThesaurusProperties;
@@ -37,7 +39,6 @@ import gr.cite.intelcomp.stiviewer.query.DataAccessRequestQuery;
 import gr.cite.intelcomp.stiviewer.query.IndicatorAccessQuery;
 import gr.cite.intelcomp.stiviewer.service.indicatoraccess.IndicatorAccessService;
 import gr.cite.intelcomp.stiviewer.service.indicatorgroup.IndicatorGroupService;
-import gr.cite.intelcomp.stiviewer.service.user.UserServiceImpl;
 import gr.cite.tools.data.builder.BuilderFactory;
 import gr.cite.tools.data.query.QueryFactory;
 import gr.cite.tools.exception.MyApplicationException;
@@ -67,7 +68,7 @@ import java.util.stream.Collectors;
 @RequestScope
 public class DataAccessRequestServiceImpl implements DataAccessRequestService {
 
-    private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(UserServiceImpl.class));
+    private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(DataAccessRequestServiceImpl.class));
 
     private final TenantEntityManager entityManager;
 
@@ -180,15 +181,20 @@ public class DataAccessRequestServiceImpl implements DataAccessRequestService {
                 shouldNotifyForReject = true;
             }
 
-            if (isUpdate) this.entityManager.merge(data);
-            else this.entityManager.persist(data);
+            if (isUpdate)
+                this.entityManager.merge(data);
+            else
+                this.entityManager.persist(data);
 
             this.entityManager.flush();
 
-            if (shouldNotifyForApprove) this.notifyForApprove(data);
-            if (shouldNotifyForReject) this.notifyForReject(data);
+            if (shouldNotifyForApprove)
+                this.notifyForApprove(data);
+            if (shouldNotifyForReject)
+                this.notifyForReject(data);
         } finally {
-            if (shouldChange) this.tenantScope.removeTempTenant(this.globalEntityManager);
+            if (shouldChange)
+                this.tenantScope.removeTempTenant(this.globalEntityManager);
         }
 
         this.entityManager.flush();
@@ -218,7 +224,7 @@ public class DataAccessRequestServiceImpl implements DataAccessRequestService {
         event.setContactTypeHint(NotificationContactType.EMAIL);
         event.setNotificationType(this.config.getDataAccessRequestApprovedNotificationKey());
         NotificationFieldData fieldData = new NotificationFieldData();
-        List<FieldInfo> fieldInfoList = new ArrayList<>();
+        List<FieldInfo> fieldInfoList = new ArrayList<>(100);
         fieldInfoList.add(new FieldInfo(this.config.getDataAccessRequestApprovedTemplate().getName(), DataType.String, user.getLastName() + " " + user.getFirstName()));
         fieldInfoList.add(new FieldInfo(this.config.getDataAccessRequestApprovedTemplate().getTenantCode(), DataType.String, tenantScope.getTenantCode()));
         fieldData.setFields(fieldInfoList);
@@ -257,7 +263,8 @@ public class DataAccessRequestServiceImpl implements DataAccessRequestService {
     }
 
     private DataAccessRequestConfigEntity mapToDataAccessRequestConfig(DataAccessRequestConfigPersist config) {
-        if (config == null) return null;
+        if (config == null)
+            return null;
         DataAccessRequestConfigEntity persistConfig = new DataAccessRequestConfigEntity();
         if (config.getIndicators() != null && !config.getIndicators().isEmpty()) {
             List<DataAccessRequestIndicatorConfigEntity> indicators = new ArrayList<>();
@@ -365,11 +372,14 @@ public class DataAccessRequestServiceImpl implements DataAccessRequestService {
 
             this.entityManager.flush();
 
-            if (shouldNotifyForApprove) this.notifyForApprove(data);
-            if (shouldNotifyForReject) this.notifyForReject(data);
+            if (shouldNotifyForApprove)
+                this.notifyForApprove(data);
+            if (shouldNotifyForReject)
+                this.notifyForReject(data);
 
         } finally {
-            if (shouldChange) this.tenantScope.removeTempTenant(this.globalEntityManager);
+            if (shouldChange)
+                this.tenantScope.removeTempTenant(this.globalEntityManager);
         }
 
 
@@ -393,7 +403,8 @@ public class DataAccessRequestServiceImpl implements DataAccessRequestService {
             default:
                 throw new MyApplicationException("invalid type " + status);
         }
-        if (returnValue) this.authorizationService.authorizeForce(Permission.AllowNoTenant);
+        if (returnValue)
+            this.authorizationService.authorizeForce(Permission.AllowNoTenant);
         return returnValue;
     }
 
@@ -426,7 +437,7 @@ public class DataAccessRequestServiceImpl implements DataAccessRequestService {
     }
 
     private void persistIndicatorAccessConfig(UUID indicatorId, UUID groupId, List<DataAccessRequestFilterColumnEntity> filterColumns) {
-        IndicatorAccessEntity indicatorAccessEntity = this.queryFactory.query(IndicatorAccessQuery.class).indicatorIds(indicatorId).isActive(IsActive.ACTIVE).hasUser(false).first();
+        IndicatorAccessEntity indicatorAccessEntity = this.queryFactory.query(IndicatorAccessQuery.class).indicatorIds(indicatorId).isActive(IsActive.ACTIVE).hasUser(Boolean.FALSE).first();
 
         IndicatorAccessPersist persist = new IndicatorAccessPersist();
         persist.setIndicatorId(indicatorId);
@@ -453,7 +464,7 @@ public class DataAccessRequestServiceImpl implements DataAccessRequestService {
         IndicatorAccessConfigPersist indicatorAccessConfigPersist = new IndicatorAccessConfigPersist();
 
         if (indicatorAccessConfigEntity.getGlobalFilterColumns() != null && !indicatorAccessConfigEntity.getGlobalFilterColumns().isEmpty()) {
-            List<FilterColumnConfigPersist> filterColumnConfigPersists = new ArrayList<>();
+            List<FilterColumnConfigPersist> filterColumnConfigPersists = new ArrayList<>(100);
             for (FilterColumnConfigEntity columnConfig : indicatorAccessConfigEntity.getGlobalFilterColumns()) {
                 filterColumnConfigPersists.add(this.toPersistModel(columnConfig));
             }
@@ -467,7 +478,7 @@ public class DataAccessRequestServiceImpl implements DataAccessRequestService {
             for (UUID groupId : indicatorAccessConfigEntity.getGroupFilterColumns().keySet()) {
                 List<FilterColumnConfigEntity> filterColumnConfigEntitiesToPersist = indicatorAccessConfigEntity.getGroupFilterColumns().get(groupId);
                 if (filterColumnConfigEntitiesToPersist != null && !filterColumnConfigEntitiesToPersist.isEmpty()) {
-                    List<FilterColumnConfigPersist> filterColumnConfigPersists = new ArrayList<>();
+                    List<FilterColumnConfigPersist> filterColumnConfigPersists = new ArrayList<>(100);
                     for (FilterColumnConfigEntity columnConfig : filterColumnConfigEntitiesToPersist) {
                         filterColumnConfigPersists.add(this.toPersistModel(columnConfig));
                     }
@@ -490,9 +501,11 @@ public class DataAccessRequestServiceImpl implements DataAccessRequestService {
     }
 
     private IndicatorAccessConfigEntity mergeIndicatorAccessConfig(List<DataAccessRequestFilterColumnEntity> filterColumns, UUID groupId, IndicatorAccessConfigEntity existingConfig) {
-        if (filterColumns == null || filterColumns.isEmpty()) return existingConfig;
+        if (filterColumns == null || filterColumns.isEmpty())
+            return existingConfig;
         boolean isGlobalFilters = groupId == null;
-        if (existingConfig == null) existingConfig = new IndicatorAccessConfigEntity();
+        if (existingConfig == null)
+            existingConfig = new IndicatorAccessConfigEntity();
         if (isGlobalFilters && existingConfig.getGlobalFilterColumns() == null) {
             if (existingConfig.getGlobalFilterColumns() == null)
                 existingConfig.setGlobalFilterColumns(new ArrayList<>());
@@ -593,7 +606,7 @@ public class DataAccessRequestServiceImpl implements DataAccessRequestService {
     }
 
     private void addColumnAccessFromIndicatorAccessEntity(IndicatorGroupEntity indicatorGroupEntity, IndicatorGroupAccessConfigViewEntity indicatorGroupAccessConfigViewEntity) {
-        List<IndicatorAccessEntity> indicatorAccesses = this.queryFactory.query(IndicatorAccessQuery.class).isActive(IsActive.ACTIVE).hasUser(false).indicatorIds(indicatorGroupEntity.getIndicatorIds())
+        List<IndicatorAccessEntity> indicatorAccesses = this.queryFactory.query(IndicatorAccessQuery.class).isActive(IsActive.ACTIVE).hasUser(Boolean.FALSE).indicatorIds(indicatorGroupEntity.getIndicatorIds())
                 .collectAs(new BaseFieldSet().ensure(IndicatorAccess._config).ensure(IndicatorAccess._indicator));
         for (IndicatorAccessEntity indicatorAccess : indicatorAccesses) {
             IndicatorAccessConfigEntity indicatorAccessConfig = this.jsonHandlingService.fromJsonSafe(IndicatorAccessConfigEntity.class, indicatorAccess.getConfig());

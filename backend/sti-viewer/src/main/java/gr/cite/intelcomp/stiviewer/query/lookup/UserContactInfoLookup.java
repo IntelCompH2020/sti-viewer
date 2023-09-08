@@ -13,7 +13,6 @@ public class UserContactInfoLookup extends Lookup {
     private List<IsActive> isActive;
     private List<UUID> userIds;
     private List<UUID> tenantIds;
-
     private UserLookup userSubQuery;
 
     public List<IsActive> getIsActive() {
@@ -40,12 +39,24 @@ public class UserContactInfoLookup extends Lookup {
         this.tenantIds = tenantIds;
     }
 
+    public UserLookup getUserSubQuery() {
+        return userSubQuery;
+    }
+
+    public void setUserSubQuery(UserLookup userSubQuery) {
+        this.userSubQuery = userSubQuery;
+    }
+
     public UserContactInfoQuery enrich(QueryFactory queryFactory) {
         UserContactInfoQuery query = queryFactory.query(UserContactInfoQuery.class);
-        if (this.isActive != null) query.isActive(this.isActive);
-        if (this.userIds != null) query.userIds(this.userIds);
-        if (this.tenantIds != null) query.tenantIds(this.tenantIds);
-        if (this.userSubQuery != null) query.userSubQuery(this.userSubQuery.enrich(queryFactory));
+        if (this.isActive != null)
+            query.isActive(this.isActive);
+        if (this.userIds != null)
+            query.userIds(this.userIds);
+        if (this.tenantIds != null)
+            query.tenantIds(this.tenantIds);
+        if (this.userSubQuery != null)
+            query.userSubQuery(this.userSubQuery.enrich(queryFactory));
 
         this.enrichCommon(query);
 

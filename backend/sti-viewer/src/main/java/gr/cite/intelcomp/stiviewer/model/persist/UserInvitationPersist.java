@@ -29,7 +29,7 @@ public class UserInvitationPersist {
     private String email;
 
     @NotNull(message = "{validation.empty}")
-    private Boolean isConsumed = false;
+    private Boolean isConsumed = Boolean.FALSE;
 
     @NotNull(message = "{validation.empty}")
     private Instant expiresAt;

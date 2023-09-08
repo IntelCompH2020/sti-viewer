@@ -13,25 +13,25 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-
 @Component
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class DetailItemCensor extends BaseCensor {
-	private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(DetailItemCensor.class));
-	protected final AuthorizationService authService;
+    private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(DetailItemCensor.class));
+    protected final AuthorizationService authService;
 
-	@Autowired
-	public DetailItemCensor(
-			ConventionService conventionService,
-			AuthorizationService authService
-	) {
-		super(conventionService);
-		this.authService = authService;
-	}
+    @Autowired
+    public DetailItemCensor(
+            ConventionService conventionService,
+            AuthorizationService authService
+    ) {
+        super(conventionService);
+        this.authService = authService;
+    }
 
-	public void censor(FieldSet fields) throws MyForbiddenException {
-		logger.debug(new DataLogEntry("censoring fields", fields));
-		if (this.isEmpty(fields)) return;
-		this.authService.authorizeForce(Permission.BrowseDetailItem);
-	}
+    public void censor(FieldSet fields) throws MyForbiddenException {
+        logger.debug(new DataLogEntry("censoring fields", fields));
+        if (this.isEmpty(fields))
+            return;
+        this.authService.authorizeForce(Permission.BrowseDetailItem);
+    }
 }

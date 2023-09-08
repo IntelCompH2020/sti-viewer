@@ -18,37 +18,38 @@ import org.springframework.stereotype.Component;
 import java.util.*;
 
 @Component
-//Like in C# make it transient
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class DataGroupInfoColumnBuilder extends BaseBuilder<DataGroupInfoColumn, DataGroupInfoColumnEntity> {
-	private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(DataGroupInfoColumnBuilder.class));
 
-	@Autowired
-	public DataGroupInfoColumnBuilder(ConventionService conventionService) {
-		super(conventionService, logger);
-	}
+    @Autowired
+    public DataGroupInfoColumnBuilder(ConventionService conventionService) {
+        super(conventionService, new LoggerService(LoggerFactory.getLogger(DataGroupInfoColumnBuilder.class)));
+    }
 
-	private EnumSet<AuthorizationFlags> authorize = EnumSet.of(AuthorizationFlags.None);
+    public DataGroupInfoColumnBuilder authorize(EnumSet<AuthorizationFlags> values) {
+        return this;
+    }
 
-	public DataGroupInfoColumnBuilder authorize(EnumSet<AuthorizationFlags> values) {
-		this.authorize = values;
-		return this;
-	}
+    @Override
+    public List<DataGroupInfoColumn> build(FieldSet fields, List<DataGroupInfoColumnEntity> data) throws MyApplicationException {
+        this.logger.debug("building for {} items requesting {} fields", Optional.ofNullable(data).map(List::size).orElse(0), Optional.ofNullable(fields).map(FieldSet::getFields).map(Set::size).orElse(0));
+        this.logger.trace(new DataLogEntry("requested fields", fields));
+        if (fields == null || fields.isEmpty())
+            return new ArrayList<>();
 
-	@Override
-	public List<DataGroupInfoColumn> build(FieldSet fields, List<DataGroupInfoColumnEntity> datas) throws MyApplicationException {
-		this.logger.debug("building for {} items requesting {} fields", Optional.ofNullable(datas).map(e -> e.size()).orElse(0), Optional.ofNullable(fields).map(e -> e.getFields()).map(e -> e.size()).orElse(0));
-		this.logger.trace(new DataLogEntry("requested fields", fields));
-		if (fields == null || fields.isEmpty()) return new ArrayList<>();
+        List<DataGroupInfoColumn> dataGroupInfoColumns = new ArrayList<>(100);
 
-		List<DataGroupInfoColumn> dataGroupInfoColumns = new LinkedList<>();
-		for (DataGroupInfoColumnEntity d : datas) {
-			DataGroupInfoColumn m = new DataGroupInfoColumn();
-			if (fields.hasField(this.asIndexer(DataGroupInfoColumn._fieldCode))) m.setFieldCode(d.getFieldCode());
-			if (fields.hasField(this.asIndexer(DataGroupInfoColumn._values))) m.setValues(d.getValues());
-			dataGroupInfoColumns.add(m);
-		}
+        if (data == null)
+            return dataGroupInfoColumns;
+        for (DataGroupInfoColumnEntity d : data) {
+            DataGroupInfoColumn m = new DataGroupInfoColumn();
+            if (fields.hasField(this.asIndexer(DataGroupInfoColumn._fieldCode)))
+                m.setFieldCode(d.getFieldCode());
+            if (fields.hasField(this.asIndexer(DataGroupInfoColumn._values)))
+                m.setValues(d.getValues());
+            dataGroupInfoColumns.add(m);
+        }
 
-		return dataGroupInfoColumns;
-	}
+        return dataGroupInfoColumns;
+    }
 }

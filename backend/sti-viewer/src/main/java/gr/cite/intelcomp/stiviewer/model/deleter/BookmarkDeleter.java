@@ -5,7 +5,6 @@ import gr.cite.intelcomp.stiviewer.data.BookmarkEntity;
 import gr.cite.intelcomp.stiviewer.data.TenantEntityManager;
 import gr.cite.intelcomp.stiviewer.query.BookmarkQuery;
 import gr.cite.tools.data.deleter.Deleter;
-import gr.cite.tools.data.deleter.DeleterFactory;
 import gr.cite.tools.data.query.QueryFactory;
 import gr.cite.tools.logging.LoggerService;
 import gr.cite.tools.logging.MapLogEntry;
@@ -24,51 +23,51 @@ import java.util.UUID;
 @Component
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class BookmarkDeleter implements Deleter {
-	private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(BookmarkDeleter.class));
 
-	private final TenantEntityManager entityManager;
-	private final QueryFactory queryFactory;
-	private final DeleterFactory deleterFactory;
+    private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(BookmarkDeleter.class));
 
-	@Autowired
-	public BookmarkDeleter(
-			TenantEntityManager entityManager,
-			QueryFactory queryFactory,
-			DeleterFactory deleterFactory
-	) {
-		this.entityManager = entityManager;
-		this.queryFactory = queryFactory;
-		this.deleterFactory = deleterFactory;
-	}
+    private final TenantEntityManager entityManager;
 
-	public void deleteAndSaveByIds(List<UUID> ids) throws InvalidApplicationException {
-		logger.debug(new MapLogEntry("collecting to delete").And("count", Optional.ofNullable(ids).map(e -> e.size()).orElse(0)).And("ids", ids));
-		List<BookmarkEntity> datas = this.queryFactory.query(BookmarkQuery.class).ids(ids).collect();
-		logger.trace("retrieved {} items", Optional.ofNullable(datas).map(e -> e.size()).orElse(0));
-		this.deleteAndSave(datas);
-	}
+    private final QueryFactory queryFactory;
 
-	public void deleteAndSave(List<BookmarkEntity> datas) throws InvalidApplicationException {
-		logger.debug("will delete {} items", Optional.ofNullable(datas).map(e -> e.size()).orElse(0));
-		this.delete(datas);
-		logger.trace("saving changes");
-		this.entityManager.flush();
-		logger.trace("changes saved");
-	}
+    @Autowired
+    public BookmarkDeleter(
+            TenantEntityManager entityManager,
+            QueryFactory queryFactory
+    ) {
+        this.entityManager = entityManager;
+        this.queryFactory = queryFactory;
+    }
 
-	public void delete(List<BookmarkEntity> datas) throws InvalidApplicationException {
-		logger.debug("will delete {} items", Optional.ofNullable(datas).map(x -> x.size()).orElse(0));
-		if (datas == null || datas.isEmpty()) return;
+    public void deleteAndSaveByIds(List<UUID> ids) throws InvalidApplicationException {
+        logger.debug(new MapLogEntry("collecting to delete").And("count", Optional.ofNullable(ids).map(List::size).orElse(0)).And("ids", ids));
+        List<BookmarkEntity> data = this.queryFactory.query(BookmarkQuery.class).ids(ids).collect();
+        logger.trace("retrieved {} items", Optional.ofNullable(data).map(List::size).orElse(0));
+        this.deleteAndSave(data);
+    }
 
-		Instant now = Instant.now();
+    public void deleteAndSave(List<BookmarkEntity> data) throws InvalidApplicationException {
+        logger.debug("will delete {} items", Optional.ofNullable(data).map(List::size).orElse(0));
+        this.delete(data);
+        logger.trace("saving changes");
+        this.entityManager.flush();
+        logger.trace("changes saved");
+    }
 
-		for (BookmarkEntity item : datas) {
-			logger.trace("deleting item {}", item.getId());
-			item.setIsActive(IsActive.INACTIVE);
-			item.setUpdatedAt(now);
-			logger.trace("updating item");
-			this.entityManager.merge(item);
-			logger.trace("updated item");
-		}
-	}
+    public void delete(List<BookmarkEntity> data) throws InvalidApplicationException {
+        logger.debug("will delete {} items", Optional.ofNullable(data).map(List::size).orElse(0));
+        if (data == null || data.isEmpty())
+            return;
+
+        Instant now = Instant.now();
+
+        for (BookmarkEntity item : data) {
+            logger.trace("deleting item {}", item.getId());
+            item.setIsActive(IsActive.INACTIVE);
+            item.setUpdatedAt(now);
+            logger.trace("updating item");
+            this.entityManager.merge(item);
+            logger.trace("updated item");
+        }
+    }
 }

@@ -21,32 +21,33 @@ import java.util.UUID;
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class IndicatorAccessCensor extends BaseCensor {
 
-	private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(IndicatorAccessCensor.class));
+    private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(IndicatorAccessCensor.class));
 
-	protected final AuthorizationService authService;
-	protected final CensorFactory censorFactory;
+    protected final AuthorizationService authService;
+    protected final CensorFactory censorFactory;
 
-	@Autowired
-	public IndicatorAccessCensor(
-			ConventionService conventionService,
-			AuthorizationService authService,
-			CensorFactory censorFactory
-	) {
-		super(conventionService);
-		this.authService = authService;
-		this.censorFactory = censorFactory;
-	}
+    @Autowired
+    public IndicatorAccessCensor(
+            ConventionService conventionService,
+            AuthorizationService authService,
+            CensorFactory censorFactory
+    ) {
+        super(conventionService);
+        this.authService = authService;
+        this.censorFactory = censorFactory;
+    }
 
-	public void censor(FieldSet fields, UUID userId) throws MyForbiddenException {
-		logger.debug(new DataLogEntry("censoring fields", fields));
-		if (this.isEmpty(fields)) return;
-		this.authService.authorizeForce(Permission.BrowseIndicatorAccess);
-		FieldSet tenantFields = fields.extractPrefixed(this.asIndexerPrefix(IndicatorAccess._tenant));
-		this.censorFactory.censor(TenantCensor.class).censor(tenantFields);
-		FieldSet indicatorFields = fields.extractPrefixed(this.asIndexerPrefix(IndicatorAccess._indicator));
-		this.censorFactory.censor(IndicatorCensor.class).censor(indicatorFields, userId);
-		FieldSet userFields = fields.extractPrefixed(this.asIndexerPrefix(IndicatorAccess._user));
-		this.censorFactory.censor(UserCensor.class).censor(userFields, userId);
-	}
+    public void censor(FieldSet fields, UUID userId) throws MyForbiddenException {
+        logger.debug(new DataLogEntry("censoring fields", fields));
+        if (this.isEmpty(fields))
+            return;
+        this.authService.authorizeForce(Permission.BrowseIndicatorAccess);
+        FieldSet tenantFields = fields.extractPrefixed(this.asIndexerPrefix(IndicatorAccess._tenant));
+        this.censorFactory.censor(TenantCensor.class).censor(tenantFields);
+        FieldSet indicatorFields = fields.extractPrefixed(this.asIndexerPrefix(IndicatorAccess._indicator));
+        this.censorFactory.censor(IndicatorCensor.class).censor(indicatorFields, userId);
+        FieldSet userFields = fields.extractPrefixed(this.asIndexerPrefix(IndicatorAccess._user));
+        this.censorFactory.censor(UserCensor.class).censor(userFields, userId);
+    }
 
 }
