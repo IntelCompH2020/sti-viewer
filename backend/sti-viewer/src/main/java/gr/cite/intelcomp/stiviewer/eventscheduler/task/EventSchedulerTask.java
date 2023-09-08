@@ -19,6 +19,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.OptimisticLockException;
+import java.security.SecureRandom;
 import java.time.Instant;
 import java.util.Objects;
 import java.util.UUID;
@@ -132,7 +133,7 @@ public class EventSchedulerTask {
                     accumulatedRetry += (int) (i * options.getRetryThreshold());
                 for (int i = 1; i <= scheduledEventEntity.getRetryCount(); i += 1)
                     pastAccumulateRetry += (int) (i * options.getRetryThreshold());
-                int randAccumulatedRetry = ThreadLocalRandom.current().nextInt((int) (accumulatedRetry / 2), accumulatedRetry + 1);
+                int randAccumulatedRetry = new SecureRandom(UUID.randomUUID().toString().getBytes()).nextInt(accumulatedRetry / 2, accumulatedRetry + 1);
                 long additionalTime = randAccumulatedRetry > options.getMaxRetryDelaySeconds() ? options.getMaxRetryDelaySeconds() : randAccumulatedRetry;
                 long retry = pastAccumulateRetry + additionalTime;
 
