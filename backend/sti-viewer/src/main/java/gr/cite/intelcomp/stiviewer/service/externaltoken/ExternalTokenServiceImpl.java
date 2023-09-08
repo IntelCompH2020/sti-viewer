@@ -61,252 +61,270 @@ import java.util.stream.IntStream;
 @Service
 @RequestScope
 public class ExternalTokenServiceImpl implements ExternalTokenService {
-	private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(ExternalTokenServiceImpl.class));
+    private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(ExternalTokenServiceImpl.class));
 
-	private final TenantEntityManager entityManager;
+    private final TenantEntityManager entityManager;
 
-	private final AuthorizationService authorizationService;
-	private final DeleterFactory deleterFactory;
-	private final BuilderFactory builderFactory;
-	private final ConventionService conventionService;
-	private final ErrorThesaurusProperties errors;
-	private final MessageSource messageSource;
-	private final UserScope userScope;
-	private final QueryFactory queryFactory;
-	private final JsonHandlingService jsonHandlingService;
-	private final CipherService cipherService;
-	private final ExternalTokenServiceProperties config;
-	private final TenantScope tenantScope;
-	@PersistenceContext
-	private EntityManager globalEntityManager;
-	
-	@Autowired
-	public ExternalTokenServiceImpl(
-			TenantEntityManager entityManager,
-			AuthorizationService authorizationService,
-			DeleterFactory deleterFactory,
-			BuilderFactory builderFactory,
-			ConventionService conventionService,
-			ErrorThesaurusProperties errors,
-			MessageSource messageSource,
-			UserScope userScope,
-			QueryFactory queryFactory,
-			JsonHandlingService jsonHandlingService,
-			CipherService cipherService,
-			ExternalTokenServiceProperties properties, 
-			TenantScope tenantScope) {
-		this.entityManager = entityManager;
-		this.authorizationService = authorizationService;
-		this.deleterFactory = deleterFactory;
-		this.builderFactory = builderFactory;
-		this.conventionService = conventionService;
-		this.errors = errors;
-		this.messageSource = messageSource;
-		this.userScope = userScope;
-		this.queryFactory = queryFactory;
-		this.jsonHandlingService = jsonHandlingService;
-		this.cipherService = cipherService;
-		this.config = properties;
-		this.tenantScope = tenantScope;
-	}
+    private final AuthorizationService authorizationService;
+    private final DeleterFactory deleterFactory;
+    private final BuilderFactory builderFactory;
+    private final ConventionService conventionService;
+    private final ErrorThesaurusProperties errors;
+    private final MessageSource messageSource;
+    private final UserScope userScope;
+    private final QueryFactory queryFactory;
+    private final JsonHandlingService jsonHandlingService;
+    private final CipherService cipherService;
+    private final ExternalTokenServiceProperties config;
+    private final TenantScope tenantScope;
+    @PersistenceContext
+    private EntityManager globalEntityManager;
 
-	
-	@Override
-	public ExternalToken persist(ExternalTokenExpirationPersist model, FieldSet fields) throws MyForbiddenException, MyValidationException, MyApplicationException, MyNotFoundException, InvalidApplicationException, OperationNotSupportedException {
-		logger.debug(new MapLogEntry("persisting external token").And("model", model).And("fields", fields));
+    @Autowired
+    public ExternalTokenServiceImpl(
+            TenantEntityManager entityManager,
+            AuthorizationService authorizationService,
+            DeleterFactory deleterFactory,
+            BuilderFactory builderFactory,
+            ConventionService conventionService,
+            ErrorThesaurusProperties errors,
+            MessageSource messageSource,
+            UserScope userScope,
+            QueryFactory queryFactory,
+            JsonHandlingService jsonHandlingService,
+            CipherService cipherService,
+            ExternalTokenServiceProperties properties,
+            TenantScope tenantScope) {
+        this.entityManager = entityManager;
+        this.authorizationService = authorizationService;
+        this.deleterFactory = deleterFactory;
+        this.builderFactory = builderFactory;
+        this.conventionService = conventionService;
+        this.errors = errors;
+        this.messageSource = messageSource;
+        this.userScope = userScope;
+        this.queryFactory = queryFactory;
+        this.jsonHandlingService = jsonHandlingService;
+        this.cipherService = cipherService;
+        this.config = properties;
+        this.tenantScope = tenantScope;
+    }
 
-		if (!this.config.getEnabled()) throw new OperationNotSupportedException("ExternalToken not supported");
-		
-		Boolean isUpdate = this.conventionService.isValidGuid(model.getId());
 
-		ExternalTokenEntity data;
-		if (isUpdate) {
-			data = this.entityManager.find(ExternalTokenEntity.class, model.getId());
-			if (data == null) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{model.getId(), ExternalToken.class.getSimpleName()}, LocaleContextHolder.getLocale()));
-			if (!this.conventionService.hashValue(data.getUpdatedAt()).equals(model.getHash())) throw new MyValidationException(this.errors.getHashConflict().getCode(), this.errors.getHashConflict().getMessage());
-		} else {
-			throw new OperationNotSupportedException("Create not supported");
-		}
+    @Override
+    public ExternalToken persist(ExternalTokenExpirationPersist model, FieldSet fields) throws MyForbiddenException, MyValidationException, MyApplicationException, MyNotFoundException, InvalidApplicationException, OperationNotSupportedException {
+        logger.debug(new MapLogEntry("persisting external token").And("model", model).And("fields", fields));
 
-		this.authorizationService.authorizeAtLeastOneForce(data.getOwnerId() != null ? List.of(new OwnedResource(data.getOwnerId())) : null, Permission.EditExternalToken);
-		data.setExpiresAt(model.getExpiresAt());
-		data.setUpdatedAt(Instant.now());
+        if (!this.config.getEnabled())
+            throw new OperationNotSupportedException("ExternalToken not supported");
 
-		if (tenantScope.isSet() && !data.getTenantId().equals(tenantScope.getTenant())) throw  new MyForbiddenException("tenant is not allowed by user");
-		boolean shouldChangeTenant = !tenantScope.isSet();
-		try {
+        boolean isUpdate = this.conventionService.isValidGuid(model.getId());
 
-			if (shouldChangeTenant) {
-				this.authorizationService.authorizeForce(Permission.AllowNoTenant);
-				TenantEntity tenant = this.entityManager.find(TenantEntity.class, data.getTenantId());
-				this.tenantScope.setTempTenant(this.globalEntityManager, tenant.getId());
-			}
-			this.entityManager.merge(data);
-			this.entityManager.flush();
-		} finally {
-			if (shouldChangeTenant) this.tenantScope.removeTempTenant(this.globalEntityManager);
-		}
-		return this.builderFactory.builder(ExternalTokenBuilder.class).build(BaseFieldSet.build(fields, ExternalToken._id, ExternalToken._hash), data);
-	}
+        ExternalTokenEntity data;
+        if (isUpdate) {
+            data = this.entityManager.find(ExternalTokenEntity.class, model.getId());
+            if (data == null)
+                throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{model.getId(), ExternalToken.class.getSimpleName()}, LocaleContextHolder.getLocale()));
+            if (!this.conventionService.hashValue(data.getUpdatedAt()).equals(model.getHash()))
+                throw new MyValidationException(this.errors.getHashConflict().getCode(), this.errors.getHashConflict().getMessage());
+        } else {
+            throw new OperationNotSupportedException("Create not supported");
+        }
 
-	@Override
-	public String persist(ExternalTokenChangePersist model) throws MyForbiddenException, MyValidationException, MyApplicationException, MyNotFoundException, InvalidApplicationException, OperationNotSupportedException, NoSuchAlgorithmException {
-		logger.debug(new MapLogEntry("persisting external token").And("model", model));
+        this.authorizationService.authorizeAtLeastOneForce(data.getOwnerId() != null ? List.of(new OwnedResource(data.getOwnerId())) : null, Permission.EditExternalToken);
+        data.setExpiresAt(model.getExpiresAt());
+        data.setUpdatedAt(Instant.now());
 
-		if (!this.config.getEnabled()) throw new OperationNotSupportedException("ExternalToken not supported");
-		
-		Boolean isUpdate = this.conventionService.isValidGuid(model.getId());
+        if (tenantScope.isSet() && !data.getTenantId().equals(tenantScope.getTenant()))
+            throw new MyForbiddenException("tenant is not allowed by user");
+        boolean shouldChangeTenant = !tenantScope.isSet();
+        try {
+            if (shouldChangeTenant) {
+                this.authorizationService.authorizeForce(Permission.AllowNoTenant);
+                TenantEntity tenant = this.entityManager.find(TenantEntity.class, data.getTenantId());
+                this.tenantScope.setTempTenant(this.globalEntityManager, tenant.getId());
+            }
+            this.entityManager.merge(data);
+            this.entityManager.flush();
+        } finally {
+            if (shouldChangeTenant)
+                this.tenantScope.removeTempTenant(this.globalEntityManager);
+        }
+        return this.builderFactory.builder(ExternalTokenBuilder.class).build(BaseFieldSet.build(fields, ExternalToken._id, ExternalToken._hash), data);
+    }
 
-		ExternalTokenEntity data;
-		if (isUpdate) {
-			data = this.entityManager.find(ExternalTokenEntity.class, model.getId());
-			if (data == null) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{model.getId(), ExternalToken.class.getSimpleName()}, LocaleContextHolder.getLocale()));
-			if (!this.conventionService.hashValue(data.getUpdatedAt()).equals(model.getHash())) throw new MyValidationException(this.errors.getHashConflict().getCode(), this.errors.getHashConflict().getMessage());
-		} else {
-			throw new OperationNotSupportedException("Create not supported");
-		}
+    @Override
+    public String persist(ExternalTokenChangePersist model) throws MyForbiddenException, MyValidationException, MyApplicationException, MyNotFoundException, InvalidApplicationException, OperationNotSupportedException, NoSuchAlgorithmException {
+        logger.debug(new MapLogEntry("persisting external token").And("model", model));
 
-		this.authorizationService.authorizeAtLeastOneForce(data.getOwnerId() != null ? List.of(new OwnedResource(data.getOwnerId())) : null, Permission.EditExternalToken);
+        if (!this.config.getEnabled())
+            throw new OperationNotSupportedException("ExternalToken not supported");
 
-		String token = this.createToken();
-		
-		data.setToken(this.cipherService.toSha512(token));
-		data.setUpdatedAt(Instant.now());
+        Boolean isUpdate = this.conventionService.isValidGuid(model.getId());
 
-		if (tenantScope.isSet() && !data.getTenantId().equals(tenantScope.getTenant())) throw  new MyForbiddenException("tenant is not allowed by user");
-		boolean shouldChangeTenant = !tenantScope.isSet();
-		try {
+        ExternalTokenEntity data;
+        if (isUpdate) {
+            data = this.entityManager.find(ExternalTokenEntity.class, model.getId());
+            if (data == null)
+                throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{model.getId(), ExternalToken.class.getSimpleName()}, LocaleContextHolder.getLocale()));
+            if (!this.conventionService.hashValue(data.getUpdatedAt()).equals(model.getHash()))
+                throw new MyValidationException(this.errors.getHashConflict().getCode(), this.errors.getHashConflict().getMessage());
+        } else {
+            throw new OperationNotSupportedException("Create not supported");
+        }
 
-			if (shouldChangeTenant) {
-				this.authorizationService.authorizeForce(Permission.AllowNoTenant);
-				TenantEntity tenant = this.entityManager.find(TenantEntity.class, data.getTenantId());
-				this.tenantScope.setTempTenant(this.globalEntityManager, tenant.getId());
-			}
-			this.entityManager.merge(data);
-			this.entityManager.flush();
-		} finally {
-			if (shouldChangeTenant) this.tenantScope.removeTempTenant(this.globalEntityManager);
-		}
+        this.authorizationService.authorizeAtLeastOneForce(data.getOwnerId() != null ? List.of(new OwnedResource(data.getOwnerId())) : null, Permission.EditExternalToken);
 
-		return token;
-	}
+        String token = this.createToken();
 
-	@Override
-	public ExternalTokenCreateResponse persist(IndicatorPointReportExternalTokenPersist model) throws MyForbiddenException, MyValidationException, MyApplicationException, MyNotFoundException, InvalidApplicationException, OperationNotSupportedException, JsonProcessingException, NoSuchAlgorithmException {
-		logger.debug(new MapLogEntry("persisting external token").And("model", model));
+        data.setToken(this.cipherService.toSha512(token));
+        data.setUpdatedAt(Instant.now());
 
-		if (!this.config.getEnabled()) throw new OperationNotSupportedException("ExternalToken not supported");
-		
-		this.authorizationService.authorizeForce(model.getLookups().size() > 1 ? Permission.CreateDashboardExternalToken: Permission.CreateChartExternalToken);
+        if (tenantScope.isSet() && !data.getTenantId().equals(tenantScope.getTenant()))
+            throw new MyForbiddenException("tenant is not allowed by user");
+        boolean shouldChangeTenant = !tenantScope.isSet();
+        try {
+            if (shouldChangeTenant) {
+                this.authorizationService.authorizeForce(Permission.AllowNoTenant);
+                TenantEntity tenant = this.entityManager.find(TenantEntity.class, data.getTenantId());
+                this.tenantScope.setTempTenant(this.globalEntityManager, tenant.getId());
+            }
+            this.entityManager.merge(data);
+            this.entityManager.flush();
+        } finally {
+            if (shouldChangeTenant)
+                this.tenantScope.removeTempTenant(this.globalEntityManager);
+        }
 
-		ExternalTokenCreateResponse persist = new ExternalTokenCreateResponse();
-		persist.setToken(this.createToken());
-		if (model.getExpiresAt() != null) persist.setExpiresAt(model.getExpiresAt());
-		else persist.setExpiresAt(Instant.now().plus(this.config.getExpirationInMinutes(), ChronoUnit.MINUTES));
-		
-		DefinitionEntity definitionEntity = new DefinitionEntity();
-		definitionEntity.setMappers(new ArrayList<>());
-		Map<UUID, IndicatorPointQueryDefinitionEntity> map = new HashMap<>();
-		for (IndicatorPointChartExternalTokenPersist chartExternalTokenPersist : model.getLookups()){
-			IndicatorPointQuery indicatorPointQuery = chartExternalTokenPersist.getLookup().getFilters().enrich(this.queryFactory).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicatorOrIndicatorAccess).indicatorIds(chartExternalTokenPersist.getIndicatorId());
-			DefinitionMapperEntity definitionMapper = new DefinitionMapperEntity();
-			definitionMapper.setExternalIds(List.of(chartExternalTokenPersist.getChartId(), chartExternalTokenPersist.getDashboardId()));
-			definitionMapper.setIndicatorPointQueryId(UUID.randomUUID());
-			definitionEntity.getMappers().add(definitionMapper);
-			map.put(definitionMapper.getIndicatorPointQueryId(), indicatorPointQuery.toIndicatorPointQueryDefinitionEntity());
-		}
-		definitionEntity.setIndicatorPointQueryMap(map);
-		
-		ExternalTokenEntity data = new ExternalTokenEntity();
-		data.setId(UUID.randomUUID());
-		data.setIsActive(IsActive.ACTIVE);
-		data.setType(map.size() > 1 ? ExternalTokenType.DashboardShare : ExternalTokenType.GraphShare);
-		data.setCreatedAt(Instant.now());
-		data.setExpiresAt(persist.getExpiresAt());
-		data.setName(model.getName());
-		data.setOwnerId(this.userScope.getUserId());
-		data.setToken(this.cipherService.toSha512(persist.getToken()));
-		data.setDefinition(this.jsonHandlingService.toJson(definitionEntity));
-		data.setUpdatedAt(Instant.now());
+        return token;
+    }
 
-		this.entityManager.persist(data);
+    @Override
+    public ExternalTokenCreateResponse persist(IndicatorPointReportExternalTokenPersist model) throws MyForbiddenException, MyValidationException, MyApplicationException, MyNotFoundException, InvalidApplicationException, OperationNotSupportedException, JsonProcessingException, NoSuchAlgorithmException {
+        logger.debug(new MapLogEntry("persisting external token").And("model", model));
 
-		this.entityManager.flush();
+        if (!this.config.getEnabled())
+            throw new OperationNotSupportedException("ExternalToken not supported");
 
-		return persist;
-	}
+        this.authorizationService.authorizeForce(model.getLookups().size() > 1 ? Permission.CreateDashboardExternalToken : Permission.CreateChartExternalToken);
 
-	private String createToken() {
-		StringBuilder builder = new StringBuilder();
-		do {
-			SecureRandom random = new SecureRandom(UUID.randomUUID().toString().getBytes());
-			if (random.nextBoolean() && this.config.getAllowedSpecialChars() != null && !this.config.getAllowedSpecialChars().isBlank()){
-				builder.append(this.config.getAllowedSpecialChars().charAt(random.nextInt(this.config.getAllowedSpecialChars().length() -1)) ); //numbers
-			}
-			if (random.nextBoolean()){
-				builder.append(random.nextInt(9)); //numbers
-			}
-			if (random.nextBoolean()){
-				builder.append(this.getRandomChar(65,90)); //upperCaseLetters
-			}
-			if (random.nextBoolean()){
-				builder.append(this.getRandomChar(97,122)); //lowerCaseLetters
-			}
-			
-		} while (builder.length() < this.config.getPasswordLength());
+        ExternalTokenCreateResponse persist = new ExternalTokenCreateResponse();
+        persist.setToken(this.createToken());
+        if (model.getExpiresAt() != null)
+            persist.setExpiresAt(model.getExpiresAt());
+        else
+            persist.setExpiresAt(Instant.now().plus(this.config.getExpirationInMinutes(), ChronoUnit.MINUTES));
 
-		return  builder.substring(0, this.config.getPasswordLength());
-	}
+        DefinitionEntity definitionEntity = new DefinitionEntity();
+        definitionEntity.setMappers(new ArrayList<>(100));
+        Map<UUID, IndicatorPointQueryDefinitionEntity> map = new HashMap<>();
+        for (IndicatorPointChartExternalTokenPersist chartExternalTokenPersist : model.getLookups()) {
+            IndicatorPointQuery indicatorPointQuery = chartExternalTokenPersist.getLookup().getFilters().enrich(this.queryFactory).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicatorOrIndicatorAccess).indicatorIds(chartExternalTokenPersist.getIndicatorId());
+            DefinitionMapperEntity definitionMapper = new DefinitionMapperEntity();
+            definitionMapper.setExternalIds(List.of(chartExternalTokenPersist.getChartId(), chartExternalTokenPersist.getDashboardId()));
+            definitionMapper.setIndicatorPointQueryId(UUID.randomUUID());
+            definitionEntity.getMappers().add(definitionMapper);
+            map.put(definitionMapper.getIndicatorPointQueryId(), indicatorPointQuery.toIndicatorPointQueryDefinitionEntity());
+        }
+        definitionEntity.setIndicatorPointQueryMap(map);
 
-	public Character getRandomChar(int randomNumberOrigin, int randomNumberBound) {
-		SecureRandom random = new SecureRandom(UUID.randomUUID().toString().getBytes());
-		IntStream specialChars = random.ints(randomNumberOrigin, randomNumberBound);
-		return specialChars.mapToObj(data -> (char) data).findFirst().orElseThrow();
-	}
-	
-	public void deleteAndSave(UUID id) throws MyForbiddenException, InvalidApplicationException, OperationNotSupportedException {
-		logger.debug("deleting externalToken: {}", id);
+        ExternalTokenEntity data = new ExternalTokenEntity();
+        data.setId(UUID.randomUUID());
+        data.setIsActive(IsActive.ACTIVE);
+        data.setType(map.size() > 1 ? ExternalTokenType.DashboardShare : ExternalTokenType.GraphShare);
+        data.setCreatedAt(Instant.now());
+        data.setExpiresAt(persist.getExpiresAt());
+        data.setName(model.getName());
+        data.setOwnerId(this.userScope.getUserId());
+        data.setToken(this.cipherService.toSha512(persist.getToken()));
+        data.setDefinition(this.jsonHandlingService.toJson(definitionEntity));
+        data.setUpdatedAt(Instant.now());
 
-		if (!this.config.getEnabled()) throw new OperationNotSupportedException("ExternalToken not supported");
-		
-		this.authorizationService.authorizeForce(Permission.DeleteExternalToken);
+        this.entityManager.persist(data);
 
-		ExternalTokenEntity data  = this.entityManager.find(ExternalTokenEntity.class, id);
-		if (data == null) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{id, ExternalToken.class.getSimpleName()}, LocaleContextHolder.getLocale()));
+        this.entityManager.flush();
 
-		if (tenantScope.isSet() && !data.getTenantId().equals(tenantScope.getTenant())) throw  new MyForbiddenException("tenant is not allowed by user");
-		boolean shouldChangeTenant = !tenantScope.isSet();
-		try {
+        return persist;
+    }
 
-			if (shouldChangeTenant) {
-				this.authorizationService.authorizeForce(Permission.AllowNoTenant);
-				TenantEntity tenant = this.entityManager.find(TenantEntity.class, data.getTenantId());
-				this.tenantScope.setTempTenant(this.globalEntityManager, tenant.getId());
-			}
-			this.deleterFactory.deleter(ExternalTokenDeleter.class).deleteAndSaveByIds(Collections.singletonList(id));
-		} finally {
-			if (shouldChangeTenant) this.tenantScope.removeTempTenant(this.globalEntityManager);
-		}
-		
-	}
+    private String createToken() {
+        StringBuilder builder = new StringBuilder();
+        do {
+            SecureRandom random = new SecureRandom(UUID.randomUUID().toString().getBytes());
+            if (random.nextBoolean() && this.config.getAllowedSpecialChars() != null && !this.config.getAllowedSpecialChars().isBlank()) {
+                builder.append(this.config.getAllowedSpecialChars().charAt(random.nextInt(this.config.getAllowedSpecialChars().length() - 1))); //numbers
+            }
+            if (random.nextBoolean()) {
+                builder.append(random.nextInt(9)); //numbers
+            }
+            if (random.nextBoolean()) {
+                builder.append(this.getRandomChar(65, 90)); //upperCaseLetters
+            }
+            if (random.nextBoolean()) {
+                builder.append(this.getRandomChar(97, 122)); //lowerCaseLetters
+            }
 
-	@Override
-	public DefinitionEntity getValidDefintionForce(String token) throws NoSuchAlgorithmException, OperationNotSupportedException {
-		if (!this.config.getEnabled()) throw new OperationNotSupportedException("ExternalToken not supported");
-		ExternalTokenEntity tokenEntity = this.getValidForce(token);
-		DefinitionEntity definitionEntity = this.jsonHandlingService.fromJsonSafe(DefinitionEntity.class, tokenEntity.getDefinition());
-		if (definitionEntity == null)  throw new MyForbiddenException("Access is denied");
-		return definitionEntity;
-	}
+        } while (builder.length() < this.config.getPasswordLength());
 
-	@Override
-	public ExternalTokenEntity getValidForce(String token) throws NoSuchAlgorithmException, OperationNotSupportedException {
-		if (!this.config.getEnabled()) throw new OperationNotSupportedException("ExternalToken not supported");
-		
-		if (this.conventionService.isNullOrEmpty(token)) throw new MyForbiddenException("Access is denied");
-		ExternalTokenEntity tokenEntity = this.queryFactory.query(ExternalTokenQuery.class).tokens(this.cipherService.toSha512(token)).isActive(IsActive.ACTIVE).first();
-		if (tokenEntity == null) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{token, ExternalTokenEntity.class.getSimpleName()}, LocaleContextHolder.getLocale()));
-		if (tokenEntity.getExpiresAt().isBefore(Instant.now()))  throw new MyForbiddenException("Access is denied");
-		return tokenEntity;
-	}
+        return builder.substring(0, this.config.getPasswordLength());
+    }
+
+    public Character getRandomChar(int randomNumberOrigin, int randomNumberBound) {
+        SecureRandom random = new SecureRandom(UUID.randomUUID().toString().getBytes());
+        IntStream specialChars = random.ints(randomNumberOrigin, randomNumberBound);
+        return specialChars.mapToObj(data -> (char) data).findFirst().orElseThrow();
+    }
+
+    public void deleteAndSave(UUID id) throws MyForbiddenException, InvalidApplicationException, OperationNotSupportedException {
+        logger.debug("deleting externalToken: {}", id);
+
+        if (!this.config.getEnabled())
+            throw new OperationNotSupportedException("ExternalToken not supported");
+
+        this.authorizationService.authorizeForce(Permission.DeleteExternalToken);
+
+        ExternalTokenEntity data = this.entityManager.find(ExternalTokenEntity.class, id);
+        if (data == null)
+            throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{id, ExternalToken.class.getSimpleName()}, LocaleContextHolder.getLocale()));
+
+        if (tenantScope.isSet() && !data.getTenantId().equals(tenantScope.getTenant()))
+            throw new MyForbiddenException("tenant is not allowed by user");
+        boolean shouldChangeTenant = !tenantScope.isSet();
+        try {
+            if (shouldChangeTenant) {
+                this.authorizationService.authorizeForce(Permission.AllowNoTenant);
+                TenantEntity tenant = this.entityManager.find(TenantEntity.class, data.getTenantId());
+                this.tenantScope.setTempTenant(this.globalEntityManager, tenant.getId());
+            }
+            this.deleterFactory.deleter(ExternalTokenDeleter.class).deleteAndSaveByIds(Collections.singletonList(id));
+        } finally {
+            if (shouldChangeTenant) this.tenantScope.removeTempTenant(this.globalEntityManager);
+        }
+
+    }
+
+    @Override
+    public DefinitionEntity getValidDefintionForce(String token) throws NoSuchAlgorithmException, OperationNotSupportedException {
+        if (!this.config.getEnabled())
+            throw new OperationNotSupportedException("ExternalToken not supported");
+        ExternalTokenEntity tokenEntity = this.getValidForce(token);
+        DefinitionEntity definitionEntity = this.jsonHandlingService.fromJsonSafe(DefinitionEntity.class, tokenEntity.getDefinition());
+        if (definitionEntity == null)
+            throw new MyForbiddenException("Access is denied");
+        return definitionEntity;
+    }
+
+    @Override
+    public ExternalTokenEntity getValidForce(String token) throws NoSuchAlgorithmException, OperationNotSupportedException {
+        if (!this.config.getEnabled())
+            throw new OperationNotSupportedException("ExternalToken not supported");
+        if (this.conventionService.isNullOrEmpty(token))
+            throw new MyForbiddenException("Access is denied");
+        ExternalTokenEntity tokenEntity = this.queryFactory.query(ExternalTokenQuery.class).tokens(this.cipherService.toSha512(token)).isActive(IsActive.ACTIVE).first();
+        if (tokenEntity == null)
+            throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{token, ExternalTokenEntity.class.getSimpleName()}, LocaleContextHolder.getLocale()));
+        if (tokenEntity.getExpiresAt().isBefore(Instant.now()))
+            throw new MyForbiddenException("Access is denied");
+        return tokenEntity;
+    }
 }

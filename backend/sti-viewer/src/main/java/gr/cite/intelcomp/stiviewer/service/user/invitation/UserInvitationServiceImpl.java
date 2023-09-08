@@ -6,7 +6,6 @@ import gr.cite.intelcomp.stiviewer.authorization.Permission;
 import gr.cite.intelcomp.stiviewer.convention.ConventionService;
 import gr.cite.intelcomp.stiviewer.data.TenantEntityManager;
 import gr.cite.intelcomp.stiviewer.data.UserInvitationEntity;
-import gr.cite.intelcomp.stiviewer.errorcode.ErrorThesaurusProperties;
 import gr.cite.intelcomp.stiviewer.model.UserContactInfo;
 import gr.cite.intelcomp.stiviewer.model.UserInvitation;
 import gr.cite.intelcomp.stiviewer.model.builder.UserInvitationBuilder;
@@ -36,61 +35,60 @@ import java.util.UUID;
 @RequestScope
 public class UserInvitationServiceImpl implements UserInvitationService {
 
-	private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(UserInvitationServiceImpl.class));
-	private final TenantEntityManager entityManager;
-	private final AuthorizationService authorizationService;
-	private final BuilderFactory builderFactory;
-	private final ConventionService conventionService;
-	private final ErrorThesaurusProperties errors;
-	private final MessageSource messageSource;
+    private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(UserInvitationServiceImpl.class));
+    private final TenantEntityManager entityManager;
+    private final AuthorizationService authorizationService;
+    private final BuilderFactory builderFactory;
+    private final ConventionService conventionService;
+    private final MessageSource messageSource;
 
-	@Autowired
-	public UserInvitationServiceImpl(
-			TenantEntityManager entityManager,
-			AuthorizationService authorizationService,
-			BuilderFactory builderFactory,
-			ConventionService conventionService,
-			ErrorThesaurusProperties errors,
-			MessageSource messageSource
-	) {
-		this.entityManager = entityManager;
-		this.authorizationService = authorizationService;
-		this.builderFactory = builderFactory;
-		this.conventionService = conventionService;
-		this.errors = errors;
-		this.messageSource = messageSource;
-	}
+    @Autowired
+    public UserInvitationServiceImpl(
+            TenantEntityManager entityManager,
+            AuthorizationService authorizationService,
+            BuilderFactory builderFactory,
+            ConventionService conventionService,
+            MessageSource messageSource
+    ) {
+        this.entityManager = entityManager;
+        this.authorizationService = authorizationService;
+        this.builderFactory = builderFactory;
+        this.conventionService = conventionService;
+        this.messageSource = messageSource;
+    }
 
-	@Override
-	public UserInvitation persist(UserInvitationPersist model, FieldSet fields) throws MyForbiddenException, MyValidationException, MyApplicationException, MyNotFoundException, InvalidApplicationException {
-		logger.debug(new MapLogEntry("persisting data access request").And("model", model).And("fields", fields));
+    @Override
+    public UserInvitation persist(UserInvitationPersist model, FieldSet fields) throws MyForbiddenException, MyValidationException, MyApplicationException, MyNotFoundException, InvalidApplicationException {
+        logger.debug(new MapLogEntry("persisting data access request").And("model", model).And("fields", fields));
 
-		this.authorizationService.authorizeForce(Permission.EditUserInvitation);
+        this.authorizationService.authorizeForce(Permission.EditUserInvitation);
 
-		boolean isUpdate = this.conventionService.isValidGuid(model.getId());
+        boolean isUpdate = this.conventionService.isValidGuid(model.getId());
 
-		UserInvitationEntity data;
-		if (isUpdate) {
-			data = this.entityManager.find(UserInvitationEntity.class, model.getId());
-			if (data == null) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{model.getId(), UserInvitation.class.getSimpleName()}, LocaleContextHolder.getLocale()));
-		} else {
-			data = new UserInvitationEntity();
-			data.setCreatedAt(Instant.now());
-		}
+        UserInvitationEntity data;
+        if (isUpdate) {
+            data = this.entityManager.find(UserInvitationEntity.class, model.getId());
+            if (data == null)
+                throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{model.getId(), UserInvitation.class.getSimpleName()}, LocaleContextHolder.getLocale()));
+        } else {
+            data = new UserInvitationEntity();
+            data.setCreatedAt(Instant.now());
+        }
 
-		data.setConsumed(model.getConsumed());
-		data.setExpiresAt(model.getExpiresAt());
-		data.setEmail(model.getEmail());
-		data.setToken(UUID.randomUUID().toString());
-		data.setTenantId(model.getTenantId());
-		data.setUpdatedAt(BigInteger.valueOf(Instant.now().toEpochMilli()));
+        data.setConsumed(model.getConsumed());
+        data.setExpiresAt(model.getExpiresAt());
+        data.setEmail(model.getEmail());
+        data.setToken(UUID.randomUUID().toString());
+        data.setTenantId(model.getTenantId());
+        data.setUpdatedAt(BigInteger.valueOf(Instant.now().toEpochMilli()));
 
-		if (isUpdate) this.entityManager.merge(data);
-		else this.entityManager.persist(data);
+        if (isUpdate)
+            this.entityManager.merge(data);
+        else this.entityManager.persist(data);
 
-		this.entityManager.flush();
+        this.entityManager.flush();
 
-		return this.builderFactory.builder(UserInvitationBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(BaseFieldSet.build(fields, UserInvitation._id, UserContactInfo._hash), data);
-	}
+        return this.builderFactory.builder(UserInvitationBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(BaseFieldSet.build(fields, UserInvitation._id, UserContactInfo._hash), data);
+    }
 
 }

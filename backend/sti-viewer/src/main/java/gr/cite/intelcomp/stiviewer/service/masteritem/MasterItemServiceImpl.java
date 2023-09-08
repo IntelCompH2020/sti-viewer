@@ -44,148 +44,155 @@ import java.util.stream.Collectors;
 @Service
 @RequestScope
 public class MasterItemServiceImpl implements MasterItemService {
-	private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(MasterItemServiceImpl.class));
-	private final TenantEntityManager entityManager;
-	private final AuthorizationService authorizationService;
-	private final DeleterFactory deleterFactory;
-	private final BuilderFactory builderFactory;
-	private final ConventionService conventionService;
-	private final ErrorThesaurusProperties errors;
-	private final MessageSource messageSource;
-	private final QueryFactory queryFactory;
+    private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(MasterItemServiceImpl.class));
+    private final TenantEntityManager entityManager;
+    private final AuthorizationService authorizationService;
+    private final DeleterFactory deleterFactory;
+    private final BuilderFactory builderFactory;
+    private final ConventionService conventionService;
+    private final ErrorThesaurusProperties errors;
+    private final MessageSource messageSource;
+    private final QueryFactory queryFactory;
 
-	@Autowired
-	public MasterItemServiceImpl(
-			TenantEntityManager entityManager, AuthorizationService authorizationService,
-			DeleterFactory deleterFactory,
-			BuilderFactory builderFactory,
-			ConventionService conventionService,
-			ErrorThesaurusProperties errors,
-			MessageSource messageSource,
-			QueryFactory queryFactory
-	) {
-		this.entityManager = entityManager;
-		this.authorizationService = authorizationService;
-		this.deleterFactory = deleterFactory;
-		this.builderFactory = builderFactory;
-		this.conventionService = conventionService;
-		this.errors = errors;
-		this.messageSource = messageSource;
-		this.queryFactory = queryFactory;
-	}
+    @Autowired
+    public MasterItemServiceImpl(
+            TenantEntityManager entityManager, AuthorizationService authorizationService,
+            DeleterFactory deleterFactory,
+            BuilderFactory builderFactory,
+            ConventionService conventionService,
+            ErrorThesaurusProperties errors,
+            MessageSource messageSource,
+            QueryFactory queryFactory
+    ) {
+        this.entityManager = entityManager;
+        this.authorizationService = authorizationService;
+        this.deleterFactory = deleterFactory;
+        this.builderFactory = builderFactory;
+        this.conventionService = conventionService;
+        this.errors = errors;
+        this.messageSource = messageSource;
+        this.queryFactory = queryFactory;
+    }
 
-	public MasterItem persist(MasterItemPersist model, FieldSet fields) throws MyForbiddenException, MyValidationException, MyApplicationException, MyNotFoundException, InvalidApplicationException {
-		logger.debug(new MapLogEntry("persisting dataset").And("model", model).And("fields", fields));
+    public MasterItem persist(MasterItemPersist model, FieldSet fields) throws MyForbiddenException, MyValidationException, MyApplicationException, MyNotFoundException, InvalidApplicationException {
+        logger.debug(new MapLogEntry("persisting dataset").And("model", model).And("fields", fields));
 
-		this.authorizationService.authorizeForce(Permission.EditMasterItem);
+        this.authorizationService.authorizeForce(Permission.EditMasterItem);
 
-		//Persist MasterItem
-		MasterItemEntity data = this.patchAndSave(model);
+        //Persist MasterItem
+        MasterItemEntity data = this.patchAndSave(model);
 
-		MasterItemDetailsPatch detailsPatch = new MasterItemDetailsPatch();
-		detailsPatch.setId(data.getId());
-		detailsPatch.setHash(this.conventionService.hashValue(data.getUpdatedAt()));
-		detailsPatch.setDetails(model.getDetails().stream().map(x -> {
-					x.setMasterItemId(data.getId());
-					return x;
-				}
-		).collect(Collectors.toList()));
+        MasterItemDetailsPatch detailsPatch = new MasterItemDetailsPatch();
+        detailsPatch.setId(data.getId());
+        detailsPatch.setHash(this.conventionService.hashValue(data.getUpdatedAt()));
+        detailsPatch.setDetails(model.getDetails().stream().peek(x -> x.setMasterItemId(data.getId())
+        ).collect(Collectors.toList()));
 
-		this.patchAndSave(Arrays.asList(new MasterItemDetailsPatch[]{detailsPatch}));
+        this.patchAndSave(List.of(detailsPatch));
 
-		this.entityManager.flush();
+        this.entityManager.flush();
 
-		MasterItem persisted = this.builderFactory.builder(MasterItemBuilder.class).build(BaseFieldSet.build(fields, MasterItem._id, MasterItem._hash), data);
-		return persisted;
-	}
+        return this.builderFactory.builder(MasterItemBuilder.class).build(BaseFieldSet.build(fields, MasterItem._id, MasterItem._hash), data);
+    }
 
-	private MasterItemEntity patchAndSave(MasterItemPersist model) throws MyValidationException, MyApplicationException, MyNotFoundException, InvalidApplicationException {
-		Boolean isUpdate = this.conventionService.isValidGuid(model.getId());
+    private MasterItemEntity patchAndSave(MasterItemPersist model) throws MyValidationException, MyApplicationException, MyNotFoundException, InvalidApplicationException {
+        Boolean isUpdate = this.conventionService.isValidGuid(model.getId());
 
-		MasterItemEntity data = null;
-		if (isUpdate) {
-			data = this.entityManager.find(MasterItemEntity.class, model.getId());
-			if (data == null) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{model.getId(), MasterItem.class.getSimpleName()}, LocaleContextHolder.getLocale()));
-			if (!this.conventionService.hashValue(data.getUpdatedAt()).equals(model.getHash())) throw new MyValidationException(this.errors.getHashConflict().getCode(), this.errors.getHashConflict().getMessage());
-		} else {
-			data = new MasterItemEntity();
-			data.setId(UUID.randomUUID());
-			data.setIsActive(IsActive.ACTIVE);
-			data.setCreatedAt(Instant.now());
-		}
+        MasterItemEntity data;
+        if (isUpdate) {
+            data = this.entityManager.find(MasterItemEntity.class, model.getId());
+            if (data == null)
+                throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{model.getId(), MasterItem.class.getSimpleName()}, LocaleContextHolder.getLocale()));
+            if (!this.conventionService.hashValue(data.getUpdatedAt()).equals(model.getHash()))
+                throw new MyValidationException(this.errors.getHashConflict().getCode(), this.errors.getHashConflict().getMessage());
+        } else {
+            data = new MasterItemEntity();
+            data.setId(UUID.randomUUID());
+            data.setIsActive(IsActive.ACTIVE);
+            data.setCreatedAt(Instant.now());
+        }
 
-		data.setName(model.getName());
-		data.setUpdatedAt(Instant.now());
+        data.setName(model.getName());
+        data.setUpdatedAt(Instant.now());
 
-		if (isUpdate) this.entityManager.merge(data);
-		else this.entityManager.persist(data);
+        if (isUpdate)
+            this.entityManager.merge(data);
+        else this.entityManager.persist(data);
 
-		this.entityManager.flush();
+        this.entityManager.flush();
 
-		return data;
-	}
+        return data;
+    }
 
-	private void patchAndSave(List<MasterItemDetailsPatch> models) throws MyValidationException, MyApplicationException, MyNotFoundException, InvalidApplicationException {
-		if (models == null || models.isEmpty()) return;
-		List<UUID> masterItemIds = models.stream().filter(x -> this.conventionService.isValidGuid(x.getId())).map(x -> x.getId()).distinct().collect(Collectors.toList());
+    private void patchAndSave(List<MasterItemDetailsPatch> models) throws MyValidationException, MyApplicationException, MyNotFoundException, InvalidApplicationException {
+        if (models == null || models.isEmpty())
+            return;
+        List<UUID> masterItemIds = models.stream().map(MasterItemDetailsPatch::getId).filter(this.conventionService::isValidGuid).distinct().collect(Collectors.toList());
 
-		List<MasterItemEntity> masterItems = this.queryFactory.query(MasterItemQuery.class).ids(masterItemIds)
-				.collectAs(new BaseFieldSet().ensure(MasterItem._id).ensure(MasterItem._hash));
-		Map<UUID, MasterItemEntity> masterItemsLookup = masterItems.stream().collect(Collectors.toMap(x -> x.getId(), x -> x));
+        List<MasterItemEntity> masterItems = this.queryFactory.query(MasterItemQuery.class).ids(masterItemIds)
+                .collectAs(new BaseFieldSet().ensure(MasterItem._id).ensure(MasterItem._hash));
+        Map<UUID, MasterItemEntity> masterItemsLookup = masterItems.stream().collect(Collectors.toMap(MasterItemEntity::getId, x -> x));
 
-		List<DetailItemEntity> details = this.queryFactory.query(DetailItemQuery.class)
-				.masterItemIds(masterItemIds).collect();
-		Map<UUID, List<DetailItemEntity>> detailsLookup = this.conventionService.toDictionaryOfList(details, x -> x.getMasterId());
+        List<DetailItemEntity> details = this.queryFactory.query(DetailItemQuery.class)
+                .masterItemIds(masterItemIds).collect();
+        Map<UUID, List<DetailItemEntity>> detailsLookup = this.conventionService.toDictionaryOfList(details, DetailItemEntity::getMasterId);
 
-		for (MasterItemDetailsPatch model : models) {
-			if (!masterItemsLookup.containsKey(model.getId())) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{model.getId(), MasterItem.class.getSimpleName()}, LocaleContextHolder.getLocale()));
-			MasterItemEntity masterItem = masterItemsLookup.get(model.getId());
-			if (masterItem == null) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{model.getId(), MasterItem.class.getSimpleName()}, LocaleContextHolder.getLocale()));
-			if (!this.conventionService.hashValue(masterItem.getUpdatedAt()).equals(model.getHash())) throw new MyValidationException(this.errors.getHashConflict().getCode(), this.errors.getHashConflict().getMessage());
+        for (MasterItemDetailsPatch model : models) {
+            if (!masterItemsLookup.containsKey(model.getId()))
+                throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{model.getId(), MasterItem.class.getSimpleName()}, LocaleContextHolder.getLocale()));
+            MasterItemEntity masterItem = masterItemsLookup.get(model.getId());
+            if (masterItem == null)
+                throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{model.getId(), MasterItem.class.getSimpleName()}, LocaleContextHolder.getLocale()));
+            if (!this.conventionService.hashValue(masterItem.getUpdatedAt()).equals(model.getHash()))
+                throw new MyValidationException(this.errors.getHashConflict().getCode(), this.errors.getHashConflict().getMessage());
 
-			List<DetailItemEntity> existingDetails = null;
-			if (detailsLookup.containsKey(model.getId())) existingDetails = detailsLookup.get(model.getId());
-			else existingDetails = new ArrayList<>();
+            List<DetailItemEntity> existingDetails;
+            if (detailsLookup.containsKey(model.getId())) existingDetails = detailsLookup.get(model.getId());
+            else existingDetails = new ArrayList<>();
 
-			List<UUID> updatedDetailIds = model.getDetails().stream().filter(x -> this.conventionService.isValidGuid(x.getId())).map(x -> x.getId()).distinct().collect(Collectors.toList());
-			List<DetailItemEntity> toDelete = existingDetails.stream().filter(x -> !updatedDetailIds.contains(x.getId())).collect(Collectors.toList());
-			this.deleterFactory.deleter(DetailItemDeleter.class).delete(toDelete);
+            List<UUID> updatedDetailIds = model.getDetails().stream().map(DetailItemPersist::getId).filter(this.conventionService::isValidGuid).distinct().collect(Collectors.toList());
+            List<DetailItemEntity> toDelete = existingDetails.stream().filter(x -> !updatedDetailIds.contains(x.getId())).collect(Collectors.toList());
+            this.deleterFactory.deleter(DetailItemDeleter.class).delete(toDelete);
 
-			Map<UUID, DetailItemEntity> existingDetailsLookup = existingDetails.stream().collect(Collectors.toMap(x -> x.getId(), x -> x));
+            Map<UUID, DetailItemEntity> existingDetailsLookup = existingDetails.stream().collect(Collectors.toMap(DetailItemEntity::getId, x -> x));
 
-			for (DetailItemPersist detail : model.getDetails()) {
-				Boolean isUpdate = this.conventionService.isValidGuid(detail.getId());
+            for (DetailItemPersist detail : model.getDetails()) {
+                Boolean isUpdate = this.conventionService.isValidGuid(detail.getId());
 
-				DetailItemEntity data = null;
-				if (isUpdate) {
-					if (!existingDetailsLookup.containsKey(detail.getId())) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{detail.getId(), DetailItem.class.getSimpleName()}, LocaleContextHolder.getLocale()));
-					data = existingDetailsLookup.get(detail.getId());
-					if (data == null) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{detail.getId(), DetailItem.class.getSimpleName()}, LocaleContextHolder.getLocale()));
-					if (!this.conventionService.hashValue(data.getUpdatedAt()).equals(detail.getHash())) throw new MyValidationException(this.errors.getHashConflict().getCode(), this.errors.getHashConflict().getMessage());
-				} else {
-					data = new DetailItemEntity();
-					data.setId(UUID.randomUUID());
-					data.setIsActive(IsActive.ACTIVE);
-					data.setCreatedAt(Instant.now());
-				}
+                DetailItemEntity data;
+                if (isUpdate) {
+                    if (!existingDetailsLookup.containsKey(detail.getId()))
+                        throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{detail.getId(), DetailItem.class.getSimpleName()}, LocaleContextHolder.getLocale()));
+                    data = existingDetailsLookup.get(detail.getId());
+                    if (data == null)
+                        throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{detail.getId(), DetailItem.class.getSimpleName()}, LocaleContextHolder.getLocale()));
+                    if (!this.conventionService.hashValue(data.getUpdatedAt()).equals(detail.getHash()))
+                        throw new MyValidationException(this.errors.getHashConflict().getCode(), this.errors.getHashConflict().getMessage());
+                } else {
+                    data = new DetailItemEntity();
+                    data.setId(UUID.randomUUID());
+                    data.setIsActive(IsActive.ACTIVE);
+                    data.setCreatedAt(Instant.now());
+                }
 
-				data.setName(detail.getName());
-				data.setMasterId(masterItem.getId());
+                data.setName(detail.getName());
+                data.setMasterId(masterItem.getId());
 
-				data.setUpdatedAt(Instant.now());
+                data.setUpdatedAt(Instant.now());
 
-				if (isUpdate) this.entityManager.merge(data);
-				else this.entityManager.persist(data);
-			}
-		}
-		this.entityManager.flush();
-	}
+                if (isUpdate)
+                    this.entityManager.merge(data);
+                else this.entityManager.persist(data);
+            }
+        }
+        this.entityManager.flush();
+    }
 
-	public void deleteAndSave(UUID id) throws MyForbiddenException, InvalidApplicationException {
-		logger.debug("deleting dataset: {}", id);
+    public void deleteAndSave(UUID id) throws MyForbiddenException, InvalidApplicationException {
+        logger.debug("deleting dataset: {}", id);
 
-		this.authorizationService.authorizeForce(Permission.DeleteMasterItem);
+        this.authorizationService.authorizeForce(Permission.DeleteMasterItem);
 
-		this.deleterFactory.deleter(MasterItemDeleter.class).deleteAndSaveByIds(Arrays.asList(new UUID[]{id}));
-	}
+        this.deleterFactory.deleter(MasterItemDeleter.class).deleteAndSaveByIds(Arrays.asList(new UUID[]{id}));
+    }
 }
