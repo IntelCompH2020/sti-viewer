@@ -39,8 +39,8 @@ public class FieldBuilder extends BaseBuilder<Field, FieldEntity> {
 
     @Override
     public List<Field> build(FieldSet fields, List<FieldEntity> data) throws MyApplicationException {
-        this.logger.debug("building for {} items requesting {} fields", Optional.ofNullable(data).map(List::size).orElse(0), Optional.ofNullable(fields).map(FieldSet::getFields).map(Set::size).orElse(0));
-        this.logger.trace(new DataLogEntry("requested fields", fields));
+        logger.debug("building for {} items requesting {} fields", Optional.ofNullable(data).map(List::size).orElse(0), Optional.ofNullable(fields).map(FieldSet::getFields).map(Set::size).orElse(0));
+        logger.trace(new DataLogEntry("requested fields", fields));
         if (fields == null || fields.isEmpty())
             return new ArrayList<>();
 
