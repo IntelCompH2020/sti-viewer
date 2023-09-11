@@ -1,7 +1,6 @@
 package gr.cite.intelcomp.stiviewer.model.builder;
 
 import gr.cite.intelcomp.stiviewer.authorization.AuthorizationFlags;
-import gr.cite.intelcomp.stiviewer.common.JsonHandlingService;
 import gr.cite.intelcomp.stiviewer.convention.ConventionService;
 import gr.cite.intelcomp.stiviewer.data.IndicatorAccessEntity;
 import gr.cite.intelcomp.stiviewer.data.tenant.TenantScopedBaseEntity;
@@ -54,7 +53,8 @@ public class IndicatorAccessBuilder extends BaseBuilder<IndicatorAccess, Indicat
     public List<IndicatorAccess> build(FieldSet fields, List<IndicatorAccessEntity> data) throws MyApplicationException {
         this.logger.debug("building for {} items requesting {} fields", Optional.ofNullable(data).map(List::size).orElse(0), Optional.ofNullable(fields).map(FieldSet::getFields).map(Set::size).orElse(0));
         this.logger.trace(new DataLogEntry("requested fields", fields));
-        if (fields == null || data == null || fields.isEmpty()) return new ArrayList<>();
+        if (fields == null || data == null || fields.isEmpty())
+            return new ArrayList<>();
 
         FieldSet tenantFields = fields.extractPrefixed(this.asPrefix(IndicatorAccess._tenant));
         Map<UUID, Tenant> tenantItemsMap = this.collectTenants(tenantFields, data);
@@ -92,7 +92,8 @@ public class IndicatorAccessBuilder extends BaseBuilder<IndicatorAccess, Indicat
     }
 
     private Map<UUID, Tenant> collectTenants(FieldSet fields, List<IndicatorAccessEntity> data) throws MyApplicationException {
-        if (fields.isEmpty() || data.isEmpty()) return null;
+        if (fields.isEmpty() || data.isEmpty())
+            return null;
         this.logger.debug("checking related - {}", Tenant.class.getSimpleName());
 
         Map<UUID, Tenant> itemMap;
@@ -121,7 +122,8 @@ public class IndicatorAccessBuilder extends BaseBuilder<IndicatorAccess, Indicat
     }
 
     private Map<UUID, User> collectUsers(FieldSet fields, List<IndicatorAccessEntity> data) throws MyApplicationException {
-        if (fields.isEmpty() || data.isEmpty()) return null;
+        if (fields.isEmpty() || data.isEmpty())
+            return null;
         this.logger.debug("checking related - {}", User.class.getSimpleName());
 
         Map<UUID, User> itemMap;
@@ -150,7 +152,8 @@ public class IndicatorAccessBuilder extends BaseBuilder<IndicatorAccess, Indicat
     }
 
     private Map<UUID, Indicator> collectIndicators(FieldSet fields, List<IndicatorAccessEntity> data) throws MyApplicationException {
-        if (fields.isEmpty() || data.isEmpty()) return null;
+        if (fields.isEmpty() || data.isEmpty())
+            return null;
         this.logger.debug("checking related - {}", Indicator.class.getSimpleName());
 
         Map<UUID, Indicator> itemMap;

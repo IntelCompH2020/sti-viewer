@@ -22,42 +22,43 @@ import java.util.Set;
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class DatasetBuilder extends BaseBuilder<Dataset, DatasetEntity> {
 
-	@Autowired
-	public DatasetBuilder(
-			ConventionService conventionService
-	) {
-		super(conventionService, new LoggerService(LoggerFactory.getLogger(DatasetBuilder.class)));
-	}
+    @Autowired
+    public DatasetBuilder(
+            ConventionService conventionService
+    ) {
+        super(conventionService, new LoggerService(LoggerFactory.getLogger(DatasetBuilder.class)));
+    }
 
-	@Override
-	public List<Dataset> build(FieldSet fields, List<DatasetEntity> data) throws MyApplicationException {
-		this.logger.debug("building for {} items requesting {} fields", Optional.ofNullable(data).map(List::size).orElse(0), Optional.ofNullable(fields).map(FieldSet::getFields).map(Set::size).orElse(0));
-		this.logger.trace(new DataLogEntry("requested fields", fields));
-		if (fields == null || fields.isEmpty()) return new ArrayList<>();
+    @Override
+    public List<Dataset> build(FieldSet fields, List<DatasetEntity> data) throws MyApplicationException {
+        this.logger.debug("building for {} items requesting {} fields", Optional.ofNullable(data).map(List::size).orElse(0), Optional.ofNullable(fields).map(FieldSet::getFields).map(Set::size).orElse(0));
+        this.logger.trace(new DataLogEntry("requested fields", fields));
+        if (fields == null || fields.isEmpty())
+            return new ArrayList<>();
 
-		List<Dataset> models = new ArrayList<>();
+        List<Dataset> models = new ArrayList<>();
 
-		if (data == null)
-			return models;
-		for (DatasetEntity d : data) {
-			Dataset m = new Dataset();
-			if (fields.hasField(this.asIndexer(Dataset._id)))
-				m.setId(d.getId());
-			if (fields.hasField(this.asIndexer(Dataset._hash)))
-				m.setHash(this.hashValue(d.getUpdatedAt()));
-			if (fields.hasField(this.asIndexer(Dataset._title)))
-				m.setTitle(d.getTitle());
-			if (fields.hasField(this.asIndexer(Dataset._isActive)))
-				m.setIsActive(d.getIsActive());
-			if (fields.hasField(this.asIndexer(Dataset._notes)))
-				m.setNotes(d.getNotes());
-			if (fields.hasField(this.asIndexer(Dataset._createdAt)))
-				m.setCreatedAt(d.getCreatedAt());
-			if (fields.hasField(this.asIndexer(Dataset._updatedAt)))
-				m.setUpdatedAt(d.getUpdatedAt());
-			models.add(m);
-		}
-		this.logger.debug("build {} items", Optional.of(models).map(List::size).orElse(0));
-		return models;
-	}
+        if (data == null)
+            return models;
+        for (DatasetEntity d : data) {
+            Dataset m = new Dataset();
+            if (fields.hasField(this.asIndexer(Dataset._id)))
+                m.setId(d.getId());
+            if (fields.hasField(this.asIndexer(Dataset._hash)))
+                m.setHash(this.hashValue(d.getUpdatedAt()));
+            if (fields.hasField(this.asIndexer(Dataset._title)))
+                m.setTitle(d.getTitle());
+            if (fields.hasField(this.asIndexer(Dataset._isActive)))
+                m.setIsActive(d.getIsActive());
+            if (fields.hasField(this.asIndexer(Dataset._notes)))
+                m.setNotes(d.getNotes());
+            if (fields.hasField(this.asIndexer(Dataset._createdAt)))
+                m.setCreatedAt(d.getCreatedAt());
+            if (fields.hasField(this.asIndexer(Dataset._updatedAt)))
+                m.setUpdatedAt(d.getUpdatedAt());
+            models.add(m);
+        }
+        this.logger.debug("build {} items", Optional.of(models).map(List::size).orElse(0));
+        return models;
+    }
 }

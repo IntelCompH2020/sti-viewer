@@ -122,7 +122,8 @@ public class ExternalTokenBuilder extends BaseBuilder<ExternalToken, ExternalTok
     }
 
     private Map<UUID, User> collectOwners(FieldSet fields, List<ExternalTokenEntity> data) throws MyApplicationException {
-        if (fields.isEmpty() || data.isEmpty()) return null;
+        if (fields.isEmpty() || data.isEmpty())
+            return null;
         this.logger.debug("checking related - {}", User.class.getSimpleName());
 
         Map<UUID, User> itemMap;

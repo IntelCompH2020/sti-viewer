@@ -47,7 +47,8 @@ public class UserInvitationBuilder extends BaseBuilder<UserInvitation, UserInvit
     public List<UserInvitation> build(FieldSet fields, List<UserInvitationEntity> data) throws MyApplicationException {
         this.logger.debug("building for {} items requesting {} fields", Optional.ofNullable(data).map(List::size).orElse(0), Optional.ofNullable(fields).map(FieldSet::getFields).map(Set::size).orElse(0));
         this.logger.trace(new DataLogEntry("requested fields", fields));
-        if (fields == null || data == null || fields.isEmpty()) return new ArrayList<>();
+        if (fields == null || data == null || fields.isEmpty())
+            return new ArrayList<>();
 
         FieldSet tenantFields = fields.extractPrefixed(this.asPrefix(UserInvitation._tenant));
         Map<UUID, Tenant> tenantMap = this.collectTenants(tenantFields, data);
@@ -79,7 +80,8 @@ public class UserInvitationBuilder extends BaseBuilder<UserInvitation, UserInvit
     }
 
     private Map<UUID, Tenant> collectTenants(FieldSet fields, List<UserInvitationEntity> data) throws MyApplicationException {
-        if (fields.isEmpty() || data.isEmpty()) return null;
+        if (fields.isEmpty() || data.isEmpty())
+            return null;
         this.logger.debug("checking related - {}", Tenant.class.getSimpleName());
 
         Map<UUID, Tenant> itemMap;

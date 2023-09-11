@@ -51,7 +51,8 @@ public class BookmarkBuilder extends BaseBuilder<Bookmark, BookmarkEntity> {
     public List<Bookmark> build(FieldSet fields, List<BookmarkEntity> data) throws MyApplicationException {
         this.logger.debug("building for {} items requesting {} fields", Optional.ofNullable(data).map(List::size).orElse(0), Optional.ofNullable(fields).map(FieldSet::getFields).map(Set::size).orElse(0));
         this.logger.trace(new DataLogEntry("requested fields", fields));
-        if (fields == null || fields.isEmpty()) return new ArrayList<>();
+        if (fields == null || fields.isEmpty())
+            return new ArrayList<>();
 
         FieldSet userFields = fields.extractPrefixed(this.asPrefix(Bookmark._user));
         Map<UUID, User> userMap = this.collectUsers(userFields, data);

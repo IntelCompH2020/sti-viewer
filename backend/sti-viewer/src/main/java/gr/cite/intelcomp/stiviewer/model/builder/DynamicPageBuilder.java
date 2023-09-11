@@ -104,7 +104,8 @@ public class DynamicPageBuilder extends BaseBuilder<DynamicPage, DynamicPageEnti
 
 
     private Map<UUID, User> collectCreators(FieldSet fields, List<DynamicPageEntity> data) throws MyApplicationException {
-        if (fields.isEmpty() || data.isEmpty()) return null;
+        if (fields.isEmpty() || data.isEmpty())
+            return null;
         this.logger.debug("checking related - {}", User.class.getSimpleName());
 
         Map<UUID, User> itemMap;

@@ -52,7 +52,8 @@ public class UserBuilder extends BaseBuilder<User, UserEntity> {
     public List<User> build(FieldSet fields, List<UserEntity> data) throws MyApplicationException {
         this.logger.debug("building for {} items requesting {} fields", Optional.ofNullable(data).map(List::size).orElse(0), Optional.ofNullable(fields).map(FieldSet::getFields).map(Set::size).orElse(0));
         this.logger.trace(new DataLogEntry("requested fields", fields));
-        if (fields == null || fields.isEmpty()) return new ArrayList<>();
+        if (fields == null || fields.isEmpty())
+            return new ArrayList<>();
 
         FieldSet tenantUsersFields = fields.extractPrefixed(this.asPrefix(User._tenantUsers));
         Map<UUID, List<TenantUser>> tenantUsersMap = this.collectTenantUsers(tenantUsersFields, data);
@@ -62,7 +63,8 @@ public class UserBuilder extends BaseBuilder<User, UserEntity> {
 
         List<User> models = new ArrayList<>(100);
 
-        if (data == null) return models;
+        if (data == null)
+            return models;
         for (UserEntity d : data) {
             User m = new User();
             if (fields.hasField(this.asIndexer(User._id)))
@@ -98,7 +100,8 @@ public class UserBuilder extends BaseBuilder<User, UserEntity> {
     }
 
     private Map<UUID, List<TenantUser>> collectTenantUsers(FieldSet fields, List<UserEntity> datas) throws MyApplicationException {
-        if (fields.isEmpty() || datas.isEmpty()) return null;
+        if (fields.isEmpty() || datas.isEmpty())
+            return null;
         this.logger.debug("checking related - {}", TenantUser.class.getSimpleName());
 
         Map<UUID, List<TenantUser>> itemMap;
@@ -118,7 +121,8 @@ public class UserBuilder extends BaseBuilder<User, UserEntity> {
     }
 
     private Map<UUID, List<IndicatorAccess>> collectIndicatorAccesses(FieldSet fields, List<UserEntity> datas) throws MyApplicationException {
-        if (fields.isEmpty() || datas.isEmpty()) return null;
+        if (fields.isEmpty() || datas.isEmpty())
+            return null;
         this.logger.debug("checking related - {}", IndicatorAccess.class.getSimpleName());
 
         Map<UUID, List<IndicatorAccess>> itemMap;

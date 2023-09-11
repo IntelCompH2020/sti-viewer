@@ -43,7 +43,8 @@ public class DetailItemBuilder extends BaseBuilder<DetailItem, DetailItemEntity>
     public List<DetailItem> build(FieldSet fields, List<DetailItemEntity> data) throws MyApplicationException {
         this.logger.debug("building for {} items requesting {} fields", Optional.ofNullable(data).map(List::size).orElse(0), Optional.ofNullable(fields).map(FieldSet::getFields).map(Set::size).orElse(0));
         this.logger.trace(new DataLogEntry("requested fields", fields));
-        if (fields == null || fields.isEmpty()) return new ArrayList<>();
+        if (fields == null || fields.isEmpty())
+            return new ArrayList<>();
 
         FieldSet masterItemFields = fields.extractPrefixed(this.asPrefix(DetailItem._master));
         Map<UUID, MasterItem> masterItemMap = this.collectMasterItems(masterItemFields, data);
@@ -75,7 +76,8 @@ public class DetailItemBuilder extends BaseBuilder<DetailItem, DetailItemEntity>
     }
 
     private Map<UUID, MasterItem> collectMasterItems(FieldSet fields, List<DetailItemEntity> datas) throws MyApplicationException {
-        if (fields.isEmpty() || datas.isEmpty()) return null;
+        if (fields.isEmpty() || datas.isEmpty())
+            return null;
         this.logger.debug("checking related - {}", MasterItem.class.getSimpleName());
 
         Map<UUID, MasterItem> itemMap;

@@ -111,7 +111,8 @@ public class UserContactInfoBuilder extends BaseBuilder<UserContactInfo, UserCon
     }
 
     private Map<UUID, Tenant> collectTenants(FieldSet fields, List<UserContactInfoEntity> data) throws MyApplicationException {
-        if (fields.isEmpty() || data.isEmpty()) return null;
+        if (fields.isEmpty() || data.isEmpty())
+            return null;
         this.logger.debug("checking related - {}", Tenant.class.getSimpleName());
 
         Map<UUID, Tenant> itemMap;

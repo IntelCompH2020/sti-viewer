@@ -52,7 +52,8 @@ public class TenantRequestBuilder extends BaseBuilder<TenantRequest, TenantReque
     public List<TenantRequest> build(FieldSet fields, List<TenantRequestEntity> data) throws MyApplicationException {
         this.logger.debug("building for {} items requesting {} fields", Optional.ofNullable(data).map(List::size).orElse(0), Optional.ofNullable(fields).map(FieldSet::getFields).map(Set::size).orElse(0));
         this.logger.trace(new DataLogEntry("requested fields", fields));
-        if (fields == null || data == null || fields.isEmpty()) return new ArrayList<>();
+        if (fields == null || data == null || fields.isEmpty())
+            return new ArrayList<>();
 
         FieldSet forUserFields = fields.extractPrefixed(this.asPrefix(TenantRequest._forUser));
         Map<UUID, User> forUserMap = this.collectUsers(forUserFields, data);
@@ -89,7 +90,8 @@ public class TenantRequestBuilder extends BaseBuilder<TenantRequest, TenantReque
     }
 
     private Map<UUID, User> collectUsers(FieldSet fields, List<TenantRequestEntity> data) throws MyApplicationException {
-        if (fields.isEmpty() || data.isEmpty()) return null;
+        if (fields.isEmpty() || data.isEmpty())
+            return null;
         this.logger.debug("checking related - {}", User.class.getSimpleName());
 
         Map<UUID, User> itemMap;
@@ -118,7 +120,8 @@ public class TenantRequestBuilder extends BaseBuilder<TenantRequest, TenantReque
     }
 
     private Map<UUID, Tenant> collectAssignedTenants(FieldSet fields, List<TenantRequestEntity> datas) throws MyApplicationException {
-        if (fields.isEmpty() || datas.isEmpty()) return null;
+        if (fields.isEmpty() || datas.isEmpty())
+            return null;
         this.logger.debug("checking related - {}", Tenant.class.getSimpleName());
 
         Map<UUID, Tenant> itemMap = null;

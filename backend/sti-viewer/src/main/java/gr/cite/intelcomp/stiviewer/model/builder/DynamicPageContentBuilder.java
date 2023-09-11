@@ -48,7 +48,8 @@ public class DynamicPageContentBuilder extends BaseBuilder<DynamicPageContent, D
     public List<DynamicPageContent> build(FieldSet fields, List<DynamicPageContentEntity> data) throws MyApplicationException {
         this.logger.debug("building for {} items requesting {} fields", Optional.ofNullable(data).map(List::size).orElse(0), Optional.ofNullable(fields).map(FieldSet::getFields).map(Set::size).orElse(0));
         this.logger.trace(new DataLogEntry("requested fields", fields));
-        if (fields == null || data == null || fields.isEmpty()) return new ArrayList<>();
+        if (fields == null || data == null || fields.isEmpty())
+            return new ArrayList<>();
 
         FieldSet dynamicPageFields = fields.extractPrefixed(this.asPrefix(DynamicPageContent._page));
         Map<UUID, DynamicPage> dynamicPageItemsMap = this.collectPages(dynamicPageFields, data);
@@ -82,7 +83,8 @@ public class DynamicPageContentBuilder extends BaseBuilder<DynamicPageContent, D
     }
 
     private Map<UUID, DynamicPage> collectPages(FieldSet fields, List<DynamicPageContentEntity> data) throws MyApplicationException {
-        if (fields.isEmpty() || data.isEmpty()) return null;
+        if (fields.isEmpty() || data.isEmpty())
+            return null;
         this.logger.debug("checking related - {}", DynamicPage.class.getSimpleName());
 
         Map<UUID, DynamicPage> itemMap;

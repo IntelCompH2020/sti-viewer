@@ -49,7 +49,8 @@ public class IndicatorGroupBuilder extends BaseBuilder<IndicatorGroup, Indicator
     public List<IndicatorGroup> build(FieldSet fields, List<IndicatorGroupEntity> data) throws MyApplicationException {
         this.logger.debug("building for {} items requesting {} fields", Optional.ofNullable(data).map(List::size).orElse(0), Optional.ofNullable(fields).map(FieldSet::getFields).map(Set::size).orElse(0));
         this.logger.trace(new DataLogEntry("requested fields", fields));
-        if (fields == null || data == null || fields.isEmpty()) return new ArrayList<>();
+        if (fields == null || data == null || fields.isEmpty())
+            return new ArrayList<>();
 
         FieldSet indicatorFields = fields.extractPrefixed(this.asPrefix(IndicatorGroup._indicators));
         Map<UUID, Indicator> indicatorItemsMap = this.collectIndicators(indicatorFields, data.stream().map(IndicatorGroupEntity::getIndicatorIds).flatMap(List::stream).collect(Collectors.toList()));

@@ -34,7 +34,8 @@ public class DataTreeLevelDashboardOverrideFieldRequirementBuilder extends BaseB
     public List<DataTreeLevelDashboardOverrideFieldRequirement> build(FieldSet fields, List<DataTreeLevelDashboardOverrideFieldRequirementEntity> data) throws MyApplicationException {
         this.logger.debug("building for {} items requesting {} BrowseDataFields", Optional.ofNullable(data).map(List::size).orElse(0), Optional.ofNullable(fields).map(FieldSet::getFields).map(Set::size).orElse(0));
         this.logger.trace(new DataLogEntry("requested BrowseDataFields", fields));
-        if (fields == null || fields.isEmpty()) return new ArrayList<>();
+        if (fields == null || fields.isEmpty())
+            return new ArrayList<>();
 
         List<DataTreeLevelDashboardOverrideFieldRequirement> models = new LinkedList<>();
 

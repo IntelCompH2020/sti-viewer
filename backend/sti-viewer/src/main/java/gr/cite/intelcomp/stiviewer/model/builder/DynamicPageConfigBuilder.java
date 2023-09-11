@@ -31,7 +31,8 @@ public class DynamicPageConfigBuilder extends BaseBuilder<DynamicPageConfig, Dyn
     public List<DynamicPageConfig> build(FieldSet fields, List<DynamicPageConfigEntity> data) throws MyApplicationException {
         this.logger.debug("building for {} items requesting {} fields", Optional.ofNullable(data).map(List::size).orElse(0), Optional.ofNullable(fields).map(FieldSet::getFields).map(Set::size).orElse(0));
         this.logger.trace(new DataLogEntry("requested fields", fields));
-        if (fields == null || data == null || fields.isEmpty()) return new ArrayList<>();
+        if (fields == null || data == null || fields.isEmpty())
+            return new ArrayList<>();
 
         List<DynamicPageConfig> models = new ArrayList<>(100);
 

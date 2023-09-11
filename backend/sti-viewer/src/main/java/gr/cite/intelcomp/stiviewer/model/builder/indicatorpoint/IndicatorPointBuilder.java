@@ -43,7 +43,8 @@ public class IndicatorPointBuilder extends BaseBuilder<IndicatorPoint, Indicator
     public List<IndicatorPoint> build(FieldSet fields, List<IndicatorPointEntity> data) throws MyApplicationException {
         this.logger.debug("building for {} items requesting {} fields", Optional.ofNullable(data).map(List::size).orElse(0), Optional.ofNullable(fields).map(FieldSet::getFields).map(Set::size).orElse(0));
         this.logger.trace(new DataLogEntry("requested fields", fields));
-        if (fields == null || fields.isEmpty()) return new ArrayList<>();
+        if (fields == null || fields.isEmpty())
+            return new ArrayList<>();
 
         List<IndicatorPoint> models = new ArrayList<>(100);
 

@@ -65,7 +65,8 @@ public class TenantUserBuilder extends BaseBuilder<TenantUser, TenantUserEntity>
 
         List<TenantUser> models = new ArrayList<>(100);
 
-        if (data == null) return models;
+        if (data == null)
+            return models;
         for (TenantUserEntity d : data) {
             TenantUser m = new TenantUser();
             if (fields.hasField(this.asIndexer(TenantUser._id)))
@@ -89,7 +90,8 @@ public class TenantUserBuilder extends BaseBuilder<TenantUser, TenantUserEntity>
     }
 
     private Map<UUID, User> collectUsers(FieldSet fields, List<TenantUserEntity> datas) throws MyApplicationException {
-        if (fields.isEmpty() || datas.isEmpty()) return null;
+        if (fields.isEmpty() || datas.isEmpty())
+            return null;
         this.logger.debug("checking related - {}", User.class.getSimpleName());
 
         Map<UUID, User> itemMap;
@@ -118,7 +120,8 @@ public class TenantUserBuilder extends BaseBuilder<TenantUser, TenantUserEntity>
     }
 
     private Map<UUID, Tenant> collectTenants(FieldSet fields, List<TenantUserEntity> datas) throws MyApplicationException {
-        if (fields.isEmpty() || datas.isEmpty()) return null;
+        if (fields.isEmpty() || datas.isEmpty())
+            return null;
         this.logger.debug("checking related - {}", Tenant.class.getSimpleName());
 
         Map<UUID, Tenant> itemMap;
