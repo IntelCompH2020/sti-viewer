@@ -3,9 +3,9 @@ package gr.cite.intelcomp.stiviewer.web.controllers;
 import gr.cite.intelcomp.stiviewer.audit.AuditableAction;
 import gr.cite.intelcomp.stiviewer.model.UserSettings;
 import gr.cite.intelcomp.stiviewer.model.elasticreport.AggregateResponseModel;
+import gr.cite.intelcomp.stiviewer.model.indicatorpoint.IndicatorPoint;
 import gr.cite.intelcomp.stiviewer.model.shared.DashboardLookup;
 import gr.cite.intelcomp.stiviewer.model.shared.PublicIndicatorPointReportLookup;
-import gr.cite.intelcomp.stiviewer.model.indicatorpoint.IndicatorPoint;
 import gr.cite.intelcomp.stiviewer.service.dashboard.DashboardService;
 import gr.cite.intelcomp.stiviewer.service.indicatorpoint.IndicatorPointService;
 import gr.cite.tools.auditing.AuditService;
@@ -20,63 +20,69 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.management.InvalidApplicationException;
 import javax.naming.OperationNotSupportedException;
 import java.security.NoSuchAlgorithmException;
-import java.util.*;
+import java.util.AbstractMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping(path = "api/public")
 public class PublicController {
-	private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(PublicController.class));
 
-	private final AuditService auditService;
-	private final IndicatorPointService indicatorPointService;
-	private final DashboardService dashboardService;
-	private final MessageSource messageSource;
+    private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(PublicController.class));
 
-	@Autowired
-	public PublicController(
-			AuditService auditService,
-			IndicatorPointService indicatorPointService,
-			DashboardService dashboardService, 
-			MessageSource messageSource
-	) {
-		this.auditService = auditService;
-		this.indicatorPointService = indicatorPointService;
-		this.dashboardService = dashboardService;
-		this.messageSource = messageSource;
-	}
+    private final AuditService auditService;
 
-	@PostMapping("indicator-point/report")
-	public AggregateResponseModel reportPublic(@MyValidate @RequestBody PublicIndicatorPointReportLookup model, FieldSet fieldSet) throws InvalidApplicationException, NoSuchAlgorithmException, OperationNotSupportedException {
-		logger.debug(new MapLogEntry("persisting" + IndicatorPoint.class.getSimpleName()).And("model", model).And("fieldSet", fieldSet));
+    private final IndicatorPointService indicatorPointService;
 
-		AggregateResponseModel report = this.indicatorPointService.reportPublic(model.getIndicatorId(), model, fieldSet);
+    private final DashboardService dashboardService;
 
-		this.auditService.track(AuditableAction.Public_Indicator_Point_Report, Map.ofEntries(
-				new AbstractMap.SimpleEntry<String, Object>("model", model),
-				new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
-		));
-		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
-		return report;
-	}
+    private final MessageSource messageSource;
 
+    @Autowired
+    public PublicController(
+            AuditService auditService,
+            IndicatorPointService indicatorPointService,
+            DashboardService dashboardService,
+            MessageSource messageSource
+    ) {
+        this.auditService = auditService;
+        this.indicatorPointService = indicatorPointService;
+        this.dashboardService = dashboardService;
+        this.messageSource = messageSource;
+    }
 
-	@PostMapping("dashboard/lookup")
-	public String dashboardLookup(@MyValidate @RequestBody DashboardLookup lookup) throws MyApplicationException, MyForbiddenException, MyNotFoundException, NoSuchAlgorithmException, OperationNotSupportedException {
-		logger.debug(new MapLogEntry("retrieving" + DashboardLookup.class.getSimpleName()).And("lookup", lookup));
+    @PostMapping("indicator-point/report")
+    public AggregateResponseModel reportPublic(@MyValidate @RequestBody PublicIndicatorPointReportLookup model, FieldSet fieldSet) throws InvalidApplicationException, NoSuchAlgorithmException, OperationNotSupportedException {
+        logger.debug(new MapLogEntry("persisting" + IndicatorPoint.class.getSimpleName()).And("model", model).And("fieldSet", fieldSet));
 
-		String model = this.dashboardService.getPublicDashboard(lookup);
-		if (model == null || model.isBlank()) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{lookup.getDashboardId(), UserSettings.class.getSimpleName()}, LocaleContextHolder.getLocale()));
+        AggregateResponseModel report = this.indicatorPointService.reportPublic(model.getIndicatorId(), model, fieldSet);
 
-		this.auditService.track(AuditableAction.Indicator_Lookup, Map.ofEntries(
-				new AbstractMap.SimpleEntry<String, Object>("lookup", lookup)
-		));
-		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
+        this.auditService.track(AuditableAction.Public_Indicator_Point_Report, Map.ofEntries(
+                new AbstractMap.SimpleEntry<String, Object>("model", model),
+                new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
+        ));
+        return report;
+    }
 
-		return model;
-	}
+    @PostMapping("dashboard/lookup")
+    public String dashboardLookup(@MyValidate @RequestBody DashboardLookup lookup) throws MyApplicationException, MyForbiddenException, MyNotFoundException, NoSuchAlgorithmException, OperationNotSupportedException {
+        logger.debug(new MapLogEntry("retrieving" + DashboardLookup.class.getSimpleName()).And("lookup", lookup));
+
+        String model = this.dashboardService.getPublicDashboard(lookup);
+        if (model == null || model.isBlank())
+            throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{lookup.getDashboardId(), UserSettings.class.getSimpleName()}, LocaleContextHolder.getLocale()));
+
+        this.auditService.track(AuditableAction.Indicator_Lookup, Map.ofEntries(
+                new AbstractMap.SimpleEntry<String, Object>("lookup", lookup)
+        ));
+
+        return model;
+    }
 }

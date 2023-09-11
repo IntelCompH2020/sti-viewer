@@ -29,9 +29,10 @@ public class PortofolioConfigController {
     private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(PortofolioConfigController.class));
 
     private final AuditService auditService;
-    private final PortofolioConfigService portofolioConfigService;
-    private final CensorFactory censorFactory;
 
+    private final PortofolioConfigService portofolioConfigService;
+
+    private final CensorFactory censorFactory;
 
     public PortofolioConfigController(AuditService auditService,
                                       PortofolioConfigService portofolioConfigService,
@@ -49,7 +50,6 @@ public class PortofolioConfigController {
 
         List<PortofolioConfig> models = this.portofolioConfigService.getMyConfigs(fieldSet);
         this.auditService.track(AuditableAction.PortofolioConfig_GetMyConfigs, "fieldSet", fieldSet);
-        //this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
 
         return models;
     }
@@ -64,7 +64,6 @@ public class PortofolioConfigController {
                 new AbstractMap.SimpleEntry<String, Object>("key", key),
                 new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
         ));
-        //this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
 
         return models;
     }

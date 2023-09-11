@@ -36,79 +36,82 @@ import java.util.*;
 @RequestMapping(path = "api/user-settings")
 public class UserSettingsController {
 
-	private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(UserSettingsController.class));
+    private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(UserSettingsController.class));
 
-	private final BuilderFactory builderFactory;
-	private final AuditService auditService;
-	private final UserSettingsService settingsService;
-	private final CensorFactory censorFactory;
-	private final QueryFactory queryFactory;
-	private final MessageSource messageSource;
+    private final BuilderFactory builderFactory;
 
-	@Autowired
-	public UserSettingsController(
-			BuilderFactory builderFactory,
-			AuditService auditService,
-			UserSettingsService settingsService,
-			CensorFactory censorFactory,
-			QueryFactory queryFactory,
-			MessageSource messageSource) {
-		this.builderFactory = builderFactory;
-		this.auditService = auditService;
-		this.settingsService = settingsService;
-		this.censorFactory = censorFactory;
-		this.queryFactory = queryFactory;
-		this.messageSource = messageSource;
-	}
+    private final AuditService auditService;
 
-	@PostMapping("query")
-	public QueryResult<UserSettings> Query(@RequestBody UserSettingsLookup lookup) throws MyApplicationException, MyForbiddenException {
-		logger.debug("querying {}", UserSettings.class.getSimpleName());
-		this.censorFactory.censor(UserSettingsCensor.class).censor(lookup.getProject(), null);
-		UserSettingsQuery query = lookup.enrich(this.queryFactory).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator);
-		List<UserSettingsEntity> data = query.collectAs(lookup.getProject());
-		List<UserSettings> models = this.builderFactory.builder(UserSettingsBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(lookup.getProject(), data);
-		long count = (lookup.getMetadata() != null && lookup.getMetadata().getCountAll()) ? query.count() : models.size();
+    private final UserSettingsService settingsService;
 
-		this.auditService.track(AuditableAction.User_Settings_Query, "lookup", lookup);
-		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
+    private final CensorFactory censorFactory;
 
-		return new QueryResult<>(models, count);
-	}
+    private final QueryFactory queryFactory;
 
-	@GetMapping("{id}")
-	@Transactional
-	public UserSettings Get(@PathVariable("id") UUID id, FieldSet fieldSet, Locale locale) throws MyApplicationException, MyForbiddenException, MyNotFoundException {
-		logger.debug(new MapLogEntry("retrieving" + UserSettings.class.getSimpleName()).And("id", id).And("fields", fieldSet));
+    private final MessageSource messageSource;
 
-		this.censorFactory.censor(UserSettingsCensor.class).censor(fieldSet, null);
+    @Autowired
+    public UserSettingsController(
+            BuilderFactory builderFactory,
+            AuditService auditService,
+            UserSettingsService settingsService,
+            CensorFactory censorFactory,
+            QueryFactory queryFactory,
+            MessageSource messageSource) {
+        this.builderFactory = builderFactory;
+        this.auditService = auditService;
+        this.settingsService = settingsService;
+        this.censorFactory = censorFactory;
+        this.queryFactory = queryFactory;
+        this.messageSource = messageSource;
+    }
 
-		UserSettingsQuery query = this.queryFactory.query(UserSettingsQuery.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).ids(id);
-		UserSettings model = this.builderFactory.builder(UserSettingsBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(fieldSet, query.firstAs(fieldSet));
-		if (model == null) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{id, UserSettings.class.getSimpleName()}, LocaleContextHolder.getLocale()));
+    @PostMapping("query")
+    public QueryResult<UserSettings> query(@RequestBody UserSettingsLookup lookup) throws MyApplicationException, MyForbiddenException {
+        logger.debug("querying {}", UserSettings.class.getSimpleName());
+        this.censorFactory.censor(UserSettingsCensor.class).censor(lookup.getProject(), null);
+        UserSettingsQuery query = lookup.enrich(this.queryFactory).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator);
+        List<UserSettingsEntity> data = query.collectAs(lookup.getProject());
+        List<UserSettings> models = this.builderFactory.builder(UserSettingsBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(lookup.getProject(), data);
+        long count = (lookup.getMetadata() != null && lookup.getMetadata().getCountAll()) ? query.count() : models.size();
 
-		this.auditService.track(AuditableAction.User_Settings_Lookup, Map.ofEntries(
-				new AbstractMap.SimpleEntry<String, Object>("id", id),
-				new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
-		));
-		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
+        this.auditService.track(AuditableAction.User_Settings_Query, "lookup", lookup);
 
-		return model;
-	}
+        return new QueryResult<>(models, count);
+    }
 
-	@PostMapping("persist")
-	@Transactional
-	public UserSettings Persist(@MyValidate @RequestBody UserSettingsPersist model, FieldSet fieldSet) throws MyApplicationException, MyForbiddenException, MyNotFoundException, InvalidApplicationException {
-		logger.debug(new MapLogEntry("persisting" + UserSettings.class.getSimpleName()).And("model", model).And("fieldSet", fieldSet));
+    @GetMapping("{id}")
+    @Transactional
+    public UserSettings get(@PathVariable("id") UUID id, FieldSet fieldSet, Locale locale) throws MyApplicationException, MyForbiddenException, MyNotFoundException {
+        logger.debug(new MapLogEntry("retrieving" + UserSettings.class.getSimpleName()).And("id", id).And("fields", fieldSet));
 
-		UserSettings persisted = this.settingsService.persist(model, fieldSet);
+        this.censorFactory.censor(UserSettingsCensor.class).censor(fieldSet, null);
 
-		this.auditService.track(AuditableAction.User_Settings_Persist, Map.ofEntries(
-				new AbstractMap.SimpleEntry<String, Object>("model", model),
-				new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
-		));
-		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
-		return persisted;
-	}
+        UserSettingsQuery query = this.queryFactory.query(UserSettingsQuery.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).ids(id);
+        UserSettings model = this.builderFactory.builder(UserSettingsBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(fieldSet, query.firstAs(fieldSet));
+        if (model == null)
+            throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{id, UserSettings.class.getSimpleName()}, LocaleContextHolder.getLocale()));
+
+        this.auditService.track(AuditableAction.User_Settings_Lookup, Map.ofEntries(
+                new AbstractMap.SimpleEntry<String, Object>("id", id),
+                new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
+        ));
+
+        return model;
+    }
+
+    @PostMapping("persist")
+    @Transactional
+    public UserSettings persist(@MyValidate @RequestBody UserSettingsPersist model, FieldSet fieldSet) throws MyApplicationException, MyForbiddenException, MyNotFoundException, InvalidApplicationException {
+        logger.debug(new MapLogEntry("persisting" + UserSettings.class.getSimpleName()).And("model", model).And("fieldSet", fieldSet));
+
+        UserSettings persisted = this.settingsService.persist(model, fieldSet);
+
+        this.auditService.track(AuditableAction.User_Settings_Persist, Map.ofEntries(
+                new AbstractMap.SimpleEntry<String, Object>("model", model),
+                new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
+        ));
+        return persisted;
+    }
 
 }

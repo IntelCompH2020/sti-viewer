@@ -41,107 +41,108 @@ import java.util.UUID;
 @RequestMapping(path = "api/data-group-request")
 public class DataGroupRequestController {
 
-	private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(DataGroupRequestController.class));
+    private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(DataGroupRequestController.class));
 
-	private final BuilderFactory builderFactory;
-	private final AuditService auditService;
-	private final DataGroupRequestService dataGroupRequestService;
-	private final CensorFactory censorFactory;
-	private final QueryFactory queryFactory;
-	private final MessageSource messageSource;
+    private final BuilderFactory builderFactory;
 
-	@Autowired
-	public DataGroupRequestController(
-			BuilderFactory builderFactory,
-			AuditService auditService,
-			DataGroupRequestService dataGroupRequestService,
-			CensorFactory censorFactory,
-			QueryFactory queryFactory,
-			MessageSource messageSource
+    private final AuditService auditService;
 
-	) {
-		this.builderFactory = builderFactory;
-		this.auditService = auditService;
-		this.dataGroupRequestService = dataGroupRequestService;
-		this.censorFactory = censorFactory;
-		this.queryFactory = queryFactory;
-		this.messageSource = messageSource;
-	}
+    private final DataGroupRequestService dataGroupRequestService;
 
-	@PostMapping("query")
-	public QueryResult<DataGroupRequest> Query(@RequestBody DataGroupRequestLookup lookup) throws MyApplicationException, MyForbiddenException {
-		logger.debug("querying {}", DataGroupRequest.class.getSimpleName());
-		this.censorFactory.censor(DataGroupRequestCensor.class).censor(lookup.getProject(), null);
-		DataGroupRequestQuery query = lookup.enrich(this.queryFactory).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator);
-		List<DataGroupRequestEntity> data = query.collectAs(lookup.getProject());
-		List<DataGroupRequest> models = this.builderFactory.builder(DataGroupRequestBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(lookup.getProject(), data);
-		long count = (lookup.getMetadata() != null && lookup.getMetadata().getCountAll()) ? query.count() : models.size();
+    private final CensorFactory censorFactory;
 
-		this.auditService.track(AuditableAction.Data_Group_Request_Query, "lookup", lookup);
-		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
+    private final QueryFactory queryFactory;
 
-		return new QueryResult<>(models, count);
-	}
+    private final MessageSource messageSource;
 
-	@GetMapping("{id}")
-	@Transactional
-	public DataGroupRequest Get(@PathVariable("id") UUID id, FieldSet fieldSet) throws MyApplicationException, MyForbiddenException, MyNotFoundException {
-		logger.debug(new MapLogEntry("retrieving" + DataGroupRequest.class.getSimpleName()).And("id", id).And("fields", fieldSet));
+    @Autowired
+    public DataGroupRequestController(
+            BuilderFactory builderFactory,
+            AuditService auditService,
+            DataGroupRequestService dataGroupRequestService,
+            CensorFactory censorFactory,
+            QueryFactory queryFactory,
+            MessageSource messageSource
 
-		this.censorFactory.censor(DataGroupRequestCensor.class).censor(fieldSet, null);
+    ) {
+        this.builderFactory = builderFactory;
+        this.auditService = auditService;
+        this.dataGroupRequestService = dataGroupRequestService;
+        this.censorFactory = censorFactory;
+        this.queryFactory = queryFactory;
+        this.messageSource = messageSource;
+    }
 
-		DataGroupRequestQuery query = this.queryFactory.query(DataGroupRequestQuery.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).ids(id);
-		DataGroupRequest model = this.builderFactory.builder(DataGroupRequestBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(fieldSet, query.firstAs(fieldSet));
-		if (model == null) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{id, DataGroupRequest.class.getSimpleName()}, LocaleContextHolder.getLocale()));
+    @PostMapping("query")
+    public QueryResult<DataGroupRequest> query(@RequestBody DataGroupRequestLookup lookup) throws MyApplicationException, MyForbiddenException {
+        logger.debug("querying {}", DataGroupRequest.class.getSimpleName());
+        this.censorFactory.censor(DataGroupRequestCensor.class).censor(lookup.getProject(), null);
+        DataGroupRequestQuery query = lookup.enrich(this.queryFactory).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator);
+        List<DataGroupRequestEntity> data = query.collectAs(lookup.getProject());
+        List<DataGroupRequest> models = this.builderFactory.builder(DataGroupRequestBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(lookup.getProject(), data);
+        long count = (lookup.getMetadata() != null && lookup.getMetadata().getCountAll()) ? query.count() : models.size();
 
-		this.auditService.track(AuditableAction.Data_Group_Request_Lookup, Map.ofEntries(
-				new AbstractMap.SimpleEntry<String, Object>("id", id),
-				new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
-		));
-		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
+        this.auditService.track(AuditableAction.Data_Group_Request_Query, "lookup", lookup);
 
-		return model;
-	}
+        return new QueryResult<>(models, count);
+    }
 
-	@PostMapping("persist-name")
-	@Transactional
-	public DataGroupRequest Persist(@MyValidate @RequestBody DataGroupRequestNamePersist model, FieldSet fieldSet) throws MyApplicationException, MyForbiddenException, MyNotFoundException, InvalidApplicationException, NoSuchAlgorithmException {
-		logger.debug(new MapLogEntry("persisting name" + DataGroupRequestNamePersist.class.getSimpleName()).And("model", model).And("fieldSet", fieldSet));
+    @GetMapping("{id}")
+    @Transactional
+    public DataGroupRequest get(@PathVariable("id") UUID id, FieldSet fieldSet) throws MyApplicationException, MyForbiddenException, MyNotFoundException {
+        logger.debug(new MapLogEntry("retrieving" + DataGroupRequest.class.getSimpleName()).And("id", id).And("fields", fieldSet));
 
-		DataGroupRequest persisted = this.dataGroupRequestService.persist(model, fieldSet);
+        this.censorFactory.censor(DataGroupRequestCensor.class).censor(fieldSet, null);
 
-		this.auditService.track(AuditableAction.Data_Group_Request_PersistName, Map.ofEntries(
-				new AbstractMap.SimpleEntry<String, Object>("model", model),
-				new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
-		));
-		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
-		return persisted;
-	}
+        DataGroupRequestQuery query = this.queryFactory.query(DataGroupRequestQuery.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).ids(id);
+        DataGroupRequest model = this.builderFactory.builder(DataGroupRequestBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(fieldSet, query.firstAs(fieldSet));
+        if (model == null)
+            throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{id, DataGroupRequest.class.getSimpleName()}, LocaleContextHolder.getLocale()));
 
-	@PostMapping("persist")
-	@Transactional
-	public DataGroupRequest Persist(@MyValidate @RequestBody DataGroupRequestPersist model, FieldSet fieldSet) throws MyApplicationException, MyForbiddenException, MyNotFoundException, InvalidApplicationException, NoSuchAlgorithmException {
-		logger.debug(new MapLogEntry("persisting" + DataGroupRequest.class.getSimpleName()).And("model", model).And("fieldSet", fieldSet));
+        this.auditService.track(AuditableAction.Data_Group_Request_Lookup, Map.ofEntries(
+                new AbstractMap.SimpleEntry<String, Object>("id", id),
+                new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
+        ));
 
-		DataGroupRequest persisted = this.dataGroupRequestService.persist(model, fieldSet);
+        return model;
+    }
 
-		this.auditService.track(AuditableAction.Data_Group_Request_Persist, Map.ofEntries(
-				new AbstractMap.SimpleEntry<String, Object>("model", model),
-				new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
-		));
-		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
-		return persisted;
-	}
+    @PostMapping("persist-name")
+    @Transactional
+    public DataGroupRequest persistName(@MyValidate @RequestBody DataGroupRequestNamePersist model, FieldSet fieldSet) throws MyApplicationException, MyForbiddenException, MyNotFoundException, InvalidApplicationException, NoSuchAlgorithmException {
+        logger.debug(new MapLogEntry("persisting name" + DataGroupRequestNamePersist.class.getSimpleName()).And("model", model).And("fieldSet", fieldSet));
 
-	@DeleteMapping("{id}")
-	@Transactional
-	public void Delete(@PathVariable("id") UUID id) throws MyForbiddenException, InvalidApplicationException {
-		logger.debug(new MapLogEntry("deleting" + DataGroupRequest.class.getSimpleName()).And("id", id));
+        DataGroupRequest persisted = this.dataGroupRequestService.persist(model, fieldSet);
 
-		this.dataGroupRequestService.deleteAndSave(id);
+        this.auditService.track(AuditableAction.Data_Group_Request_PersistName, Map.ofEntries(
+                new AbstractMap.SimpleEntry<String, Object>("model", model),
+                new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
+        ));
+        return persisted;
+    }
 
-		this.auditService.track(AuditableAction.Data_Group_Request_Delete, "id", id);
-		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
-	}
+    @PostMapping("persist")
+    @Transactional
+    public DataGroupRequest persist(@MyValidate @RequestBody DataGroupRequestPersist model, FieldSet fieldSet) throws MyApplicationException, MyForbiddenException, MyNotFoundException, InvalidApplicationException, NoSuchAlgorithmException {
+        logger.debug(new MapLogEntry("persisting" + DataGroupRequest.class.getSimpleName()).And("model", model).And("fieldSet", fieldSet));
+
+        DataGroupRequest persisted = this.dataGroupRequestService.persist(model, fieldSet);
+
+        this.auditService.track(AuditableAction.Data_Group_Request_Persist, Map.ofEntries(
+                new AbstractMap.SimpleEntry<String, Object>("model", model),
+                new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
+        ));
+        return persisted;
+    }
+
+    @DeleteMapping("{id}")
+    @Transactional
+    public void delete(@PathVariable("id") UUID id) throws MyForbiddenException, InvalidApplicationException {
+        logger.debug(new MapLogEntry("deleting" + DataGroupRequest.class.getSimpleName()).And("id", id));
+
+        this.dataGroupRequestService.deleteAndSave(id);
+
+        this.auditService.track(AuditableAction.Data_Group_Request_Delete, "id", id);
+    }
 
 }

@@ -35,9 +35,10 @@ public class DataTreeConfigController {
     private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(DataTreeConfigController.class));
 
     private final AuditService auditService;
-    private final DataTreeConfigService dataTreeConfigService;
-    private final CensorFactory censorFactory;
 
+    private final DataTreeConfigService dataTreeConfigService;
+
+    private final CensorFactory censorFactory;
 
     public DataTreeConfigController(AuditService auditService,
                                     DataTreeConfigService dataTreeConfigService,
@@ -55,7 +56,6 @@ public class DataTreeConfigController {
 
         List<DataTreeConfig> models = dataTreeConfigService.getMyConfigs(fieldSet);
         this.auditService.track(AuditableAction.DataTreeConfig_MyConfigs, "fieldSet", fieldSet);
-        //this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
 
         return models;
     }
@@ -70,7 +70,6 @@ public class DataTreeConfigController {
                 new AbstractMap.SimpleEntry<String, Object>("key", key),
                 new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
         ));
-        //this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
 
         return models;
     }
@@ -84,17 +83,15 @@ public class DataTreeConfigController {
         this.auditService.track(AuditableAction.DataTreeConfig_UpdateLastAccess, Map.ofEntries(
                 new AbstractMap.SimpleEntry<String, Object>("model", model)
         ));
-        //this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
     }
 
     @PostMapping("query-level")
-    public QueryResult<DataTreeLevel> QueryLevel(@RequestBody IndicatorReportLevelLookup lookup) throws MyApplicationException, MyForbiddenException, InvalidApplicationException {
+    public QueryResult<DataTreeLevel> queryLevel(@RequestBody IndicatorReportLevelLookup lookup) throws MyApplicationException, MyForbiddenException, InvalidApplicationException {
         logger.debug("querying {}", DataTreeLevelItemEntity.class.getSimpleName());
         this.censorFactory.censor(BrowseDataTreeLevelItemCensor.class).censor(lookup.getProject());
 
         DataTreeLevel models = dataTreeConfigService.getIndicatorReportLevel(lookup, lookup.getProject());
         this.auditService.track(AuditableAction.DataTreeConfig_QueryLevel, "lookup", lookup);
-        //this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
 
         return new QueryResult<>(List.of(models), 1);
     }

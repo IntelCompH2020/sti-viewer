@@ -24,6 +24,7 @@ public class IndicatorPointValidationServiceImpl implements IndicatorPointValida
     private final ConventionService conventionService;
 
     private final AtomicReference<Map.Entry<String, List<String>>> fieldErrors = new AtomicReference<>();
+
     private final List<Map.Entry<String, List<String>>> validationErrors;
 
     @Autowired
@@ -125,7 +126,8 @@ public class IndicatorPointValidationServiceImpl implements IndicatorPointValida
             default:
                 throw new MyApplicationException("invalid type " + baseType);
         }
-        if (!valid) fieldErrors.get().getValue().add("required field " + fieldName + " is empty ");
+        if (!valid)
+            fieldErrors.get().getValue().add("required field " + fieldName + " is empty ");
     }
 
     private void checkAllowedValues(Map.Entry<String, Object> field, ValidationEntity validation, IndicatorFieldBaseType baseType) {
@@ -239,7 +241,7 @@ public class IndicatorPointValidationServiceImpl implements IndicatorPointValida
                     break;
                 Double doubleToSave = (Double) value;
                 valid = checkValidDoubleRange(validation, doubleToSave);
-                ValueRange = DoubleValuesRangeToString(validation);
+                ValueRange = doubleValuesRangeToString(validation);
                 break;
             case Integer:
                 if (value == null)
@@ -272,7 +274,7 @@ public class IndicatorPointValidationServiceImpl implements IndicatorPointValida
                     valid = checkValidDoubleRange(validation, doubles.get(doubleIndex));
                     doubleIndex++;
                 }
-                ValueRange = DoubleValuesRangeToString(validation);
+                ValueRange = doubleValuesRangeToString(validation);
                 break;
             case IntegerMap:
                 if (value == null)
@@ -304,7 +306,7 @@ public class IndicatorPointValidationServiceImpl implements IndicatorPointValida
                     valid = checkValidDoubleRange(validation, collectedDoubles.get(doubleIndex2));
                     doubleIndex2++;
                 }
-                ValueRange = DoubleValuesRangeToString(validation);
+                ValueRange = doubleValuesRangeToString(validation);
                 break;
             default:
                 throw new MyApplicationException("invalid type " + baseType);
@@ -317,7 +319,7 @@ public class IndicatorPointValidationServiceImpl implements IndicatorPointValida
         return "Min Integer: " + validation.getMinInt() + " and Max Integer : " + validation.getMaxInt();
     }
 
-    private String DoubleValuesRangeToString(ValidationEntity validation) {
+    private String doubleValuesRangeToString(ValidationEntity validation) {
         return "Min Double: " + validation.getMinDouble() + " and Max Double : " + validation.getMaxDouble();
     }
 

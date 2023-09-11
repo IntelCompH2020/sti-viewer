@@ -24,68 +24,67 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping(path = "api/principal", produces = MediaType.APPLICATION_JSON_VALUE)
 public class PrincipalController {
-	private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(PrincipalController.class));
-	private final AuditService auditService;
 
-	private final CurrentPrincipalResolver currentPrincipalResolver;
-	private final AccountBuilder accountBuilder;
-	private final ClaimExtractor claimExtractor;
+    private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(PrincipalController.class));
 
-	@Autowired
-	public PrincipalController(
-			CurrentPrincipalResolver currentPrincipalResolver,
-			AccountBuilder accountBuilder,
-			AuditService auditService,
-			ClaimExtractor claimExtractor) {
-		this.currentPrincipalResolver = currentPrincipalResolver;
-		this.accountBuilder = accountBuilder;
-		this.auditService = auditService;
-		this.claimExtractor = claimExtractor;
-	}
+    private final AuditService auditService;
 
-	@GetMapping("me")
-	public Account me(FieldSet fieldSet) {
-		logger.debug("me");
+    private final CurrentPrincipalResolver currentPrincipalResolver;
 
+    private final AccountBuilder accountBuilder;
 
-		if (fieldSet == null || fieldSet.isEmpty()) {
-			fieldSet = new BaseFieldSet(
-					Account._isAuthenticated,
-					BaseFieldSet.asIndexer(Account._principal, Account.PrincipalInfo._subject),
-					BaseFieldSet.asIndexer(Account._principal, Account.PrincipalInfo._userId),
-					BaseFieldSet.asIndexer(Account._principal, Account.PrincipalInfo._name),
-					BaseFieldSet.asIndexer(Account._principal, Account.PrincipalInfo._scope),
-					BaseFieldSet.asIndexer(Account._principal, Account.PrincipalInfo._client),
-					BaseFieldSet.asIndexer(Account._principal, Account.PrincipalInfo._issuedAt),
-					BaseFieldSet.asIndexer(Account._principal, Account.PrincipalInfo._notBefore),
-					BaseFieldSet.asIndexer(Account._principal, Account.PrincipalInfo._authenticatedAt),
-					BaseFieldSet.asIndexer(Account._principal, Account.PrincipalInfo._expiresAt),
-					BaseFieldSet.asIndexer(Account._principal, Account.PrincipalInfo._more),
-					Account._permissions);
-		}
+    private final ClaimExtractor claimExtractor;
 
-		MyPrincipal principal = this.currentPrincipalResolver.currentPrincipal();
+    @Autowired
+    public PrincipalController(
+            CurrentPrincipalResolver currentPrincipalResolver,
+            AccountBuilder accountBuilder,
+            AuditService auditService,
+            ClaimExtractor claimExtractor) {
+        this.currentPrincipalResolver = currentPrincipalResolver;
+        this.accountBuilder = accountBuilder;
+        this.auditService = auditService;
+        this.claimExtractor = claimExtractor;
+    }
 
-		Account me = this.accountBuilder.build(fieldSet, principal);
+    @GetMapping("me")
+    public Account me(FieldSet fieldSet) {
 
-		this.auditService.track(AuditableAction.Principal_Lookup);
-		//auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
+        if (fieldSet == null || fieldSet.isEmpty()) {
+            fieldSet = new BaseFieldSet(
+                    Account._isAuthenticated,
+                    BaseFieldSet.asIndexer(Account._principal, Account.PrincipalInfo._subject),
+                    BaseFieldSet.asIndexer(Account._principal, Account.PrincipalInfo._userId),
+                    BaseFieldSet.asIndexer(Account._principal, Account.PrincipalInfo._name),
+                    BaseFieldSet.asIndexer(Account._principal, Account.PrincipalInfo._scope),
+                    BaseFieldSet.asIndexer(Account._principal, Account.PrincipalInfo._client),
+                    BaseFieldSet.asIndexer(Account._principal, Account.PrincipalInfo._issuedAt),
+                    BaseFieldSet.asIndexer(Account._principal, Account.PrincipalInfo._notBefore),
+                    BaseFieldSet.asIndexer(Account._principal, Account.PrincipalInfo._authenticatedAt),
+                    BaseFieldSet.asIndexer(Account._principal, Account.PrincipalInfo._expiresAt),
+                    BaseFieldSet.asIndexer(Account._principal, Account.PrincipalInfo._more),
+                    Account._permissions);
+        }
 
-		return me;
+        MyPrincipal principal = this.currentPrincipalResolver.currentPrincipal();
 
-	}
+        Account me = this.accountBuilder.build(fieldSet, principal);
 
-	@GetMapping("my-tenants")
-	public List<String> myTenants() {
-		logger.debug("my-tenants");
+        this.auditService.track(AuditableAction.Principal_Lookup);
 
-		MyPrincipal principal = this.currentPrincipalResolver.currentPrincipal();
-		List<String> tenants = this.claimExtractor.asStrings(principal, TenantScope.TenantCodesClaimName);
+        return me;
 
-		this.auditService.track(AuditableAction.Tenants_Lookup);
-		//auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
+    }
 
-		return tenants == null ? null : tenants.stream().distinct().collect(Collectors.toList());
-	}
+    @GetMapping("my-tenants")
+    public List<String> myTenants() {
+
+        MyPrincipal principal = this.currentPrincipalResolver.currentPrincipal();
+        List<String> tenants = this.claimExtractor.asStrings(principal, TenantScope.TenantCodesClaimName);
+
+        this.auditService.track(AuditableAction.Tenants_Lookup);
+
+        return tenants == null ? null : tenants.stream().distinct().collect(Collectors.toList());
+    }
 
 }

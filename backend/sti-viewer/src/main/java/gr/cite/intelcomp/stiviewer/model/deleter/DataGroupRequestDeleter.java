@@ -26,9 +26,9 @@ public class DataGroupRequestDeleter implements Deleter {
 
     private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(DataGroupRequestDeleter.class));
 
-    private final TenantEntityManager entityManager;
-
     protected final QueryFactory queryFactory;
+
+    private final TenantEntityManager entityManager;
 
     @Autowired
     public DataGroupRequestDeleter(TenantEntityManager entityManager, QueryFactory queryFactory) {
@@ -53,7 +53,8 @@ public class DataGroupRequestDeleter implements Deleter {
 
     public void delete(List<DataGroupRequestEntity> data) throws InvalidApplicationException {
         logger.debug("will delete {}  items", Optional.ofNullable(data).map(List::size).orElse(0));
-        if (data == null || data.isEmpty()) return;
+        if (data == null || data.isEmpty())
+            return;
         Instant now = Instant.now();
 
         for (DataGroupRequestEntity item : data) {

@@ -35,92 +35,94 @@ import java.util.*;
 @RestController
 @RequestMapping(path = "api/tenant")
 public class TenantController {
-	private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(TenantController.class));
 
-	private final BuilderFactory builderFactory;
-	private final AuditService auditService;
-	private final TenantService tenantService;
-	private final CensorFactory censorFactory;
-	private final QueryFactory queryFactory;
-	private final MessageSource messageSource;
+    private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(TenantController.class));
 
-	@Autowired
-	public TenantController(BuilderFactory builderFactory,
-	                        AuditService auditService,
-	                        TenantService tenantService,
-	                        CensorFactory censorFactory,
-	                        QueryFactory queryFactory,
-	                        MessageSource messageSource) {
-		this.builderFactory = builderFactory;
-		this.auditService = auditService;
-		this.tenantService = tenantService;
-		this.censorFactory = censorFactory;
-		this.queryFactory = queryFactory;
-		this.messageSource = messageSource;
-	}
+    private final BuilderFactory builderFactory;
 
-	@PostMapping("query")
-	public QueryResult<Tenant> Query(@RequestBody TenantLookup lookup) throws MyApplicationException, MyForbiddenException {
-		logger.debug("querying {}", Tenant.class.getSimpleName());
+    private final AuditService auditService;
 
-		this.censorFactory.censor(TenantCensor.class).censor(lookup.getProject());
+    private final TenantService tenantService;
 
-		TenantQuery query = lookup.enrich(this.queryFactory).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator);
-		List<TenantEntity> data = query.collectAs(lookup.getProject());
-		List<Tenant> models = this.builderFactory.builder(TenantBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(lookup.getProject(), data);
-		long count = (lookup.getMetadata() != null && lookup.getMetadata().getCountAll()) ? query.count() : models.size();
+    private final CensorFactory censorFactory;
 
-		this.auditService.track(AuditableAction.Tenant_Query, "lookup", lookup);
+    private final QueryFactory queryFactory;
 
-		return new QueryResult<>(models, count);
-	}
+    private final MessageSource messageSource;
 
-	@GetMapping("{id}")
-	@Transactional
-	public Tenant Get(@PathVariable UUID id, FieldSet fieldSet, Locale locale) throws MyApplicationException, MyForbiddenException, MyNotFoundException {
-		logger.debug(new MapLogEntry("retrieving" + Tenant.class.getSimpleName()).And("id", id).And("fields", fieldSet));
+    @Autowired
+    public TenantController(BuilderFactory builderFactory,
+                            AuditService auditService,
+                            TenantService tenantService,
+                            CensorFactory censorFactory,
+                            QueryFactory queryFactory,
+                            MessageSource messageSource) {
+        this.builderFactory = builderFactory;
+        this.auditService = auditService;
+        this.tenantService = tenantService;
+        this.censorFactory = censorFactory;
+        this.queryFactory = queryFactory;
+        this.messageSource = messageSource;
+    }
 
-		this.censorFactory.censor(TenantCensor.class).censor(fieldSet);
+    @PostMapping("query")
+    public QueryResult<Tenant> query(@RequestBody TenantLookup lookup) throws MyApplicationException, MyForbiddenException {
+        logger.debug("querying {}", Tenant.class.getSimpleName());
 
-		TenantQuery query = this.queryFactory.query(TenantQuery.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).ids(id);
-		Tenant model = this.builderFactory.builder(TenantBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(fieldSet, query.firstAs(fieldSet));
-		if (model == null)
-			throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{id, Tenant.class.getSimpleName()}, LocaleContextHolder.getLocale()));
+        this.censorFactory.censor(TenantCensor.class).censor(lookup.getProject());
 
-		this.auditService.track(AuditableAction.Tenant_Lookup, Map.ofEntries(
-				new AbstractMap.SimpleEntry<String, Object>("id", id),
-				new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
-		));
-		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
+        TenantQuery query = lookup.enrich(this.queryFactory).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator);
+        List<TenantEntity> data = query.collectAs(lookup.getProject());
+        List<Tenant> models = this.builderFactory.builder(TenantBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(lookup.getProject(), data);
+        long count = (lookup.getMetadata() != null && lookup.getMetadata().getCountAll()) ? query.count() : models.size();
 
-		return model;
-	}
+        this.auditService.track(AuditableAction.Tenant_Query, "lookup", lookup);
 
-	@PostMapping("persist")
-	@Transactional
-	public Tenant Persist(@MyValidate @RequestBody TenantPersist model, FieldSet fieldSet) throws MyApplicationException, MyForbiddenException, MyNotFoundException, InvalidApplicationException {
-		logger.debug(new MapLogEntry("persisting" + Tenant.class.getSimpleName()).And("model", model).And("fieldSet", fieldSet));
+        return new QueryResult<>(models, count);
+    }
 
-		Tenant persisted = this.tenantService.persist(model, fieldSet);
+    @GetMapping("{id}")
+    @Transactional
+    public Tenant get(@PathVariable UUID id, FieldSet fieldSet, Locale locale) throws MyApplicationException, MyForbiddenException, MyNotFoundException {
+        logger.debug(new MapLogEntry("retrieving" + Tenant.class.getSimpleName()).And("id", id).And("fields", fieldSet));
 
-		this.auditService.track(AuditableAction.Tenant_Persist, Map.ofEntries(
-				new AbstractMap.SimpleEntry<String, Object>("model", model),
-				new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
-		));
-		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
+        this.censorFactory.censor(TenantCensor.class).censor(fieldSet);
 
-		return persisted;
-	}
+        TenantQuery query = this.queryFactory.query(TenantQuery.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).ids(id);
+        Tenant model = this.builderFactory.builder(TenantBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(fieldSet, query.firstAs(fieldSet));
+        if (model == null)
+            throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{id, Tenant.class.getSimpleName()}, LocaleContextHolder.getLocale()));
 
-	@DeleteMapping("{id}")
-	@Transactional
-	public void Delete(@PathVariable("id") UUID id) throws MyForbiddenException, InvalidApplicationException {
-		logger.debug(new MapLogEntry("deleting" + Tenant.class.getSimpleName()).And("id", id));
+        this.auditService.track(AuditableAction.Tenant_Lookup, Map.ofEntries(
+                new AbstractMap.SimpleEntry<String, Object>("id", id),
+                new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
+        ));
 
-		this.tenantService.deleteAndSave(id);
+        return model;
+    }
 
-		this.auditService.track(AuditableAction.Tenant_Delete, "id", id);
+    @PostMapping("persist")
+    @Transactional
+    public Tenant persist(@MyValidate @RequestBody TenantPersist model, FieldSet fieldSet) throws MyApplicationException, MyForbiddenException, MyNotFoundException, InvalidApplicationException {
+        logger.debug(new MapLogEntry("persisting" + Tenant.class.getSimpleName()).And("model", model).And("fieldSet", fieldSet));
 
-		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
-	}
+        Tenant persisted = this.tenantService.persist(model, fieldSet);
+
+        this.auditService.track(AuditableAction.Tenant_Persist, Map.ofEntries(
+                new AbstractMap.SimpleEntry<String, Object>("model", model),
+                new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
+        ));
+
+        return persisted;
+    }
+
+    @DeleteMapping("{id}")
+    @Transactional
+    public void delete(@PathVariable("id") UUID id) throws MyForbiddenException, InvalidApplicationException {
+        logger.debug(new MapLogEntry("deleting" + Tenant.class.getSimpleName()).And("id", id));
+
+        this.tenantService.deleteAndSave(id);
+
+        this.auditService.track(AuditableAction.Tenant_Delete, "id", id);
+    }
 }

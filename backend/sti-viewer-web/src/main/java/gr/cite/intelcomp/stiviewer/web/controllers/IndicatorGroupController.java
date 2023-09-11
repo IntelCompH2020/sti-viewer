@@ -34,9 +34,13 @@ public class IndicatorGroupController {
     private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(IndicatorGroupController.class));
 
     private final BuilderFactory builderFactory;
+
     private final AuditService auditService;
+
     private final IndicatorGroupService indicatorGroupService;
+
     private final CensorFactory censorFactory;
+
     private final MessageSource messageSource;
 
     @Autowired
@@ -64,13 +68,12 @@ public class IndicatorGroupController {
         List<IndicatorGroup> models = this.builderFactory.builder(IndicatorGroupBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(fieldSet, items);
 
         this.auditService.track(AuditableAction.Indicator_Group_Get_All, "fieldSet", fieldSet);
-        //this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
 
         return models;
     }
 
     @GetMapping("{id}")
-    public IndicatorGroup Get(@PathVariable("id") UUID id, FieldSet fieldSet, Locale locale) throws MyApplicationException, MyForbiddenException, MyNotFoundException {
+    public IndicatorGroup get(@PathVariable("id") UUID id, FieldSet fieldSet, Locale locale) throws MyApplicationException, MyForbiddenException, MyNotFoundException {
         logger.debug(new MapLogEntry("retrieving" + IndicatorGroup.class.getSimpleName()).And("id", id).And("fields", fieldSet));
 
         this.censorFactory.censor(IndicatorGroupCensor.class).censor(fieldSet, null);
@@ -84,13 +87,12 @@ public class IndicatorGroupController {
                 new AbstractMap.SimpleEntry<String, Object>("id", id),
                 new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
         ));
-        //this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
 
         return model;
     }
 
     @GetMapping("by-code/{code}")
-    public IndicatorGroup Get(@PathVariable("code") String code, FieldSet fieldSet, Locale locale) throws MyApplicationException, MyForbiddenException, MyNotFoundException {
+    public IndicatorGroup getByCode(@PathVariable("code") String code, FieldSet fieldSet, Locale locale) throws MyApplicationException, MyForbiddenException, MyNotFoundException {
         logger.debug(new MapLogEntry("retrieving" + IndicatorGroup.class.getSimpleName()).And("code", code).And("fields", fieldSet));
 
         this.censorFactory.censor(IndicatorGroupCensor.class).censor(fieldSet, null);
@@ -104,7 +106,6 @@ public class IndicatorGroupController {
                 new AbstractMap.SimpleEntry<String, Object>("code", code),
                 new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
         ));
-        //this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
 
         return model;
     }
