@@ -19,26 +19,28 @@ import org.springframework.stereotype.Component;
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class BrowseDataTreeLevelConfigCensor extends BaseCensor {
 
-	private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(BrowseDataTreeLevelConfigCensor.class));
+    private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(BrowseDataTreeLevelConfigCensor.class));
 
-	protected final AuthorizationService authService;
-	protected final CensorFactory censorFactory;
+    protected final AuthorizationService authService;
 
-	@Autowired
-	public BrowseDataTreeLevelConfigCensor(
-			ConventionService conventionService,
-			AuthorizationService authService,
-			CensorFactory censorFactory
-	) {
-		super(conventionService);
-		this.authService = authService;
-		this.censorFactory = censorFactory;
-	}
+    protected final CensorFactory censorFactory;
 
-	public void censor(FieldSet fields) throws MyForbiddenException {
-		logger.debug(new DataLogEntry("censoring fields", fields));
-		if (this.isEmpty(fields)) return;
-		this.authService.authorizeForce(Permission.BrowseBrowseDataTreeConfig);
-	}
+    @Autowired
+    public BrowseDataTreeLevelConfigCensor(
+            ConventionService conventionService,
+            AuthorizationService authService,
+            CensorFactory censorFactory
+    ) {
+        super(conventionService);
+        this.authService = authService;
+        this.censorFactory = censorFactory;
+    }
+
+    public void censor(FieldSet fields) throws MyForbiddenException {
+        logger.debug(new DataLogEntry("censoring fields", fields));
+        if (this.isEmpty(fields))
+            return;
+        this.authService.authorizeForce(Permission.BrowseBrowseDataTreeConfig);
+    }
 
 }

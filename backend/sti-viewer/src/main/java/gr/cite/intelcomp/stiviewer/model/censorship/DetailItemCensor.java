@@ -16,7 +16,9 @@ import org.springframework.stereotype.Component;
 @Component
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class DetailItemCensor extends BaseCensor {
+
     private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(DetailItemCensor.class));
+
     protected final AuthorizationService authService;
 
     @Autowired

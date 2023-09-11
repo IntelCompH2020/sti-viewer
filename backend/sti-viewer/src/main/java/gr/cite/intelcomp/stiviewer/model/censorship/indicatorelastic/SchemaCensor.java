@@ -17,11 +17,12 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class SchemaCensor  extends BaseCensor {
+public class SchemaCensor extends BaseCensor {
 
     private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(SchemaCensor.class));
 
     protected AuthorizationService authService;
+
     protected final CensorFactory censorFactory;
 
     @Autowired
@@ -32,8 +33,9 @@ public class SchemaCensor  extends BaseCensor {
     }
 
     public void censor(FieldSet fields) throws MyForbiddenException {
-        logger.debug(new DataLogEntry("censoring fields",fields));
-        if(fields.isEmpty()) return;
+        logger.debug(new DataLogEntry("censoring fields", fields));
+        if (fields.isEmpty())
+            return;
         this.authService.authorizeForce(Permission.BrowseIndicatorElastic);
     }
 }

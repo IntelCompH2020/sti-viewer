@@ -20,28 +20,30 @@ import org.springframework.stereotype.Component;
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class BrowseDataTreeLevelCensor extends BaseCensor {
 
-	private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(BrowseDataTreeLevelCensor.class));
+    private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(BrowseDataTreeLevelCensor.class));
 
-	protected final AuthorizationService authService;
-	protected final CensorFactory censorFactory;
+    protected final AuthorizationService authService;
 
-	@Autowired
-	public BrowseDataTreeLevelCensor(
-			ConventionService conventionService,
-			AuthorizationService authService,
-			CensorFactory censorFactory
-	) {
-		super(conventionService);
-		this.authService = authService;
-		this.censorFactory = censorFactory;
-	}
+    protected final CensorFactory censorFactory;
 
-	public void censor(FieldSet fields) throws MyForbiddenException {
-		logger.debug(new DataLogEntry("censoring fields", fields));
-		if (this.isEmpty(fields)) return;
-		this.authService.authorizeForce(Permission.BrowseBrowseDataTree);
-		FieldSet tenantFields = fields.extractPrefixed(this.asIndexerPrefix(DataTreeLevel._items));
-		this.censorFactory.censor(BrowseDataTreeLevelItemCensor.class).censor(tenantFields);
-	}
+    @Autowired
+    public BrowseDataTreeLevelCensor(
+            ConventionService conventionService,
+            AuthorizationService authService,
+            CensorFactory censorFactory
+    ) {
+        super(conventionService);
+        this.authService = authService;
+        this.censorFactory = censorFactory;
+    }
+
+    public void censor(FieldSet fields) throws MyForbiddenException {
+        logger.debug(new DataLogEntry("censoring fields", fields));
+        if (this.isEmpty(fields))
+            return;
+        this.authService.authorizeForce(Permission.BrowseBrowseDataTree);
+        FieldSet tenantFields = fields.extractPrefixed(this.asIndexerPrefix(DataTreeLevel._items));
+        this.censorFactory.censor(BrowseDataTreeLevelItemCensor.class).censor(tenantFields);
+    }
 
 }

@@ -20,8 +20,11 @@ import java.util.UUID;
 @Component
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class IndicatorCensor extends BaseCensor {
+
     private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(IndicatorCensor.class));
+
     private final AuthorizationService authService;
+
     private final CensorFactory censorFactory;
 
     @Autowired

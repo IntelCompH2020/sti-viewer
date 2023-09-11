@@ -24,6 +24,7 @@ public class IndicatorAccessCensor extends BaseCensor {
     private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(IndicatorAccessCensor.class));
 
     protected final AuthorizationService authService;
+
     protected final CensorFactory censorFactory;
 
     @Autowired

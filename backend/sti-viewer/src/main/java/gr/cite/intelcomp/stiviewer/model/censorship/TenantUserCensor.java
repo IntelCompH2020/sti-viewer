@@ -22,6 +22,7 @@ import java.util.UUID;
 @Component
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class TenantUserCensor extends BaseCensor {
+
     private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(TenantUserCensor.class));
 
     protected final AuthorizationService authService;

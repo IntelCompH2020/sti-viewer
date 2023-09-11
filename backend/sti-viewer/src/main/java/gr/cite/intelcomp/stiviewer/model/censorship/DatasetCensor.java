@@ -16,13 +16,13 @@ import org.springframework.stereotype.Component;
 @Component
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class DatasetCensor extends BaseCensor {
+
     private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(DatasetCensor.class));
+
     private final AuthorizationService authService;
 
     @Autowired
-    public DatasetCensor(ConventionService conventionService,
-                         AuthorizationService authService
-    ) {
+    public DatasetCensor(ConventionService conventionService, AuthorizationService authService) {
         super(conventionService);
         this.authService = authService;
     }

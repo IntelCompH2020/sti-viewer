@@ -19,7 +19,6 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.UUID;
 
-
 @Component
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class BookmarkCensor extends BaseCensor {
@@ -30,11 +29,7 @@ public class BookmarkCensor extends BaseCensor {
     protected final CensorFactory censorFactory;
 
     @Autowired
-    public BookmarkCensor(
-            ConventionService conventionService,
-            AuthorizationService authService,
-            CensorFactory censorFactory
-    ) {
+    public BookmarkCensor(ConventionService conventionService, AuthorizationService authService, CensorFactory censorFactory) {
         super(conventionService);
         this.authService = authService;
         this.censorFactory = censorFactory;
