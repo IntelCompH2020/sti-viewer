@@ -1,37 +1,35 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges, NgZone, ViewChild, ElementRef, HostListener, Optional } from '@angular/core';
-import { ChartBuilderService, GraphOptions, TreeMapData } from '@app/core/services/data-transform/charts-common.service';
-import { ChartSerie, DataTransformService, StandAloneData } from '@app/core/services/data-transform/data-transform.service';
-import { IndicatorPointService } from '@app/core/services/http/indicator-point.service';
+import { Component, ElementRef, Input, OnChanges, OnInit, Optional, SimpleChanges } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { GENERAL_ANIMATIONS } from '@app/animations';
+import { AggregateResponseModel } from '@app/core/model/aggregate-response/aggregate-reponse.model';
+import { IndicatorPointReportExternalTokenPersist } from '@app/core/model/external-token/external-token.model';
+import { ChartBuilderService, GraphOptions, TreeMapData, TableData } from '@app/core/services/data-transform/charts-common.service';
+import { DataTransformService, StandAloneData } from '@app/core/services/data-transform/data-transform.service';
+import { IndicatorPointService } from '@app/core/services/http/indicator-point.service';
+import { PublicService } from '@app/core/services/http/public.service';
+import { ChartHelperService } from '@app/core/services/ui/chart-helper.service';
 import { BaseComponent } from '@common/base/base.component';
 import { HttpErrorHandlingService } from '@common/modules/errors/error-handling/http-error-handling.service';
 import { UiNotificationService } from '@common/modules/notification/ui-notification-service';
-import { DataZoomComponentOption, EChartsOption, registerMap} from 'echarts';
-import { BehaviorSubject, combineLatest, interval, Observable, of, Subject } from 'rxjs';
-import { delayWhen, distinctUntilChanged, filter, map, takeUntil } from 'rxjs/operators';
-import { BaseIndicatorDashboardChartConfig, IndicatorDashboardBarChartConfig, IndicatorDashboardChartType, IndicatorDashboardConfig, IndicatorDashboardGraphChartConfig, IndicatorDashboardLineChartConfig, IndicatorDashboardMapChartConfig, IndicatorDashboardPolarBarChartConfig, IndicatorDashboardRadarChartConfig, IndicatorDashboardSankeyChartConfig, IndicatorDashboardScatterChartConfig, IndicatorDashboardTreeMapChartConfig, IndicatorFilterType} from '../indicator-dashboard-config';
-import { IndicatorQueryParams } from '../indicator-dashboard.component';
-import { MatDialog } from '@angular/material/dialog';
-import { IndicatorDashboardFiltersComponent, IndicatorListingFiltersComponentData } from './indicator-dashboard-filters/indicator-dashboard-filters.component';
+import { Guid } from '@common/types/guid';
+import { DataZoomComponentOption, EChartsOption, registerMap } from 'echarts';
 import * as FileSaver from 'file-saver';
-import { IndicatorPointReportLookup, RawDataRequest } from '@app/core/query/indicator-point-report.lookup';
-import { IndicatorPointLookup } from '@app/core/query/indicator-point.lookup';
-import moment, { max } from 'moment';
+import { BehaviorSubject, Observable, Subject, combineLatest, interval, of } from 'rxjs';
+import { delayWhen, distinctUntilChanged, filter, map, takeUntil } from 'rxjs/operators';
+import { BaseIndicatorDashboardChartConfig, IndicatorDashboardBarChartConfig, IndicatorDashboardChartType, IndicatorDashboardGraphChartConfig, IndicatorDashboardLineChartConfig, IndicatorDashboardMapChartConfig, IndicatorDashboardPolarBarChartConfig, IndicatorDashboardRadarChartConfig, IndicatorDashboardSankeyChartConfig, IndicatorDashboardScatterChartConfig, IndicatorDashboardTreeMapChartConfig, IndicatorFilterType } from '../indicator-dashboard-config';
+import { IndicatorQueryParams } from '../indicator-dashboard.component';
+import { ShareDialogComponent, ShareDialogData } from '../share-dialog/share-dialog.component';
+import { ChartLockZoomService } from '../ui-services/chart-lock-zoom.service';
+import { DashboardUITagsService } from '../ui-services/dashboard-tags.service';
+import { IndicatorDashboardFiltersComponent, IndicatorListingFiltersComponentData } from './indicator-dashboard-filters/indicator-dashboard-filters.component';
 const mapGeo = require('./world-sm.geo.json');
+const europeMap = require('./europe.geo.json');
+// const asiaMap = require('./asia.geo.json');
+// const africaMap = require('./africa.geo.json');
+// const usaMap = require('./usa.geo.json');
+// const oceaniaMap = require('./oceania.geo.json');
 const MAP_GEO_DICTIONARY = mapGeo.features.reduce((aggr, country) => ({...aggr, [country.properties.name]: country.properties.name}), {});
 const GRAPH_OPTIONS = require('./les-miserables.json') as GraphOptions;
-import { AuthService } from '@app/core/services/ui/auth.service';
-import { DashboardUITagsService } from '../ui-services/dashboard-tags.service';
-import { ChartLockZoomService } from '../ui-services/chart-lock-zoom.service';
-import { ExternalToken, IndicatorPointReportExternalTokenPersist } from '@app/core/model/external-token/external-token.model';
-import { ExternalTokenService } from '@app/core/services/http/external-token.service';
-import { Guid } from '@common/types/guid';
-import { PublicService } from '@app/core/services/http/public.service';
-import { AggregateResponseModel } from '@app/core/model/aggregate-response/aggregate-reponse.model';
-import { InstallationConfigurationService } from '@common/installation-configuration/installation-configuration.service';
-import { QueryParamsService } from '@app/core/services/ui/query-params.service';
-import { ChartHelperService } from '@app/core/services/ui/chart-helper.service';
-import { ShareDialogComponent, ShareDialogData } from '../share-dialog/share-dialog.component';
 // const TREE_MAP_DATA = require('./disk.tree.json');
 
 @Component({
@@ -46,7 +44,7 @@ export class IndicatorDashboardChartComponent extends BaseComponent implements O
 	@Input() indicatorQueryParams: IndicatorQueryParams;
 	@Input() token = null;
 	chartOptions: EChartsOption;
-
+	tableConfig: TableData;
 
 
 	private _observer: IntersectionObserver;
@@ -69,7 +67,7 @@ export class IndicatorDashboardChartComponent extends BaseComponent implements O
 		takeUntil(this._destroyed)
 	);
 
-
+	indicatorDashboardChartType = IndicatorDashboardChartType
 
 	private _chartTags$ = new BehaviorSubject<string[]>([]);
 
@@ -268,6 +266,7 @@ export class IndicatorDashboardChartComponent extends BaseComponent implements O
 			IndicatorDashboardChartType.Sankey,
 			IndicatorDashboardChartType.Radar,
 			IndicatorDashboardChartType.Scatter,
+			IndicatorDashboardChartType.Table,
 		]
 
 
@@ -312,7 +311,11 @@ export class IndicatorDashboardChartComponent extends BaseComponent implements O
 			)
 			.subscribe((response) => {
 				try{
-
+					response?.items.forEach((element, index) => {
+						if (Object.keys(element.group.items).length === 0 || element.values.length === 0) {
+							response.items.splice(index); // Remove the undefined element
+						}
+					});
 					buildConfiguration: { //  TODO MAKE IT A SWITCH CASE OR A FUNCTION
 
 						// * SANKEY
@@ -509,6 +512,20 @@ export class IndicatorDashboardChartComponent extends BaseComponent implements O
 							break buildConfiguration;
 						}
 
+						// * Table
+						if (this.chartConfig.type === IndicatorDashboardChartType.Table) {
+							if (!seriesData) {
+								console.warn('No series found for table');
+								return;
+							}
+
+							this.tableConfig = {
+								title: this.chartConfig?.chartName,
+								values: seriesData?.labels
+							};							
+							break buildConfiguration;
+						}
+
 						// * POLAR BAR
 						if (this.chartConfig.type === IndicatorDashboardChartType.PolarBar) {
 							if (!seriesData) {
@@ -542,7 +559,14 @@ export class IndicatorDashboardChartComponent extends BaseComponent implements O
 								return;
 							}
 							const { series, labels } = seriesData ?? { series: {} , labels: []};
-							registerMap('worldmap', mapGeo);
+							switch (this.chartConfig.series[0].map?.toLocaleLowerCase()) {
+								case 'europe':
+									registerMap('europe', europeMap);
+									break;
+								default:
+									registerMap('worldmap', mapGeo);
+							}
+
 							const seriesIds = Object.keys(series);
 
 							const mapChartConfig = this.chartConfig as IndicatorDashboardMapChartConfig;

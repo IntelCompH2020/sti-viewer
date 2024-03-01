@@ -6,17 +6,17 @@ import gr.cite.tools.fieldset.FieldSet;
 
 public class BaseCensor implements Censor {
 
-    protected final ConventionService conventionService;
+	protected final ConventionService conventionService;
 
-    public BaseCensor(ConventionService conventionService) {
-        this.conventionService = conventionService;
-    }
+	public BaseCensor(ConventionService conventionService){
+		this.conventionService = conventionService;
+	}
 
-    protected Boolean isEmpty(FieldSet fields) {
-        return fields == null || fields.isEmpty();
-    }
+	protected Boolean isEmpty(FieldSet fields) {
+		return fields == null || fields.isEmpty();
+	}
 
-    protected String asIndexerPrefix(String part) {
-        return this.conventionService.asPrefix(part);
-    }
+	protected String asIndexerPrefix(String part){
+		return this.conventionService.asPrefix(part);
+	}
 }

@@ -781,11 +781,12 @@ export class OrderingConfigEditorModel implements Lookup.Ordering{
 // * LINE CHART
 export class IndicatorDashboardLineChartConfigEditorModel extends BaseIndicatorDashboardChartConfigEditorModel implements IndicatorDashboardLineChartConfig{
 	xAxis: IndicatorDashboardChartXAxisConfig;
-	yAxis: IndicatorDashboardChartYAxisConfig;
-	stack?: boolean;
+	yAxis: IndicatorDashboardChartYAxisConfig[];
+	stack?: string; //TODO: It was boolean
 	horizontal?: boolean;
 	areaStyle?: object;
 	dataZoom?: DataZoom;
+	yAxisIndex?: number
 
 	public static readonly ADDITIONAL_FIELDS: AdditionalFieldBuilder[] = [
 		{
@@ -818,7 +819,7 @@ export class IndicatorDashboardLineChartConfigEditorModel extends BaseIndicatorD
 			super.fromModel(item);
 			this.xAxis = item.xAxis;
 			this.yAxis = item.yAxis;
-			this.stack = !!item.stack;
+			// this.stack = !!item.stack;
 			this.horizontal = !!item.horizontal;
 			this.areaStyle = item.areaStyle;
 			this.dataZoom = item.dataZoom;

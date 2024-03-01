@@ -26,38 +26,36 @@ import java.util.Map;
 @RestController
 @RequestMapping(path = "api/dashboard")
 public class DashboardController {
+	private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(DashboardController.class));
 
-    private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(DashboardController.class));
+	private final AuditService auditService;
+	private final DashboardService dashboardService;
+	private final MessageSource messageSource;
 
-    private final AuditService auditService;
 
-    private final DashboardService dashboardService;
+	@Autowired
+	public DashboardController(
+			AuditService auditService,
+			DashboardService dashboardService,
+			MessageSource messageSource
+	) {
+		this.auditService = auditService;
+		this.dashboardService = dashboardService;
+		this.messageSource = messageSource;
+	}
 
-    private final MessageSource messageSource;
+	@GetMapping("by-key/{key}")
+	public String Get(@PathVariable("key") String key) throws MyApplicationException, MyForbiddenException, MyNotFoundException, InvalidApplicationException {
+		logger.debug(new MapLogEntry("retrieving" + Indicator.class.getSimpleName()).And("key", key));
 
-    @Autowired
-    public DashboardController(
-            AuditService auditService,
-            DashboardService dashboardService,
-            MessageSource messageSource
-    ) {
-        this.auditService = auditService;
-        this.dashboardService = dashboardService;
-        this.messageSource = messageSource;
-    }
+		String model = this.dashboardService.getPublicDashboard(key);
+		if (model == null || model.isBlank()) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{key, UserSettings.class.getSimpleName()}, LocaleContextHolder.getLocale()));
 
-    @GetMapping("by-key/{key}")
-    public String get(@PathVariable("key") String key) throws MyApplicationException, MyForbiddenException, MyNotFoundException, InvalidApplicationException {
-        logger.debug(new MapLogEntry("retrieving" + Indicator.class.getSimpleName()).And("key", key));
+		this.auditService.track(AuditableAction.Indicator_Lookup, Map.ofEntries(
+				new AbstractMap.SimpleEntry<String, Object>("key", key)
+		));
+		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
 
-        String model = this.dashboardService.getPublicDashboard(key);
-        if (model == null || model.isBlank())
-            throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{key, UserSettings.class.getSimpleName()}, LocaleContextHolder.getLocale()));
-
-        this.auditService.track(AuditableAction.Indicator_Lookup, Map.ofEntries(
-                new AbstractMap.SimpleEntry<String, Object>("key", key)
-        ));
-
-        return model;
-    }
+		return model;
+	}
 }

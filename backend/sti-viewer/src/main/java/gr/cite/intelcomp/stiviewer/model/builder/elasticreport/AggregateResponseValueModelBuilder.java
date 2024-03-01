@@ -16,36 +16,39 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 
+
 @Component
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class AggregateResponseValueModelBuilder extends BaseBuilder<AggregateResponseValueModel, AggregateResponseValue> {
 
-    public AggregateResponseValueModelBuilder(
-            ConventionService conventionService
-    ) {
-        super(conventionService, new LoggerService(LoggerFactory.getLogger(AggregateResponseValueModelBuilder.class)));
-    }
+	private EnumSet<AuthorizationFlags> authorize = EnumSet.of(AuthorizationFlags.None);
 
-    public AggregateResponseValueModelBuilder authorize(EnumSet<AuthorizationFlags> values) {
-        return this;
-    }
 
-    @Override
-    public List<AggregateResponseValueModel> build(FieldSet fields, List<AggregateResponseValue> data) throws MyApplicationException {
-        this.logger.debug("building for {} items requesting {} fields", Optional.ofNullable(data).map(List::size).orElse(0), Optional.ofNullable(fields).map(FieldSet::getFields).map(Set::size).orElse(0));
-        this.logger.trace(new DataLogEntry("requested fields", fields));
+	public AggregateResponseValueModelBuilder(
+			ConventionService conventionService
+	) {
+		super(conventionService, new LoggerService(LoggerFactory.getLogger(AggregateResponseValueModelBuilder.class)));
+	}
 
-        List<AggregateResponseValueModel> models = new ArrayList<>(100);
+	public AggregateResponseValueModelBuilder authorize(EnumSet<AuthorizationFlags> values) {
+		this.authorize = values;
+		return this;
+	}
 
-        if (data == null)
-            return models;
-        for (AggregateResponseValue d : data) {
-            AggregateResponseValueModel m = new AggregateResponseValueModel();
-            m.setValue(d.getValue());
-            m.setField(d.getField());
-            m.setAggregateType(d.getAggregateType());
-            models.add(m);
-        }
-        return models;
-    }
+	@Override
+	public List<AggregateResponseValueModel> build(FieldSet fields, List<AggregateResponseValue> data) throws MyApplicationException {
+		this.logger.debug("building for {} items requesting {} fields", Optional.ofNullable(data).map(List::size).orElse(0), Optional.ofNullable(fields).map(FieldSet::getFields).map(Set::size).orElse(0));
+		this.logger.trace(new DataLogEntry("requested fields", fields));
+
+		List<AggregateResponseValueModel> models = new ArrayList<>();
+
+		for (AggregateResponseValue d : data) {
+			AggregateResponseValueModel m = new AggregateResponseValueModel();
+			m.setValue(d.getValue());
+			m.setField(d.getField());
+			m.setAggregateType(d.getAggregateType());
+			models.add(m);
+		}
+		return models;
+	}
 }

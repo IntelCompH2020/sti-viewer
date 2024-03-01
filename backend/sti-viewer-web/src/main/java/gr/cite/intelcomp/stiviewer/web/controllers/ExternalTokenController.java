@@ -43,123 +43,123 @@ import java.util.*;
 @RequestMapping(path = "api/external-token")
 @Hidden
 public class ExternalTokenController {
+	private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(ExternalTokenController.class));
 
-    private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(ExternalTokenController.class));
+	private final BuilderFactory builderFactory;
+	private final AuditService auditService;
+	private final ExternalTokenService externalTokenService;
+	private final CensorFactory censorFactory;
+	private final QueryFactory queryFactory;
+	private final MessageSource messageSource;
 
-    private final BuilderFactory builderFactory;
+	@Autowired
+	public ExternalTokenController(
+			BuilderFactory builderFactory,
+			AuditService auditService,
+			ExternalTokenService externalTokenService,
+			CensorFactory censorFactory,
+			QueryFactory queryFactory,
+			MessageSource messageSource
 
-    private final AuditService auditService;
+	) {
+		this.builderFactory = builderFactory;
+		this.auditService = auditService;
+		this.externalTokenService = externalTokenService;
+		this.censorFactory = censorFactory;
+		this.queryFactory = queryFactory;
+		this.messageSource = messageSource;
+	}
 
-    private final ExternalTokenService externalTokenService;
+	@PostMapping("query")
+	public QueryResult<ExternalToken> query(@RequestBody ExternalTokenLookup lookup) throws MyApplicationException, MyForbiddenException {
+		logger.debug("querying {}", ExternalToken.class.getSimpleName());
 
-    private final CensorFactory censorFactory;
+		this.censorFactory.censor(ExternalTokenCensor.class).censor(lookup.getProject(), null);
 
-    private final QueryFactory queryFactory;
+		ExternalTokenQuery query = lookup.enrich(this.queryFactory).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicatorOrIndicatorAccess);
+		List<ExternalTokenEntity> datas = query.collectAs(lookup.getProject());
+		List<ExternalToken> models = this.builderFactory.builder(ExternalTokenBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicatorOrIndicatorAccess).build(lookup.getProject(), datas);
+		long count = (lookup.getMetadata() != null && lookup.getMetadata().getCountAll()) ? query.count() : models.size();
 
-    private final MessageSource messageSource;
+		this.auditService.track(AuditableAction.ExternalToken_Query, "lookup", lookup);
+		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
 
-    @Autowired
-    public ExternalTokenController(
-            BuilderFactory builderFactory,
-            AuditService auditService,
-            ExternalTokenService externalTokenService,
-            CensorFactory censorFactory,
-            QueryFactory queryFactory,
-            MessageSource messageSource
+		return new QueryResult(models, count);
+	}
 
-    ) {
-        this.builderFactory = builderFactory;
-        this.auditService = auditService;
-        this.externalTokenService = externalTokenService;
-        this.censorFactory = censorFactory;
-        this.queryFactory = queryFactory;
-        this.messageSource = messageSource;
-    }
+	@GetMapping("{id}")
+	@Transactional
+	public ExternalToken get(@PathVariable("id") UUID id, FieldSet fieldSet, Locale locale) throws MyApplicationException, MyForbiddenException, MyNotFoundException {
+		logger.debug(new MapLogEntry("retrieving" + ExternalToken.class.getSimpleName()).And("id", id).And("fields", fieldSet));
 
-    @PostMapping("query")
-    public QueryResult<ExternalToken> query(@RequestBody ExternalTokenLookup lookup) throws MyApplicationException, MyForbiddenException {
-        logger.debug("querying {}", ExternalToken.class.getSimpleName());
+		this.censorFactory.censor(ExternalTokenCensor.class).censor(fieldSet, null);
 
-        this.censorFactory.censor(ExternalTokenCensor.class).censor(lookup.getProject(), null);
+		ExternalTokenQuery query = this.queryFactory.query(ExternalTokenQuery.class).ids(id).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicatorOrIndicatorAccess);
+		ExternalToken model = this.builderFactory.builder(ExternalTokenBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicatorOrIndicatorAccess).build(fieldSet, query.firstAs(fieldSet));
+		if (model == null) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{id, ExternalToken.class.getSimpleName()}, LocaleContextHolder.getLocale()));
 
-        ExternalTokenQuery query = lookup.enrich(this.queryFactory).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicatorOrIndicatorAccess);
-        List<ExternalTokenEntity> data = query.collectAs(lookup.getProject());
-        List<ExternalToken> models = this.builderFactory.builder(ExternalTokenBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicatorOrIndicatorAccess).build(lookup.getProject(), data);
-        long count = (lookup.getMetadata() != null && lookup.getMetadata().getCountAll()) ? query.count() : models.size();
+		this.auditService.track(AuditableAction.ExternalToken_Lookup, Map.ofEntries(
+				new AbstractMap.SimpleEntry<String, Object>("id", id),
+				new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
+		));
+		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
 
-        this.auditService.track(AuditableAction.ExternalToken_Query, "lookup", lookup);
+		return model;
+	}
 
-        return new QueryResult<>(models, count);
-    }
+	@PostMapping("persist-expiration")
+	@Transactional
+	public ExternalToken persistExpiration(@MyValidate @RequestBody ExternalTokenExpirationPersist model, FieldSet fieldSet) throws MyApplicationException, MyForbiddenException, MyNotFoundException, InvalidApplicationException, OperationNotSupportedException {
+		logger.debug(new MapLogEntry("persist expiration" + ExternalToken.class.getSimpleName()).And("model", model).And("fieldSet", fieldSet));
 
-    @GetMapping("{id}")
-    @Transactional
-    public ExternalToken get(@PathVariable("id") UUID id, FieldSet fieldSet, Locale locale) throws MyApplicationException, MyForbiddenException, MyNotFoundException {
-        logger.debug(new MapLogEntry("retrieving" + ExternalToken.class.getSimpleName()).And("id", id).And("fields", fieldSet));
+		ExternalToken persisted = this.externalTokenService.persist(model, fieldSet);
 
-        this.censorFactory.censor(ExternalTokenCensor.class).censor(fieldSet, null);
+		this.auditService.track(AuditableAction.ExternalToken_Persist, Map.ofEntries(
+				new AbstractMap.SimpleEntry<String, Object>("model", model),
+				new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
+		));
+		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
+		return persisted;
+	}
 
-        ExternalTokenQuery query = this.queryFactory.query(ExternalTokenQuery.class).ids(id).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicatorOrIndicatorAccess);
-        ExternalToken model = this.builderFactory.builder(ExternalTokenBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicatorOrIndicatorAccess).build(fieldSet, query.firstAs(fieldSet));
-        if (model == null)
-            throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{id, ExternalToken.class.getSimpleName()}, LocaleContextHolder.getLocale()));
+	@PostMapping("token-change")
+	@Transactional
+	public String tokenChange(@MyValidate @RequestBody ExternalTokenChangePersist model) throws MyApplicationException, MyForbiddenException, MyNotFoundException, InvalidApplicationException, OperationNotSupportedException, NoSuchAlgorithmException {
+		logger.debug(new MapLogEntry("token change" + ExternalToken.class.getSimpleName()).And("model", model));
 
-        this.auditService.track(AuditableAction.ExternalToken_Lookup, Map.ofEntries(
-                new AbstractMap.SimpleEntry<String, Object>("id", id),
-                new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
-        ));
+		String token = this.externalTokenService.persist(model);
 
-        return model;
-    }
+		this.auditService.track(AuditableAction.ExternalToken_Persist, Map.ofEntries(
+				new AbstractMap.SimpleEntry<String, Object>("model", model)
+		));
+		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
+		return token;
+	}
 
-    @PostMapping("persist-expiration")
-    @Transactional
-    public ExternalToken persistExpiration(@MyValidate @RequestBody ExternalTokenExpirationPersist model, FieldSet fieldSet) throws MyApplicationException, MyForbiddenException, MyNotFoundException, InvalidApplicationException, OperationNotSupportedException {
-        logger.debug(new MapLogEntry("persist expiration" + ExternalToken.class.getSimpleName()).And("model", model).And("fieldSet", fieldSet));
+	@PostMapping("persist/for-indicator-point-report")
+	@Transactional
+	public ExternalTokenCreateResponse persistIndicatorPointReport(@MyValidate @RequestBody IndicatorPointReportExternalTokenPersist model) throws MyApplicationException, MyForbiddenException, MyNotFoundException, InvalidApplicationException, OperationNotSupportedException, JsonProcessingException, NoSuchAlgorithmException {
+		logger.debug(new MapLogEntry("token change" + ExternalToken.class.getSimpleName()).And("model", model));
 
-        ExternalToken persisted = this.externalTokenService.persist(model, fieldSet);
+		ExternalTokenCreateResponse response = this.externalTokenService.persist(model);
 
-        this.auditService.track(AuditableAction.ExternalToken_Persist, Map.ofEntries(
-                new AbstractMap.SimpleEntry<String, Object>("model", model),
-                new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
-        ));
-        return persisted;
-    }
+		this.auditService.track(AuditableAction.ExternalToken_Persist, Map.ofEntries(
+				new AbstractMap.SimpleEntry<String, Object>("model", model)
+				));
+		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
+		return response;
+	}
 
-    @PostMapping("token-change")
-    @Transactional
-    public String tokenChange(@MyValidate @RequestBody ExternalTokenChangePersist model) throws MyApplicationException, MyForbiddenException, MyNotFoundException, InvalidApplicationException, OperationNotSupportedException, NoSuchAlgorithmException {
-        logger.debug(new MapLogEntry("token change" + ExternalToken.class.getSimpleName()).And("model", model));
+	@DeleteMapping("{id}")
+	@Transactional
+	public void delete(@PathVariable("id") UUID id) throws MyForbiddenException, InvalidApplicationException, OperationNotSupportedException {
+		logger.debug(new MapLogEntry("retrieving" + ExternalToken.class.getSimpleName()).And("id", id));
 
-        String token = this.externalTokenService.persist(model);
+		this.externalTokenService.deleteAndSave(id);
 
-        this.auditService.track(AuditableAction.ExternalToken_Persist, Map.ofEntries(
-                new AbstractMap.SimpleEntry<String, Object>("model", model)
-        ));
-        return token;
-    }
+		this.auditService.track(AuditableAction.ExternalToken_Delete, "id", id);
+		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
+	}
 
-    @PostMapping("persist/for-indicator-point-report")
-    @Transactional
-    public ExternalTokenCreateResponse persistIndicatorPointReport(@MyValidate @RequestBody IndicatorPointReportExternalTokenPersist model) throws MyApplicationException, MyForbiddenException, MyNotFoundException, InvalidApplicationException, OperationNotSupportedException, JsonProcessingException, NoSuchAlgorithmException {
-        logger.debug(new MapLogEntry("token change" + ExternalToken.class.getSimpleName()).And("model", model));
-
-        ExternalTokenCreateResponse response = this.externalTokenService.persist(model);
-
-        this.auditService.track(AuditableAction.ExternalToken_Persist, Map.ofEntries(
-                new AbstractMap.SimpleEntry<String, Object>("model", model)
-        ));
-        return response;
-    }
-
-    @DeleteMapping("{id}")
-    @Transactional
-    public void delete(@PathVariable("id") UUID id) throws MyForbiddenException, InvalidApplicationException, OperationNotSupportedException {
-        logger.debug(new MapLogEntry("retrieving" + ExternalToken.class.getSimpleName()).And("id", id));
-
-        this.externalTokenService.deleteAndSave(id);
-
-        this.auditService.track(AuditableAction.ExternalToken_Delete, "id", id);
-    }
 
 }

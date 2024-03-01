@@ -17,42 +17,47 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 
+
 @Component
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class AggregateResponseItemModelBuilder extends BaseBuilder<AggregateResponseItemModel, AggregateResponseItem> {
 
-    private final BuilderFactory builderFactory;
+	private final BuilderFactory builderFactory;
+	private Map<String, Map<String, String>> groupItemLabels;
 
-    private EnumSet<AuthorizationFlags> authorize = EnumSet.of(AuthorizationFlags.None);
+	private EnumSet<AuthorizationFlags> authorize = EnumSet.of(AuthorizationFlags.None);
 
-    public AggregateResponseItemModelBuilder(
-            ConventionService conventionService,
-            BuilderFactory builderFactory
-    ) {
-        super(conventionService, new LoggerService(LoggerFactory.getLogger(AggregateResponseItemModelBuilder.class)));
-        this.builderFactory = builderFactory;
-    }
+	public AggregateResponseItemModelBuilder(
+			ConventionService conventionService,
+			BuilderFactory builderFactory
+	) {
+		super(conventionService, new LoggerService(LoggerFactory.getLogger(AggregateResponseItemModelBuilder.class)));
+		this.builderFactory = builderFactory;
+	}
 
-    public AggregateResponseItemModelBuilder authorize(EnumSet<AuthorizationFlags> values) {
-        this.authorize = values;
-        return this;
-    }
+	public AggregateResponseItemModelBuilder authorize(EnumSet<AuthorizationFlags> values) {
+		this.authorize = values;
+		return this;
+	}
 
-    @Override
-    public List<AggregateResponseItemModel> build(FieldSet fields, List<AggregateResponseItem> data) throws MyApplicationException {
-        this.logger.debug("building for {} items requesting {} fields", Optional.ofNullable(data).map(List::size).orElse(0), Optional.ofNullable(fields).map(FieldSet::getFields).map(Set::size).orElse(0));
-        this.logger.trace(new DataLogEntry("requested fields", fields));
+	public AggregateResponseItemModelBuilder groupItemLabels(Map<String, Map<String, String>>  groupItemLabels) {
+		this.groupItemLabels = groupItemLabels;
+		return this;
+	}
 
-        List<AggregateResponseItemModel> models = new ArrayList<>(100);
+	@Override
+	public List<AggregateResponseItemModel> build(FieldSet fields, List<AggregateResponseItem> data) throws MyApplicationException {
+		this.logger.debug("building for {} items requesting {} fields", Optional.ofNullable(data).map(List::size).orElse(0), Optional.ofNullable(fields).map(FieldSet::getFields).map(Set::size).orElse(0));
+		this.logger.trace(new DataLogEntry("requested fields", fields));
 
-        if (data == null)
-            return models;
-        for (AggregateResponseItem d : data) {
-            AggregateResponseItemModel m = new AggregateResponseItemModel();
-            m.setGroup(this.builderFactory.builder(AggregateResponseGroupModelBuilder.class).authorize(this.authorize).build(null, d.getGroup()));
-            m.setValues(this.builderFactory.builder(AggregateResponseValueModelBuilder.class).authorize(this.authorize).build(null, d.getValues()));
-            models.add(m);
-        }
-        return models;
-    }
+		List<AggregateResponseItemModel> models = new ArrayList<>();
+
+		for (AggregateResponseItem d : data) {
+			AggregateResponseItemModel m = new AggregateResponseItemModel();
+			m.setGroup(this.builderFactory.builder(AggregateResponseGroupModelBuilder.class).groupItemLabels(groupItemLabels).authorize(this.authorize).build(null, d.getGroup()));
+			m.setValues(this.builderFactory.builder(AggregateResponseValueModelBuilder.class).authorize(this.authorize).build(null, d.getValues()));
+			models.add(m);
+		}
+		return models;
+	}
 }

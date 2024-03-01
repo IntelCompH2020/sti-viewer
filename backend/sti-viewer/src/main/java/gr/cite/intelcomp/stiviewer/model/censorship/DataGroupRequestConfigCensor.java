@@ -21,32 +21,30 @@ import java.util.UUID;
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class DataGroupRequestConfigCensor extends BaseCensor {
 
-    private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(DataGroupRequestConfigCensor.class));
+	private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(DataGroupRequestConfigCensor.class));
 
-    protected final AuthorizationService authService;
+	protected final AuthorizationService authService;
+	protected final CensorFactory censorFactory;
 
-    protected final CensorFactory censorFactory;
+	@Autowired
+	public DataGroupRequestConfigCensor(
+			ConventionService conventionService,
+			AuthorizationService authService,
+			CensorFactory censorFactory
+	) {
+		super(conventionService);
+		this.authService = authService;
+		this.censorFactory = censorFactory;
+	}
 
-    @Autowired
-    public DataGroupRequestConfigCensor(
-            ConventionService conventionService,
-            AuthorizationService authService,
-            CensorFactory censorFactory
-    ) {
-        super(conventionService);
-        this.authService = authService;
-        this.censorFactory = censorFactory;
-    }
-
-    public void censor(FieldSet fields, UUID userId) throws MyForbiddenException {
-        logger.debug(new DataLogEntry("censoring fields", fields));
-        if (this.isEmpty(fields))
-            return;
-        this.authService.authorizeForce(Permission.BrowseDataGroupRequest);
-        FieldSet indicatorGroupFields = fields.extractPrefixed(this.asIndexerPrefix(DataGroupRequestConfig._indicatorGroup));
-        this.censorFactory.censor(IndicatorGroupCensor.class).censor(indicatorGroupFields, userId);
-        FieldSet groupColumnFields = fields.extractPrefixed(this.asIndexerPrefix(DataGroupRequestConfig._groupColumns));
-        this.censorFactory.censor(DataGroupColumnCensor.class).censor(groupColumnFields, userId);
-    }
+	public void censor(FieldSet fields, UUID userId) throws MyForbiddenException {
+		logger.debug(new DataLogEntry("censoring fields", fields));
+		if (this.isEmpty(fields)) return;
+		this.authService.authorizeForce(Permission.BrowseDataGroupRequest);
+		FieldSet indicatorGroupFields = fields.extractPrefixed(this.asIndexerPrefix(DataGroupRequestConfig._indicatorGroup));
+		this.censorFactory.censor(IndicatorGroupCensor.class).censor(indicatorGroupFields, userId);
+		FieldSet groupColumnFields = fields.extractPrefixed(this.asIndexerPrefix(DataGroupRequestConfig._groupColumns));
+		this.censorFactory.censor(DataGroupColumnCensor.class).censor(groupColumnFields, userId);
+	}
 
 }

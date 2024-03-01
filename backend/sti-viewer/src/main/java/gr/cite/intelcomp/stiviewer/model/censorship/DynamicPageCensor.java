@@ -20,32 +20,28 @@ import java.util.UUID;
 @Component
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class DynamicPageCensor extends BaseCensor {
+	private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(DynamicPageCensor.class));
+	private final AuthorizationService authService;
+	private final CensorFactory censorFactory;
 
-    private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(DynamicPageCensor.class));
+	@Autowired
+	public DynamicPageCensor(
+			ConventionService conventionService,
+			AuthorizationService authService,
+			CensorFactory censorFactory
+	) {
+		super(conventionService);
+		this.authService = authService;
+		this.censorFactory = censorFactory;
+	}
 
-    private final AuthorizationService authService;
-
-    private final CensorFactory censorFactory;
-
-    @Autowired
-    public DynamicPageCensor(
-            ConventionService conventionService,
-            AuthorizationService authService,
-            CensorFactory censorFactory
-    ) {
-        super(conventionService);
-        this.authService = authService;
-        this.censorFactory = censorFactory;
-    }
-
-    public void censor(FieldSet fields, UUID userId) throws MyForbiddenException {
-        logger.debug(new DataLogEntry("censoring fields", fields));
-        if (this.isEmpty(fields))
-            return;
-        this.authService.authorizeForce(Permission.BrowseDynamicPage);
-        FieldSet dynamicPageContentsFields = fields.extractPrefixed(this.asIndexerPrefix(DynamicPage._pageContents));
-        this.censorFactory.censor(DynamicPageContentCensor.class).censor(dynamicPageContentsFields, userId);
-        FieldSet dynamicPageConfigFields = fields.extractPrefixed(this.asIndexerPrefix(DynamicPage._config));
-        this.censorFactory.censor(DynamicPageContentCensor.class).censor(dynamicPageConfigFields, userId);
-    }
+	public void censor(FieldSet fields, UUID userId) throws MyForbiddenException {
+		logger.debug(new DataLogEntry("censoring fields", fields));
+		if (this.isEmpty(fields)) return;
+		this.authService.authorizeForce(Permission.BrowseDynamicPage);
+		FieldSet dynamicPageContentsFields = fields.extractPrefixed(this.asIndexerPrefix(DynamicPage._pageContents));
+		this.censorFactory.censor(DynamicPageContentCensor.class).censor(dynamicPageContentsFields, userId);
+		FieldSet dynamicPageConfigFields = fields.extractPrefixed(this.asIndexerPrefix(DynamicPage._config));
+		this.censorFactory.censor(DynamicPageContentCensor.class).censor(dynamicPageConfigFields, userId);
+	}
 }

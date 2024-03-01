@@ -44,116 +44,113 @@ import java.util.UUID;
 @RequestMapping(path = "api/data-access-request")
 public class DataAccessRequestController {
 
-    private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(DataAccessRequestController.class));
+	private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(DataAccessRequestController.class));
 
-    private final BuilderFactory builderFactory;
+	private final BuilderFactory builderFactory;
+	private final AuditService auditService;
+	private final DataAccessRequestService dataAccessRequestService;
+	private final CensorFactory censorFactory;
+	private final QueryFactory queryFactory;
+	private final MessageSource messageSource;
 
-    private final AuditService auditService;
+	@Autowired
+	public DataAccessRequestController(
+			BuilderFactory builderFactory,
+			AuditService auditService,
+			DataAccessRequestService dataAccessRequestService,
+			CensorFactory censorFactory,
+			QueryFactory queryFactory,
+			MessageSource messageSource
 
-    private final DataAccessRequestService dataAccessRequestService;
+	) {
+		this.builderFactory = builderFactory;
+		this.auditService = auditService;
+		this.dataAccessRequestService = dataAccessRequestService;
+		this.censorFactory = censorFactory;
+		this.queryFactory = queryFactory;
+		this.messageSource = messageSource;
+	}
 
-    private final CensorFactory censorFactory;
+	@PostMapping("query")
+	public QueryResult<DataAccessRequest> Query(@RequestBody DataAccessRequestLookup lookup) throws MyApplicationException, MyForbiddenException {
+		logger.debug("querying {}", DataAccessRequest.class.getSimpleName());
+		this.censorFactory.censor(DataAccessRequestCensor.class).censor(lookup.getProject(), null);
+		DataAccessRequestQuery query = lookup.enrich(this.queryFactory).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator);
+		List<DataAccessRequestEntity> data = query.collectAs(lookup.getProject());
+		List<DataAccessRequest> models = this.builderFactory.builder(DataAccessRequestBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(lookup.getProject(), data);
+		long count = (lookup.getMetadata() != null && lookup.getMetadata().getCountAll()) ? query.count() : models.size();
 
-    private final QueryFactory queryFactory;
+		this.auditService.track(AuditableAction.Data_Access_Request_Query, "lookup", lookup);
+		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
 
-    private final MessageSource messageSource;
+		return new QueryResult<>(models, count);
+	}
 
-    @Autowired
-    public DataAccessRequestController(
-            BuilderFactory builderFactory,
-            AuditService auditService,
-            DataAccessRequestService dataAccessRequestService,
-            CensorFactory censorFactory,
-            QueryFactory queryFactory,
-            MessageSource messageSource
+	@GetMapping("{id}")
+	public DataAccessRequest Get(@PathVariable("id") UUID id, FieldSet fieldSet) throws MyApplicationException, MyForbiddenException, MyNotFoundException {
+		logger.debug(new MapLogEntry("retrieving" + DataAccessRequest.class.getSimpleName()).And("id", id).And("fields", fieldSet));
 
-    ) {
-        this.builderFactory = builderFactory;
-        this.auditService = auditService;
-        this.dataAccessRequestService = dataAccessRequestService;
-        this.censorFactory = censorFactory;
-        this.queryFactory = queryFactory;
-        this.messageSource = messageSource;
-    }
+		this.censorFactory.censor(DataAccessRequestCensor.class).censor(fieldSet, null);
 
-    @PostMapping("query")
-    public QueryResult<DataAccessRequest> query(@RequestBody DataAccessRequestLookup lookup) throws MyApplicationException, MyForbiddenException {
-        logger.debug("querying {}", DataAccessRequest.class.getSimpleName());
-        this.censorFactory.censor(DataAccessRequestCensor.class).censor(lookup.getProject(), null);
-        DataAccessRequestQuery query = lookup.enrich(this.queryFactory).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator);
-        List<DataAccessRequestEntity> data = query.collectAs(lookup.getProject());
-        List<DataAccessRequest> models = this.builderFactory.builder(DataAccessRequestBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(lookup.getProject(), data);
-        long count = (lookup.getMetadata() != null && lookup.getMetadata().getCountAll()) ? query.count() : models.size();
+		DataAccessRequestQuery query = this.queryFactory.query(DataAccessRequestQuery.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).ids(id);
+		DataAccessRequest model = this.builderFactory.builder(DataAccessRequestBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(fieldSet, query.firstAs(fieldSet));
+		if (model == null) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{id, DataAccessRequest.class.getSimpleName()}, LocaleContextHolder.getLocale()));
 
-        this.auditService.track(AuditableAction.Data_Access_Request_Query, "lookup", lookup);
+		this.auditService.track(AuditableAction.Data_Access_Request_Lookup, Map.ofEntries(
+				new AbstractMap.SimpleEntry<String, Object>("id", id),
+				new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
+		));
+		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
 
-        return new QueryResult<>(models, count);
-    }
+		return model;
+	}
 
-    @GetMapping("{id}")
-    public DataAccessRequest get(@PathVariable("id") UUID id, FieldSet fieldSet) throws MyApplicationException, MyForbiddenException, MyNotFoundException {
-        logger.debug(new MapLogEntry("retrieving" + DataAccessRequest.class.getSimpleName()).And("id", id).And("fields", fieldSet));
+	@PostMapping("persist")
+	@Transactional
+	public DataAccessRequest Persist(@MyValidate @RequestBody DataAccessRequestPersist model, FieldSet fieldSet) throws MyApplicationException, MyForbiddenException, MyNotFoundException, InvalidApplicationException {
+		logger.debug(new MapLogEntry("persisting" + DataAccessRequest.class.getSimpleName()).And("model", model).And("fieldSet", fieldSet));
 
-        this.censorFactory.censor(DataAccessRequestCensor.class).censor(fieldSet, null);
+		DataAccessRequest persisted = this.dataAccessRequestService.persist(model, fieldSet);
 
-        DataAccessRequestQuery query = this.queryFactory.query(DataAccessRequestQuery.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).ids(id);
-        DataAccessRequest model = this.builderFactory.builder(DataAccessRequestBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(fieldSet, query.firstAs(fieldSet));
-        if (model == null)
-            throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{id, DataAccessRequest.class.getSimpleName()}, LocaleContextHolder.getLocale()));
+		this.auditService.track(AuditableAction.Data_Access_Request_Persist, Map.ofEntries(
+				new AbstractMap.SimpleEntry<String, Object>("model", model),
+				new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
+		));
+		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
+		return persisted;
+	}
 
-        this.auditService.track(AuditableAction.Data_Access_Request_Lookup, Map.ofEntries(
-                new AbstractMap.SimpleEntry<String, Object>("id", id),
-                new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
-        ));
+	@PostMapping("status")
+	@Transactional
+	public DataAccessRequest Persist(@MyValidate @RequestBody DataAccessRequestStatusPersist model, FieldSet fieldSet) throws MyApplicationException, MyForbiddenException, MyNotFoundException, InvalidApplicationException {
+		logger.debug(new MapLogEntry("persisting" + DataAccessRequestStatusPersist.class.getSimpleName()).And("model", model).And("fieldSet", fieldSet));
 
-        return model;
-    }
+		DataAccessRequest persisted = this.dataAccessRequestService.persist(model, fieldSet);
 
-    @PostMapping("persist")
-    @Transactional
-    public DataAccessRequest persist(@MyValidate @RequestBody DataAccessRequestPersist model, FieldSet fieldSet) throws MyApplicationException, MyForbiddenException, MyNotFoundException, InvalidApplicationException {
-        logger.debug(new MapLogEntry("persisting" + DataAccessRequest.class.getSimpleName()).And("model", model).And("fieldSet", fieldSet));
+		this.auditService.track(AuditableAction.Data_Access_Request_PersistStatus, Map.ofEntries(
+				new AbstractMap.SimpleEntry<String, Object>("model", model),
+				new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
+		));
+		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
+		return persisted;
+	}
+	@GetMapping("indicator-group-access-config-view/{code}")
+	public IndicatorGroupAccessConfigView GetIndicatorGroupAccessConfigView(@PathVariable("code") String code, FieldSet fieldSet) throws MyApplicationException, MyForbiddenException, MyNotFoundException {
+		logger.debug(new MapLogEntry("retrieving" + DataAccessRequest.class.getSimpleName()).And("code", code).And("fields", fieldSet));
 
-        DataAccessRequest persisted = this.dataAccessRequestService.persist(model, fieldSet);
+		this.censorFactory.censor(IndicatorGroupAccessConfigViewCensor.class).censor(fieldSet, null);
 
-        this.auditService.track(AuditableAction.Data_Access_Request_Persist, Map.ofEntries(
-                new AbstractMap.SimpleEntry<String, Object>("model", model),
-                new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
-        ));
-        return persisted;
-    }
+		IndicatorGroupAccessConfigViewEntity data = this.dataAccessRequestService.getIndicatorGroupAccessConfigViewEntity(code);
 
-    @PostMapping("status")
-    @Transactional
-    public DataAccessRequest status(@MyValidate @RequestBody DataAccessRequestStatusPersist model, FieldSet fieldSet) throws MyApplicationException, MyForbiddenException, MyNotFoundException, InvalidApplicationException {
-        logger.debug(new MapLogEntry("persisting" + DataAccessRequestStatusPersist.class.getSimpleName()).And("model", model).And("fieldSet", fieldSet));
+		IndicatorGroupAccessConfigView model = this.builderFactory.builder(IndicatorGroupAccessConfigViewBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(fieldSet, data);
+		if (model == null) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{code, IndicatorGroupAccessConfigView.class.getSimpleName()}, LocaleContextHolder.getLocale()));
 
-        DataAccessRequest persisted = this.dataAccessRequestService.persist(model, fieldSet);
+		this.auditService.track(AuditableAction.Data_Access_Request_GetIndicatorGroupAccessConfigView, Map.ofEntries(
+				new AbstractMap.SimpleEntry<String, Object>("code", code),
+				new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
+		));
+		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
 
-        this.auditService.track(AuditableAction.Data_Access_Request_PersistStatus, Map.ofEntries(
-                new AbstractMap.SimpleEntry<String, Object>("model", model),
-                new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
-        ));
-        return persisted;
-    }
-
-    @GetMapping("indicator-group-access-config-view/{code}")
-    public IndicatorGroupAccessConfigView getIndicatorGroupAccessConfigView(@PathVariable("code") String code, FieldSet fieldSet) throws MyApplicationException, MyForbiddenException, MyNotFoundException {
-        logger.debug(new MapLogEntry("retrieving" + DataAccessRequest.class.getSimpleName()).And("code", code).And("fields", fieldSet));
-
-        this.censorFactory.censor(IndicatorGroupAccessConfigViewCensor.class).censor(fieldSet, null);
-
-        IndicatorGroupAccessConfigViewEntity data = this.dataAccessRequestService.getIndicatorGroupAccessConfigViewEntity(code);
-
-        IndicatorGroupAccessConfigView model = this.builderFactory.builder(IndicatorGroupAccessConfigViewBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(fieldSet, data);
-        if (model == null)
-            throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{code, IndicatorGroupAccessConfigView.class.getSimpleName()}, LocaleContextHolder.getLocale()));
-
-        this.auditService.track(AuditableAction.Data_Access_Request_GetIndicatorGroupAccessConfigView, Map.ofEntries(
-                new AbstractMap.SimpleEntry<String, Object>("code", code),
-                new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
-        ));
-
-        return model;
-    }
+		return model;
+	}
 }

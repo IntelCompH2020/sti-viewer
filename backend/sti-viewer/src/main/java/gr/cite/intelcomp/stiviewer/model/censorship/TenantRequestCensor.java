@@ -21,26 +21,22 @@ import java.util.UUID;
 @Component
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class TenantRequestCensor extends BaseCensor {
+	private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(TenantRequestCensor.class));
+	private final AuthorizationService authService;
+	private final CensorFactory censorFactory;
 
-    private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(TenantRequestCensor.class));
+	@Autowired
+	public TenantRequestCensor(ConventionService conventionService, AuthorizationService authService, CensorFactory censorFactory) {
+		super(conventionService);
+		this.authService = authService;
+		this.censorFactory = censorFactory;
+	}
 
-    private final AuthorizationService authService;
-
-    private final CensorFactory censorFactory;
-
-    @Autowired
-    public TenantRequestCensor(ConventionService conventionService, AuthorizationService authService, CensorFactory censorFactory) {
-        super(conventionService);
-        this.authService = authService;
-        this.censorFactory = censorFactory;
-    }
-
-    public void censor(FieldSet fields, UUID userId) {
-        logger.debug(new DataLogEntry("censoring fields", fields));
-        if (this.isEmpty(fields))
-            return;
-        this.authService.authorizeAtLeastOneForce(userId != null ? List.of(new OwnedResource(userId)) : null, Permission.BrowseTenantRequest, Permission.DeferredAffiliation);
-        FieldSet userFields = fields.extractPrefixed(this.asIndexerPrefix(TenantRequest._forUser));
-        this.censorFactory.censor(UserCensor.class).censor(userFields, userId);
-    }
+	public void censor(FieldSet fields, UUID userId) {
+		logger.debug(new DataLogEntry("censoring fields", fields));
+		if (this.isEmpty(fields)) return;
+		this.authService.authorizeAtLeastOneForce(userId != null ? List.of(new OwnedResource(userId)) : null, Permission.BrowseTenantRequest, Permission.DeferredAffiliation);
+		FieldSet userFields = fields.extractPrefixed(this.asIndexerPrefix(TenantRequest._forUser));
+		this.censorFactory.censor(UserCensor.class).censor(userFields, userId);
+	}
 }

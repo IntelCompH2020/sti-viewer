@@ -112,7 +112,7 @@
 			<dependency>
 				<groupId>gr.cite</groupId>
 				<artifactId>elastic</artifactId>
-				<version>1.0.5</version>
+				<version>1.0.7</version>
 			</dependency>
 			<dependency>
 				<groupId>gr.cite</groupId>

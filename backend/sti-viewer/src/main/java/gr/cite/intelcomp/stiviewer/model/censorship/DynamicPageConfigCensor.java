@@ -3,6 +3,7 @@ package gr.cite.intelcomp.stiviewer.model.censorship;
 import gr.cite.commons.web.authz.service.AuthorizationService;
 import gr.cite.intelcomp.stiviewer.authorization.Permission;
 import gr.cite.intelcomp.stiviewer.convention.ConventionService;
+import gr.cite.tools.data.censor.CensorFactory;
 import gr.cite.tools.exception.MyForbiddenException;
 import gr.cite.tools.fieldset.FieldSet;
 import gr.cite.tools.logging.DataLogEntry;
@@ -18,24 +19,24 @@ import java.util.UUID;
 @Component
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class DynamicPageConfigCensor extends BaseCensor {
+	private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(DynamicPageConfigCensor.class));
+	private final AuthorizationService authService;
+	private final CensorFactory censorFactory;
 
-    private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(DynamicPageConfigCensor.class));
+	@Autowired
+	public DynamicPageConfigCensor(
+			ConventionService conventionService,
+			AuthorizationService authService,
+			CensorFactory censorFactory
+	) {
+		super(conventionService);
+		this.authService = authService;
+		this.censorFactory = censorFactory;
+	}
 
-    private final AuthorizationService authService;
-
-    @Autowired
-    public DynamicPageConfigCensor(
-            ConventionService conventionService,
-            AuthorizationService authService
-    ) {
-        super(conventionService);
-        this.authService = authService;
-    }
-
-    public void censor(FieldSet fields, UUID userId) throws MyForbiddenException {
-        logger.debug(new DataLogEntry("censoring fields", fields));
-        if (this.isEmpty(fields))
-            return;
-        this.authService.authorizeForce(Permission.BrowseDynamicPage);
-    }
+	public void censor(FieldSet fields, UUID userId) throws MyForbiddenException {
+		logger.debug(new DataLogEntry("censoring fields", fields));
+		if (this.isEmpty(fields)) return;
+		this.authService.authorizeForce(Permission.BrowseDynamicPage);
+	}
 }

@@ -16,27 +16,26 @@ import org.springframework.web.bind.annotation.RestController;
 @Hidden
 public class ProtectedScratchpadController {
 
-    private final AuthnSandbox authnSandbox;
+	private final AuthnSandbox authnSandbox;
+	private final CurrentPrincipalResolver currentPrincipalResolver;
+	private final ClaimExtractor claimExtractor;
 
-    private final CurrentPrincipalResolver currentPrincipalResolver;
+	@Autowired
+	public ProtectedScratchpadController(
+			AuthnSandbox authnSandbox,
+			CurrentPrincipalResolver currentPrincipalResolver,
+			ClaimExtractor claimExtractor) {
+		this.authnSandbox = authnSandbox;
+		this.currentPrincipalResolver = currentPrincipalResolver;
+		this.claimExtractor = claimExtractor;
+	}
 
-    private final ClaimExtractor claimExtractor;
-
-    @Autowired
-    public ProtectedScratchpadController(
-            AuthnSandbox authnSandbox,
-            CurrentPrincipalResolver currentPrincipalResolver,
-            ClaimExtractor claimExtractor) {
-        this.authnSandbox = authnSandbox;
-        this.currentPrincipalResolver = currentPrincipalResolver;
-        this.claimExtractor = claimExtractor;
-    }
-
-    @GetMapping("hi")
-    public String sayHi() {
-        MyPrincipal principal = this.currentPrincipalResolver.currentPrincipal();
-        System.out.println(this.claimExtractor.name(principal));
-        System.out.println(this.claimExtractor.client(principal));
-        return authnSandbox.sayHi();
-    }
+	@GetMapping("hi")
+	public String sayHi() {
+		//System.out.println(principalManager.getPrincipal().getName());
+		MyPrincipal principal = this.currentPrincipalResolver.currentPrincipal();
+		System.out.println(this.claimExtractor.name(principal));
+		System.out.println(this.claimExtractor.client(principal));
+		return authnSandbox.sayHi();
+	}
 }

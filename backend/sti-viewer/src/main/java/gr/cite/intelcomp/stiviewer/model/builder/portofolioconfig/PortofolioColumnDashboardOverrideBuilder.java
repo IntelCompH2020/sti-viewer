@@ -19,46 +19,42 @@ import org.springframework.stereotype.Component;
 import java.util.*;
 
 @Component
+//Like in C# make it transient
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class PortofolioColumnDashboardOverrideBuilder extends BaseBuilder<PortofolioColumnDashboardOverride, PortofolioColumnDashboardOverrideEntity> {
+	private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(PortofolioColumnDashboardOverrideBuilder.class));
 
-    private final BuilderFactory builderFactory;
+	private final BuilderFactory builderFactory;
 
-    private EnumSet<AuthorizationFlags> authorize = EnumSet.of(AuthorizationFlags.None);
+	private EnumSet<AuthorizationFlags> authorize = EnumSet.of(AuthorizationFlags.None);
 
-    @Autowired
-    public PortofolioColumnDashboardOverrideBuilder(ConventionService conventionService, BuilderFactory builderFactory) {
-        super(conventionService, new LoggerService(LoggerFactory.getLogger(PortofolioColumnDashboardOverrideBuilder.class)));
-        this.builderFactory = builderFactory;
-    }
+	@Autowired
+	public PortofolioColumnDashboardOverrideBuilder(ConventionService conventionService, BuilderFactory builderFactory) {
+		super(conventionService, logger);
+		this.builderFactory = builderFactory;
+	}
 
-    public PortofolioColumnDashboardOverrideBuilder authorize(EnumSet<AuthorizationFlags> values) {
-        this.authorize = values;
-        return this;
-    }
+	public PortofolioColumnDashboardOverrideBuilder authorize(EnumSet<AuthorizationFlags> values) {
+		this.authorize = values;
+		return this;
+	}
 
-    @Override
-    public List<PortofolioColumnDashboardOverride> build(FieldSet fields, List<PortofolioColumnDashboardOverrideEntity> data) throws MyApplicationException {
-        this.logger.debug("building for {} items requesting {} BrowseDataFields", Optional.ofNullable(data).map(List::size).orElse(0), Optional.ofNullable(fields).map(FieldSet::getFields).map(Set::size).orElse(0));
-        this.logger.trace(new DataLogEntry("requested BrowseDataFields", fields));
-        if (fields == null || fields.isEmpty())
-            return new ArrayList<>();
+	@Override
+	public List<PortofolioColumnDashboardOverride> build(FieldSet fields, List<PortofolioColumnDashboardOverrideEntity> datas) throws MyApplicationException {
+		this.logger.debug("building for {} items requesting {} BrowseDataFields", Optional.ofNullable(datas).map(e -> e.size()).orElse(0), Optional.ofNullable(fields).map(e -> e.getFields()).map(e -> e.size()).orElse(0));
+		this.logger.trace(new DataLogEntry("requested BrowseDataFields", fields));
+		if (fields == null || fields.isEmpty()) return new ArrayList<>();
 
-        FieldSet requirementsFields = fields.extractPrefixed(this.asPrefix(PortofolioColumnDashboardOverride._requirements));
+		FieldSet requirementsFields = fields.extractPrefixed(this.asPrefix(PortofolioColumnDashboardOverride._requirements));
 
-        List<PortofolioColumnDashboardOverride> models = new ArrayList<>(100);
+		List<PortofolioColumnDashboardOverride> models = new LinkedList<>();
+		for (PortofolioColumnDashboardOverrideEntity d : datas) {
+			PortofolioColumnDashboardOverride m = new PortofolioColumnDashboardOverride();
+			if (fields.hasField(this.asIndexer(PortofolioColumnDashboardOverride._supportedDashboards))) m.setSupportedDashboards(d.getSupportedDashboards());
+			if (!requirementsFields.isEmpty() && d.getRequirements() != null) m.setRequirements(this.builderFactory.builder(PortofolioColumnDashboardOverrideFieldRequirementBuilder.class).authorize(this.authorize).build(requirementsFields, d.getRequirements()));
+			models.add(m);
+		}
 
-        if (data == null)
-            return models;
-        for (PortofolioColumnDashboardOverrideEntity d : data) {
-            PortofolioColumnDashboardOverride m = new PortofolioColumnDashboardOverride();
-            if (fields.hasField(this.asIndexer(PortofolioColumnDashboardOverride._supportedDashboards)))
-                m.setSupportedDashboards(d.getSupportedDashboards());
-            if (!requirementsFields.isEmpty() && d.getRequirements() != null)
-                m.setRequirements(this.builderFactory.builder(PortofolioColumnDashboardOverrideFieldRequirementBuilder.class).authorize(this.authorize).build(requirementsFields, d.getRequirements()));
-            models.add(m);
-        }
-
-        return models;
-    }
+		return models;
+	}
 }

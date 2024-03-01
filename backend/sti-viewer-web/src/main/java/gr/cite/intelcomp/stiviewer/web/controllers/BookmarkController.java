@@ -33,122 +33,117 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.management.InvalidApplicationException;
 import javax.transaction.Transactional;
-import java.util.AbstractMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @RequestMapping(path = "api/bookmark")
 public class BookmarkController {
+	private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(BookmarkController.class));
 
-    private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(BookmarkController.class));
+	private final BuilderFactory builderFactory;
+	private final AuditService auditService;
+	private final BookmarkService bookmarkService;
+	private final CensorFactory censorFactory;
+	private final QueryFactory queryFactory;
+	private final MessageSource messageSource;
+	private final UserScope userScope;
 
-    private final BuilderFactory builderFactory;
+	@Autowired
+	public BookmarkController(
+			BuilderFactory builderFactory,
+			AuditService auditService,
+			BookmarkService bookmarkService,
+			CensorFactory censorFactory,
+			QueryFactory queryFactory,
+			MessageSource messageSource,
+			UserScope userScope
 
-    private final AuditService auditService;
+	) {
+		this.builderFactory = builderFactory;
+		this.auditService = auditService;
+		this.bookmarkService = bookmarkService;
+		this.censorFactory = censorFactory;
+		this.queryFactory = queryFactory;
+		this.messageSource = messageSource;
+		this.userScope = userScope;
+	}
 
-    private final BookmarkService bookmarkService;
+	@PostMapping("query/mine")
+	public QueryResult<Bookmark> query(@RequestBody BookmarkLookup lookup) throws MyApplicationException, MyForbiddenException, InvalidApplicationException {
+		logger.debug("querying {}", Bookmark.class.getSimpleName());
 
-    private final CensorFactory censorFactory;
+		this.censorFactory.censor(BookmarkCensor.class).censor(lookup.getProject(), this.userScope.getUserId());
+		BookmarkQuery query = lookup.enrich(this.queryFactory).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).userIds(this.userScope.getUserId());
+		List<BookmarkEntity> datas = query.collectAs(lookup.getProject());
+		List<Bookmark> models = this.builderFactory.builder(BookmarkBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(lookup.getProject(), datas);
+		long count = (lookup.getMetadata() != null && lookup.getMetadata().getCountAll()) ? query.count() : models.size();
 
-    private final QueryFactory queryFactory;
+		this.auditService.track(AuditableAction.Bookmark_QueryMine, "lookup", lookup);
+		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
 
-    private final MessageSource messageSource;
+		return new QueryResult(models, count);
+	}
 
-    private final UserScope userScope;
+	@PostMapping("get-by-hash/mine")
+	public Bookmark getBookmarkByHashMine(@RequestBody GetBookmarkByHashParams model, FieldSet fieldSet) throws InvalidApplicationException, JsonProcessingException {
+		logger.debug(new MapLogEntry("persisting" + Bookmark.class.getSimpleName()).And("model", model).And("fieldSet", fieldSet));
 
-    @Autowired
-    public BookmarkController(
-            BuilderFactory builderFactory,
-            AuditService auditService,
-            BookmarkService bookmarkService,
-            CensorFactory censorFactory,
-            QueryFactory queryFactory,
-            MessageSource messageSource,
-            UserScope userScope
+		Bookmark persisted = this.bookmarkService.getBookmarkByHashMine(model, fieldSet);
 
-    ) {
-        this.builderFactory = builderFactory;
-        this.auditService = auditService;
-        this.bookmarkService = bookmarkService;
-        this.censorFactory = censorFactory;
-        this.queryFactory = queryFactory;
-        this.messageSource = messageSource;
-        this.userScope = userScope;
-    }
+		this.auditService.track(AuditableAction.Bookmark_GetBookmarkByHash, Map.ofEntries(
+				new AbstractMap.SimpleEntry<String, Object>("model", model),
+				new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
+		));
+		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
 
-    @PostMapping("query/mine")
-    public QueryResult<Bookmark> query(@RequestBody BookmarkLookup lookup) throws MyApplicationException, MyForbiddenException, InvalidApplicationException {
-        logger.debug("querying {}", Bookmark.class.getSimpleName());
+		return persisted;
+	}
 
-        this.censorFactory.censor(BookmarkCensor.class).censor(lookup.getProject(), this.userScope.getUserId());
-        BookmarkQuery query = lookup.enrich(this.queryFactory).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).userIds(this.userScope.getUserId());
-        List<BookmarkEntity> data = query.collectAs(lookup.getProject());
-        List<Bookmark> models = this.builderFactory.builder(BookmarkBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(lookup.getProject(), data);
-        long count = (lookup.getMetadata() != null && lookup.getMetadata().getCountAll()) ? query.count() : models.size();
+	@GetMapping("{id}/mine")
+	@Transactional
+	public Bookmark get(@PathVariable("id") UUID id, FieldSet fieldSet, Locale locale) throws MyApplicationException, MyForbiddenException, MyNotFoundException, InvalidApplicationException {
+		logger.debug(new MapLogEntry("retrieving" + Bookmark.class.getSimpleName()).And("id", id).And("fields", fieldSet));
 
-        this.auditService.track(AuditableAction.Bookmark_QueryMine, "lookup", lookup);
+		this.censorFactory.censor(BookmarkCensor.class).censor(fieldSet, this.userScope.getUserId());
 
-        return new QueryResult<>(models, count);
-    }
+		BookmarkQuery query = this.queryFactory.query(BookmarkQuery.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).ids(id).userIds(this.userScope.getUserId());
+		Bookmark model = this.builderFactory.builder(BookmarkBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(fieldSet, query.firstAs(fieldSet));
+		if (model == null) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{id, Bookmark.class.getSimpleName()}, LocaleContextHolder.getLocale()));
 
-    @PostMapping("get-by-hash/mine")
-    public Bookmark getBookmarkByHashMine(@RequestBody GetBookmarkByHashParams model, FieldSet fieldSet) throws InvalidApplicationException, JsonProcessingException {
-        logger.debug(new MapLogEntry("persisting" + Bookmark.class.getSimpleName()).And("model", model).And("fieldSet", fieldSet));
+		this.auditService.track(AuditableAction.Bookmark_LookupMine, Map.ofEntries(
+				new AbstractMap.SimpleEntry<String, Object>("id", id),
+				new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
+		));
+		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
 
-        Bookmark persisted = this.bookmarkService.getBookmarkByHashMine(model, fieldSet);
+		return model;
+	}
 
-        this.auditService.track(AuditableAction.Bookmark_GetBookmarkByHash, Map.ofEntries(
-                new AbstractMap.SimpleEntry<String, Object>("model", model),
-                new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
-        ));
+	@PostMapping("persist/mine")
+	@Transactional
+	public Bookmark persist(@MyValidate @RequestBody MyBookmarkPersist model, FieldSet fieldSet) throws MyApplicationException, MyForbiddenException, MyNotFoundException, InvalidApplicationException, JsonProcessingException {
+		logger.debug(new MapLogEntry("persisting" + Bookmark.class.getSimpleName()).And("model", model).And("fieldSet", fieldSet));
 
-        return persisted;
-    }
+		Bookmark persisted = this.bookmarkService.persistMine(model, fieldSet);
 
-    @GetMapping("{id}/mine")
-    @Transactional
-    public Bookmark get(@PathVariable("id") UUID id, FieldSet fieldSet) throws MyApplicationException, MyForbiddenException, MyNotFoundException, InvalidApplicationException {
-        logger.debug(new MapLogEntry("retrieving" + Bookmark.class.getSimpleName()).And("id", id).And("fields", fieldSet));
+		this.auditService.track(AuditableAction.Bookmark_PersistMine, Map.ofEntries(
+				new AbstractMap.SimpleEntry<String, Object>("model", model),
+				new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
+		));
+		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
+		return persisted;
+	}
 
-        this.censorFactory.censor(BookmarkCensor.class).censor(fieldSet, this.userScope.getUserId());
+	@DeleteMapping("{id}")
+	@Transactional
+	public void delete(@PathVariable("id") UUID id) throws MyForbiddenException, InvalidApplicationException {
+		logger.debug(new MapLogEntry("retrieving" + Bookmark.class.getSimpleName()).And("id", id));
 
-        BookmarkQuery query = this.queryFactory.query(BookmarkQuery.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).ids(id).userIds(this.userScope.getUserId());
-        Bookmark model = this.builderFactory.builder(BookmarkBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(fieldSet, query.firstAs(fieldSet));
-        if (model == null)
-            throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{id, Bookmark.class.getSimpleName()}, LocaleContextHolder.getLocale()));
+		this.bookmarkService.deleteAndSave(id);
 
-        this.auditService.track(AuditableAction.Bookmark_LookupMine, Map.ofEntries(
-                new AbstractMap.SimpleEntry<String, Object>("id", id),
-                new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
-        ));
+		this.auditService.track(AuditableAction.Bookmark_DeleteMine, "id", id);
+		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
+	}
 
-        return model;
-    }
-
-    @PostMapping("persist/mine")
-    @Transactional
-    public Bookmark persist(@MyValidate @RequestBody MyBookmarkPersist model, FieldSet fieldSet) throws MyApplicationException, MyForbiddenException, MyNotFoundException, InvalidApplicationException, JsonProcessingException {
-        logger.debug(new MapLogEntry("persisting" + Bookmark.class.getSimpleName()).And("model", model).And("fieldSet", fieldSet));
-
-        Bookmark persisted = this.bookmarkService.persistMine(model, fieldSet);
-
-        this.auditService.track(AuditableAction.Bookmark_PersistMine, Map.ofEntries(
-                new AbstractMap.SimpleEntry<String, Object>("model", model),
-                new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
-        ));
-        return persisted;
-    }
-
-    @DeleteMapping("{id}")
-    @Transactional
-    public void delete(@PathVariable("id") UUID id) throws MyForbiddenException, InvalidApplicationException {
-        logger.debug(new MapLogEntry("retrieving" + Bookmark.class.getSimpleName()).And("id", id));
-
-        this.bookmarkService.deleteAndSave(id);
-
-        this.auditService.track(AuditableAction.Bookmark_DeleteMine, "id", id);
-    }
 
 }

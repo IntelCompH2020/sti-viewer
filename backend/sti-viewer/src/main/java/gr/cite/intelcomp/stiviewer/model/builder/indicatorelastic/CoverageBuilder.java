@@ -18,40 +18,38 @@ import org.springframework.stereotype.Component;
 import java.util.*;
 
 @Component
+//Like in C# make it transient
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class CoverageBuilder extends BaseBuilder<Coverage, CoverageEntity> {
+	private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(CoverageBuilder.class));
 
-    @Autowired
-    public CoverageBuilder(ConventionService conventionService) {
-        super(conventionService, new LoggerService(LoggerFactory.getLogger(CoverageBuilder.class)));
-    }
+	private EnumSet<AuthorizationFlags> authorize = EnumSet.of(AuthorizationFlags.None);
 
-    public CoverageBuilder authorize(EnumSet<AuthorizationFlags> values) {
-        return this;
-    }
+	@Autowired
+	public CoverageBuilder(ConventionService conventionService) {
+		super(conventionService, logger);
+	}
 
-    @Override
-    public List<Coverage> build(FieldSet fields, List<CoverageEntity> data) throws MyApplicationException {
-        this.logger.debug("building for {} items requesting {} fields", Optional.ofNullable(data).map(List::size).orElse(0), Optional.ofNullable(fields).map(FieldSet::getFields).map(Set::size).orElse(0));
-        this.logger.trace(new DataLogEntry("requested fields", fields));
-        if (fields == null || fields.isEmpty())
-            return new ArrayList<>();
+	public CoverageBuilder authorize(EnumSet<AuthorizationFlags> values) {
+		this.authorize = values;
+		return this;
+	}
 
-        List<Coverage> coverages = new ArrayList<>(100);
+	@Override
+	public List<Coverage> build(FieldSet fields, List<CoverageEntity> datas) throws MyApplicationException {
+		this.logger.debug("building for {} items requesting {} fields", Optional.ofNullable(datas).map(e -> e.size()).orElse(0), Optional.ofNullable(fields).map(e -> e.getFields()).map(e -> e.size()).orElse(0));
+		this.logger.trace(new DataLogEntry("requested fields", fields));
+		if (fields == null || fields.isEmpty()) return new ArrayList<>();
 
-        if (data == null)
-            return coverages;
-        for (CoverageEntity d : data) {
-            Coverage m = new Coverage();
-            if (fields.hasField(this.asIndexer(Coverage._label)))
-                m.setLabel(d.getLabel());
-            if (fields.hasField(this.asIndexer(Coverage._max)))
-                m.setMax(d.getMax());
-            if (fields.hasField(this.asIndexer(Coverage._min)))
-                m.setMin(d.getMin());
-            coverages.add(m);
-        }
+		List<Coverage> coverages = new LinkedList<>();
+		for (CoverageEntity d : datas) {
+			Coverage m = new Coverage();
+			if (fields.hasField(this.asIndexer(Coverage._label))) m.setLabel(d.getLabel());
+			if (fields.hasField(this.asIndexer(Coverage._max))) m.setMax(d.getMax());
+			if (fields.hasField(this.asIndexer(Coverage._min))) m.setMin(d.getMin());
+			coverages.add(m);
+		}
 
-        return coverages;
-    }
+		return coverages;
+	}
 }

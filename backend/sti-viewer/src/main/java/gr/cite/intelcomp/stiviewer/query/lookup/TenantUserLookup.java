@@ -54,16 +54,11 @@ public class TenantUserLookup extends Lookup {
 
 	public TenantUserQuery enrich(QueryFactory queryFactory) {
 		TenantUserQuery query = queryFactory.query(TenantUserQuery.class);
-		if (this.isActive != null)
-			query.isActive(this.isActive);
-		if (this.ids != null)
-			query.ids(this.ids);
-		if (this.userIds != null)
-			query.userIds(this.userIds);
-		if (this.tenantIds != null)
-			query.tenantIds(this.tenantIds);
-		if (this.userSubQuery != null)
-			query.userSubQuery(this.userSubQuery.enrich(queryFactory));
+		if (this.isActive != null) query.isActive(this.isActive);
+		if (this.ids != null) query.ids(this.ids);
+		if (this.userIds != null) query.userIds(this.userIds);
+		if (this.tenantIds != null) query.tenantIds(this.tenantIds);
+		if (this.userSubQuery != null) query.userSubQuery(this.userSubQuery.enrich(queryFactory));
 
 		this.enrichCommon(query);
 

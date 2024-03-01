@@ -28,63 +28,60 @@ import java.util.stream.Collectors;
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class DynamicPageDeleter implements Deleter {
 
-    private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(DynamicPageDeleter.class));
+	private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(DynamicPageDeleter.class));
 
-    private final TenantEntityManager entityManager;
+	private final TenantEntityManager entityManager;
+	protected final QueryFactory queryFactory;
+	protected final DeleterFactory deleterFactory;
 
-    protected final QueryFactory queryFactory;
+	@Autowired
+	public DynamicPageDeleter(
+			TenantEntityManager entityManager,
+			QueryFactory queryFactory,
+			DeleterFactory deleterFactory
+	) {
+		this.entityManager = entityManager;
+		this.queryFactory = queryFactory;
+		this.deleterFactory = deleterFactory;
+	}
 
-    protected final DeleterFactory deleterFactory;
+	public void deleteAndSaveByIds(List<UUID> ids) throws InvalidApplicationException {
+		logger.debug(new MapLogEntry("collecting to delete").And("count", Optional.ofNullable(ids).map(List::size).orElse(0)).And("ids", ids));
+		List<DynamicPageEntity> data = this.queryFactory.query(DynamicPageQuery.class).ids(ids).collect();
+		logger.trace("retrieved {} items", Optional.ofNullable(data).map(List::size).orElse(0));
+		this.deleteAndSave(data);
+	}
 
-    @Autowired
-    public DynamicPageDeleter(
-            TenantEntityManager entityManager,
-            QueryFactory queryFactory,
-            DeleterFactory deleterFactory
-    ) {
-        this.entityManager = entityManager;
-        this.queryFactory = queryFactory;
-        this.deleterFactory = deleterFactory;
-    }
+	public void deleteAndSave(List<DynamicPageEntity> data) throws InvalidApplicationException {
+		logger.debug("will delete {} items", Optional.ofNullable(data).map(List::size).orElse(0));
+		this.delete(data);
+		logger.trace("saving changes");
+		this.entityManager.flush();
+		logger.trace("changes saved");
+	}
 
-    public void deleteAndSaveByIds(List<UUID> ids) throws InvalidApplicationException {
-        logger.debug(new MapLogEntry("collecting to delete").And("count", Optional.ofNullable(ids).map(List::size).orElse(0)).And("ids", ids));
-        List<DynamicPageEntity> data = this.queryFactory.query(DynamicPageQuery.class).ids(ids).collect();
-        logger.trace("retrieved {} items", Optional.ofNullable(data).map(List::size).orElse(0));
-        this.deleteAndSave(data);
-    }
+	public void delete(List<DynamicPageEntity> data) throws InvalidApplicationException {
+		logger.debug("will delete {} items", Optional.ofNullable(data).map(List::size).orElse(0));
+		if (data == null || data.isEmpty()) return;
 
-    public void deleteAndSave(List<DynamicPageEntity> data) throws InvalidApplicationException {
-        logger.debug("will delete {} items", Optional.ofNullable(data).map(List::size).orElse(0));
-        this.delete(data);
-        logger.trace("saving changes");
-        this.entityManager.flush();
-        logger.trace("changes saved");
-    }
+		Instant now = Instant.now();
 
-    public void delete(List<DynamicPageEntity> data) throws InvalidApplicationException {
-        logger.debug("will delete {} items", Optional.ofNullable(data).map(List::size).orElse(0));
-        if (data == null || data.isEmpty())
-            return;
+		List<UUID> ids = data.stream().map(x -> x.getId()).distinct().collect(Collectors.toList());
+		{
+			logger.debug("checking related - {}", DynamicPageContentEntity.class.getSimpleName());
+			List<DynamicPageContentEntity> items = this.queryFactory.query(DynamicPageContentQuery.class).pageIds(ids).collect();
+			DynamicPageContentDeleter deleter = this.deleterFactory.deleter(DynamicPageContentDeleter.class);
+			deleter.delete(items);
+		}
 
-        Instant now = Instant.now();
-
-        List<UUID> ids = data.stream().map(DynamicPageEntity::getId).distinct().collect(Collectors.toList());
-        {
-            logger.debug("checking related - {}", DynamicPageContentEntity.class.getSimpleName());
-            List<DynamicPageContentEntity> items = this.queryFactory.query(DynamicPageContentQuery.class).pageIds(ids).collect();
-            DynamicPageContentDeleter deleter = this.deleterFactory.deleter(DynamicPageContentDeleter.class);
-            deleter.delete(items);
-        }
-
-        for (DynamicPageEntity item : data) {
-            logger.trace("deleting item {}", item.getId());
-            item.setIsActive(IsActive.INACTIVE);
-            item.setUpdatedAt(now);
-            logger.trace("updating item");
-            this.entityManager.merge(item);
-            logger.trace("updated item");
-        }
-    }
+		for (DynamicPageEntity item : data) {
+			logger.trace("deleting item {}", item.getId());
+			item.setIsActive(IsActive.INACTIVE);
+			item.setUpdatedAt(now);
+			logger.trace("updating item");
+			this.entityManager.merge(item);
+			logger.trace("updated item");
+		}
+	}
 
 }

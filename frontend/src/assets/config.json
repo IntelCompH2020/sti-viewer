@@ -9,7 +9,7 @@
 	"userSettingsVersion": "1",
 	"idp_service": {
 		"enabled": true,
-		"address": "http://dev03.local.cite.gr:60201/auth",
+		"address": "http://dev03.local.cite.gr:60201",
 		"realm": "sti-viewer",
 		"flow": "hybrid",
 		"clientId": "intelcomp-sti-viewer-dev",

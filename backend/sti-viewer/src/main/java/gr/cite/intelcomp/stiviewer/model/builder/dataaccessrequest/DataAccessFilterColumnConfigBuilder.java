@@ -6,6 +6,7 @@ import gr.cite.intelcomp.stiviewer.convention.ConventionService;
 import gr.cite.intelcomp.stiviewer.model.builder.BaseBuilder;
 import gr.cite.intelcomp.stiviewer.model.dataaccessrequest.DataAccessRequestFilterColumnConfig;
 import gr.cite.intelcomp.stiviewer.model.dataaccessrequest.DataAccessRequestIndicatorConfig;
+import gr.cite.tools.data.builder.BuilderFactory;
 import gr.cite.tools.exception.MyApplicationException;
 import gr.cite.tools.fieldset.FieldSet;
 import gr.cite.tools.logging.DataLogEntry;
@@ -22,39 +23,41 @@ import java.util.*;
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class DataAccessFilterColumnConfigBuilder extends BaseBuilder<DataAccessRequestFilterColumnConfig, DataAccessRequestFilterColumnEntity> {
 
-    @Autowired
-    public DataAccessFilterColumnConfigBuilder(
-            ConventionService conventionService) {
-        super(conventionService, new LoggerService(LoggerFactory.getLogger(DataAccessFilterColumnConfigBuilder.class)));
-    }
+	private final BuilderFactory builderFactory;
+	private EnumSet<AuthorizationFlags> authorize = EnumSet.of(AuthorizationFlags.None);
 
-    public DataAccessFilterColumnConfigBuilder authorize(EnumSet<AuthorizationFlags> values) {
-        return this;
-    }
+	@Autowired
+	public DataAccessFilterColumnConfigBuilder(
+			ConventionService conventionService, BuilderFactory builderFactory) {
+		super(conventionService, new LoggerService(LoggerFactory.getLogger(DataAccessFilterColumnConfigBuilder.class)));
+		this.builderFactory = builderFactory;
+	}
 
-    @Override
-    public List<DataAccessRequestFilterColumnConfig> build(FieldSet fields, List<DataAccessRequestFilterColumnEntity> data) throws MyApplicationException {
-        this.logger.debug("building for {} items requesting {} fields", Optional.ofNullable(data).map(List::size).orElse(0), Optional.ofNullable(fields).map(FieldSet::getFields).map(Set::size).orElse(0));
-        this.logger.trace(new DataLogEntry("requested fields", fields));
-        if (fields == null || data == null || fields.isEmpty())
-            return new ArrayList<>();
+	public DataAccessFilterColumnConfigBuilder authorize(EnumSet<AuthorizationFlags> values) {
+		this.authorize = values;
+		return this;
+	}
+
+	@Override
+	public List<DataAccessRequestFilterColumnConfig> build(FieldSet fields, List<DataAccessRequestFilterColumnEntity> data) throws MyApplicationException {
+		this.logger.debug("building for {} items requesting {} fields", Optional.ofNullable(data).map(List::size).orElse(0), Optional.ofNullable(fields).map(FieldSet::getFields).map(Set::size).orElse(0));
+		this.logger.trace(new DataLogEntry("requested fields", fields));
+		if (fields == null || data == null || fields.isEmpty()) return new ArrayList<>();
 
 
-        List<DataAccessRequestFilterColumnConfig> models = new ArrayList<>(100);
+		List<DataAccessRequestFilterColumnConfig> models = new ArrayList<>();
 
-        fields.extractPrefixed(this.asPrefix(DataAccessRequestIndicatorConfig._filterColumns));
+		FieldSet filterColumnsFields = fields.extractPrefixed(this.asPrefix(DataAccessRequestIndicatorConfig._filterColumns));
 
-        for (DataAccessRequestFilterColumnEntity d : data) {
-            DataAccessRequestFilterColumnConfig m = new DataAccessRequestFilterColumnConfig();
-            if (fields.hasField(this.asIndexer(DataAccessRequestFilterColumnConfig._column)))
-                m.setColumn(d.getColumn());
-            if (fields.hasField(this.asIndexer(DataAccessRequestFilterColumnConfig._values)))
-                m.setValues(d.getValues());
-            models.add(m);
-        }
-        this.logger.debug("build {} items", Optional.of(models).map(List::size).orElse(0));
+		for (DataAccessRequestFilterColumnEntity d : data) {
+			DataAccessRequestFilterColumnConfig m = new DataAccessRequestFilterColumnConfig();
+			if (fields.hasField(this.asIndexer(DataAccessRequestFilterColumnConfig._column))) m.setColumn(d.getColumn());
+			if (fields.hasField(this.asIndexer(DataAccessRequestFilterColumnConfig._values))) m.setValues(d.getValues());
+			models.add(m);
+		}
+		this.logger.debug("build {} items", Optional.of(models).map(List::size).orElse(0));
 
-        return models;
-    }
+		return models;
+	}
 
 }

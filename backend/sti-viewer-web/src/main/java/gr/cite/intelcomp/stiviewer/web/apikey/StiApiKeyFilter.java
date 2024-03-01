@@ -51,7 +51,10 @@ public class StiApiKeyFilter implements Filter {
     @Override
 
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        if (!config.isEnabled()) filterChain.doFilter(servletRequest, servletResponse);
+        if (!config.isEnabled()) {
+            filterChain.doFilter(servletRequest, servletResponse);
+            return;
+        }
 
         HttpServletRequest httpRequest = ((HttpServletRequest) servletRequest);
         String apiKey = httpRequest.getHeader(config.getApiKeyHeader());

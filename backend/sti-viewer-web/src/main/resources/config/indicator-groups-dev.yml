@@ -6,6 +6,7 @@ indicator-group:
       indicator-codes:
         - ai
         - climate
+        - cancer
     - groupId: EA39A344-29C4-4EAC-BF7D-93DAD2CD5550
       name: portofolio
       code: portofolio

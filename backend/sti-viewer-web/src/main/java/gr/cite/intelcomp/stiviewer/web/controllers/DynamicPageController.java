@@ -4,8 +4,8 @@ import gr.cite.intelcomp.stiviewer.audit.AuditableAction;
 import gr.cite.intelcomp.stiviewer.data.DynamicPageEntity;
 import gr.cite.intelcomp.stiviewer.model.DynamicPage;
 import gr.cite.intelcomp.stiviewer.model.DynamicPageContentData;
-import gr.cite.intelcomp.stiviewer.model.DynamicPageMenuItem;
 import gr.cite.intelcomp.stiviewer.model.PageContentRequest;
+import gr.cite.intelcomp.stiviewer.model.DynamicPageMenuItem;
 import gr.cite.intelcomp.stiviewer.model.builder.DynamicPageBuilder;
 import gr.cite.intelcomp.stiviewer.model.censorship.DynamicPageCensor;
 import gr.cite.intelcomp.stiviewer.model.persist.PagePersist;
@@ -37,122 +37,122 @@ import java.util.*;
 @RestController
 @RequestMapping(path = "api/dynamic-page")
 public class DynamicPageController {
+	private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(DynamicPageController.class));
 
-    private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(DynamicPageController.class));
+	private final BuilderFactory builderFactory;
+	private final AuditService auditService;
+	private final DynamicPageService dynamicPageService;
+	private final CensorFactory censorFactory;
+	private final QueryFactory queryFactory;
+	private final MessageSource messageSource;
 
-    private final BuilderFactory builderFactory;
+	@Autowired
+	public DynamicPageController(
+			BuilderFactory builderFactory,
+			AuditService auditService,
+			DynamicPageService dynamicPageService,
+			CensorFactory censorFactory,
+			QueryFactory queryFactory,
+			MessageSource messageSource
 
-    private final AuditService auditService;
+	) {
+		this.builderFactory = builderFactory;
+		this.auditService = auditService;
+		this.dynamicPageService = dynamicPageService;
+		this.censorFactory = censorFactory;
+		this.queryFactory = queryFactory;
+		this.messageSource = messageSource;
+	}
 
-    private final DynamicPageService dynamicPageService;
+	@PostMapping("query")
+	public QueryResult<DynamicPage> Query(@RequestBody DynamicPageLookup lookup) throws MyApplicationException, MyForbiddenException {
+		logger.debug("querying {}", DynamicPage.class.getSimpleName());
 
-    private final CensorFactory censorFactory;
+		this.censorFactory.censor(DynamicPageCensor.class).censor(lookup.getProject(), null);
 
-    private final QueryFactory queryFactory;
+		DynamicPageQuery query = lookup.enrich(this.queryFactory);
+		List<DynamicPageEntity> datas = query.collectAs(lookup.getProject());
+		List<DynamicPage> models = this.builderFactory.builder(DynamicPageBuilder.class).build(lookup.getProject(), datas);
+		long count = (lookup.getMetadata() != null && lookup.getMetadata().getCountAll()) ? query.count() : models.size();
 
-    private final MessageSource messageSource;
+		this.auditService.track(AuditableAction.DynamicPage_Query, "lookup", lookup);
+		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
 
-    @Autowired
-    public DynamicPageController(
-            BuilderFactory builderFactory,
-            AuditService auditService,
-            DynamicPageService dynamicPageService,
-            CensorFactory censorFactory,
-            QueryFactory queryFactory,
-            MessageSource messageSource
+		return new QueryResult(models, count);
+	}
 
-    ) {
-        this.builderFactory = builderFactory;
-        this.auditService = auditService;
-        this.dynamicPageService = dynamicPageService;
-        this.censorFactory = censorFactory;
-        this.queryFactory = queryFactory;
-        this.messageSource = messageSource;
-    }
+	@GetMapping("{id}")
+	public DynamicPage Get(@PathVariable("id") UUID id, FieldSet fieldSet, Locale locale) throws MyApplicationException, MyForbiddenException, MyNotFoundException {
+		logger.debug(new MapLogEntry("retrieving" + DynamicPage.class.getSimpleName()).And("id", id).And("fields", fieldSet));
 
-    @PostMapping("query")
-    public QueryResult<DynamicPage> query(@RequestBody DynamicPageLookup lookup) throws MyApplicationException, MyForbiddenException {
-        logger.debug("querying {}", DynamicPage.class.getSimpleName());
+		this.censorFactory.censor(DynamicPageCensor.class).censor(fieldSet, null);
 
-        this.censorFactory.censor(DynamicPageCensor.class).censor(lookup.getProject(), null);
+		DynamicPageQuery query = this.queryFactory.query(DynamicPageQuery.class).ids(id);
+		DynamicPage model = this.builderFactory.builder(DynamicPageBuilder.class).build(fieldSet, query.firstAs(fieldSet));
+		if (model == null) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{id, DynamicPage.class.getSimpleName()}, LocaleContextHolder.getLocale()));
 
-        DynamicPageQuery query = lookup.enrich(this.queryFactory);
-        List<DynamicPageEntity> data = query.collectAs(lookup.getProject());
-        List<DynamicPage> models = this.builderFactory.builder(DynamicPageBuilder.class).build(lookup.getProject(), data);
-        long count = (lookup.getMetadata() != null && lookup.getMetadata().getCountAll()) ? query.count() : models.size();
+		this.auditService.track(AuditableAction.DynamicPage_Lookup, Map.ofEntries(
+				new AbstractMap.SimpleEntry<String, Object>("id", id),
+				new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
+		));
+		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
 
-        this.auditService.track(AuditableAction.DynamicPage_Query, "lookup", lookup);
+		return model;
+	}
 
-        return new QueryResult<>(models, count);
-    }
+	@GetMapping("allowed-menu/{language}")
+	public List<DynamicPageMenuItem> getAllowedPageMenuItems(@PathVariable("language") String language, Locale locale) throws MyApplicationException, MyForbiddenException, MyNotFoundException {
+		logger.debug(new MapLogEntry("retrieving" + DynamicPageMenuItem.class.getSimpleName()).And("language", language));
 
-    @GetMapping("{id}")
-    public DynamicPage get(@PathVariable("id") UUID id, FieldSet fieldSet, Locale locale) throws MyApplicationException, MyForbiddenException, MyNotFoundException {
-        logger.debug(new MapLogEntry("retrieving" + DynamicPage.class.getSimpleName()).And("id", id).And("fields", fieldSet));
+		List<DynamicPageMenuItem> model = this.dynamicPageService.getAllowedPageMenuItems(language);
 
-        this.censorFactory.censor(DynamicPageCensor.class).censor(fieldSet, null);
+		this.auditService.track(AuditableAction.DynamicPage_AllowedPageMenuItems, Map.ofEntries(
+				new AbstractMap.SimpleEntry<String, Object>("language", language)
+		));
+		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
 
-        DynamicPageQuery query = this.queryFactory.query(DynamicPageQuery.class).ids(id);
-        DynamicPage model = this.builderFactory.builder(DynamicPageBuilder.class).build(fieldSet, query.firstAs(fieldSet));
-        if (model == null)
-            throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{id, DynamicPage.class.getSimpleName()}, LocaleContextHolder.getLocale()));
+		return model;
+	}
 
-        this.auditService.track(AuditableAction.DynamicPage_Lookup, Map.ofEntries(
-                new AbstractMap.SimpleEntry<String, Object>("id", id),
-                new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
-        ));
+	@PostMapping("content")
+	public DynamicPageContentData getPageContent(@MyValidate @RequestBody  PageContentRequest model, Locale locale) throws MyApplicationException, MyForbiddenException, MyNotFoundException {
+		logger.debug(new MapLogEntry("retrieving" + DynamicPageContentData.class.getSimpleName()).And("model", model));
 
-        return model;
-    }
+		DynamicPageContentData contentData = this.dynamicPageService.getPageContent(model);
 
-    @GetMapping("allowed-menu/{language}")
-    public List<DynamicPageMenuItem> getAllowedPageMenuItems(@PathVariable("language") String language, Locale locale) throws MyApplicationException, MyForbiddenException, MyNotFoundException {
-        logger.debug(new MapLogEntry("retrieving" + DynamicPageMenuItem.class.getSimpleName()).And("language", language));
+		this.auditService.track(AuditableAction.DynamicPage_GetPageContent, Map.ofEntries(
+				new AbstractMap.SimpleEntry<String, Object>("model", model)
+		));
+		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
 
-        List<DynamicPageMenuItem> model = this.dynamicPageService.getAllowedPageMenuItems(language);
+		return contentData;
+	}
 
-        this.auditService.track(AuditableAction.DynamicPage_AllowedPageMenuItems, Map.ofEntries(
-                new AbstractMap.SimpleEntry<String, Object>("language", language)
-        ));
+	@PostMapping("persist")
+	@Transactional
+	public DynamicPage Persist(@MyValidate @RequestBody PagePersist model, FieldSet fieldSet) throws MyApplicationException, MyForbiddenException, MyNotFoundException, InvalidApplicationException {
+		logger.debug(new MapLogEntry("persisting" + DynamicPage.class.getSimpleName()).And("model", model).And("fieldSet", fieldSet));
 
-        return model;
-    }
+		DynamicPage persisted = this.dynamicPageService.persist(model, fieldSet);
 
-    @PostMapping("content")
-    public DynamicPageContentData getPageContent(@MyValidate @RequestBody PageContentRequest model, Locale locale) throws MyApplicationException, MyForbiddenException, MyNotFoundException {
-        logger.debug(new MapLogEntry("retrieving" + DynamicPageContentData.class.getSimpleName()).And("model", model));
+		this.auditService.track(AuditableAction.DynamicPage_Persist, Map.ofEntries(
+				new AbstractMap.SimpleEntry<String, Object>("model", model),
+				new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
+		));
+		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
+		return persisted;
+	}
 
-        DynamicPageContentData contentData = this.dynamicPageService.getPageContent(model);
+	@DeleteMapping("{id}")
+	@Transactional
+	public void Delete(@PathVariable("id") UUID id) throws MyForbiddenException, InvalidApplicationException {
+		logger.debug(new MapLogEntry("retrieving" + DynamicPage.class.getSimpleName()).And("id", id));
 
-        this.auditService.track(AuditableAction.DynamicPage_GetPageContent, Map.ofEntries(
-                new AbstractMap.SimpleEntry<String, Object>("model", model)
-        ));
+		this.dynamicPageService.deleteAndSave(id);
 
-        return contentData;
-    }
+		this.auditService.track(AuditableAction.DynamicPage_Delete, "id", id);
+		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
+	}
 
-    @PostMapping("persist")
-    @Transactional
-    public DynamicPage persist(@MyValidate @RequestBody PagePersist model, FieldSet fieldSet) throws MyApplicationException, MyForbiddenException, MyNotFoundException, InvalidApplicationException {
-        logger.debug(new MapLogEntry("persisting" + DynamicPage.class.getSimpleName()).And("model", model).And("fieldSet", fieldSet));
-
-        DynamicPage persisted = this.dynamicPageService.persist(model, fieldSet);
-
-        this.auditService.track(AuditableAction.DynamicPage_Persist, Map.ofEntries(
-                new AbstractMap.SimpleEntry<String, Object>("model", model),
-                new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
-        ));
-        return persisted;
-    }
-
-    @DeleteMapping("{id}")
-    @Transactional
-    public void delete(@PathVariable("id") UUID id) throws MyForbiddenException, InvalidApplicationException {
-        logger.debug(new MapLogEntry("retrieving" + DynamicPage.class.getSimpleName()).And("id", id));
-
-        this.dynamicPageService.deleteAndSave(id);
-
-        this.auditService.track(AuditableAction.DynamicPage_Delete, "id", id);
-    }
 
 }

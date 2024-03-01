@@ -19,48 +19,43 @@ import org.springframework.stereotype.Component;
 import java.util.*;
 
 @Component
+//Like in C# make it transient
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class DataTreeLevelDashboardOverrideBuilder extends BaseBuilder<DataTreeLevelDashboardOverride, DataTreeLevelDashboardOverrideEntity> {
+	private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(DataTreeLevelDashboardOverrideBuilder.class));
 
-    private final BuilderFactory builderFactory;
+	private final BuilderFactory builderFactory;
 
-    private EnumSet<AuthorizationFlags> authorize = EnumSet.of(AuthorizationFlags.None);
+	private EnumSet<AuthorizationFlags> authorize = EnumSet.of(AuthorizationFlags.None);
 
-    @Autowired
-    public DataTreeLevelDashboardOverrideBuilder(ConventionService conventionService, BuilderFactory builderFactory) {
-        super(conventionService, new LoggerService(LoggerFactory.getLogger(DataTreeLevelDashboardOverrideBuilder.class)));
-        this.builderFactory = builderFactory;
-    }
+	@Autowired
+	public DataTreeLevelDashboardOverrideBuilder(ConventionService conventionService, BuilderFactory builderFactory) {
+		super(conventionService, logger);
+		this.builderFactory = builderFactory;
+	}
 
-    public DataTreeLevelDashboardOverrideBuilder authorize(EnumSet<AuthorizationFlags> values) {
-        this.authorize = values;
-        return this;
-    }
+	public DataTreeLevelDashboardOverrideBuilder authorize(EnumSet<AuthorizationFlags> values) {
+		this.authorize = values;
+		return this;
+	}
 
-    @Override
-    public List<DataTreeLevelDashboardOverride> build(FieldSet fields, List<DataTreeLevelDashboardOverrideEntity> data) throws MyApplicationException {
-        this.logger.debug("building for {} items requesting {} BrowseDataFields", Optional.ofNullable(data).map(List::size).orElse(0), Optional.ofNullable(fields).map(FieldSet::getFields).map(Set::size).orElse(0));
-        this.logger.trace(new DataLogEntry("requested BrowseDataFields", fields));
-        if (fields == null || fields.isEmpty())
-            return new ArrayList<>();
+	@Override
+	public List<DataTreeLevelDashboardOverride> build(FieldSet fields, List<DataTreeLevelDashboardOverrideEntity> datas) throws MyApplicationException {
+		this.logger.debug("building for {} items requesting {} BrowseDataFields", Optional.ofNullable(datas).map(e -> e.size()).orElse(0), Optional.ofNullable(fields).map(e -> e.getFields()).map(e -> e.size()).orElse(0));
+		this.logger.trace(new DataLogEntry("requested BrowseDataFields", fields));
+		if (fields == null || fields.isEmpty()) return new ArrayList<>();
 
-        FieldSet requirementsFields = fields.extractPrefixed(this.asPrefix(DataTreeLevelDashboardOverride._requirements));
+		FieldSet requirementsFields = fields.extractPrefixed(this.asPrefix(DataTreeLevelDashboardOverride._requirements));
 
-        List<DataTreeLevelDashboardOverride> models = new ArrayList<>(100);
+		List<DataTreeLevelDashboardOverride> models = new LinkedList<>();
+		for (DataTreeLevelDashboardOverrideEntity d : datas) {
+			DataTreeLevelDashboardOverride m = new DataTreeLevelDashboardOverride();
+			if (fields.hasField(this.asIndexer(DataTreeLevelDashboardOverride._supportedDashboards))) m.setSupportedDashboards(d.getSupportedDashboards());
+			if (fields.hasField(this.asIndexer(DataTreeLevelDashboardOverride._supportSubLevel))) m.setSupportSubLevel(d.getSupportSubLevel());
+			if (!requirementsFields.isEmpty() && d.getRequirements() != null) m.setRequirements(this.builderFactory.builder(DataTreeLevelDashboardOverrideFieldRequirementBuilder.class).authorize(this.authorize).build(requirementsFields, d.getRequirements()));
+			models.add(m);
+		}
 
-        if (data == null)
-            return models;
-        for (DataTreeLevelDashboardOverrideEntity d : data) {
-            DataTreeLevelDashboardOverride m = new DataTreeLevelDashboardOverride();
-            if (fields.hasField(this.asIndexer(DataTreeLevelDashboardOverride._supportedDashboards)))
-                m.setSupportedDashboards(d.getSupportedDashboards());
-            if (fields.hasField(this.asIndexer(DataTreeLevelDashboardOverride._supportSubLevel)))
-                m.setSupportSubLevel(d.getSupportSubLevel());
-            if (!requirementsFields.isEmpty() && d.getRequirements() != null)
-                m.setRequirements(this.builderFactory.builder(DataTreeLevelDashboardOverrideFieldRequirementBuilder.class).authorize(this.authorize).build(requirementsFields, d.getRequirements()));
-            models.add(m);
-        }
-
-        return models;
-    }
+		return models;
+	}
 }

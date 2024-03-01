@@ -19,44 +19,41 @@ import org.springframework.stereotype.Component;
 import java.util.*;
 
 @Component
+//Like in C# make it transient
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class DataGroupInfoBuilder extends BaseBuilder<DataGroupInfo, DataGroupInfoEntity> {
+	private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(DataGroupInfoBuilder.class));
 
-    private final BuilderFactory builderFactory;
-    private EnumSet<AuthorizationFlags> authorize = EnumSet.of(AuthorizationFlags.None);
+	private final BuilderFactory builderFactory;
+	private EnumSet<AuthorizationFlags> authorize = EnumSet.of(AuthorizationFlags.None);
 
-    @Autowired
-    public DataGroupInfoBuilder(ConventionService conventionService, BuilderFactory builderFactory) {
-        super(conventionService, new LoggerService(LoggerFactory.getLogger(DataGroupInfoBuilder.class)));
-        this.builderFactory = builderFactory;
-    }
+	@Autowired
+	public DataGroupInfoBuilder(ConventionService conventionService, BuilderFactory builderFactory) {
+		super(conventionService, logger);
+		this.builderFactory = builderFactory;
+	}
 
-    public DataGroupInfoBuilder authorize(EnumSet<AuthorizationFlags> values) {
-        this.authorize = values;
-        return this;
-    }
+	public DataGroupInfoBuilder authorize(EnumSet<AuthorizationFlags> values) {
+		this.authorize = values;
+		return this;
+	}
 
-    @Override
-    public List<DataGroupInfo> build(FieldSet fields, List<DataGroupInfoEntity> data) throws MyApplicationException {
-        this.logger.debug("building for {} items requesting {} fields", Optional.ofNullable(data).map(List::size).orElse(0), Optional.ofNullable(fields).map(FieldSet::getFields).map(Set::size).orElse(0));
-        this.logger.trace(new DataLogEntry("requested fields", fields));
-        if (fields == null || fields.isEmpty())
-            return new ArrayList<>();
+	@Override
+	public List<DataGroupInfo> build(FieldSet fields, List<DataGroupInfoEntity> datas) throws MyApplicationException {
+		this.logger.debug("building for {} items requesting {} fields", Optional.ofNullable(datas).map(e -> e.size()).orElse(0), Optional.ofNullable(fields).map(e -> e.getFields()).map(e -> e.size()).orElse(0));
+		this.logger.trace(new DataLogEntry("requested fields", fields));
+		if (fields == null || fields.isEmpty()) return new ArrayList<>();
 
-        FieldSet columnsFields = fields.extractPrefixed(this.asPrefix(DataGroupInfo._columns));
+		FieldSet columnsFields = fields.extractPrefixed(this.asPrefix(DataGroupInfo._columns));
 
-        List<DataGroupInfo> dataGroupInfo = new ArrayList<>(100);
+		List<DataGroupInfo> DataGroupInfo = new LinkedList<>();
+		for (DataGroupInfoEntity d : datas) {
+			DataGroupInfo m = new DataGroupInfo();
+			if (!columnsFields.isEmpty() && d.getColumns() != null) m.setColumns(this.builderFactory.builder(DataGroupInfoColumnBuilder.class).authorize(this.authorize).build(columnsFields, d.getColumns()));
 
-        if (data == null)
-            return dataGroupInfo;
-        for (DataGroupInfoEntity d : data) {
-            DataGroupInfo m = new DataGroupInfo();
-            if (!columnsFields.isEmpty() && d.getColumns() != null)
-                m.setColumns(this.builderFactory.builder(DataGroupInfoColumnBuilder.class).authorize(this.authorize).build(columnsFields, d.getColumns()));
+			DataGroupInfo.add(m);
+		}
 
-            dataGroupInfo.add(m);
-        }
-
-        return dataGroupInfo;
-    }
+		return DataGroupInfo;
+	}
 }

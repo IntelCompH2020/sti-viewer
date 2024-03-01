@@ -15,33 +15,31 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+
 @Component
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class MasterItemCensor extends BaseCensor {
+	private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(MasterItemCensor.class));
 
-    private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(MasterItemCensor.class));
+	protected final AuthorizationService authService;
+	protected final CensorFactory censorFactory;
 
-    protected final AuthorizationService authService;
+	@Autowired
+	public MasterItemCensor(
+			ConventionService conventionService,
+			AuthorizationService authService,
+			CensorFactory censorFactory
+	) {
+		super(conventionService);
+		this.authService = authService;
+		this.censorFactory = censorFactory;
+	}
 
-    protected final CensorFactory censorFactory;
-
-    @Autowired
-    public MasterItemCensor(
-            ConventionService conventionService,
-            AuthorizationService authService,
-            CensorFactory censorFactory
-    ) {
-        super(conventionService);
-        this.authService = authService;
-        this.censorFactory = censorFactory;
-    }
-
-    public void censor(FieldSet fields) throws MyForbiddenException {
-        logger.debug(new DataLogEntry("censoring fields", fields));
-        if (this.isEmpty(fields))
-            return;
-        this.authService.authorizeForce(Permission.BrowseMasterItem);
-        FieldSet detailFields = fields.extractPrefixed(this.asIndexerPrefix(MasterItem._details));
-        this.censorFactory.censor(DetailItemCensor.class).censor(detailFields);
-    }
+	public void censor(FieldSet fields) throws MyForbiddenException {
+		logger.debug(new DataLogEntry("censoring fields", fields));
+		if (this.isEmpty(fields)) return;
+		this.authService.authorizeForce(Permission.BrowseMasterItem);
+		FieldSet detailFields = fields.extractPrefixed(this.asIndexerPrefix(MasterItem._details));
+		this.censorFactory.censor(DetailItemCensor.class).censor(detailFields);
+	}
 }

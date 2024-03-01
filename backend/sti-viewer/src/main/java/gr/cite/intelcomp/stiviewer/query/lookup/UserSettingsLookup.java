@@ -40,12 +40,9 @@ public class UserSettingsLookup extends Lookup {
 
     public UserSettingsQuery enrich(QueryFactory queryFactory) {
         UserSettingsQuery query = queryFactory.query(UserSettingsQuery.class);
-        if (this.like != null)
-            query.like(this.like);
-        if (this.ids != null)
-            query.ids(this.ids);
-        if (this.userSettingsTypes != null)
-            query.userSettingsTypes(this.userSettingsTypes);
+        if (this.like != null) query.like(this.like);
+        if (this.ids != null) query.ids(this.ids);
+        if (this.userSettingsTypes != null) query.userSettingsTypes(this.userSettingsTypes);
 
         this.enrichCommon(query);
 

@@ -11,18 +11,9 @@ public class DataAccessRequestLookup extends Lookup {
 
     private List<UUID> ids;
 
-    public List<UUID> getIds() {
-        return ids;
-    }
-
-    public void setIds(List<UUID> ids) {
-        this.ids = ids;
-    }
-
     public DataAccessRequestQuery enrich(QueryFactory queryFactory) {
         DataAccessRequestQuery query = queryFactory.query(DataAccessRequestQuery.class);
-        if (this.ids != null)
-            query.ids(this.ids);
+        if (this.ids != null) query.ids(this.ids);
 
         this.enrichCommon(query);
 

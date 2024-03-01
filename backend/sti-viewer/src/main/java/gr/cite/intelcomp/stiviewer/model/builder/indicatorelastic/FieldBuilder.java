@@ -19,78 +19,61 @@ import org.springframework.stereotype.Component;
 import java.util.*;
 
 @Component
+//Like in C# make it transient
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class FieldBuilder extends BaseBuilder<Field, FieldEntity> {
+	private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(FieldBuilder.class));
 
-    private final BuilderFactory builderFactory;
+	private final BuilderFactory builderFactory;
 
-    private EnumSet<AuthorizationFlags> authorize = EnumSet.of(AuthorizationFlags.None);
+	private EnumSet<AuthorizationFlags> authorize = EnumSet.of(AuthorizationFlags.None);
 
-    @Autowired
-    public FieldBuilder(ConventionService conventionService, BuilderFactory builderFactory) {
-        super(conventionService, new LoggerService(LoggerFactory.getLogger(FieldBuilder.class)));
-        this.builderFactory = builderFactory;
-    }
+	@Autowired
+	public FieldBuilder(ConventionService conventionService, BuilderFactory builderFactory) {
+		super(conventionService, logger);
+		this.builderFactory = builderFactory;
+	}
 
-    public FieldBuilder authorize(EnumSet<AuthorizationFlags> values) {
-        this.authorize = values;
-        return this;
-    }
+	public FieldBuilder authorize(EnumSet<AuthorizationFlags> values) {
+		this.authorize = values;
+		return this;
+	}
 
-    @Override
-    public List<Field> build(FieldSet fields, List<FieldEntity> data) throws MyApplicationException {
-        logger.debug("building for {} items requesting {} fields", Optional.ofNullable(data).map(List::size).orElse(0), Optional.ofNullable(fields).map(FieldSet::getFields).map(Set::size).orElse(0));
-        logger.trace(new DataLogEntry("requested fields", fields));
-        if (fields == null || fields.isEmpty())
-            return new ArrayList<>();
+	@Override
+	public List<Field> build(FieldSet fields, List<FieldEntity> datas) throws MyApplicationException {
+		this.logger.debug("building for {} items requesting {} fields", Optional.ofNullable(datas).map(e -> e.size()).orElse(0), Optional.ofNullable(fields).map(e -> e.getFields()).map(e -> e.size()).orElse(0));
+		this.logger.trace(new DataLogEntry("requested fields", fields));
+		if (fields == null || fields.isEmpty()) return new ArrayList<>();
 
-        FieldSet valueRangeFields = fields.extractPrefixed(this.asPrefix(Field._valueRange));
-        FieldSet operationsFields = fields.extractPrefixed(this.asPrefix(Field._operations));
-        FieldSet altLabelsFields = fields.extractPrefixed(this.asPrefix(Field._altLabels));
-        FieldSet altDescriptionsFields = fields.extractPrefixed(this.asPrefix(Field._altDescriptions));
+		FieldSet valueRangeFields = fields.extractPrefixed(this.asPrefix(Field._valueRange));
+		FieldSet operationsFields = fields.extractPrefixed(this.asPrefix(Field._operations));
+		FieldSet altLabelsFields = fields.extractPrefixed(this.asPrefix(Field._altLabels));
+		FieldSet altDescriptionsFields = fields.extractPrefixed(this.asPrefix(Field._altDescriptions));
 
-        List<Field> fieldModels = new ArrayList<>(100);
+		List<Field> fieldModels = new LinkedList<>();
+		for (FieldEntity d : datas) {
+			Field m = new Field();
+			if (fields.hasField(this.asIndexer(Field._id))) m.setId(d.getId());
+			if (fields.hasField(this.asIndexer(Field._code))) m.setCode(d.getCode());
+			if (fields.hasField(this.asIndexer(Field._description))) m.setDescription(d.getDescription());
+			if (fields.hasField(this.asIndexer(Field._label))) m.setLabel(d.getLabel());
+			if (fields.hasField(this.asIndexer(Field._name))) m.setName(d.getName());
+			if (fields.hasField(this.asIndexer(Field._subfieldOf))) m.setSubfieldOf(d.getSubfieldOf());
+			if (fields.hasField(this.asIndexer(Field._typeId))) m.setTypeId(d.getTypeId());
+			if (fields.hasField(this.asIndexer(Field._typeSemantics))) m.setTypeSemantics(d.getTypeSemantics());
+			if (fields.hasField(this.asIndexer(Field._baseType))) m.setBaseType(d.getBaseType());
+			if (fields.hasField(this.asIndexer(Field._useAs))) m.setUseAs(d.getUseAs());
+			if (fields.hasField(this.asIndexer(Field._validation))) m.setValidation(d.getValidation().toString());
+			if (fields.hasField(this.asIndexer(Field._valueField))) m.setValueField(d.getValueField());
+			if (!valueRangeFields.isEmpty() && d.getValueRange() != null) m.setValueRange(this.builderFactory.builder(ValueRangeBuilder.class).authorize(this.authorize).build(valueRangeFields, d.getValueRange()));
+			if (!operationsFields.isEmpty() && d.getOperations() != null) m.setOperations(this.builderFactory.builder(OperatorBuilder.class).authorize(this.authorize).build(operationsFields, d.getOperations()));
+			if (!altLabelsFields.isEmpty() && d.getAltLabels() != null) m.setAltLabels(this.builderFactory.builder(AltTextBuilder.class).authorize(this.authorize).build(altLabelsFields, d.getAltLabels()));
+			if (!altDescriptionsFields.isEmpty() && d.getAltDescriptions() != null) m.setAltDescriptions(this.builderFactory.builder(AltTextBuilder.class).authorize(this.authorize).build(altDescriptionsFields, d.getAltDescriptions()));
 
-        if (data == null)
-            return fieldModels;
-        for (FieldEntity d : data) {
-            Field m = new Field();
-            if (fields.hasField(this.asIndexer(Field._id)))
-                m.setId(d.getId());
-            if (fields.hasField(this.asIndexer(Field._code)))
-                m.setCode(d.getCode());
-            if (fields.hasField(this.asIndexer(Field._description)))
-                m.setDescription(d.getDescription());
-            if (fields.hasField(this.asIndexer(Field._label)))
-                m.setLabel(d.getLabel());
-            if (fields.hasField(this.asIndexer(Field._name)))
-                m.setName(d.getName());
-            if (fields.hasField(this.asIndexer(Field._subfieldOf)))
-                m.setSubfieldOf(d.getSubfieldOf());
-            if (fields.hasField(this.asIndexer(Field._typeId)))
-                m.setTypeId(d.getTypeId());
-            if (fields.hasField(this.asIndexer(Field._typeSemantics)))
-                m.setTypeSemantics(d.getTypeSemantics());
-            if (fields.hasField(this.asIndexer(Field._baseType)))
-                m.setBaseType(d.getBaseType());
-            if (fields.hasField(this.asIndexer(Field._useAs)))
-                m.setUseAs(d.getUseAs());
-            if (fields.hasField(this.asIndexer(Field._validation)))
-                m.setValidation(d.getValidation().toString());
-            if (fields.hasField(this.asIndexer(Field._valueField)))
-                m.setValueField(d.getValueField());
-            if (!valueRangeFields.isEmpty() && d.getValueRange() != null)
-                m.setValueRange(this.builderFactory.builder(ValueRangeBuilder.class).authorize(this.authorize).build(valueRangeFields, d.getValueRange()));
-            if (!operationsFields.isEmpty() && d.getOperations() != null)
-                m.setOperations(this.builderFactory.builder(OperatorBuilder.class).authorize(this.authorize).build(operationsFields, d.getOperations()));
-            if (!altLabelsFields.isEmpty() && d.getAltLabels() != null)
-                m.setAltLabels(this.builderFactory.builder(AltTextBuilder.class).authorize(this.authorize).build(altLabelsFields, d.getAltLabels()));
-            if (!altDescriptionsFields.isEmpty() && d.getAltDescriptions() != null)
-                m.setAltDescriptions(this.builderFactory.builder(AltTextBuilder.class).authorize(this.authorize).build(altDescriptionsFields, d.getAltDescriptions()));
 
-            fieldModels.add(m);
-        }
+			fieldModels.add(m);
+		}
 
-        return fieldModels;
-    }
+		return fieldModels;
+	}
 }

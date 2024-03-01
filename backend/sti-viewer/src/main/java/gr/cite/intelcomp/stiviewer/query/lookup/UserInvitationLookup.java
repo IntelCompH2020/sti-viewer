@@ -39,12 +39,9 @@ public class UserInvitationLookup extends Lookup {
 
     public UserInvitationQuery enrich(QueryFactory queryFactory) {
         UserInvitationQuery query = queryFactory.query(UserInvitationQuery.class);
-        if (this.like != null)
-            query.like(this.like);
-        if (this.ids != null)
-            query.ids(this.ids);
-        if (this.tenantIds != null)
-            query.tenantIds(this.tenantIds);
+        if (this.like != null) query.like(this.like);
+        if (this.ids != null) query.ids(this.ids);
+        if (this.tenantIds != null) query.tenantIds(this.tenantIds);
 
         this.enrichCommon(query);
 

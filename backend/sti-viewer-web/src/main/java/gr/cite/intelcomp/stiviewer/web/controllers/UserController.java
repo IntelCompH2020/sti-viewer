@@ -38,19 +38,13 @@ import java.util.UUID;
 @RestController
 @RequestMapping(path = "api/user")
 public class UserController {
-
     private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(UserController.class));
 
     private final BuilderFactory builderFactory;
-
     private final AuditService auditService;
-
     private final UserService userService;
-
     private final CensorFactory censorFactory;
-
     private final QueryFactory queryFactory;
-
     private final MessageSource messageSource;
 
     @Autowired
@@ -72,22 +66,23 @@ public class UserController {
     }
 
     @PostMapping("query")
-    public QueryResult<User> query(@RequestBody UserLookup lookup) throws MyApplicationException, MyForbiddenException {
+    public QueryResult<User> Query(@RequestBody UserLookup lookup) throws MyApplicationException, MyForbiddenException {
         logger.debug("querying {}", User.class.getSimpleName());
         this.censorFactory.censor(UserCensor.class).censor(lookup.getProject(), null);
         UserQuery query = lookup.enrich(this.queryFactory).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator);
-        List<UserEntity> data = query.collectAs(lookup.getProject());
-        List<User> models = this.builderFactory.builder(UserBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(lookup.getProject(), data);
+        List<UserEntity> datas = query.collectAs(lookup.getProject());
+        List<User> models = this.builderFactory.builder(UserBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(lookup.getProject(), datas);
         long count = (lookup.getMetadata() != null && lookup.getMetadata().getCountAll()) ? query.count() : models.size();
 
         this.auditService.track(AuditableAction.User_Query, "lookup", lookup);
+        //this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
 
         return new QueryResult<>(models, count);
     }
 
     @GetMapping("{id}")
     @Transactional
-    public User get(@PathVariable("id") UUID id, FieldSet fieldSet) throws MyApplicationException, MyForbiddenException, MyNotFoundException {
+    public User Get(@PathVariable("id") UUID id, FieldSet fieldSet) throws MyApplicationException, MyForbiddenException, MyNotFoundException {
         logger.debug(new MapLogEntry("retrieving" + User.class.getSimpleName()).And("id", id).And("fields", fieldSet));
 
         this.censorFactory.censor(UserCensor.class).censor(fieldSet, id);
@@ -101,13 +96,14 @@ public class UserController {
                 new AbstractMap.SimpleEntry<String, Object>("id", id),
                 new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
         ));
+        //this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
 
         return model;
     }
 
     @PostMapping("persist")
     @Transactional
-    public User persist(@MyValidate @RequestBody UserPersist model, FieldSet fieldSet) throws MyApplicationException, MyForbiddenException, MyNotFoundException, InvalidApplicationException {
+    public User Persist(@MyValidate @RequestBody UserPersist model, FieldSet fieldSet) throws MyApplicationException, MyForbiddenException, MyNotFoundException, InvalidApplicationException {
         logger.debug(new MapLogEntry("persisting" + User.class.getSimpleName()).And("model", model).And("fieldSet", fieldSet));
 
         User persisted = this.userService.persist(model, fieldSet);
@@ -116,17 +112,20 @@ public class UserController {
                 new AbstractMap.SimpleEntry<String, Object>("model", model),
                 new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
         ));
+        //this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
         return persisted;
     }
 
     @DeleteMapping("{id}")
     @Transactional
-    public void delete(@PathVariable("id") UUID id) throws MyForbiddenException, InvalidApplicationException {
+    public void Delete(@PathVariable("id") UUID id) throws MyForbiddenException, InvalidApplicationException {
         logger.debug(new MapLogEntry("retrieving" + User.class.getSimpleName()).And("id", id));
 
         this.userService.deleteAndSave(id);
 
         this.auditService.track(AuditableAction.User_Delete, "id", id);
+        //this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
     }
+
 
 }

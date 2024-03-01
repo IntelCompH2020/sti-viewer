@@ -35,127 +35,121 @@ import java.util.Map;
 @Component
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class CreateDataGroupScheduledEventHandlerImpl implements CreateDataGroupScheduledEventHandler {
-    private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(CreateDataGroupScheduledEventHandlerImpl.class));
-    private final JsonHandlingService jsonHandlingService;
-    protected final ApplicationContext applicationContext;
+	private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(CreateDataGroupScheduledEventHandlerImpl.class));
+	private final JsonHandlingService jsonHandlingService;
+	protected final ApplicationContext applicationContext;
 
-    @PersistenceContext
-    public EntityManager entityManager;
+	@PersistenceContext
+	public EntityManager entityManager;
 
-    public CreateDataGroupScheduledEventHandlerImpl(
-            JsonHandlingService jsonHandlingService,
-            ApplicationContext applicationContext
-    ) {
-        this.jsonHandlingService = jsonHandlingService;
-        this.applicationContext = applicationContext;
-    }
-
-
-    @Override
-    public EventProcessingStatus handle(ScheduledEventEntity scheduledEvent) {
-        CreateDataGroupScheduledEventData eventData = this.jsonHandlingService.fromJsonSafe(CreateDataGroupScheduledEventData.class, scheduledEvent.getData());
-        if (eventData == null)
-            return EventProcessingStatus.Postponed;
-        EventProcessingStatus status;
-
-        EntityManager entityManager = null;
-        EntityTransaction transaction = null;
-        try (FakeRequestScope ignored = new FakeRequestScope()) {
-            try {
-                EntityManagerFactory entityManagerFactory = this.applicationContext.getBean(EntityManagerFactory.class);
-                entityManager = entityManagerFactory.createEntityManager();
-
-                transaction = entityManager.getTransaction();
-                transaction.begin();
-
-                CreateDataGroupConsistencyHandler createDataGroupConsistencyHandler = this.applicationContext.getBean(CreateDataGroupConsistencyHandler.class);
-                Boolean isConsistent = (createDataGroupConsistencyHandler.isConsistent(new CreateDataGroupConsistencyPredicates(scheduledEvent.getKey(), eventData.getDataGroupRequestId())));
-                if (isConsistent) {
-                    QueryFactory queryFactory = this.applicationContext.getBean(QueryFactory.class);
-                    TenantScope scope = this.applicationContext.getBean(TenantScope.class);
-
-                    DataGroupRequestEntity dataGroupRequest = queryFactory.query(DataGroupRequestQuery.class).ids(eventData.getDataGroupRequestId()).first();
-
-                    if (scope.isMultitenant() && dataGroupRequest.getTenantId() != null) {
-                        TenantEntity tenant = queryFactory.query(TenantQuery.class).ids(dataGroupRequest.getTenantId()).firstAs(new BaseFieldSet().ensure(Tenant._id).ensure(Tenant._code));
-                        if (tenant == null) {
-                            logger.error("missing tenant from event message");
-                            throw new MyApplicationException("missing tenant from event message");
-                        }
-                        scope.setTenant(dataGroupRequest.getTenantId(), tenant.getCode());
-                    } else if (scope.isMultitenant()) {
-                        logger.error("missing tenant from event message");
-                        throw new MyApplicationException("missing tenant from event message");
-
-                    }
-
-                    try {
-                        this.run(dataGroupRequest, entityManager, queryFactory, scope);
-                        status = EventProcessingStatus.Success;
-
-                        AuditService auditService = this.applicationContext.getBean(AuditService.class);
-
-                        auditService.track(AuditableAction.Scheduled_Event_Run, Map.ofEntries(
-                                new AbstractMap.SimpleEntry<String, Object>("id", scheduledEvent.getId()),
-                                new AbstractMap.SimpleEntry<String, Object>("eventType", scheduledEvent.getEventType()),
-                                new AbstractMap.SimpleEntry<String, Object>("key", scheduledEvent.getKey()),
-                                new AbstractMap.SimpleEntry<String, Object>("keyType", scheduledEvent.getKeyType()),
-                                new AbstractMap.SimpleEntry<String, Object>("runAt", scheduledEvent.getRunAt())
-
-                        ));
-                        //auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
-
-                    } catch (Exception e) {
-                        transaction.rollback();
-                        throw e;
-                    }
-                } else {
-                    status = EventProcessingStatus.Postponed;
-                }
+	public CreateDataGroupScheduledEventHandlerImpl(
+			JsonHandlingService jsonHandlingService,
+			ApplicationContext applicationContext
+	) {
+		this.jsonHandlingService = jsonHandlingService;
+		this.applicationContext = applicationContext;
+	}
 
 
-                transaction.commit();
-            } catch (OptimisticLockException ex) {
-                logger.debug("Concurrency exception getting scheduled event. Skipping: {} ", ex.getMessage());
-                if (transaction != null)
-                    transaction.rollback();
-                status = EventProcessingStatus.Error;
-            } catch (Exception ex) {
-                logger.error("Problem getting scheduled event. Skipping: {}", ex.getMessage(), ex);
-                if (transaction != null)
-                    transaction.rollback();
-                status = EventProcessingStatus.Error;
-            } finally {
-                if (entityManager != null)
-                    entityManager.close();
-            }
-        } catch (Exception ex) {
-            logger.error("Problem getting scheduled event. Skipping: {}", ex.getMessage(), ex);
-            status = EventProcessingStatus.Error;
-        }
-        return status;
-    }
+	@Override
+	public EventProcessingStatus handle(ScheduledEventEntity scheduledEvent) {
+		CreateDataGroupScheduledEventData eventData = this.jsonHandlingService.fromJsonSafe(CreateDataGroupScheduledEventData.class, scheduledEvent.getData());
+		if (eventData == null) return EventProcessingStatus.Postponed;
+		EventProcessingStatus status;
 
-    private void run(DataGroupRequestEntity dataGroupRequest, EntityManager entityManager, QueryFactory queryFactory, TenantScope scope) throws InvalidApplicationException, IOException {
-        DataGroupRequestService dataGroupRequestService = this.applicationContext.getBean(DataGroupRequestService.class);
-        boolean success = dataGroupRequestService.buildGroup(dataGroupRequest);
+		EntityManager entityManager = null;
+		EntityTransaction transaction = null;
+		try (FakeRequestScope ignored = new FakeRequestScope()) {
+			try {
+				EntityManagerFactory entityManagerFactory = this.applicationContext.getBean(EntityManagerFactory.class);
+				entityManager = entityManagerFactory.createEntityManager();
 
-        List<DataGroupRequestEntity> dataGroupRequests = queryFactory.query(DataGroupRequestQuery.class).groupHashes(dataGroupRequest.getGroupHash()).collect();
-        DataGroupRequestStatus status = success ? DataGroupRequestStatus.COMPLETED : DataGroupRequestStatus.ERROR;
-        try {
-            TenantEntity tenant = queryFactory.query(TenantQuery.class)
-                    .ids(dataGroupRequest.getTenantId())
-                    .firstAs(new BaseFieldSet().ensure(Tenant._id).ensure(Tenant._code));
-            for (DataGroupRequestEntity item : dataGroupRequests) {
-                scope.setTempTenant(this.entityManager, tenant.getId());
+				transaction = entityManager.getTransaction();
+				transaction.begin();
 
-                item.setStatus(status);
-                item.setUpdatedAt(Instant.now());
-                entityManager.merge(item);
-                entityManager.flush();
-            }
-        } finally {
-            scope.removeTempTenant(this.entityManager);
-        }
-    }
+				CreateDataGroupConsistencyHandler createDataGroupConsistencyHandler = this.applicationContext.getBean(CreateDataGroupConsistencyHandler.class);
+				Boolean isConsistent = (createDataGroupConsistencyHandler.isConsistent(new CreateDataGroupConsistencyPredicates(scheduledEvent.getKey(), eventData.getDataGroupRequestId())));
+				if (isConsistent) {
+					QueryFactory queryFactory = this.applicationContext.getBean(QueryFactory.class);
+					TenantScope scope = this.applicationContext.getBean(TenantScope.class);
+
+					DataGroupRequestEntity dataGroupRequest = queryFactory.query(DataGroupRequestQuery.class).ids(eventData.getDataGroupRequestId()).first();
+
+					if (scope.isMultitenant() && dataGroupRequest.getTenantId() != null) {
+						TenantEntity tenant = queryFactory.query(TenantQuery.class).ids(dataGroupRequest.getTenantId()).firstAs(new BaseFieldSet().ensure(Tenant._id).ensure(Tenant._code));
+						if (tenant == null) {
+							logger.error("missing tenant from event message");
+							throw new MyApplicationException("missing tenant from event message");
+						}
+						scope.setTenant(dataGroupRequest.getTenantId(), tenant.getCode());
+					} else if (scope.isMultitenant()) {
+						logger.error("missing tenant from event message");
+						throw new MyApplicationException("missing tenant from event message");
+
+					}
+
+					try {
+						this.run(dataGroupRequest, entityManager, queryFactory, scope);
+						status = EventProcessingStatus.Success;
+
+						AuditService auditService = this.applicationContext.getBean(AuditService.class);
+
+						auditService.track(AuditableAction.Scheduled_Event_Run, Map.ofEntries(
+								new AbstractMap.SimpleEntry<String, Object>("id", scheduledEvent.getId()),
+								new AbstractMap.SimpleEntry<String, Object>("eventType", scheduledEvent.getEventType()),
+								new AbstractMap.SimpleEntry<String, Object>("key", scheduledEvent.getKey()),
+								new AbstractMap.SimpleEntry<String, Object>("keyType", scheduledEvent.getKeyType()),
+								new AbstractMap.SimpleEntry<String, Object>("runAt", scheduledEvent.getRunAt())
+
+						));
+						//auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
+
+					} catch (Exception e) {
+						transaction.rollback();
+						throw e;
+					}
+				} else {
+					status = EventProcessingStatus.Postponed;
+				}
+
+
+				transaction.commit();
+			} catch (OptimisticLockException ex) {
+				logger.debug("Concurrency exception getting scheduled event. Skipping: {} ", ex.getMessage());
+				if (transaction != null) transaction.rollback();
+				status = EventProcessingStatus.Error;
+			} catch (Exception ex) {
+				logger.error("Problem getting scheduled event. Skipping: {}", ex.getMessage(), ex);
+				if (transaction != null) transaction.rollback();
+				status = EventProcessingStatus.Error;
+			} finally {
+				if (entityManager != null) entityManager.close();
+			}
+		} catch (Exception ex) {
+			logger.error("Problem getting scheduled event. Skipping: {}", ex.getMessage(), ex);
+			status = EventProcessingStatus.Error;
+		}
+		return status;
+	}
+
+	private void run(DataGroupRequestEntity dataGroupRequest, EntityManager entityManager, QueryFactory queryFactory, TenantScope scope) throws InvalidApplicationException, IOException {
+		DataGroupRequestService dataGroupRequestService = this.applicationContext.getBean(DataGroupRequestService.class);
+		boolean success = dataGroupRequestService.buildGroup(dataGroupRequest);
+
+		List<DataGroupRequestEntity> dataGroupRequests = queryFactory.query(DataGroupRequestQuery.class).groupHashes(dataGroupRequest.getGroupHash()).collect();
+		DataGroupRequestStatus status = success ? DataGroupRequestStatus.COMPLETED : DataGroupRequestStatus.ERROR;
+		try {
+			for (DataGroupRequestEntity item : dataGroupRequests) {
+				TenantEntity tenant = queryFactory.query(TenantQuery.class).ids(dataGroupRequest.getTenantId()).firstAs(new BaseFieldSet().ensure(Tenant._id).ensure(Tenant._code));
+				scope.setTempTenant(this.entityManager, tenant.getId());
+
+				item.setStatus(status);
+				item.setUpdatedAt(Instant.now());
+				entityManager.merge(item);
+				entityManager.flush();
+			}
+		} finally {
+			scope.removeTempTenant(this.entityManager);
+		}
+	}
 }

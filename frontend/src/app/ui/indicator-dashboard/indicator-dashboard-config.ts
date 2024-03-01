@@ -1,3 +1,4 @@
+import { MapChartContinent } from "@app/core/enum/map-chart-continent.enum";
 import { Bucket, CompositeBucket, DataHistogramBucket, NestedBucket, TermsBucket } from "@app/core/model/bucket/bucket.model";
 import { Metric } from "@app/core/model/metic/metric.model";
 import { RawDataRequest } from "@app/core/query/indicator-point-report.lookup";
@@ -74,21 +75,23 @@ export interface ConnectionExtractor{
 }
 export interface IndicatorDashboardLineChartConfig extends BaseIndicatorDashboardChartConfig {
 	xAxis:IndicatorDashboardChartXAxisConfig;
-	yAxis: IndicatorDashboardChartYAxisConfig;
-	stack?: boolean;
+	yAxis: IndicatorDashboardChartYAxisConfig[];
 	horizontal?: boolean;
 	areaStyle?: object;
 	dataZoom?: DataZoom;
+	tooltip?: LineToolTip;
 }
 
 export interface IndicatorDashboardBarChartConfig extends IndicatorDashboardLineChartConfig, Omit <IndicatorDashboardLineChartConfig, 'type'> {
 	type: IndicatorDashboardChartType.Bar;
+	multipleColors?: boolean;
+	colorPalette?: string[];
 }
 export interface IndicatorDashboardScatterChartConfig extends BaseIndicatorDashboardChartConfig, Omit <BaseIndicatorDashboardChartConfig, 'type'>{
 	type: IndicatorDashboardChartType.Scatter;
 	colorMap?: Record<string, string> ;// TODO ADD IN EDITOR
 	xAxis: ScatterAxis; // TODO ADD IN EDITOR
-	yAxis: ScatterAxis; // TODO ADD IN EDITOR
+	yAxis: ScatterAxis[]; // TODO ADD IN EDITOR
 	bubble: ScatterBubble; // TODO ADD IN EDITOR
 }
 
@@ -121,6 +124,8 @@ export interface IndicatorDashboardPolarBarChartConfig extends BaseIndicatorDash
 	// type: IndicatorDashboardChartType.PolarBar;
 	dataZoom?: DataZoom;
 	radiusAxis: PolarBarRadiusAxis;
+	multipleColors?: boolean;
+	colorPalette?: string[];
 }
 export interface IndicatorDashboardMapChartConfig extends BaseIndicatorDashboardChartConfig, Omit <BaseIndicatorDashboardChartConfig, 'type'>{
 	// type: IndicatorDashboardChartType.Map;
@@ -148,6 +153,9 @@ export interface ChildParentRelationShipConfig{ // TODO ADD IN CONFIGURATION EDI
 export interface TreeMapToolTip{
 	name?: string;
 	metricName?: string;
+}
+export interface LineToolTip{
+    trigger?: 'item' | 'axis' | 'none';
 }
 export interface MapConfig{
 	high?:MapConfigLegentItem;
@@ -284,6 +292,9 @@ export interface DashBoardSerieConfiguration{
 
 	// * describe how to extract value from values
 	values:DashBoardSerieValues
+	stack?: string; //TODO: Add to editor
+	map?: MapChartContinent;
+	yAxisIndex?: number;
 }
 
 export interface DashBoardSerieSplitSerie{
@@ -398,22 +409,33 @@ export enum IndicatorDashboardChartType {
 	Graph = 'graph',
 	TreeMap= "treemap",
 	Sankey= 'sankey',
-	Radar = 'radar'// TODO PUT IN EDITOR
+	Radar = 'radar',
+	Table = 'table'// TODO PUT IN EDITOR
 }
 
 export interface DataZoom{
 	inside?: boolean;
 	slider?: boolean;
 	areaZoom?: AreaZoom;
+	startValue?: number;
+	endValue?: number;
 }
 export interface AreaZoom{
 	start :number; //percentage
 	end: number; //percentage
 }
-
+declare const AXIS_TYPES: {
+    readonly value: 1;
+    readonly category: 1;
+    readonly time: 1;
+    readonly log: 1;
+};
+declare type OptionAxisType = keyof typeof AXIS_TYPES;
 export interface BaseIndicatorDashboardChartAxisConfig{
 	name: string;
 	boundaryGap?:boolean;
+	logBase?: number;
+	type?: OptionAxisType;
 }
 export interface IndicatorDashboardChartYAxisConfig extends BaseIndicatorDashboardChartAxisConfig {
 

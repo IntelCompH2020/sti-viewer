@@ -1,8 +1,8 @@
 package gr.cite.intelcomp.stiviewer.query.lookup;
 
+import gr.cite.intelcomp.stiviewer.common.enums.IsActive;
 import gr.cite.intelcomp.stiviewer.common.enums.DynamicPageType;
 import gr.cite.intelcomp.stiviewer.common.enums.DynamicPageVisibility;
-import gr.cite.intelcomp.stiviewer.common.enums.IsActive;
 import gr.cite.intelcomp.stiviewer.query.DynamicPageQuery;
 import gr.cite.tools.data.query.Lookup;
 import gr.cite.tools.data.query.QueryFactory;
@@ -86,22 +86,14 @@ public class DynamicPageLookup extends Lookup {
 
     public DynamicPageQuery enrich(QueryFactory queryFactory) {
         DynamicPageQuery query = queryFactory.query(DynamicPageQuery.class);
-        if (this.ids != null)
-            query.ids(this.ids);
-        if (this.like != null)
-            query.like(this.like);
-        if (this.creatorIds != null)
-            query.creatorIds(this.creatorIds);
-        if (this.defaultLanguages != null)
-            query.defaultLanguages(this.defaultLanguages);
-        if (this.isActives != null)
-            query.isActive(this.isActives);
-        if (this.visibility != null)
-            query.visibility(this.visibility);
-        if (this.type != null)
-            query.type(this.type);
-        if (this.excludedIds != null)
-            query.excludedIds(this.excludedIds);
+        if (this.ids != null) query.ids(this.ids);
+        if (this.like != null) query.like(this.like);
+        if (this.creatorIds != null) query.creatorIds(this.creatorIds);
+        if (this.defaultLanguages != null) query.defaultLanguages(this.defaultLanguages);
+        if (this.isActives != null) query.isActive(this.isActives);
+        if (this.visibility != null) query.visibility(this.visibility);
+        if (this.type != null) query.type(this.type);
+        if (this.excludedIds != null) query.excludedIds(this.excludedIds);
 
         this.enrichCommon(query);
 

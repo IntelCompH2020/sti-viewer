@@ -21,34 +21,32 @@ import java.util.UUID;
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class DataGroupRequestCensor extends BaseCensor {
 
-    private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(DataGroupRequestCensor.class));
+	private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(DataGroupRequestCensor.class));
 
-    protected final AuthorizationService authService;
+	protected final AuthorizationService authService;
+	protected final CensorFactory censorFactory;
 
-    protected final CensorFactory censorFactory;
+	@Autowired
+	public DataGroupRequestCensor(
+			ConventionService conventionService,
+			AuthorizationService authService,
+			CensorFactory censorFactory
+	) {
+		super(conventionService);
+		this.authService = authService;
+		this.censorFactory = censorFactory;
+	}
 
-    @Autowired
-    public DataGroupRequestCensor(
-            ConventionService conventionService,
-            AuthorizationService authService,
-            CensorFactory censorFactory
-    ) {
-        super(conventionService);
-        this.authService = authService;
-        this.censorFactory = censorFactory;
-    }
-
-    public void censor(FieldSet fields, UUID userId) throws MyForbiddenException {
-        logger.debug(new DataLogEntry("censoring fields", fields));
-        if (this.isEmpty(fields))
-            return;
-        this.authService.authorizeForce(Permission.BrowseDataGroupRequest);
-        FieldSet tenantFields = fields.extractPrefixed(this.asIndexerPrefix(DataGroupRequest._tenant));
-        this.censorFactory.censor(TenantCensor.class).censor(tenantFields);
-        FieldSet userFields = fields.extractPrefixed(this.asIndexerPrefix(DataGroupRequest._user));
-        this.censorFactory.censor(UserCensor.class).censor(userFields, userId);
-        FieldSet configFields = fields.extractPrefixed(this.asIndexerPrefix(DataGroupRequest._config));
-        this.censorFactory.censor(DataGroupRequestConfigCensor.class).censor(configFields, userId);
-    }
+	public void censor(FieldSet fields, UUID userId) throws MyForbiddenException {
+		logger.debug(new DataLogEntry("censoring fields", fields));
+		if (this.isEmpty(fields)) return;
+		this.authService.authorizeForce(Permission.BrowseDataGroupRequest);
+		FieldSet tenantFields = fields.extractPrefixed(this.asIndexerPrefix(DataGroupRequest._tenant));
+		this.censorFactory.censor(TenantCensor.class).censor(tenantFields);
+		FieldSet userFields = fields.extractPrefixed(this.asIndexerPrefix(DataGroupRequest._user));
+		this.censorFactory.censor(UserCensor.class).censor(userFields, userId);
+		FieldSet configFields = fields.extractPrefixed(this.asIndexerPrefix(DataGroupRequest._config));
+		this.censorFactory.censor(DataGroupRequestConfigCensor.class).censor(configFields, userId);
+	}
 
 }

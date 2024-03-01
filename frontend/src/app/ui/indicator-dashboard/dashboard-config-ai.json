@@ -1,0 +1,2425 @@
+{
+	"id": "dg11_pv02_dashboard",
+	"tabs": [
+		{
+			"name": "Science",
+			"chartGroups": [
+				{
+					"name": "",
+					"type": "gauge",
+					"gauges": [
+						{
+							"chartId": "39ca292b-c740-4f10-8cfa-b385198d8083",
+							"chartShare": {},
+							"indicatorId": "4051148f-6651-4e28-96e4-82e6bfb5ac5b",
+							"type": "value_card",
+							"name": "",
+							"description": "",
+							"metrics": [
+								{
+									"type": "Sum",
+									"field": "value"
+								}
+							],
+							"labelOverride":"Publications",
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv02"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv01"]
+									},
+									{
+										"field": "indid",
+										"value": ["i01"]
+									}
+								]
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Publications",
+										"labelKey": "indid"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							]
+						},
+						{
+							"chartId": "4eceab84-df2b-42a7-b887-564c038cdc8a",
+							"chartShare": {},
+							"indicatorId": "4051148f-6651-4e28-96e4-82e6bfb5ac5b",
+							"type": "value_card",
+							"name": "",
+							"description": "",
+							"metrics": [
+								{
+									"type": "Sum",
+									"field": "value"
+								}
+							],
+							"labelOverride":"Citations",
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv02"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv01"]
+									},
+									{
+										"field": "indid",
+										"value": ["i06"]
+									}
+								]
+							},
+							"series": [
+								{
+
+									"label": {
+										"name": "Citations",
+										"labelKey": "indid"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							]
+						},
+						{
+							"chartId": "eaebd683-1136-462d-bb79-71161d3c67fd",
+							"chartShare": {},
+							"indicatorId": "4051148f-6651-4e28-96e4-82e6bfb5ac5b",
+							"type": "value_card",
+							"name": "",
+							"description": "",
+							"metrics": [
+								{
+									"type": "Sum",
+									"field": "value"
+								}
+							],
+							"labelOverride":"Publications cited in patents",
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv02"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv01"]
+									},
+									{
+										"field": "indid",
+										"value": ["i13a"]
+									}
+								]
+							},
+							"series": [
+								{
+
+									"label": {
+										"name": "Publications cited in patents ",
+										"labelKey": "indid"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Scientific Production Trends",
+					"charts": [
+						{
+							"chartId": "e482c981-fba8-4e46-bd80-d0374acd90df",
+							"chartShare": {},
+							"indicatorId": "4051148f-6651-4e28-96e4-82e6bfb5ac5b",
+							"type": "line",
+							"dataZoom": {
+								"inside": true,
+								"slider": true
+							},
+							"name": "",
+							"chartName": "Publications in AI over time",
+							"xAxis": {
+								"name": "year"
+							},
+							"yAxis": [{
+								"name": "publications"
+							}],
+							"description": "The graph shows the evolution in the number of publications in the AI domain, in the EU (at least one author is affiliated to an EU organization). <i>Data Source</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a>",
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "indid",
+										"value": ["i01"]
+									},
+									{
+										"field": "pvid",
+										"value": ["pv02"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv01"]
+									}
+								]
+							},
+							"labelSortKey": "key",
+							"labelsTransform": {},
+							"series": [
+								{
+									"label": {
+										"name": "publications",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"areaStyle": {},
+							"chartDownloadData": {},
+							"chartDownloadImage": {},
+							"chartDownloadJson": {}
+						},
+						{
+							"chartId": "609ba906-2199-40ef-9930-9aa321511dfd",
+							"chartShare": {},
+							"indicatorId": "4051148f-6651-4e28-96e4-82e6bfb5ac5b",
+							"type": "line",
+							"tooltip": {
+								"trigger": "item"
+							},
+							"dataZoom": {
+								"inside": true,
+								"slider": true
+							},
+							"legend": {},
+							"name": "",
+							"chartName": "Share of publications in AI topics over time",
+							"xAxis": {
+								"name": "year"
+							},
+							"yAxis": [{
+								"name": "publications"
+							}],
+							"labelSortKey": "year",
+							"description": "The graph shows the evolution in the share of publications in different topics in the AI domain in the EU, over time. The ontology of topics has been inferred from the selected publications using Natural Language Processing techniques: Latent Dirichlet Allocation is used detect and categorize the topics, and ChatGPT is used to label them. <i>Data Source</i>: (<a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a>)",
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Composite",
+								"field": "key",
+								"sources": [
+									{
+										"field": "key"
+									},
+									{
+										"field": "year"
+									}
+								],
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv02"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv02"]
+									},
+									{
+										"field": "indid",
+										"value": ["i01"]
+									}
+								]
+							},
+							"series": [
+								{
+									"splitSeries": [
+										{
+											"key": "key"
+										}
+									],
+									"label": {
+										"name": "Topic",
+										"labelKey": "year"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 1
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									},
+									"stack": "x"
+								}
+							],
+							"areaStyle": {}
+						},
+						{
+							"chartId": "915ebcaa-06e2-46e6-9173-a62ad35fcc06",
+							"chartShare": {},
+							"indicatorId": "4051148f-6651-4e28-96e4-82e6bfb5ac5b",
+							"type": "line",
+							"dataZoom": {
+								"inside": true
+							},
+							"name": "",
+							"chartName": "Open Access publications in AI over time",
+							"xAxis": {
+								"name": "year"
+							},
+							"yAxis": [{
+								"name": "publications"
+							}],
+							"legend": {},
+							"labelSortKey": "year",
+							"description": "The graph shows the evolution in the number of scientific articles published in Open Access, and in the number of publications (any type) that can be found in Open Access in the OpenAIRE graph (best available access rights from any of the OpenAIRE data sources). <i>Data Source</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a>",
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Composite",
+								"field": "key",
+								"sources": [
+									{
+										"field": "key"
+									},
+									{
+										"field": "indid"
+									}
+								],
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv02"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv01"]
+									},
+									{
+										"field": "indid",
+										"value": ["i01", "i23", "i23b"]
+									}
+								]
+							},
+							"series": [
+								{
+									"nested": {
+										"type": "bar"
+									},
+									"label": {
+										"name": "Publications",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										],
+										"groupTests": [
+											{
+												"indid": "i01"
+											}
+										]
+									}
+								},
+								{
+									"label": {
+										"name": "Publications (any type) in Open Access",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										],
+										"groupTests": [
+											{
+												"indid": "i23"
+											}
+										]
+									}
+								},
+								{
+									"label": {
+										"name": "Scientific articles published in Open Access",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										],
+										"groupTests": [
+											{
+												"indid": "i23b"
+											}
+										]
+									}
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Scientific Production Origins",
+					"charts": [
+						{
+							"chartId": "afc68748-b738-4ec9-85c6-ee9d66331594",
+							"chartShare": {},
+							"indicatorId": "4051148f-6651-4e28-96e4-82e6bfb5ac5b",
+							"type": "map",
+							"name": "",
+							"chartName": "Publications by Country",
+							"description": "The graph shows the number of publications in AI by the country of the affiliated organization of an author  (with at least one author affiliated to an EU organization). In the case of multiple authors each organization and corresponding country is counted as a separate publication (e.g., one publication with three authors, where two are from Greece and one is from Spain is counted as two publications in Greece and one in Spain). <i>Data Source</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a>",
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+							"mapChartConfig": {
+								"high": {
+									"text": "High",
+									"color": "#42c39a"
+								}
+							},
+							"countryNameMapping": {"BS":"Bahamas","BZ":"Belize","CA":"Canada","CR":"Costa Rica","CU":"Cuba","DO":"Dominican Rep.","GL":"Greenland","GT":"Guatemala","HN":"Honduras","HT":"Haiti","MX":"Mexico","NI":"Nicaragua","PA":"Panama","PR":"Puerto Rico","SV":"El Salvador","TT":"Trinidad and Tobago","US":"United States","AR":"Argentina","BO":"Bolivia","BR":"Brazil","CL":"Chile","CO":"Colombia","EC":"Ecuador","FK":"Falkland Is.","GY":"Guyana","PE":"Peru","PY":"Paraguay","SR":"Suriname","UY":"Uruguay","VE":"Venezuela","AF":"Afghanistan","AE":"United Arab Emirates","JM":"Jamaica","AM":"Armenia","AZ":"Azerbaijan","BD":"Bangladesh","BN":"Brunei","BT":"Bhutan","CN":"China","-99":"Kosovo","CY":"Cyprus","GE":"Georgia","ID":"Indonesia","IN":"India","IR":"Iran","IQ":"Iraq","IL":"Israel","JO":"Jordan","JP":"Japan","KZ":"Kazakhstan","KG":"Kyrgyzstan","KH":"Cambodia","KR":"Korea","KW":"Kuwait","LA":"Lao PDR","LB":"Lebanon","LK":"Sri Lanka","MM":"Myanmar","MN":"Mongolia","MY":"Malaysia","NP":"Nepal","OM":"Oman","PK":"Pakistan","PH":"Philippines","KP":"Dem. Rep. Korea","PS":"Palestine","QA":"Qatar","SA":"Saudi Arabia","SY":"Syria","TM":"Turkmenistan","TH":"Thailand","TJ":"Tajikistan","TL":"Timor-Leste","TR":"Turkey","TW":"Taiwan","UZ":"Uzbekistan","VN":"Vietnam","AO":"Angola","YE":"Yemen","BI":"Burundi","BJ":"Benin","BF":"Burkina Faso","BW":"Botswana","CF":"Central African Rep.","CI":"Côte d'Ivoire","CM":"Cameroon","CD":"Dem. Rep. Congo","CG":"Congo","DJ":"Djibouti","DZ":"Algeria","EG":"Egypt","ER":"Eritrea","ET":"Ethiopia","GA":"Gabon","GH":"Ghana","GN":"Guinea","GM":"Gambia","GW":"Guinea-Bissau","GQ":"Eq. Guinea","KE":"Kenya","LR":"Liberia","LY":"Libya","LS":"Lesotho","MA":"Morocco","MG":"Madagascar","ML":"Mali","MZ":"Mozambique","MR":"Mauritania","NA":"Namibia","MW":"Malawi","NE":"Niger","NG":"Nigeria","RW":"Rwanda","SS":"S. Sudan","EH":"W. Sahara","SD":"Sudan","SN":"Senegal","SL":"Sierra Leone","SO":"Somalia","SZ":"Swaziland","TD":"Chad","TG":"Togo","TN":"Tunisia","TZ":"Tanzania","UG":"Uganda","ZM":"Zambia","ZA":"South Africa","ZW":"Zimbabwe","AL":"Albania","AT":"Austria","BE":"Belgium","BG":"Bulgaria","BA":"Bosnia and Herz.","BY":"Belarus","CH":"Switzerland","CZ":"Czech Rep.","DE":"Germany","DK":"Denmark","ES":"Spain","EE":"Estonia","FI":"Finland","FR":"France","GB":"United Kingdom","GR":"Greece","HR":"Croatia","HU":"Hungary","IE":"Ireland","IS":"Iceland","IT":"Italy","LT":"Lithuania","LU":"Luxembourg","LV":"Latvia","MD":"Moldova","MK":"Macedonia","ME":"Montenegro","NL":"Netherlands","NO":"Norway","PL":"Poland","PT":"Portugal","RO":"Romania","RU":"Russia","RS":"Serbia","SK":"Slovakia","SI":"Slovenia","SE":"Sweden","UA":"Ukraine","AU":"Australia","FJ":"Fiji","NC":"New Caledonia","NZ":"New Zealand","PG":"Papua New Guinea","SB":"Solomon Is.","VU":"Vanuatu"},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv02"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv09"]
+									},
+									{
+										"field": "indid",
+										"value": ["i01"]
+									}
+								]
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Publications by Country",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							]
+						},
+						{
+							"chartId": "b75fdbbb-13e0-4b81-b5f7-6224c4c57488",
+							"chartShare": {},
+							"indicatorId": "4051148f-6651-4e28-96e4-82e6bfb5ac5b",
+							"type": "bar",
+							"name": "",
+							"chartName": "Publications by Organization (top 100)",
+							"description": "The graph shows the top 100 organizations in terms of the number of publications in AI with at least one author from an EU organization. <i>Data Source</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a>",
+							"horizontal": false,
+							"dataZoom": {
+								"slider": true,
+								"startValue": 0, 
+								"endValue": 19
+							},
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"yAxis":[{
+								"name":"publications"
+							}],
+							"xAxis": {
+								"name":"organizations",
+								"axisLabel": {
+									"rotate": 45,
+									"width": 100
+								}
+							},
+							"rawDataRequest": {
+								"keyField": "key",
+								"valueField": "value",
+								"order": {
+									"items": ["-value"]
+								},
+								"page": {
+									"offset": 0,
+									"size": 100
+								}
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "indid",
+										"value": ["i01"]
+									},
+									{
+										"field": "pvid",
+										"value": ["pv02"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv06"]
+									}
+								]
+							},
+							"series": [
+								{
+									"label": {
+										"name": "AI publications per organization",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							]
+						},
+						{
+							"chartId": "1127c52e-fc8e-47f9-8733-830a27528302",
+							"chartShare": {},
+							"indicatorId": "4051148f-6651-4e28-96e4-82e6bfb5ac5b",
+							"type": "polar_bar",
+							"horizontal": false,
+							"dataZoom": {
+								"inside": true,
+								"slider": true,
+								"areaZoom": {
+									"start": 0,
+									"end": 20
+								}
+							},
+							"name": "",
+							"chartName": "Publications by Funder",
+							"description": "The graph shows the number of grant-supported publications in AI with at least one author from an EU organization, by funder. <i>Data Source</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a>",
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"rawDataRequest": {
+								"keyField": "key",
+								"valueField": "value",
+								"order": {
+									"items": ["-value"]
+								},
+								"page": {
+									"offset": 0,
+									"size": 100
+								}
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Citations per publication",
+										"labelKey": "key"
+									},
+									"values": {
+										"valueKey": "value",
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv02"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv12"]
+									},
+									{
+										"field": "indid",
+										"value": ["i01"]
+									}
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Scientific Production Characteristics",
+					"charts": [
+						{
+							"chartId": "5088afe1-e78e-4ad2-961f-0d1472ab0087",
+							"chartShare": {},
+							"indicatorId": "4051148f-6651-4e28-96e4-82e6bfb5ac5b",
+							"type": "bar",
+							"chartName": "Top 50 Journals",
+							"description": "The graph shows top 50 journals by the number of scientific publications in AI, with at least one author from an EU organization. <i>Data Source</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a>",
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+                            "horizontal": false,
+							"dataZoom": {
+								"slider": true,
+								"startValue": 0, 
+								"endValue": 19
+							},
+							"xAxis": {
+								"name": "journal",
+								"axisLabel": {
+									"width": 100,
+									"rotate": 45
+								}
+							},
+							"yAxis": [{
+								"name": "publications"
+							}],
+							"bucket": {
+								"type": "Composite",
+								"field": "key",
+								"sources": [
+									{
+										"field": "key"
+									}
+								],
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "svid",
+										"value": ["sv10"]
+									},
+									{
+										"field": "indid",
+										"value": ["i01"]
+									}
+								]
+							},
+							"labelsTransform": {},
+							"rawDataRequest": {
+								"keyField": "key",
+								"valueField": "value",
+								"order": {
+									"items": ["-value"]
+								},
+								"page": {
+									"offset": 0,
+									"size": 50
+								}
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Scientific publications in AI",
+										"labelKey": "key"
+									},
+									"values": {
+										"valueKey": "value",
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Scientific Impact Trends",
+					"charts": [
+						{
+							"chartId": "47fd85bd-6875-42b9-81c9-c96afd476b81",
+							"chartShare": {},
+							"indicatorId": "4051148f-6651-4e28-96e4-82e6bfb5ac5b",
+							"type": "line",
+							"name": "",
+							"chartName": "Publications cited in patents",
+							"description": "The graph shows the total number of publications, superimposed with the number of those that are cited in patents, over time using data on publications and patents are in the AI domain in the EU. <i>Data Sources</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a>, <a href=\"https://www.epo.org/searching-for-patents/business/patstat.html\" target=\"_blank\">Patstat - EPO dataset</a>.",
+							"xAxis": {
+								"name": "year"
+							},
+							"yAxis": [
+								{
+									"name": "publications"
+								},
+								{
+									"name": "Publications cited in patents"
+								}
+							],
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+							"legend":{},
+							"bucket": {
+								"type": "Composite",
+								"field": "key",
+								"sources": [
+									{
+										"field": "key"
+									},
+									{
+										"field": "indid"
+									}
+								],
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}								
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv02"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv01"]
+									},
+									{
+										"field": "indid",
+										"value": ["i01", "i13a"]
+									}
+								]
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Publications",
+										"labelKey": "key"
+									},
+									"nested": {
+										"type": "bar"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										],
+										"groupTests": [
+											{
+												"indid": "i01"
+											}
+										]
+									}
+								},
+								{
+									"yAxisIndex": "1",
+									"label": {
+										"name": "Publications cited in patents",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 1
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										],
+										"groupTests": [
+											{
+												"indid": "i13a"
+											}
+										]
+									}
+								}
+							],
+							"labelSortKey": "key"
+						},
+						{
+							"chartId": "adc1964b-1ced-4fcb-82ba-523976d7e253",
+							"chartShare": {},
+							"indicatorId": "4051148f-6651-4e28-96e4-82e6bfb5ac5b",
+							"type": "line",
+							"name": "",
+							"chartName": "Average citations per publication over time",
+							"description": "The graph shows the average number of citations per scientific publication in the AI domain, with at least one author from an EU organization, over time by the year of publication. <i>Data Source</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a> using the integrated <a href=\"https://opencitations.net/\" target=\"_blank\">Open Citations</a> dataset.",
+							"xAxis": {
+								"name": "year"
+							},
+							"yAxis": [{
+								"name": "citations per publication"
+							}],
+							"areaStyle": {},
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"labelSortKey": "key",
+							"series": [
+								{
+									"label": {
+										"name": "Number of citations of scientific publications in AI domain",
+										"labelKey": "key"
+									},
+									"values": {
+										"valueKey": "value",
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 1
+										},
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv02"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv01"]
+									},
+									{
+										"field": "indid",
+										"value": ["i07"]
+									}
+								]
+							}
+						},
+						{
+							"chartId": "5e16b3c5-1f30-4208-8510-ba809678e9a0",
+							"chartShare": {},
+							"indicatorId": "4051148f-6651-4e28-96e4-82e6bfb5ac5b",
+							"type": "line",
+							"name": "",
+							"chartName": "Total citations over time",
+							"description": "The graph shows the total number of citations for scientific publications in AI with at least one author from an EU organization over time by the year of publication. <i>Data Source</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a> using the integrated <a href=\"https://opencitations.net/\" target=\"_blank\">Open Citations</a> dataset.",
+							"xAxis": {
+								"name": "year"
+							},
+							"yAxis": [{
+								"name": "citations"
+							}],
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+							"areaStyle": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"labelSortKey": "key",
+							"series": [
+								{
+									"label": {
+										"name": "Number of scientific publications in AI domain",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv02"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv01"]
+									},
+									{
+										"field": "indid",
+										"value": ["i06"]
+									}
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Scientific Impact Origins",
+					"charts": [
+						{
+							"chartId": "b8d98ebd-d366-42d7-b470-07ac9db3591c",
+							"chartShare": {},
+							"indicatorId": "4051148f-6651-4e28-96e4-82e6bfb5ac5b",
+							"type": "map",
+							"name": "",
+							"countryNameMapping": {"BS":"Bahamas","BZ":"Belize","CA":"Canada","CR":"Costa Rica","CU":"Cuba","DO":"Dominican Rep.","GL":"Greenland","GT":"Guatemala","HN":"Honduras","HT":"Haiti","MX":"Mexico","NI":"Nicaragua","PA":"Panama","PR":"Puerto Rico","SV":"El Salvador","TT":"Trinidad and Tobago","US":"United States","AR":"Argentina","BO":"Bolivia","BR":"Brazil","CL":"Chile","CO":"Colombia","EC":"Ecuador","FK":"Falkland Is.","GY":"Guyana","PE":"Peru","PY":"Paraguay","SR":"Suriname","UY":"Uruguay","VE":"Venezuela","AF":"Afghanistan","AE":"United Arab Emirates","JM":"Jamaica","AM":"Armenia","AZ":"Azerbaijan","BD":"Bangladesh","BN":"Brunei","BT":"Bhutan","CN":"China","-99":"Kosovo","CY":"Cyprus","GE":"Georgia","ID":"Indonesia","IN":"India","IR":"Iran","IQ":"Iraq","IL":"Israel","JO":"Jordan","JP":"Japan","KZ":"Kazakhstan","KG":"Kyrgyzstan","KH":"Cambodia","KR":"Korea","KW":"Kuwait","LA":"Lao PDR","LB":"Lebanon","LK":"Sri Lanka","MM":"Myanmar","MN":"Mongolia","MY":"Malaysia","NP":"Nepal","OM":"Oman","PK":"Pakistan","PH":"Philippines","KP":"Dem. Rep. Korea","PS":"Palestine","QA":"Qatar","SA":"Saudi Arabia","SY":"Syria","TM":"Turkmenistan","TH":"Thailand","TJ":"Tajikistan","TL":"Timor-Leste","TR":"Turkey","TW":"Taiwan","UZ":"Uzbekistan","VN":"Vietnam","AO":"Angola","YE":"Yemen","BI":"Burundi","BJ":"Benin","BF":"Burkina Faso","BW":"Botswana","CF":"Central African Rep.","CI":"Côte d'Ivoire","CM":"Cameroon","CD":"Dem. Rep. Congo","CG":"Congo","DJ":"Djibouti","DZ":"Algeria","EG":"Egypt","ER":"Eritrea","ET":"Ethiopia","GA":"Gabon","GH":"Ghana","GN":"Guinea","GM":"Gambia","GW":"Guinea-Bissau","GQ":"Eq. Guinea","KE":"Kenya","LR":"Liberia","LY":"Libya","LS":"Lesotho","MA":"Morocco","MG":"Madagascar","ML":"Mali","MZ":"Mozambique","MR":"Mauritania","NA":"Namibia","MW":"Malawi","NE":"Niger","NG":"Nigeria","RW":"Rwanda","SS":"S. Sudan","EH":"W. Sahara","SD":"Sudan","SN":"Senegal","SL":"Sierra Leone","SO":"Somalia","SZ":"Swaziland","TD":"Chad","TG":"Togo","TN":"Tunisia","TZ":"Tanzania","UG":"Uganda","ZM":"Zambia","ZA":"South Africa","ZW":"Zimbabwe","AL":"Albania","AT":"Austria","BE":"Belgium","BG":"Bulgaria","BA":"Bosnia and Herz.","BY":"Belarus","CH":"Switzerland","CZ":"Czech Rep.","DE":"Germany","DK":"Denmark","ES":"Spain","EE":"Estonia","FI":"Finland","FR":"France","GB":"United Kingdom","GR":"Greece","HR":"Croatia","HU":"Hungary","IE":"Ireland","IS":"Iceland","IT":"Italy","LT":"Lithuania","LU":"Luxembourg","LV":"Latvia","MD":"Moldova","MK":"Macedonia","ME":"Montenegro","NL":"Netherlands","NO":"Norway","PL":"Poland","PT":"Portugal","RO":"Romania","RU":"Russia","RS":"Serbia","SK":"Slovakia","SI":"Slovenia","SE":"Sweden","UA":"Ukraine","AU":"Australia","FJ":"Fiji","NC":"New Caledonia","NZ":"New Zealand","PG":"Papua New Guinea","SB":"Solomon Is.","VU":"Vanuatu"},
+							"chartName": "Citations per publication by country",
+							"description": "The graph shows the average number of citations per publication, in AI with at least one author from an EU organization, by the country of the affiliated organization of an author. In the case of multiple authors each organization and corresponding country is counted as a separate publication (e.g., one publication with three authors, where two are from Greece and one is from Spain is counted as two publications in Greece and one in Spain). <i>Data Source</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a> using the integrated <a href=\"https://opencitations.net/\" target=\"_blank\">Open Citations</a> dataset.",
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+							"mapChartConfig": {
+								"high": {
+									"text": "High",
+									"color": "#42c39a"
+								}
+							},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Average Number of citation",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 1
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv02"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv09"]
+									},
+									{
+										"field": "indid",
+										"value": ["i07"]
+									}
+								]
+							}
+						},
+						{
+							"chartId": "83577a6f-e36b-40d6-853d-3ccc0b6814ee",
+							"chartShare": {},
+							"indicatorId": "4051148f-6651-4e28-96e4-82e6bfb5ac5b",
+							"type": "bar",
+							"horizontal": false,
+							"dataZoom": {
+								"slider": true,
+								"startValue": 0, 
+								"endValue": 19
+							},
+							"name": "",
+							"chartName": "Citations per publication by organization (top 100)",
+							"description": "The graph shows the top 100 organizations in terms of the average number of citations per publication in AI with at least one author from an EU organization. <i>Data Source</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a> using the integrated <a href=\"https://opencitations.net/\" target=\"_blank\">Open Citations</a> dataset.",
+							"xAxis": {
+								"name": "organization",
+								"axisLabel": {
+									"width": 100,
+									"rotate": 45
+								}
+							},
+							"yAxis": [{
+								"name": "citations per publication"
+							}],
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"rawDataRequest": {
+								"keyField": "key",
+								"valueField": "value",
+								"order": {
+									"items": ["-value"]
+								},
+								"page": {
+									"offset": 0,
+									"size": 100
+								}
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Citations per publication",
+										"labelKey": "key"
+									},
+									"values": {
+										"valueKey": "value",
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 1
+										},
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv02"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv06"]
+									},{
+										"field": "indid",
+										"value": ["i07"]
+									}
+								]
+							}
+						},
+						{
+							"chartId": "240feab1-5a38-4c7e-baa6-78e75fb97bdb",
+							"chartShare": {},
+							"indicatorId": "4051148f-6651-4e28-96e4-82e6bfb5ac5b",
+							"type": "polar_bar",
+							"horizontal": false,
+							"dataZoom": {
+								"inside": true,
+								"slider": true,
+								"areaZoom": {
+									"start": 0,
+									"end": 20
+								}
+							},
+							"name": "",
+							"chartName": "Citations per publication by funder",
+							"description": "The graph shows citations per publication for grant-supported publications, by funder (for funders integrated in OpenAIRE – see Methodology for a list), in AI with at least one author from an EU organization.  <i>Data Source</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a> using the integrated <a href=\"https://opencitations.net/\" target=\"_blank\">Open Citations</a> dataset.",
+							"xAxis": {
+								"name": "funder",
+								"axisLabel": {
+									"width": 100,
+									"rotate": 45
+								}
+							},
+							"yAxis": [{
+								"name": "citations per publication"
+							}],
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"rawDataRequest": {
+								"keyField": "key",
+								"valueField": "value",
+								"order": {
+									"items": ["-value"]
+								},
+								"page": {
+									"offset": 0,
+									"size": 100
+								}
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Citations per publication",
+										"labelKey": "key"
+									},
+									"values": {
+										"valueKey": "value",
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 1
+										},
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv02"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv12"]
+									},
+									{
+										"field": "indid",
+										"value": ["i07"]
+									}
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Scientific Impact Characteristics",
+					"charts": [
+						{
+							"chartId": "a5764e05-cce5-458e-92fa-59d6efc2c9dc",
+							"chartShare": {},
+							"indicatorId": "4051148f-6651-4e28-96e4-82e6bfb5ac5b",
+							"type": "pie",
+							"doughnut": true,
+							"roseType": "area",
+							"name": "",
+							"chartName": "Publications cited in patents by topic in AI",
+							"description": "The graph shows the number of publications cited in patents by topic within the AI domain, both publications and patents are in the AI domain in the EU. The ontology of topics has been inferred from the selected publications using Natural Language Processing techniques: Latent Dirichlet Allocation is used detect and categorize the topics, and ChatGPT is used to label them. <i>Data Sources</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a>, <a href=\"https://www.epo.org/searching-for-patents/business/patstat.html\" target=\"_blank\">Patstat - EPO dataset</a>.",
+							"xAxis": {
+								"name": "topic"
+							},
+							"yAxis": [{
+								"name": ""
+							}],
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+							"legend": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"rawDataRequest": {
+								"keyField": "key",
+								"valueField": "value",
+								"order": {
+									"items": ["-value"]
+								}
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Average Number of citation",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 1
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv02"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv02"]
+									},
+									{
+										"field": "indid",
+										"value": ["i13a"]
+									}
+								]
+							}
+						},
+						{
+							"chartId": "4e020b7f-8e23-4ddf-9bb7-ffd248d79d8b",
+							"chartShare": {},
+							"indicatorId": "4051148f-6651-4e28-96e4-82e6bfb5ac5b",
+							"type": "pie",
+							"doughnut": true,
+							"roseType": "area",
+							"name": "",
+							"chartName": "Citations per publication by topic in AI",
+							"description": "The graph shows the average number of citations per scientific publication for different topics in the AI domain. The ontology of topics has been inferred from the selected publications using Natural Language Processing techniques: Latent Dirichlet Allocation is used detect and categorize the topics, and ChatGPT is used to label them. <i>Data Source</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a> using the integrated <a href=\"https://opencitations.net/\" target=\"_blank\">Open Citations</a> dataset.",
+							"xAxis": {
+								"name": "topic"
+							},
+							"yAxis": [{
+								"name": ""
+							}],
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+							"legend": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"rawDataRequest": {
+								"keyField": "key",
+								"valueField": "value",
+								"order": {
+									"items": ["-value"]
+								}
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Average Number of citation",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 1
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv02"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv02"]
+									},
+									{
+										"field": "indid",
+										"value": ["i07"]
+									}
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Scientific Collaborations",
+					"charts": [
+						{
+							"chartId": "143352f6-b511-44a8-916e-49e3d7735a9f",
+							"chartShare": {},
+							"indicatorId": "4051148f-6651-4e28-96e4-82e6bfb5ac5b",
+							"type": "line",
+							"dataZoom": {
+								"inside": true
+							},
+							"legend": {},
+							"name": "",
+							"chartName": "International collaborations over time",
+							"xAxis": {
+								"name": "year"
+							},
+							"yAxis": [{
+								"name": "publications"
+							},{
+								"name": "co-publications"
+							}],
+							"labelSortKey": "year",
+							"description": "The graph shows the evolution in the number of publications in AI with authors affiliated to organizations in at least two different countries, one of which is in the EU. Superimposed is the number of those that are cited by at least one publication. <i>Data Source</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a> using the integrated <a href=\"https://opencitations.net/\" target=\"_blank\">Open Citations</a> dataset.",
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Composite",
+								"field": "key",
+								"sources": [
+									{
+										"field": "key"
+									},
+									{
+										"field": "indid"
+									}
+								],
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv02"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv01"]
+									},
+									{
+										"field": "indid",
+										"value": ["i19", "i20", "i01"]
+									}
+								]
+							},
+							"series": [
+								{
+									"nested": {
+										"type": "bar"
+									},
+									"label": {
+										"name": "Publications over time",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										],
+										"groupTests": [
+											{
+												"indid": "i01"
+											}
+										]
+									}
+								},
+								{
+									"yAxisIndex":"1",
+									"label": {
+										"name": "Citable international co-publications",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										],
+										"groupTests": [
+											{
+												"indid": "i20"
+											}
+										]
+									}
+								},
+								{
+									"yAxisIndex":"1",
+									"label": {
+										"name": "International co-publications",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										],
+										"groupTests": [
+											{
+												"indid": "i19"
+											}
+										]
+									}
+								}
+							]
+						},
+						{
+							"chartId": "35549915-2265-4dd1-892e-003e39ef05f8",
+							"chartShare": {},
+							"indicatorId": "4051148f-6651-4e28-96e4-82e6bfb5ac5b",
+							"type": "pie",
+							"doughnut": true,
+							"roseType": "area",
+							"name": "",
+							"chartName": "International collaborations by topic",
+							"description": "The graph shows the number of publications with authors affiliated to organizations in at least two different countries, one of which is in the EU, by topic in the AI domain. The ontology of topics has been inferred from the selected publications using Natural Language Processing techniques: Latent Dirichlet Allocation is used detect and categorize the topics, and ChatGPT is used to label them. <i>Data Sourc</i>_: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a>",
+							"xAxis": {
+								"name": "topic"
+							},
+							"yAxis": [{
+								"name": "publications"
+							}],
+							"rawDataRequest": {
+								"keyField": "key",
+								"valueField": "value",
+								"order": {
+									"items": ["-value"]
+								},
+								"page": {
+									"offset": 0,
+									"size": 1000
+								}
+							},
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+							"legend": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Average Number of citation",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 1
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv02"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv02"]
+									},
+									{
+										"field": "indid",
+										"value": ["i19"]
+									}
+								]
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Technology",
+			"chartGroups": [
+				{
+					"name": "",
+					"type": "gauge",
+					"gauges": [
+						{
+							"chartId": "b4ade6b5-3f71-4ef2-85f7-edabe6d9be11",
+							"chartShare": {},
+							"indicatorId": "4051148f-6651-4e28-96e4-82e6bfb5ac5b",
+							"type": "value_card",
+							"name": "",
+							"description": "",
+							"metrics": [
+								{
+									"type": "Sum",
+									"field": "value"
+								}
+							],
+							"labelOverride": "Patents",
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv01" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i09" ]
+									}
+								]
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Publications",
+										"labelKey": "indid"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Technological Production Trends",
+					"charts": [
+						{
+							"chartId": "f781c8c4-bd27-4d77-b1b2-6c9f8a699b16",
+							"chartShare": {},
+							"indicatorId": "4051148f-6651-4e28-96e4-82e6bfb5ac5b",
+							"type": "line",
+							"dataZoom": {
+								"inside": true,
+								"slider": true
+							},
+							"name": "",
+							"chartName": "Patents in AI over time",
+							"xAxis": {
+								"name": "year"
+							},
+							"yAxis": [{
+								"name": "patents"
+							}],
+							"description": "The graph shows the evolution in the number of patents in the AI domain granted by the EPO and still valid in 2021-Q2 by priority year. <i>Data Source</i>: <a href=\"https://www.epo.org/searching-for-patents/business/patstat.html\" target=\"_blank\">Patstat - EPO dataset</a>",
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv01" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i09" ]
+									}
+								]
+							},
+							"labelSortKey": "key",
+							"labelsTransform": {},
+							"series": [
+								{
+									"label": {
+										"name": "patents",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"areaStyle": {},
+							"filters": [],
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {}
+						},
+						{
+							"chartId": "185e5d96-1c6e-4f59-9369-df4694f11f15",
+							"chartShare": {},
+							"indicatorId": "4051148f-6651-4e28-96e4-82e6bfb5ac5b",
+							"type": "line",
+							"dataZoom": {
+								"inside": true
+							},
+							"legend": {},
+							"name": "",
+							"chartName": "Share of patents in AI topics over time",
+							"xAxis": {
+								"name": "year"
+							},
+							"yAxis": [{
+								"name": "patents"
+							}],
+							"labelSortKey": "year",
+							"description": "The graph shows the evolution in the share of patents in different topics in the AI domain, granted by the EPO and still valid in 2021-Q2. The ontology of topics is taken from the technical annex of the Final Report of the <a href=\"https://finance.ec.europa.eu/sustainable-finance/tools-and-standards/eu-taxonomy-sustainable-activities_en#documents\" target=\"_blank\">EU taxonomy for sustainable activities</a> (Chapter 4. “Electricity, gas, steam and air conditioning supply,” p. 205). We assigned patents to  topics, by matching topics to CPC codes. <i>Data Source</i>: <a href=\"https://www.epo.org/searching-for-patents/business/patstat.html\" target=\"_blank\">Patstat - EPO dataset</a>",
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Composite",
+								"field": "key",
+								"sources": [
+									{
+										"field": "key"
+									},
+									{
+										"field": "year"
+									}
+								],
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": [ "pv02" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv02" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i09b" ]
+									}
+								]
+							},
+							"series": [
+								{
+									"splitSeries": [
+										{
+											"key": "key"
+										}
+									],
+									"label": {
+										"name": "Topic",
+										"labelKey": "year"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									},
+									"stack": "x"
+								}
+							],
+							"areaStyle": {}
+						}
+					]
+				},
+				{
+					"name": "Technological Production Origins",
+					"charts":[
+						{
+							"chartId": "2dbb2693-d61a-4ffa-93eb-adff301a6e26",
+							"chartShare": {},
+							"indicatorId": "4051148f-6651-4e28-96e4-82e6bfb5ac5b",
+							"type": "map",
+							"name": "",
+							"chartName": "Patents by country",
+							"description": "The graph shows the number of patents in the AI domain granted by the EPO and still valid in 2021-Q2 by the country of the applicant. <i>Data Source<i/>: <a href=\"https://www.epo.org/searching-for-patents/business/patstat.html\" target=\"_blank\">Patstat - EPO dataset</a>",
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+							"mapChartConfig": {
+								"high": {
+									"text": "High",
+									"color": "#42c39a"
+								}
+							},
+							"countryNameMapping": {"BS":"Bahamas","BZ":"Belize","CA":"Canada","CR":"Costa Rica","CU":"Cuba","DO":"Dominican Rep.","GL":"Greenland","GT":"Guatemala","HN":"Honduras","HT":"Haiti","MX":"Mexico","NI":"Nicaragua","PA":"Panama","PR":"Puerto Rico","SV":"El Salvador","TT":"Trinidad and Tobago","US":"United States","AR":"Argentina","BO":"Bolivia","BR":"Brazil","CL":"Chile","CO":"Colombia","EC":"Ecuador","FK":"Falkland Is.","GY":"Guyana","PE":"Peru","PY":"Paraguay","SR":"Suriname","UY":"Uruguay","VE":"Venezuela","AF":"Afghanistan","AE":"United Arab Emirates","JM":"Jamaica","AM":"Armenia","AZ":"Azerbaijan","BD":"Bangladesh","BN":"Brunei","BT":"Bhutan","CN":"China","-99":"Kosovo","CY":"Cyprus","GE":"Georgia","ID":"Indonesia","IN":"India","IR":"Iran","IQ":"Iraq","IL":"Israel","JO":"Jordan","JP":"Japan","KZ":"Kazakhstan","KG":"Kyrgyzstan","KH":"Cambodia","KR":"Korea","KW":"Kuwait","LA":"Lao PDR","LB":"Lebanon","LK":"Sri Lanka","MM":"Myanmar","MN":"Mongolia","MY":"Malaysia","NP":"Nepal","OM":"Oman","PK":"Pakistan","PH":"Philippines","KP":"Dem. Rep. Korea","PS":"Palestine","QA":"Qatar","SA":"Saudi Arabia","SY":"Syria","TM":"Turkmenistan","TH":"Thailand","TJ":"Tajikistan","TL":"Timor-Leste","TR":"Turkey","TW":"Taiwan","UZ":"Uzbekistan","VN":"Vietnam","AO":"Angola","YE":"Yemen","BI":"Burundi","BJ":"Benin","BF":"Burkina Faso","BW":"Botswana","CF":"Central African Rep.","CI":"Côte d'Ivoire","CM":"Cameroon","CD":"Dem. Rep. Congo","CG":"Congo","DJ":"Djibouti","DZ":"Algeria","EG":"Egypt","ER":"Eritrea","ET":"Ethiopia","GA":"Gabon","GH":"Ghana","GN":"Guinea","GM":"Gambia","GW":"Guinea-Bissau","GQ":"Eq. Guinea","KE":"Kenya","LR":"Liberia","LY":"Libya","LS":"Lesotho","MA":"Morocco","MG":"Madagascar","ML":"Mali","MZ":"Mozambique","MR":"Mauritania","NA":"Namibia","MW":"Malawi","NE":"Niger","NG":"Nigeria","RW":"Rwanda","SS":"S. Sudan","EH":"W. Sahara","SD":"Sudan","SN":"Senegal","SL":"Sierra Leone","SO":"Somalia","SZ":"Swaziland","TD":"Chad","TG":"Togo","TN":"Tunisia","TZ":"Tanzania","UG":"Uganda","ZM":"Zambia","ZA":"South Africa","ZW":"Zimbabwe","AL":"Albania","AT":"Austria","BE":"Belgium","BG":"Bulgaria","BA":"Bosnia and Herz.","BY":"Belarus","CH":"Switzerland","CZ":"Czech Rep.","DE":"Germany","DK":"Denmark","ES":"Spain","EE":"Estonia","FI":"Finland","FR":"France","GB":"United Kingdom","GR":"Greece","HR":"Croatia","HU":"Hungary","IE":"Ireland","IS":"Iceland","IT":"Italy","LT":"Lithuania","LU":"Luxembourg","LV":"Latvia","MD":"Moldova","MK":"Macedonia","ME":"Montenegro","NL":"Netherlands","NO":"Norway","PL":"Poland","PT":"Portugal","RO":"Romania","RU":"Russia","RS":"Serbia","SK":"Slovakia","SI":"Slovenia","SE":"Sweden","UA":"Ukraine","AU":"Australia","FJ":"Fiji","NC":"New Caledonia","NZ":"New Zealand","PG":"Papua New Guinea","SB":"Solomon Is.","VU":"Vanuatu"},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv02"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv09"]
+									},
+									{
+										"field": "indid",
+										"value": ["i09"]
+									}
+								]
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Patents by Country",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 1
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							]
+						},
+						{
+							"chartId": "9012312a-2367-4cbf-b94e-e0e5bd35a5e7",
+							"chartShare": {},
+							"indicatorId": "4051148f-6651-4e28-96e4-82e6bfb5ac5b",
+							"type": "bar",
+							"horizontal": false,
+							"dataZoom": {
+								"slider": true,
+								"startValue": 0, 
+								"endValue": 19
+							},
+							"name": "",
+							"chartName": "Patents by Organization (top 100)",
+							"description": "The graph shows the top 100 organizations of patent applicants in terms of the number of patents in the AI domain granted by the EPO and still valid in 2021-Q2.",
+							"xAxis": {
+								"name": "organization",
+								"axisLabel": {
+									"width": 100,
+									"rotate": 45
+								}
+							},
+							"yAxis": [{
+								"name": "patents"
+							}],
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								],
+								"bucketSort":{
+									"sortFields":[
+										{
+											"field":"value",
+											"metricAggregateType":"Sum",
+											"order":"DESC"
+										}
+									],
+									"paging":{
+										"offset":0,
+										"size":100
+									}
+								}
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Number of patents",
+										"labelKey": "key"
+									},
+									"values": {
+										"valueKey": "value",
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv02"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv06"]
+									},
+									{
+										"field": "indid",
+										"value": ["i09"]
+									}
+								]
+							}
+						},
+						{
+							"chartId": "1013cdff-a546-4839-9959-ca280b401684",
+							"chartShare": {},
+							"indicatorId": "4051148f-6651-4e28-96e4-82e6bfb5ac5b",
+							"type": "pie",
+							"doughnut": false,
+							"radius": ["40%", "70%"],
+							"name": "",
+							"chartName": "Patents by sector",
+							"description": "The graph shows the number of patents in the AI domain granted by the EPO and currently valid (at least until 2021 Q2) by the type of patent applicant. <i>Data Source</i>: <a href=\"https://www.epo.org/searching-for-patents/business/patstat.html\" target=\"_blank\">Patstat - EPO dataset</a>",
+							"xAxis": {
+								"name": "topic"
+							},
+							"yAxis": [{
+								"name": ""
+							}],
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+							"legend": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Number of patents",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv02"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv08"]
+									},
+									{
+										"field": "indid",
+										"value": ["i09"]
+									}
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Technological Production Characteristics",
+					"charts":[
+						{
+							"chartId": "d9400da5-66a6-47bf-8bd0-df9d02d71be5",
+							"chartShare": {},
+							"indicatorId": "4051148f-6651-4e28-96e4-82e6bfb5ac5b",
+							"type": "pie",
+							"name": "",
+							"chartName": "Patents by NACE code",
+							"description": "The graph shows the number of patents in the AI domain granted by the EPO and still valid in 2021-Q2 by the NACE (Nomenclature of Economic Activities) codes of patents as assigned by PATSTAT. <i>Data Source</i>: <a href=\"https://www.epo.org/searching-for-patents/business/patstat.html\" target=\"_blank\">Patstat - EPO dataset</a>",
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+							"legend": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Number of patents",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 1
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv02"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv07"]
+									},
+									{
+										"field": "indid",
+										"value": ["i09"]
+									}
+								]
+							}
+						},
+						{
+							"chartId": "e3124fa7-9c1a-4bcc-93ff-1bbfc7ca555f",
+							"chartShare": {},
+							"indicatorId": "4051148f-6651-4e28-96e4-82e6bfb5ac5b",
+							"type": "bar",
+							"horizontal": true,
+							"dataZoom": {
+								"slider": true,
+								"startValue": 0,
+								"endValue": 19							
+							},
+							"name": "",
+							"chartName": "Patents by IPC code (top 20 codes)",
+							"description": "The graph shows the top 20 IPC (International Patent Classification) codes by the number of patents in the AI domain granted by the EPO and still valid in 2021-Q2 by IPC. <i>Data Source</i>: <a href=\"https://www.epo.org/searching-for-patents/business/patstat.html\" target=\"_blank\">Patstat - EPO dataset</a>",
+							"xAxis": {
+								"name": "organization",
+								"axisLabel": {
+									"width": 100,
+									"rotate": 45
+								}
+							},
+							"yAxis": [{
+								"name": "citations per publications"
+							}],
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								],
+								"bucketSort":{
+									"sortFields":[
+										{
+											"field":"value",
+											"metricAggregateType":"Sum",
+											"order":"DESC"
+										}
+									],
+									"paging":{
+										"offset":0,
+										"size":20
+									}
+								}
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Number of patents",
+										"labelKey": "key"
+									},
+									"values": {
+										"valueKey": "value",
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv02"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv13"]
+									},
+									{
+										"field": "indid",
+										"value": ["i09"]
+									}
+								]
+							}
+						},
+						{
+							"chartId": "78c1f732-81d3-4135-92ab-2759954024a1",
+							"chartShare": {},
+							"indicatorId": "4051148f-6651-4e28-96e4-82e6bfb5ac5b",
+							"type": "pie",
+							"roseType": "area",
+							"doughnut": true,
+							"name": "",
+							"chartName": "Patents by topic",
+							"description": "The graph shows the number of patents by topic in the AI domain, granted by the EPO and still valid in 2021-Q2. The ontology of topics is taken from the technical annex of the Final Report of the <a href=\"https://finance.ec.europa.eu/sustainable-finance/tools-and-standards/eu-taxonomy-sustainable-activities_en#documents\" target=\"_blank\">EU taxonomy for sustainable activities</a> (Chapter 4. “Electricity, gas, steam and air conditioning supply,” p. 205). We assigned patents to topics, by matching topics to CPC codes. <i>Data Source</i>: <a href=\"https://www.epo.org/searching-for-patents/business/patstat.html\" target=\"_blank\">Patstat - EPO dataset</a>",
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+							"legend": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								],
+								"bucketSort":{
+									"sortFields":[
+										{
+											"field":"value",
+											"metricAggregateType":"Sum",
+											"order":"DESC"
+										}
+									],
+									"paging":{
+										"offset":0,
+										"size":50
+									}
+								}
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Number of patents",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 1
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv02"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv02"]
+									},
+									{
+										"field": "indid",
+										"value": ["i09"]
+									}
+								]
+							}
+						}
+					]
+				}
+			]
+		}
+	]
+}

@@ -36,96 +36,94 @@ import java.util.*;
 @RequestMapping(path = "api/master-item")
 @Hidden
 public class MasterItemController {
+	private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(MasterItemController.class));
 
-    private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(MasterItemController.class));
+	private final BuilderFactory builderFactory;
+	private final AuditService auditService;
+	private final MasterItemService masterItemService;
+	private final CensorFactory censorFactory;
+	private final QueryFactory queryFactory;
+	private final MessageSource messageSource;
 
-    private final BuilderFactory builderFactory;
+	@Autowired
+	public MasterItemController(
+			BuilderFactory builderFactory,
+			AuditService auditService,
+			MasterItemService masterItemService,
+			CensorFactory censorFactory,
+			QueryFactory queryFactory,
+			MessageSource messageSource
 
-    private final AuditService auditService;
+	) {
+		this.builderFactory = builderFactory;
+		this.auditService = auditService;
+		this.masterItemService = masterItemService;
+		this.censorFactory = censorFactory;
+		this.queryFactory = queryFactory;
+		this.messageSource = messageSource;
+	}
 
-    private final MasterItemService masterItemService;
+	@PostMapping("query")
+	public QueryResult<MasterItem> Query(@RequestBody MasterItemLookup lookup) throws MyApplicationException, MyForbiddenException {
+		logger.debug("querying {}", MasterItem.class.getSimpleName());
 
-    private final CensorFactory censorFactory;
+		this.censorFactory.censor(MasterItemCensor.class).censor(lookup.getProject());
 
-    private final QueryFactory queryFactory;
+		MasterItemQuery query = lookup.enrich(this.queryFactory);
+		List<MasterItemEntity> datas = query.collectAs(lookup.getProject());
+		List<MasterItem> models = this.builderFactory.builder(MasterItemBuilder.class).build(lookup.getProject(), datas);
+		long count = (lookup.getMetadata() != null && lookup.getMetadata().getCountAll()) ? query.count() : models.size();
 
-    private final MessageSource messageSource;
+		this.auditService.track(AuditableAction.MasterItem_Query, "lookup", lookup);
+		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
 
-    @Autowired
-    public MasterItemController(
-            BuilderFactory builderFactory,
-            AuditService auditService,
-            MasterItemService masterItemService,
-            CensorFactory censorFactory,
-            QueryFactory queryFactory,
-            MessageSource messageSource
+		return new QueryResult(models, count);
+	}
 
-    ) {
-        this.builderFactory = builderFactory;
-        this.auditService = auditService;
-        this.masterItemService = masterItemService;
-        this.censorFactory = censorFactory;
-        this.queryFactory = queryFactory;
-        this.messageSource = messageSource;
-    }
+	@GetMapping("{id}")
+	public MasterItem Get(@PathVariable("id") UUID id, FieldSet fieldSet, Locale locale) throws MyApplicationException, MyForbiddenException, MyNotFoundException {
+		logger.debug(new MapLogEntry("retrieving" + MasterItem.class.getSimpleName()).And("id", id).And("fields", fieldSet));
 
-    @PostMapping("query")
-    public QueryResult<MasterItem> query(@RequestBody MasterItemLookup lookup) throws MyApplicationException, MyForbiddenException {
-        logger.debug("querying {}", MasterItem.class.getSimpleName());
+		this.censorFactory.censor(MasterItemCensor.class).censor(fieldSet);
 
-        this.censorFactory.censor(MasterItemCensor.class).censor(lookup.getProject());
+		MasterItemQuery query = this.queryFactory.query(MasterItemQuery.class).ids(id);
+		MasterItem model = this.builderFactory.builder(MasterItemBuilder.class).build(fieldSet, query.firstAs(fieldSet));
+		if (model == null) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{id, MasterItem.class.getSimpleName()}, LocaleContextHolder.getLocale()));
 
-        MasterItemQuery query = lookup.enrich(this.queryFactory);
-        List<MasterItemEntity> data = query.collectAs(lookup.getProject());
-        List<MasterItem> models = this.builderFactory.builder(MasterItemBuilder.class).build(lookup.getProject(), data);
-        long count = (lookup.getMetadata() != null && lookup.getMetadata().getCountAll()) ? query.count() : models.size();
+		this.auditService.track(AuditableAction.MasterItem_Lookup, Map.ofEntries(
+				new AbstractMap.SimpleEntry<String, Object>("id", id),
+				new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
+		));
+		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
 
-        this.auditService.track(AuditableAction.MasterItem_Query, "lookup", lookup);
+		return model;
+	}
 
-        return new QueryResult<>(models, count);
-    }
+	@PostMapping("persist")
+	@Transactional
+	public MasterItem Persist(@MyValidate @RequestBody MasterItemPersist model, FieldSet fieldSet) throws MyApplicationException, MyForbiddenException, MyNotFoundException, InvalidApplicationException {
+		logger.debug(new MapLogEntry("persisting" + MasterItem.class.getSimpleName()).And("model", model).And("fieldSet", fieldSet));
 
-    @GetMapping("{id}")
-    public MasterItem get(@PathVariable("id") UUID id, FieldSet fieldSet, Locale locale) throws MyApplicationException, MyForbiddenException, MyNotFoundException {
-        logger.debug(new MapLogEntry("retrieving" + MasterItem.class.getSimpleName()).And("id", id).And("fields", fieldSet));
+		MasterItem persisted = this.masterItemService.persist(model, fieldSet);
 
-        this.censorFactory.censor(MasterItemCensor.class).censor(fieldSet);
+		this.auditService.track(AuditableAction.MasterItem_Persist, Map.ofEntries(
+				new AbstractMap.SimpleEntry<String, Object>("model", model),
+				new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
+		));
+		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
+		return persisted;
+	}
 
-        MasterItemQuery query = this.queryFactory.query(MasterItemQuery.class).ids(id);
-        MasterItem model = this.builderFactory.builder(MasterItemBuilder.class).build(fieldSet, query.firstAs(fieldSet));
-        if (model == null)
-            throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{id, MasterItem.class.getSimpleName()}, LocaleContextHolder.getLocale()));
+	@DeleteMapping("{id}")
+	@Transactional
+	public void Delete(@PathVariable("id") UUID id) throws MyForbiddenException, InvalidApplicationException {
+		logger.debug(new MapLogEntry("retrieving" + MasterItem.class.getSimpleName()).And("id", id));
 
-        this.auditService.track(AuditableAction.MasterItem_Lookup, Map.ofEntries(
-                new AbstractMap.SimpleEntry<String, Object>("id", id),
-                new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
-        ));
+		this.masterItemService.deleteAndSave(id);
 
-        return model;
-    }
+		this.auditService.track(AuditableAction.MasterItem_Delete, "id", id);
+		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
+	}
 
-    @PostMapping("persist")
-    @Transactional
-    public MasterItem persist(@MyValidate @RequestBody MasterItemPersist model, FieldSet fieldSet) throws MyApplicationException, MyForbiddenException, MyNotFoundException, InvalidApplicationException {
-        logger.debug(new MapLogEntry("persisting" + MasterItem.class.getSimpleName()).And("model", model).And("fieldSet", fieldSet));
-
-        MasterItem persisted = this.masterItemService.persist(model, fieldSet);
-
-        this.auditService.track(AuditableAction.MasterItem_Persist, Map.ofEntries(
-                new AbstractMap.SimpleEntry<String, Object>("model", model),
-                new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
-        ));
-        return persisted;
-    }
-
-    @DeleteMapping("{id}")
-    @Transactional
-    public void delete(@PathVariable("id") UUID id) throws MyForbiddenException, InvalidApplicationException {
-        logger.debug(new MapLogEntry("retrieving" + MasterItem.class.getSimpleName()).And("id", id));
-
-        this.masterItemService.deleteAndSave(id);
-
-        this.auditService.track(AuditableAction.MasterItem_Delete, "id", id);
-    }
 
 }

@@ -306,6 +306,8 @@ export class DataTransformService {
 				type: serieConfiguration.nested?.type,
 				show: serieConfiguration.label.show != null ? serieConfiguration.label.show : null,
 				position: serieConfiguration.label.position,
+				stack: serieConfiguration.stack,
+				yAxisIndex: serieConfiguration.yAxisIndex
 			}));
 
 			
@@ -429,12 +431,13 @@ export class DataTransformService {
 				commonLabelSeries.forEach(commonserie =>{
 
 					if(!commonserie.splitSeriesData || !Object.keys(commonserie.splitSeriesData).length){
-
 						chartSerie[commonserie.name] = {
 							data: this._aggregateData(commonserie.data, helperArray, AggregateDataType.Max) , 
 							name: commonserie.name, 
 							color: commonserie.color,
-							type: commonserie.type
+							type: commonserie.type,
+							stack: commonserie.stack,
+							yAxisIndex: commonserie.yAxisIndex
 						}
 
 						return;
@@ -536,7 +539,9 @@ export class DataTransformService {
 						chartSerie[splitSerieValue] = {
 							name: splitSerieValue,
 							data: aggrData,
-							type: commonserie.type
+							type: commonserie.type,
+							stack: commonserie.stack,
+							// yAxisIndex: commonserie.yAxisIndex
 						}
 					}
 				)
@@ -608,7 +613,7 @@ export interface LineChartData{
 	standAloneData?:StandAloneData[]
 }
 
-export type ChartSerie = Record<string, {color?: string,name: string, data: number[], type: string}>
+export type ChartSerie = Record<string, {color?: string,name: string, data: number[], type: string, stack?: string, yAxisIndex?: number}>
 
 
 
@@ -618,6 +623,8 @@ interface SerieDataInfo{
 	data: number[];
 	color?: string;
 	name: string;
+	stack?: string;
+	yAxisIndex?: number;
 	// *  splitserieKey => splitseriekeyvalue => splitseirie data [] (store at numbers array the index of the data array)
 	splitSeriesData: Record<string, Record<string, number[]>>
 }

@@ -23,32 +23,30 @@ import java.util.UUID;
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class UserContactInfoCensor extends BaseCensor {
 
-    private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(UserContactInfoCensor.class));
+	private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(UserContactInfoCensor.class));
 
-    protected final AuthorizationService authService;
+	protected final AuthorizationService authService;
+	protected final CensorFactory censorFactory;
 
-    protected final CensorFactory censorFactory;
+	@Autowired
+	public UserContactInfoCensor(
+			ConventionService conventionService,
+			AuthorizationService authService,
+			CensorFactory censorFactory
+	) {
+		super(conventionService);
+		this.authService = authService;
+		this.censorFactory = censorFactory;
+	}
 
-    @Autowired
-    public UserContactInfoCensor(
-            ConventionService conventionService,
-            AuthorizationService authService,
-            CensorFactory censorFactory
-    ) {
-        super(conventionService);
-        this.authService = authService;
-        this.censorFactory = censorFactory;
-    }
-
-    public void censor(FieldSet fields, UUID userId) throws MyForbiddenException {
-        logger.debug(new DataLogEntry("censoring fields", fields));
-        if (this.isEmpty(fields))
-            return;
-        this.authService.authorizeAtLeastOneForce(userId != null ? List.of(new OwnedResource(userId)) : null, Permission.BrowseUserContactInfo);
-        FieldSet tenantFields = fields.extractPrefixed(this.asIndexerPrefix(UserContactInfo._tenant));
-        this.censorFactory.censor(TenantCensor.class).censor(tenantFields);
-        FieldSet userFields = fields.extractPrefixed(this.asIndexerPrefix(UserContactInfo._user));
-        this.censorFactory.censor(UserCensor.class).censor(userFields, userId);
-    }
+	public void censor(FieldSet fields, UUID userId) throws MyForbiddenException {
+		logger.debug(new DataLogEntry("censoring fields", fields));
+		if (this.isEmpty(fields)) return;
+		this.authService.authorizeAtLeastOneForce(userId != null ? List.of(new OwnedResource(userId)) : null, Permission.BrowseUserContactInfo);
+		FieldSet tenantFields = fields.extractPrefixed(this.asIndexerPrefix(UserContactInfo._tenant));
+		this.censorFactory.censor(TenantCensor.class).censor(tenantFields);
+		FieldSet userFields = fields.extractPrefixed(this.asIndexerPrefix(UserContactInfo._user));
+		this.censorFactory.censor(UserCensor.class).censor(userFields, userId);
+	}
 
 }

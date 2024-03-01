@@ -49,14 +49,10 @@ public class IndicatorLookup extends Lookup {
 
     public IndicatorQuery enrich(QueryFactory queryFactory) {
         IndicatorQuery query = queryFactory.query(IndicatorQuery.class);
-        if (this.like != null)
-            query.like(this.like);
-        if (this.isActive != null)
-            query.isActive(this.isActive);
-        if (this.ids != null)
-            query.ids(this.ids);
-        if (this.excludedIds != null)
-            query.excludedIds(this.excludedIds);
+        if (this.like != null) query.like(this.like);
+        if (this.isActive != null) query.isActive(this.isActive);
+        if (this.ids != null) query.ids(this.ids);
+        if (this.excludedIds != null) query.excludedIds(this.excludedIds);
 
         this.enrichCommon(query);
 

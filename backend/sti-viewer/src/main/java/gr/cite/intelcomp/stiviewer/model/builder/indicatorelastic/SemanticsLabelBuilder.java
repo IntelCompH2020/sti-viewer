@@ -18,36 +18,36 @@ import org.springframework.stereotype.Component;
 import java.util.*;
 
 @Component
+//Like in C# make it transient
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class SemanticsLabelBuilder extends BaseBuilder<SemanticsLabel, SemanticLabelEntity> {
+	private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(SemanticsLabelBuilder.class));
 
-    @Autowired
-    public SemanticsLabelBuilder(ConventionService conventionService) {
-        super(conventionService, new LoggerService(LoggerFactory.getLogger(SemanticsLabelBuilder.class)));
-    }
+	private EnumSet<AuthorizationFlags> authorize = EnumSet.of(AuthorizationFlags.None);
 
-    public SemanticsLabelBuilder authorize(EnumSet<AuthorizationFlags> values) {
-        return this;
-    }
+	@Autowired
+	public SemanticsLabelBuilder(ConventionService conventionService) {
+		super(conventionService, logger);
+	}
 
-    @Override
-    public List<SemanticsLabel> build(FieldSet fields, List<SemanticLabelEntity> data) throws MyApplicationException {
-        this.logger.debug("building for {} items requesting {} fields", Optional.ofNullable(data).map(List::size).orElse(0), Optional.ofNullable(fields).map(FieldSet::getFields).map(Set::size).orElse(0));
-        this.logger.trace(new DataLogEntry("requested fields", fields));
-        if (fields == null || fields.isEmpty())
-            return new ArrayList<>();
+	public SemanticsLabelBuilder authorize(EnumSet<AuthorizationFlags> values) {
+		this.authorize = values;
+		return this;
+	}
 
-        List<SemanticsLabel> semanticsLabels = new ArrayList<>(100);
+	@Override
+	public List<SemanticsLabel> build(FieldSet fields, List<SemanticLabelEntity> datas) throws MyApplicationException {
+		this.logger.debug("building for {} items requesting {} fields", Optional.ofNullable(datas).map(e -> e.size()).orElse(0), Optional.ofNullable(fields).map(e -> e.getFields()).map(e -> e.size()).orElse(0));
+		this.logger.trace(new DataLogEntry("requested fields", fields));
+		if (fields == null || fields.isEmpty()) return new ArrayList<>();
 
-        if (data == null)
-            return semanticsLabels;
-        for (SemanticLabelEntity d : data) {
-            SemanticsLabel m = new SemanticsLabel();
-            if (fields.hasField(this.asIndexer(SemanticsLabel._label)))
-                m.setLabel(d.getLabel());
-            semanticsLabels.add(m);
-        }
+		List<SemanticsLabel> semanticsLabels = new LinkedList<>();
+		for (SemanticLabelEntity d : datas) {
+			SemanticsLabel m = new SemanticsLabel();
+			if (fields.hasField(this.asIndexer(SemanticsLabel._label))) m.setLabel(d.getLabel());
+			semanticsLabels.add(m);
+		}
 
-        return semanticsLabels;
-    }
+		return semanticsLabels;
+	}
 }

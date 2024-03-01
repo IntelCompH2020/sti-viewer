@@ -13,63 +13,63 @@ import java.util.UUID;
 @FieldNotNullIfOtherSet(notNullField = TenantRequestPersist._id, otherSetField = TenantRequestPersist._hash, failOn = TenantRequestPersist._hash, message = "{validation.hashempty}")
 public class TenantRequestPersist {
 
-    @ValidId(message = "{validation.invalidid}")
-    private UUID id;
-    public final static String _id = "id";
+	@ValidId(message = "{validation.invalidid}")
+	private UUID id;
+	public final static String _id = "id";
 
-    private String message;
-    private final String _message = "message";
+	private String message;
+	private final String _message = "message";
 
-    @NotNull(message = "{validation.empty}")
-    @NotEmpty(message = "{validation.empty}")
-    @Size(max = 200, message = "{validation.largerthanmax}")
-    private String email;
-    private final String _email = "email";
+	@NotNull(message = "{validation.empty}")
+	@NotEmpty(message = "{validation.empty}")
+	@Size(max = 200, message = "{validation.largerthanmax}")
+	private String email;
+	private final String _email = "email";
 
 
-    @NotNull(message = "{validation.empty}")
-    private TenantRequestStatus tenantRequestStatus;
+	@NotNull(message = "{validation.empty}")
+	private TenantRequestStatus tenantRequestStatus;
 
-    private String hash;
-    public final static String _hash = "hash";
+	private String hash;
+	public final static String _hash = "hash";
 
-    public UUID getId() {
-        return id;
-    }
+	public UUID getId() {
+		return id;
+	}
 
-    public void setId(UUID id) {
-        this.id = id;
-    }
+	public void setId(UUID id) {
+		this.id = id;
+	}
 
-    public String getMessage() {
-        return message;
-    }
+	public String getMessage() {
+		return message;
+	}
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
+	public void setMessage(String message) {
+		this.message = message;
+	}
 
-    public String getEmail() {
-        return email;
-    }
+	public String getEmail() {
+		return email;
+	}
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+	public void setEmail(String email) {
+		this.email = email;
+	}
 
-    public TenantRequestStatus getStatus() {
-        return tenantRequestStatus;
-    }
+	public TenantRequestStatus getStatus() {
+		return tenantRequestStatus;
+	}
 
-    public void setStatus(TenantRequestStatus tenantRequestStatus) {
-        this.tenantRequestStatus = tenantRequestStatus;
-    }
+	public void setStatus(TenantRequestStatus tenantRequestStatus) {
+		this.tenantRequestStatus = tenantRequestStatus;
+	}
 
-    public String getHash() {
-        return hash;
-    }
+	public String getHash() {
+		return hash;
+	}
 
-    public void setHash(String hash) {
-        this.hash = hash;
-    }
+	public void setHash(String hash) {
+		this.hash = hash;
+	}
 }

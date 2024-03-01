@@ -15,21 +15,18 @@ import org.springframework.stereotype.Component;
 @Component
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class TenantCensor extends BaseCensor {
+	private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(TenantCensor.class));
+	private final AuthorizationService authService;
 
-    private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(TenantCensor.class));
+	@Autowired
+	public TenantCensor(ConventionService conventionService, AuthorizationService authService) {
+		super(conventionService);
+		this.authService = authService;
+	}
 
-    private final AuthorizationService authService;
-
-    @Autowired
-    public TenantCensor(ConventionService conventionService, AuthorizationService authService) {
-        super(conventionService);
-        this.authService = authService;
-    }
-
-    public void censor(FieldSet fields) {
-        logger.debug(new DataLogEntry("censoring fields", fields));
-        if (this.isEmpty(fields))
-            return;
-        this.authService.authorizeForce(Permission.BrowseTenant, Permission.DeferredAffiliation);
-    }
+	public void censor(FieldSet fields) {
+		logger.debug(new DataLogEntry("censoring fields", fields));
+		if (this.isEmpty(fields)) return;
+		this.authService.authorizeForce(Permission.BrowseTenant, Permission.DeferredAffiliation);
+	}
 }

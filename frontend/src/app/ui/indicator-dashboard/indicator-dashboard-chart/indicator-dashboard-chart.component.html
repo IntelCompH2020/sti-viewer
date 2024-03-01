@@ -3,15 +3,31 @@
 		<button (click)="openFilters()" [matTooltip]="'APP.INDICATOR-DASHBOARD.CHART.FILTERS' | translate" *ngIf="chartConfig?.filters?.length" [disabled]="!(chartOptions && (uiMinimumTimePased$ | async))" mat-icon-button><mat-icon>filter_alt</mat-icon></button>
 		<button (click)="downloadData()" [matTooltip]="'APP.INDICATOR-DASHBOARD.CHART.DOWNLOAD-DATA' | translate" [disabled]="!(chartOptions && (uiMinimumTimePased$ | async))" mat-icon-button><mat-icon>cloud_download</mat-icon></button>
 	</div> -->
-	<div
-		*ngIf="(chartOptions && (uiMinimumTimePased$ | async)) else loading"
-		[merge]="merge | mergeEchartOption :extraFields "
-		[options]="chartOptions"
-		echarts
+
+		<div 
+		*ngIf="(this.tableConfig && this.chartConfig?.type === indicatorDashboardChartType.Table) else normalChart" 
 		@fadeIn
-		class="col-12 chart"
-		>
+		class="col-12 chart mb-4"
+		style="height: 200px; overflow: auto;"
+	>
+		<h5><b>{{this.tableConfig.title}}</b></h5>
+		<ul>
+			<li *ngFor="let item of this.tableConfig.values">{{ item }}</li>
+		</ul>
 	</div>
+
+	<ng-template #normalChart>
+		<div
+			*ngIf="(chartOptions && (uiMinimumTimePased$ | async)) else loading"
+			[merge]="merge | mergeEchartOption :extraFields "
+			[options]="chartOptions"
+			echarts
+			@fadeIn
+			class="col-12 chart"
+			>
+		</div>
+	</ng-template>
+	  
 	<ng-template #loading>
 		<div class="loading-container col-12" [@fadeOut]>
 			<ng-container *ngIf="!noDataFound else noDataFoundTemplate">

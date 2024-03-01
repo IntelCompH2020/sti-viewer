@@ -17,6 +17,8 @@ import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -53,7 +55,7 @@ public class IndicatorMetadataQuery extends ElasticInnerObjectQuery<IndicatorMet
 
 	@Override
 	protected Boolean isFalseQuery() {
-		return Boolean.FALSE;
+		return false;
 	}
 
 	@Override
@@ -63,31 +65,24 @@ public class IndicatorMetadataQuery extends ElasticInnerObjectQuery<IndicatorMet
 
 	@Override
 	protected QueryBuilder applyFilters() {
-//		List<QueryBuilder> predicates = new ArrayList<>();
-//
-//		if (predicates.size() > 0) {
-//			return this.and(predicates);
-//		} else {
-//			return null;
-//		}
-		return null;
+		List<QueryBuilder> predicates = new ArrayList<>();
+
+		if (predicates.size() > 0) {
+			return this.and(predicates);
+		} else {
+			return null;
+		}
 	}
 
 	@Override
 	public IndicatorMetadataEntity convert(Map<String, Object> rawData, Set<String> columns) {
 		IndicatorMetadataEntity mocDoc = new IndicatorMetadataEntity();
-		if (columns.contains(IndicatorMetadataEntity.Fields.label))
-			mocDoc.setLabel(FieldBasedMapper.shallowSafeConversion(rawData.get(IndicatorMetadataEntity.Fields.label), String.class));
-		if (columns.contains(IndicatorMetadataEntity.Fields.description))
-			mocDoc.setDescription(FieldBasedMapper.shallowSafeConversion(rawData.get(IndicatorMetadataEntity.Fields.description), String.class));
-		if (columns.contains(IndicatorMetadataEntity.Fields.url))
-			mocDoc.setUrl(FieldBasedMapper.shallowSafeConversion(rawData.get(IndicatorMetadataEntity.Fields.url), String.class));
-		if (columns.contains(IndicatorMetadataEntity.Fields.code))
-			mocDoc.setCode(FieldBasedMapper.shallowSafeConversion(rawData.get(IndicatorMetadataEntity.Fields.code), String.class));
-		if (columns.contains(IndicatorMetadataEntity.Fields.date))
-			mocDoc.setDate(FieldBasedMapper.shallowSafeConversion(rawData.get(IndicatorMetadataEntity.Fields.date), Instant.class));
-		if (columns.contains(IndicatorMetadataEntity.Fields.date))
-			mocDoc.setDate(FieldBasedMapper.shallowSafeConversion(rawData.get(IndicatorMetadataEntity.Fields.date), Instant.class));
+		if (columns.contains(IndicatorMetadataEntity.Fields.label)) mocDoc.setLabel(FieldBasedMapper.shallowSafeConversion(rawData.get(IndicatorMetadataEntity.Fields.label), String.class));
+		if (columns.contains(IndicatorMetadataEntity.Fields.description)) mocDoc.setDescription(FieldBasedMapper.shallowSafeConversion(rawData.get(IndicatorMetadataEntity.Fields.description), String.class));
+		if (columns.contains(IndicatorMetadataEntity.Fields.url)) mocDoc.setUrl(FieldBasedMapper.shallowSafeConversion(rawData.get(IndicatorMetadataEntity.Fields.url), String.class));
+		if (columns.contains(IndicatorMetadataEntity.Fields.code)) mocDoc.setCode(FieldBasedMapper.shallowSafeConversion(rawData.get(IndicatorMetadataEntity.Fields.code), String.class));
+		if (columns.contains(IndicatorMetadataEntity.Fields.date)) mocDoc.setDate(FieldBasedMapper.shallowSafeConversion(rawData.get(IndicatorMetadataEntity.Fields.date), Instant.class));
+		if (columns.contains(IndicatorMetadataEntity.Fields.date)) mocDoc.setDate(FieldBasedMapper.shallowSafeConversion(rawData.get(IndicatorMetadataEntity.Fields.date), Instant.class));
 
 		mocDoc.setSemanticLabels(this.convertNested(rawData, columns, this.queryFactory.query(SemanticLabelQuery.class), IndicatorMetadataEntity.Fields.semanticLabels, this.getInnerPath()));
 		mocDoc.setAltLabels(this.convertNested(rawData, columns, this.queryFactory.query(AltTextQuery.class), IndicatorMetadataEntity.Fields.altLabels, this.getInnerPath()));
@@ -99,26 +94,16 @@ public class IndicatorMetadataQuery extends ElasticInnerObjectQuery<IndicatorMet
 
 	@Override
 	protected ElasticField fieldNameOf(FieldResolver item) {
-		if (item.match(Metadata._label))
-			return this.elasticFieldOf(IndicatorMetadataEntity.Fields.label).disableInfer(true);
-		else if (item.match(Metadata._description))
-			return this.elasticFieldOf(IndicatorMetadataEntity.Fields.description).disableInfer(true);
-		else if (item.match(Metadata._url))
-			return this.elasticFieldOf(IndicatorMetadataEntity.Fields.url).disableInfer(true);
-		else if (item.match(Metadata._code))
-			return this.elasticFieldOf(IndicatorMetadataEntity.Fields.code).disableInfer(true);
-		else if (item.match(Metadata._date))
-			return this.elasticFieldOf(IndicatorMetadataEntity.Fields.date).disableInfer(true);
-		else if (item.prefix(Metadata._semanticLabels))
-			return this.queryFactory.query(SemanticLabelQuery.class).nestedPath(this.conventionService.asIndexer(this.getInnerPath(), IndicatorMetadataEntity.Fields.semanticLabels)).fieldNameOf(this.extractPrefixed(item, Metadata._semanticLabels));
-		else if (item.prefix(Metadata._altLabels))
-			return this.queryFactory.query(AltTextQuery.class).nestedPath(this.conventionService.asIndexer(this.getInnerPath(), IndicatorMetadataEntity.Fields.altLabels)).fieldNameOf(this.extractPrefixed(item, Metadata._altLabels));
-		else if (item.prefix(Metadata._altDescriptions))
-			return this.queryFactory.query(AltTextQuery.class).nestedPath(this.conventionService.asIndexer(this.getInnerPath(), IndicatorMetadataEntity.Fields.altDescriptions)).fieldNameOf(this.extractPrefixed(item, Metadata._altDescriptions));
-		else if (item.prefix(Metadata._coverage))
-			return this.queryFactory.query(CoverageQuery.class).nestedPath(this.conventionService.asIndexer(this.getInnerPath(), IndicatorMetadataEntity.Fields.coverage)).fieldNameOf(this.extractPrefixed(item, Metadata._coverage));
-		else
-			return null;
+		if (item.match(Metadata._label)) return this.elasticFieldOf(IndicatorMetadataEntity.Fields.label).disableInfer(true);
+		else if (item.match(Metadata._description)) return this.elasticFieldOf(IndicatorMetadataEntity.Fields.description).disableInfer(true);
+		else if (item.match(Metadata._url)) return this.elasticFieldOf(IndicatorMetadataEntity.Fields.url).disableInfer(true);
+		else if (item.match(Metadata._code)) return this.elasticFieldOf(IndicatorMetadataEntity.Fields.code).disableInfer(true);
+		else if (item.match(Metadata._date)) return this.elasticFieldOf(IndicatorMetadataEntity.Fields.date).disableInfer(true);
+		else if (item.prefix(Metadata._semanticLabels)) return this.queryFactory.query(SemanticLabelQuery.class).nestedPath(this.conventionService.asIndexer(this.getInnerPath(), IndicatorMetadataEntity.Fields.semanticLabels)).fieldNameOf(this.extractPrefixed(item, Metadata._semanticLabels));
+		else if (item.prefix(Metadata._altLabels)) return this.queryFactory.query(AltTextQuery.class).nestedPath(this.conventionService.asIndexer(this.getInnerPath(), IndicatorMetadataEntity.Fields.altLabels)).fieldNameOf(this.extractPrefixed(item, Metadata._altLabels));
+		else if (item.prefix(Metadata._altDescriptions)) return this.queryFactory.query(AltTextQuery.class).nestedPath(this.conventionService.asIndexer(this.getInnerPath(), IndicatorMetadataEntity.Fields.altDescriptions)).fieldNameOf(this.extractPrefixed(item, Metadata._altDescriptions));
+		else if (item.prefix(Metadata._coverage)) return this.queryFactory.query(CoverageQuery.class).nestedPath(this.conventionService.asIndexer(this.getInnerPath(), IndicatorMetadataEntity.Fields.coverage)).fieldNameOf(this.extractPrefixed(item, Metadata._coverage));
+		else return null;
 	}
 
 	@Override

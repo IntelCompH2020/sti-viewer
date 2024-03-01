@@ -47,17 +47,11 @@ public class UserContactInfoController {
     private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(UserContactInfoController.class));
 
     private final BuilderFactory builderFactory;
-
     private final AuditService auditService;
-
     private final UserContactInfoService contactInfoService;
-
     private final CensorFactory censorFactory;
-
     private final QueryFactory queryFactory;
-
     private final MessageSource messageSource;
-
     private final ClaimExtractor claimExtractor;
 
     @Autowired
@@ -79,7 +73,7 @@ public class UserContactInfoController {
     }
 
     @PostMapping("query")
-    public QueryResult<UserContactInfo> query(@RequestBody UserContactInfoLookup lookup) throws MyApplicationException, MyForbiddenException {
+    public QueryResult<UserContactInfo> Query(@RequestBody UserContactInfoLookup lookup) throws MyApplicationException, MyForbiddenException {
         logger.debug("querying {}", UserContactInfo.class.getSimpleName());
         this.censorFactory.censor(UserContactInfoCensor.class).censor(lookup.getProject(), null);
         UserContactInfoQuery query = lookup.enrich(this.queryFactory).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator);
@@ -88,13 +82,14 @@ public class UserContactInfoController {
         long count = (lookup.getMetadata() != null && lookup.getMetadata().getCountAll()) ? query.count() : models.size();
 
         this.auditService.track(AuditableAction.User_Contact_Info_Query, "lookup", lookup);
+        //this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
 
         return new QueryResult<>(models, count);
     }
 
     @GetMapping("{type}")
     @Transactional
-    public UserContactInfo get(@PathVariable("type") UserContactType type, FieldSet fieldSet, Locale locale) throws MyApplicationException, MyForbiddenException, MyNotFoundException {
+    public UserContactInfo Get(@PathVariable("type") UserContactType type, FieldSet fieldSet, Locale locale) throws MyApplicationException, MyForbiddenException, MyNotFoundException {
         logger.debug(new MapLogEntry("retrieving" + User.class.getSimpleName()).And("type", type).And("fields", fieldSet));
 
         this.censorFactory.censor(UserContactInfoCensor.class).censor(fieldSet, null);
@@ -111,13 +106,14 @@ public class UserContactInfoController {
                 new AbstractMap.SimpleEntry<String, Object>("id", id),
                 new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
         ));
+        //this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
 
         return model;
     }
 
     @PostMapping("persist")
     @Transactional
-    public UserContactInfo persist(@MyValidate @RequestBody UserContactInfoPersist model, FieldSet fieldSet) throws MyApplicationException, MyForbiddenException, MyNotFoundException, InvalidApplicationException {
+    public UserContactInfo Persist(@MyValidate @RequestBody UserContactInfoPersist model, FieldSet fieldSet) throws MyApplicationException, MyForbiddenException, MyNotFoundException, InvalidApplicationException {
         logger.debug(new MapLogEntry("persisting" + UserContactInfo.class.getSimpleName()).And("model", model).And("fieldSet", fieldSet));
 
         UserContactInfo persisted = this.contactInfoService.persist(model, fieldSet);
@@ -126,12 +122,13 @@ public class UserContactInfoController {
                 new AbstractMap.SimpleEntry<String, Object>("model", model),
                 new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
         ));
+        //this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
         return persisted;
     }
 
     @DeleteMapping("{type}")
     @Transactional
-    public void delete(@PathVariable("type") UserContactType type) throws MyForbiddenException, InvalidApplicationException {
+    public void Delete(@PathVariable("type") UserContactType type) throws MyForbiddenException, InvalidApplicationException {
         logger.debug(new MapLogEntry("retrieving" + UserContactInfo.class.getSimpleName()).And("type", type));
 
         UserContactInfoPersist.ID id = new UserContactInfoPersist.ID();
@@ -139,6 +136,7 @@ public class UserContactInfoController {
         this.contactInfoService.deleteAndSave(id);
 
         this.auditService.track(AuditableAction.User_Delete, "id", id);
+        //this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
     }
 
 }

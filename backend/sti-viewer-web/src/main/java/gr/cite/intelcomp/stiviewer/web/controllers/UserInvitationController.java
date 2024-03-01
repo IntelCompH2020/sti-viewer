@@ -39,15 +39,10 @@ public class UserInvitationController {
     private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(UserInvitationController.class));
 
     private final BuilderFactory builderFactory;
-
     private final AuditService auditService;
-
     private final UserInvitationService userInvitationService;
-
     private final CensorFactory censorFactory;
-
     private final QueryFactory queryFactory;
-
     private final MessageSource messageSource;
 
     @Autowired
@@ -67,7 +62,7 @@ public class UserInvitationController {
     }
 
     @PostMapping("query")
-    public QueryResult<UserInvitation> query(@RequestBody UserInvitationLookup lookup) throws MyApplicationException, MyForbiddenException {
+    public QueryResult<UserInvitation> Query(@RequestBody UserInvitationLookup lookup) throws MyApplicationException, MyForbiddenException {
         logger.debug("querying {}", UserInvitation.class.getSimpleName());
         this.censorFactory.censor(UserInvitationCensor.class).censor(lookup.getProject());
         UserInvitationQuery query = lookup.enrich(this.queryFactory);
@@ -76,13 +71,14 @@ public class UserInvitationController {
         long count = (lookup.getMetadata() != null && lookup.getMetadata().getCountAll()) ? query.count() : models.size();
 
         this.auditService.track(AuditableAction.User_Invitation_Query, "lookup", lookup);
+        //this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
 
         return new QueryResult<>(models, count);
     }
 
     @GetMapping("{id}")
     @Transactional
-    public UserInvitation get(@PathVariable("id") UUID id, FieldSet fieldSet, Locale locale) throws MyApplicationException, MyForbiddenException, MyNotFoundException {
+    public UserInvitation Get(@PathVariable("id") UUID id, FieldSet fieldSet, Locale locale) throws MyApplicationException, MyForbiddenException, MyNotFoundException {
         logger.debug(new MapLogEntry("retrieving" + UserInvitation.class.getSimpleName()).And("id", id).And("fields", fieldSet));
 
         this.censorFactory.censor(UserInvitationCensor.class).censor(fieldSet);
@@ -96,13 +92,14 @@ public class UserInvitationController {
                 new AbstractMap.SimpleEntry<String, Object>("id", id),
                 new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
         ));
+        //this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
 
         return model;
     }
 
     @PostMapping("persist")
     @Transactional
-    public UserInvitation persist(@MyValidate @RequestBody UserInvitationPersist model, FieldSet fieldSet) throws MyApplicationException, MyForbiddenException, MyNotFoundException, InvalidApplicationException {
+    public UserInvitation Persist(@MyValidate @RequestBody UserInvitationPersist model, FieldSet fieldSet) throws MyApplicationException, MyForbiddenException, MyNotFoundException, InvalidApplicationException {
         logger.debug(new MapLogEntry("persisting" + UserInvitation.class.getSimpleName()).And("model", model).And("fieldSet", fieldSet));
 
         UserInvitation persisted = this.userInvitationService.persist(model, fieldSet);
@@ -111,6 +108,7 @@ public class UserInvitationController {
                 new AbstractMap.SimpleEntry<String, Object>("model", model),
                 new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
         ));
+        //this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
         return persisted;
     }
 

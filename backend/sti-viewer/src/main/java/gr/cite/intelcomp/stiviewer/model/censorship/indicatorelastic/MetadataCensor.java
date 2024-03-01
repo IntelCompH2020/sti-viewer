@@ -22,7 +22,6 @@ public class MetadataCensor extends BaseCensor {
     private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(MetadataCensor.class));
 
     protected AuthorizationService authService;
-
     protected final CensorFactory censorFactory;
 
     @Autowired
@@ -33,9 +32,8 @@ public class MetadataCensor extends BaseCensor {
     }
 
     public void censor(FieldSet fields) throws MyForbiddenException {
-        logger.debug(new DataLogEntry("censoring fields", fields));
-        if (fields.isEmpty())
-            return;
+        logger.debug(new DataLogEntry("censoring fields",fields));
+        if(fields.isEmpty()) return;
         this.authService.authorizeForce(Permission.BrowseIndicatorElastic);
     }
 }

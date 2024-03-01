@@ -30,10 +30,15 @@ import { AuthService } from '@app/core/services/ui/auth.service';
 import { AppPermission } from '@app/core/enum/permission.enum';
 
 
-// const DASHBOARD_CONFIG:IndicatorDashboardConfig = require('./4.json');
-//const DASHBOARD_CONFIG:IndicatorDashboardConfig = require('./dashboard-config-3.json');
-const DASHBOARD_CONFIG:IndicatorDashboardConfig = require('./dashboard-config-agrifood.json');
-// const DASHBOARD_CONFIG:IndicatorDashboardConfig = require('./6.json');
+// const DASHBOARD_CONFIG:IndicatorDashboardConfig = require('./dashboard-config-climate.json');
+// const DASHBOARD_CONFIG:IndicatorDashboardConfig = require('./dashboard-config-climate-gr.json');
+// const DASHBOARD_CONFIG:IndicatorDashboardConfig = require('./dashboard-config-agrifood.json');
+// const DASHBOARD_CONFIG:IndicatorDashboardConfig = require('./dashboard-config-agrifood-gr.json');
+// const DASHBOARD_CONFIG:IndicatorDashboardConfig = require('./dashboard-config-cancer-eu.json');
+// const DASHBOARD_CONFIG:IndicatorDashboardConfig = require('./dashboard-config-cancer-world.json');
+// const DASHBOARD_CONFIG:IndicatorDashboardConfig = require('./dashboard-config-cancer-ec.json');
+// const DASHBOARD_CONFIG:IndicatorDashboardConfig = require('./dashboard-config-ai.json');
+// const DASHBOARD_CONFIG:IndicatorDashboardConfig = require('./dashboard-config-ai-es.json');
 
 @Component({
 	selector: 'app-indicator-dashboard',
@@ -179,7 +184,7 @@ export class IndicatorDashboardComponent extends BaseComponent implements OnInit
 							return of(this.staticDashboardConfig);
 						}
 					}
-					return of(DASHBOARD_CONFIG);
+					// return of(DASHBOARD_CONFIG);
 			}),
 			map(
 				dashboardConfig => this.defautlsService.enrichDashboardConfigWithDefaults(dashboardConfig)

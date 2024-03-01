@@ -28,63 +28,60 @@ import java.util.stream.Collectors;
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class IndicatorDeleter implements Deleter {
 
-    private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(IndicatorDeleter.class));
+	private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(DatasetDeleter.class));
 
-    private final TenantEntityManager entityManager;
+	private final TenantEntityManager entityManager;
+	protected final QueryFactory queryFactory;
+	protected final DeleterFactory deleterFactory;
 
-    protected final QueryFactory queryFactory;
+	@Autowired
+	public IndicatorDeleter(
+			TenantEntityManager entityManager,
+			QueryFactory queryFactory,
+			DeleterFactory deleterFactory
+	) {
+		this.entityManager = entityManager;
+		this.queryFactory = queryFactory;
+		this.deleterFactory = deleterFactory;
+	}
 
-    protected final DeleterFactory deleterFactory;
+	public void deleteAndSaveByIds(List<UUID> ids) throws InvalidApplicationException {
+		logger.debug(new MapLogEntry("collecting to delete").And("count", Optional.ofNullable(ids).map(List::size).orElse(0)).And("ids", ids));
+		List<IndicatorEntity> data = this.queryFactory.query(IndicatorQuery.class).ids(ids).collect();
+		logger.trace("retrieved {} items", Optional.ofNullable(data).map(List::size).orElse(0));
+		this.deleteAndSave(data);
+	}
 
-    @Autowired
-    public IndicatorDeleter(
-            TenantEntityManager entityManager,
-            QueryFactory queryFactory,
-            DeleterFactory deleterFactory
-    ) {
-        this.entityManager = entityManager;
-        this.queryFactory = queryFactory;
-        this.deleterFactory = deleterFactory;
-    }
+	public void deleteAndSave(List<IndicatorEntity> data) throws InvalidApplicationException {
+		logger.debug("will delete {} items", Optional.ofNullable(data).map(List::size).orElse(0));
+		this.delete(data);
+		logger.trace("saving changes");
+		this.entityManager.flush();
+		logger.trace("changes saved");
+	}
 
-    public void deleteAndSaveByIds(List<UUID> ids) throws InvalidApplicationException {
-        logger.debug(new MapLogEntry("collecting to delete").And("count", Optional.ofNullable(ids).map(List::size).orElse(0)).And("ids", ids));
-        List<IndicatorEntity> data = this.queryFactory.query(IndicatorQuery.class).ids(ids).collect();
-        logger.trace("retrieved {} items", Optional.ofNullable(data).map(List::size).orElse(0));
-        this.deleteAndSave(data);
-    }
+	public void delete(List<IndicatorEntity> data) throws InvalidApplicationException {
+		logger.debug("will delete {} items", Optional.ofNullable(data).map(List::size).orElse(0));
+		if (data == null || data.isEmpty()) return;
 
-    public void deleteAndSave(List<IndicatorEntity> data) throws InvalidApplicationException {
-        logger.debug("will delete {} items", Optional.ofNullable(data).map(List::size).orElse(0));
-        this.delete(data);
-        logger.trace("saving changes");
-        this.entityManager.flush();
-        logger.trace("changes saved");
-    }
+		Instant now = Instant.now();
 
-    public void delete(List<IndicatorEntity> data) throws InvalidApplicationException {
-        logger.debug("will delete {} items", Optional.ofNullable(data).map(List::size).orElse(0));
-        if (data == null || data.isEmpty())
-            return;
+		List<UUID> ids = data.stream().map(x -> x.getId()).distinct().collect(Collectors.toList());
+		{
+			logger.debug("checking related - {}", IndicatorAccessEntity.class.getSimpleName());
+			List<IndicatorAccessEntity> items = this.queryFactory.query(IndicatorAccessQuery.class).indicatorIds(ids).collect();
+			IndicatorAccessDeleter deleter = this.deleterFactory.deleter(IndicatorAccessDeleter.class);
+			deleter.delete(items);
+		}
 
-        Instant now = Instant.now();
-
-        List<UUID> ids = data.stream().map(IndicatorEntity::getId).distinct().collect(Collectors.toList());
-        {
-            logger.debug("checking related - {}", IndicatorAccessEntity.class.getSimpleName());
-            List<IndicatorAccessEntity> items = this.queryFactory.query(IndicatorAccessQuery.class).indicatorIds(ids).collect();
-            IndicatorAccessDeleter deleter = this.deleterFactory.deleter(IndicatorAccessDeleter.class);
-            deleter.delete(items);
-        }
-
-        for (IndicatorEntity item : data) {
-            logger.trace("deleting item {}", item.getId());
-            item.setIsActive(IsActive.INACTIVE);
-            item.setUpdatedAt(now);
-            logger.trace("updating item");
-            this.entityManager.merge(item);
-            logger.trace("updated item");
-        }
-    }
+		for (IndicatorEntity item : data) {
+			logger.trace("deleting item {}", item.getId());
+			item.setIsActive(IsActive.INACTIVE);
+			item.setUpdatedAt(now);
+			logger.trace("updating item");
+			this.entityManager.merge(item);
+			logger.trace("updated item");
+		}
+	}
 
 }

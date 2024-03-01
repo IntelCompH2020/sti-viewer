@@ -6,88 +6,88 @@ import java.util.UUID;
 
 public class WhatYouKnowAboutMeCompletedIntegrationEvent extends TrackedEvent {
 
-    public static class InlinePayload {
-        private String name;
-        private String extension;
-        private String mimeType;
-        private String payload;
+	public class InlinePayload {
+		private String name;
+		private String extension;
+		private String mimeType;
+		private String payload;
 
-        public String getName() {
-            return name;
-        }
+		public String getName() {
+			return name;
+		}
 
-        public void setName(String name) {
-            this.name = name;
-        }
+		public void setName(String name) {
+			this.name = name;
+		}
 
-        public String getExtension() {
-            return extension;
-        }
+		public String getExtension() {
+			return extension;
+		}
 
-        public void setExtension(String extension) {
-            this.extension = extension;
-        }
+		public void setExtension(String extension) {
+			this.extension = extension;
+		}
 
-        public String getMimeType() {
-            return mimeType;
-        }
+		public String getMimeType() {
+			return mimeType;
+		}
 
-        public void setMimeType(String mimeType) {
-            this.mimeType = mimeType;
-        }
+		public void setMimeType(String mimeType) {
+			this.mimeType = mimeType;
+		}
 
-        public String getPayload() {
-            return payload;
-        }
+		public String getPayload() {
+			return payload;
+		}
 
-        public void setPayload(String payload) {
-            this.payload = payload;
-        }
-    }
+		public void setPayload(String payload) {
+			this.payload = payload;
+		}
+	}
 
-    private UUID id;
-    private UUID userId;
-    private UUID tenantId;
-    private Boolean success;
-    private InlinePayload inline;
+	private UUID id;
+	private UUID userId;
+	private UUID tenantId;
+	private Boolean success;
+	private InlinePayload inline;
 
-    public UUID getId() {
-        return id;
-    }
+	public UUID getId() {
+		return id;
+	}
 
-    public void setId(UUID id) {
-        this.id = id;
-    }
+	public void setId(UUID id) {
+		this.id = id;
+	}
 
-    public UUID getUserId() {
-        return userId;
-    }
+	public UUID getUserId() {
+		return userId;
+	}
 
-    public void setUserId(UUID userId) {
-        this.userId = userId;
-    }
+	public void setUserId(UUID userId) {
+		this.userId = userId;
+	}
 
-    public UUID getTenantId() {
-        return tenantId;
-    }
+	public UUID getTenantId() {
+		return tenantId;
+	}
 
-    public void setTenantId(UUID tenantId) {
-        this.tenantId = tenantId;
-    }
+	public void setTenantId(UUID tenantId) {
+		this.tenantId = tenantId;
+	}
 
-    public Boolean getSuccess() {
-        return success;
-    }
+	public Boolean getSuccess() {
+		return success;
+	}
 
-    public void setSuccess(Boolean success) {
-        this.success = success;
-    }
+	public void setSuccess(Boolean success) {
+		this.success = success;
+	}
 
-    public InlinePayload getInline() {
-        return inline;
-    }
+	public InlinePayload getInline() {
+		return inline;
+	}
 
-    public void setInline(InlinePayload inline) {
-        this.inline = inline;
-    }
+	public void setInline(InlinePayload inline) {
+		this.inline = inline;
+	}
 }

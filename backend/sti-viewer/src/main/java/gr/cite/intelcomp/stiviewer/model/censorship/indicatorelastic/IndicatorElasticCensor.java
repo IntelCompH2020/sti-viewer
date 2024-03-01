@@ -23,20 +23,18 @@ public class IndicatorElasticCensor extends BaseCensor {
     private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(IndicatorElasticCensor.class));
 
     protected AuthorizationService authService;
-
     protected final CensorFactory censorFactory;
 
     @Autowired
-    public IndicatorElasticCensor(ConventionService conventionService, CensorFactory censorFactory, AuthorizationService authService) {
+    public IndicatorElasticCensor(ConventionService conventionService, CensorFactory censorFactory,AuthorizationService authService) {
         super(conventionService);
         this.censorFactory = censorFactory;
         this.authService = authService;
     }
 
-    public void censor(FieldSet fields) throws MyForbiddenException {
-        logger.debug(new DataLogEntry("censoring fields", fields));
-        if (fields.isEmpty())
-            return;
+    public void censor(FieldSet fields) throws MyForbiddenException{
+        logger.debug(new DataLogEntry("censoring fields",fields));
+        if(fields.isEmpty()) return;
         this.authService.authorizeForce(Permission.BrowseIndicatorElastic);
         FieldSet schemaFields = fields.extractPrefixed(this.asIndexerPrefix(IndicatorElastic._schema));
         this.censorFactory.censor(SchemaCensor.class).censor(schemaFields);

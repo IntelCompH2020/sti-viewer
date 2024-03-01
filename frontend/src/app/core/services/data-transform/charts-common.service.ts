@@ -5,8 +5,11 @@ import { DataZoomComponentOption, EChartsOption, LegendComponentOption, SeriesOp
 import { ChartSerie } from "./data-transform.service";
 import { AuthService } from "../ui/auth.service";
 import { AppPermission } from "@app/core/enum/permission.enum";
+import { MapChartContinent } from "@app/core/enum/map-chart-continent.enum";
+
 // import { sankeyData } from "./sankey-data";
 
+let continentEnum = MapChartContinent;
 
 const scatterData = new Array(7).fill(0).map((_, i) => ([
 	Math.floor(Math.random() * 1000),
@@ -32,6 +35,10 @@ interface GeoMapData {
 	}[]
 }
 
+export interface TableData {
+	title: string;
+	values: string[];
+}
 
 @Injectable()
 export class ChartBuilderService {
@@ -55,7 +62,6 @@ export class ChartBuilderService {
 		onDownloadJSON?: () => void,
 		onShare?: () => void
 	}): EChartsOption {
-
 		const { config, data, onDownload, onFiltersOpen, onDownloadJSON, onShare } = args;
 		let serie: GeoMapData;
 
@@ -70,11 +76,9 @@ export class ChartBuilderService {
 		}
 
 		//* get MinMax values
-
 		const allValues = serie.data.map(record => record.value);
 		const minValue = allValues && allValues.length > 0 ? Math.min(...allValues) : 0;
 		const maxValue = allValues && allValues.length > 0 ? Math.max(...allValues) : 0;
-
 
 		return {
 			title: this._buildTitle(config),
@@ -114,13 +118,13 @@ export class ChartBuilderService {
 				name: serie.description,
 				type: 'map',
 				roam: true,
-				map: 'worldmap',
+				map: config?.series[0]?.map !== undefined ? continentEnum[config?.series[0]?.map] : continentEnum["WorldMap"],
 				emphasis: {
 					label: {
 						show: true
 					}
 				},
-				data: serie.data
+				data: serie.data,
 			}],
 		}
 	}
@@ -135,8 +139,8 @@ export class ChartBuilderService {
 		onDownloadJSON?: () => void,
 		onShare?: () => void
 	}): EChartsOption {
-
 		const { data, config, onDownload, onFiltersOpen, onDownloadJSON, onShare } = args;
+
 		function getLevelOption(isNested?: boolean) {
 			return [
 				{
@@ -144,28 +148,28 @@ export class ChartBuilderService {
 						borderWidth: 0,
 						gapWidth: 5
 					},
-					upperLabel:{
+					upperLabel: {
 						show: false
 					}
 				},
 
 				isNested ?
-				{
-					itemStyle: {
-					  borderColor: '#555',
-					  borderWidth: 5,
-					  gapWidth: 1
+					{
+						itemStyle: {
+							borderColor: '#555',
+							borderWidth: 5,
+							gapWidth: 1
+						},
+						emphasis: {
+							itemStyle: {
+								borderColor: '#ddd'
+							}
+						}
+					} : {
+						itemStyle: {
+							gapWidth: 1
+						}
 					},
-					emphasis: {
-					  itemStyle: {
-						borderColor: '#ddd'
-					  }
-					}
-				} : {
-					itemStyle: {
-						gapWidth: 1
-					}
-				},
 				//   {
 				// 	colorSaturation: [0.35, 0.5],
 				// 	itemStyle: {
@@ -191,7 +195,6 @@ export class ChartBuilderService {
 
 			return valueString;
 		}
-
 		const isNested = data?.some(x => x.children?.length);
 
 		return {
@@ -234,11 +237,11 @@ export class ChartBuilderService {
 					},
 
 					...(isNested ? {
-						upperLabel:{
-							show:true,
+						upperLabel: {
+							show: true,
 							height: 30
 						}
-					}: {})
+					} : {})
 
 
 
@@ -261,7 +264,7 @@ export class ChartBuilderService {
 
 			return {
 				...node,
-				children: node?.children?.length ?  this._buildTreeMapData( node.children,config) : null,
+				children: node?.children?.length ? this._buildTreeMapData(node.children, config) : null,
 				...itemStyle
 			}
 		});
@@ -287,7 +290,8 @@ export class ChartBuilderService {
 				config: config,
 				data: inputSeries[key].data,
 				name: inputSeries[key].name,
-				color: inputSeries[key].color
+				color: inputSeries[key].color,
+				multipleColors: config.multipleColors
 			})
 		});
 		const dataZoom = this._buildDataZoom(config);
@@ -296,7 +300,7 @@ export class ChartBuilderService {
 			title: this._buildTitle(config),
 			angleAxis: {
 				type: 'category',
-				data: labels
+				data: labels,
 			},
 			tooltip: {},
 			toolbox: this._buildToolbox({ config, onFiltersOpen, onDownload, onDownloadJSON, onShare }),
@@ -328,8 +332,7 @@ export class ChartBuilderService {
 
 		const bubbleSizeKeyExtractor = config?.bubble?.seriesKeyExtractor;
 		const xAxisKeyExtractor = config?.xAxis?.seriesKeyExtractor;
-		const yAxisKeyExtractor = config?.yAxis?.seriesKeyExtractor;
-
+		const yAxisKeyExtractor = config?.yAxis[0]?.seriesKeyExtractor;
 		if (
 			[
 				bubbleSizeKeyExtractor,
@@ -353,13 +356,15 @@ export class ChartBuilderService {
 
 			title: this._buildTitle(config),
 			legend: this._buildLegend(config.legend),
+
 			xAxis: {
 				name: config?.xAxis?.name,
+				nameLocation: 'middle',
 				// type: 'value',
 				// data: new Array(7).fill(0).map((_, index) => Math.floor(Math.random()*1000))
 			},
 			yAxis: {
-				name: config?.yAxis?.name,
+				name: config?.yAxis[0]?.name,
 				nameLocation: 'middle',
 				nameGap: 50
 				// type:'value'
@@ -369,11 +374,11 @@ export class ChartBuilderService {
 				formatter: function (param) {
 					var value = param.value;
 					return `
-				  	<div style="border-bottom: 1px solid rgba(255,255,255); font-size: 18px;padding-bottom: 7px;margin-bottom: 7px">
+					  <div style="border-bottom: 1px solid rgba(255,255,255); font-size: 18px;padding-bottom: 7px;margin-bottom: 7px">
 						${param.seriesName} ${(value[2] as number)?.toLocaleString?.() ?? value[2]}
 					</div>
 					<div>
-						${config?.yAxis?.name ?? ''}: ${(value[1] as number)?.toLocaleString?.() ?? value[1]}
+						${config?.yAxis[0]?.name ?? ''}: ${(value[1] as number)?.toLocaleString?.() ?? value[1]}
 						<br>
 						${config?.xAxis?.name ?? ''}: ${(value[0] as number)?.toLocaleString?.() ?? value[0]}
 					</div>
@@ -397,7 +402,6 @@ export class ChartBuilderService {
 							bubbleSize?.[labelIndex] ?? 0//bublesize
 						]
 					],
-
 					type: 'scatter',
 					symbolSize: function (data) {
 						return ((data[2] / maxBubbleValue) * 100) + 10
@@ -429,7 +433,6 @@ export class ChartBuilderService {
 
 
 		const dimensions = Object.keys(inputSeries).filter(x => !!x);
-
 		let maxValue = dimensions.reduce(
 			(previousMaxValue, currentDimension) => {
 
@@ -663,7 +666,6 @@ export class ChartBuilderService {
 		const { config, labels, inputSeries, onFiltersOpen, onDownload, onDownloadJSON, onShare } = params;
 		const dataZoom = this._buildDataZoom(config);
 
-
 		const series = Object.keys(inputSeries).map((key, _index) => {
 			return this._buildSerie({
 				animationDelay: index => index * 10 + (index * 10),
@@ -671,20 +673,22 @@ export class ChartBuilderService {
 				data: inputSeries[key].data,
 				name: inputSeries[key].name,
 				color: inputSeries[key].color,
-				type: inputSeries[key].type
+				type: inputSeries[key].type,
+				stack: inputSeries[key].stack,
+				yAxisIndex: inputSeries[key].yAxisIndex
 			});
 		});
-
 
 		return {
 			title: this._buildTitle(config),
 			legend: this._buildLegend(config.legend),
 			tooltip: {
-				trigger: 'axis',
+				trigger: config?.tooltip?.trigger || 'axis',
 				confine: true
 			},
 			xAxis: this._buildXAxis(config, labels),
 			yAxis: this._buildYAxis(config, labels),
+
 			dataZoom,
 			series,
 			toolbox: this._buildToolbox({ config, onDownload, onFiltersOpen, onDownloadJSON, onShare }),
@@ -722,16 +726,33 @@ export class ChartBuilderService {
 				animationDelay: index => index * 10 + (index * 10),
 				config: config,
 				data: data,
+				multipleColors: config.multipleColors,
 				name: inputSeries[key].name,
 				color: inputSeries[key].color,
-				type: inputSeries[key].type
+				type: inputSeries[key].type,
+				stack: inputSeries[key].stack,
+				yAxisIndex: inputSeries[key].yAxisIndex,
 			})
 		});
 		const dataZoom = this._buildDataZoom(config);
+		dataZoom.forEach(element => {
+			//If the bar chart is set horizontally we have to recalculate the start and end of the slider for the datazoom
+			if (config.horizontal && element.type == "slider" && element.startValue !== undefined && element.endValue !== undefined) {
+				const seriesData: any = series[0]?.data;
+				const originalStartValue: number = element.startValue as number;
+				element.startValue = seriesData?.length - (element.endValue as number) - 1;
+				element.endValue = seriesData?.length - originalStartValue - 1;
+			}
+		});
+
 		return {
 			title: this._buildTitle(config),
+			...(config?.colorPalette?.length > 0 && { color: config.colorPalette }),
 			legend: this._buildLegend(config.legend),
-			tooltip: { trigger: 'axis' },
+			tooltip: {
+				trigger: config?.tooltip?.trigger || 'axis',
+				confine: true
+			},
 			toolbox: this._buildToolbox({
 				config,
 				onDownload,
@@ -803,7 +824,11 @@ export class ChartBuilderService {
 			}
 			if (config.dataZoom.slider) {
 
-				const zoomItem = { type: 'slider' } as any;
+				const zoomItem = {
+					type: 'slider',
+					startValue: config.dataZoom?.startValue,
+					endValue: config.dataZoom?.endValue,
+				} as any;
 				if ((config as any).horizontal) {
 					zoomItem.yAxisIndex = 0;
 				}
@@ -896,19 +921,18 @@ export class ChartBuilderService {
 		return chart;
 	}
 
-	private _buildSerie(params: { type: any, config: IndicatorDashboardLineChartConfig, name: string, data: number[], animationDelay: (index: number) => number, color?: string }): SeriesOption {
-		const { config, name, data, animationDelay, color, type } = params;
+	private _buildSerie(params: { type: any, config: IndicatorDashboardLineChartConfig, name: string, data: number[], animationDelay: (index: number) => number, multipleColors?: boolean ,color?: string, stack?:string, yAxisIndex?:number}): SeriesOption {
+		const { config, name, data, animationDelay, multipleColors, color, type, stack, yAxisIndex } = params;
 		const serie: SeriesOption = {
+			colorBy: multipleColors? "data":"series",
 			name,
 			type: type ?? config.type as any,
 			data,
 			color,
 			animationDelay,
+			stack,
+			yAxisIndex
 		};
-
-		if (config.stack) {
-			(serie as any).stack = 'x';// todo configuration has it stack chart requires string
-		}
 
 		if (config.areaStyle) {
 			(serie as any).areaStyle = config.areaStyle;
@@ -917,9 +941,10 @@ export class ChartBuilderService {
 		return serie;
 	}
 
-	private _buildPolarBarSerie(params: { config: IndicatorDashboardPolarBarChartConfig, name: string, data: number[], animationDelay: (index: number) => number, color?: string }): SeriesOption {
-		const { name, data, animationDelay, color } = params;
+	private _buildPolarBarSerie(params: { config: IndicatorDashboardPolarBarChartConfig, name: string, data: number[], animationDelay: (index: number) => number, color?: string, multipleColors?: boolean }): SeriesOption {
+		const { name, data, animationDelay, color, multipleColors } = params;
 		const serie: SeriesOption = {
+			colorBy: multipleColors ? "data" : "series",
 			name,
 			type: 'bar',
 			coordinateSystem: 'polar',
@@ -936,12 +961,11 @@ export class ChartBuilderService {
 		let xAxis: XAXisComponentOption;
 		if (config.horizontal) {
 			xAxis = {
-				name: config?.yAxis?.name,
+				name: config?.yAxis[0]?.name,
 				nameLocation: 'middle',
 				nameGap: 50
 			};
 		} else {
-
 			const axisLabel = config?.xAxis?.axisLabel ? {
 				width: config.xAxis.axisLabel.width,
 				rotate: config.xAxis.axisLabel.rotate ?? 0,
@@ -950,6 +974,7 @@ export class ChartBuilderService {
 
 			xAxis = {
 				name: config?.xAxis?.name,
+				nameGap: 40,
 				data,
 				type: 'category',
 				boundaryGap: config?.xAxis?.boundaryGap ?? true,
@@ -964,29 +989,35 @@ export class ChartBuilderService {
 		return xAxis;
 	}
 
-	private _buildYAxis(config: IndicatorDashboardLineChartConfig, data: string[]): YAXisComponentOption {
-		let yAxis: YAXisComponentOption;
-
+	private _buildYAxis(config: IndicatorDashboardLineChartConfig, data: string[]): YAXisComponentOption[] {
+		let yAxis: YAXisComponentOption[];
 		if (!config.horizontal) {
-			yAxis = {
-				name: config?.yAxis?.name,
-				nameLocation: 'middle',
-				nameGap: 50
-			}
+			yAxis = [];
+			config?.yAxis?.forEach(element => {
+				yAxis.push({
+					name: element?.name,
+					nameLocation: 'middle',
+					nameGap: 50,
+					type: element?.type,
+					// logBase: element?.logBase
+				});
+			});
 		} else {
-			yAxis = {
-				name: config?.xAxis?.name,
-				boundaryGap: config?.xAxis?.boundaryGap ?? true,
-				data,
-				silent: false,
-				splitLine: {
-					show: false,
-				},
-				axisLabel: {
-					width: 100,
-					overflow: 'truncate',
-				} as any
-			}
+			yAxis = [
+				{
+					name: config?.xAxis?.name,
+					boundaryGap: config?.xAxis?.boundaryGap ?? true,
+					data,
+					silent: false,
+					splitLine: {
+						show: false,
+					},
+					axisLabel: {
+						width: 100,
+						overflow: 'truncate',
+					} as any
+				}
+			]
 		}
 		return yAxis;
 	}

@@ -5,13 +5,18 @@ import gr.cite.intelcomp.stiviewer.authorization.AuthorizationFlags;
 import gr.cite.intelcomp.stiviewer.authorization.Permission;
 import gr.cite.intelcomp.stiviewer.common.enums.IsActive;
 import gr.cite.intelcomp.stiviewer.convention.ConventionService;
+import gr.cite.intelcomp.stiviewer.data.IndicatorAccessEntity;
 import gr.cite.intelcomp.stiviewer.data.TenantEntityManager;
 import gr.cite.intelcomp.stiviewer.data.notification.NotificationEntity;
 import gr.cite.intelcomp.stiviewer.errorcode.ErrorThesaurusProperties;
+import gr.cite.intelcomp.stiviewer.model.IndicatorAccess;
+import gr.cite.intelcomp.stiviewer.model.builder.IndicatorAccessBuilder;
 import gr.cite.intelcomp.stiviewer.model.builder.notification.NotificationBuilder;
 import gr.cite.intelcomp.stiviewer.model.notification.Notification;
 import gr.cite.intelcomp.stiviewer.model.persist.notification.NotificationPersist;
+import gr.cite.intelcomp.stiviewer.service.indicatoraccess.IndicatorAccessServiceImpl;
 import gr.cite.tools.data.builder.BuilderFactory;
+import gr.cite.tools.data.deleter.DeleterFactory;
 import gr.cite.tools.exception.MyApplicationException;
 import gr.cite.tools.exception.MyForbiddenException;
 import gr.cite.tools.exception.MyNotFoundException;
@@ -38,6 +43,7 @@ public class NotificationServiceImpl implements NotificationService {
     private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(NotificationServiceImpl.class));
     private final TenantEntityManager entityManager;
     private final AuthorizationService authorizationService;
+    private final DeleterFactory deleterFactory;
     private final BuilderFactory builderFactory;
     private final ConventionService conventionService;
     private final ErrorThesaurusProperties errors;
@@ -47,6 +53,7 @@ public class NotificationServiceImpl implements NotificationService {
     public NotificationServiceImpl(
             TenantEntityManager entityManager,
             AuthorizationService authorizationService,
+            DeleterFactory deleterFactory,
             BuilderFactory builderFactory,
             ConventionService conventionService,
             ErrorThesaurusProperties errors,
@@ -54,6 +61,7 @@ public class NotificationServiceImpl implements NotificationService {
     ) {
         this.entityManager = entityManager;
         this.authorizationService = authorizationService;
+        this.deleterFactory = deleterFactory;
         this.builderFactory = builderFactory;
         this.conventionService = conventionService;
         this.errors = errors;
@@ -68,13 +76,11 @@ public class NotificationServiceImpl implements NotificationService {
 
         Boolean isUpdate = this.conventionService.isValidGuid(model.getId());
 
-        NotificationEntity data;
+        NotificationEntity data = null;
         if (isUpdate) {
             data = this.entityManager.find(NotificationEntity.class, model.getId());
-            if (data == null)
-                throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{model.getId(), Notification.class.getSimpleName()}, LocaleContextHolder.getLocale()));
-            if (!this.conventionService.hashValue(data.getUpdatedAt()).equals(model.getHash()))
-                throw new MyValidationException(this.errors.getHashConflict().getCode(), this.errors.getHashConflict().getMessage());
+            if (data == null) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{model.getId(), Notification.class.getSimpleName()}, LocaleContextHolder.getLocale()));
+            if (!this.conventionService.hashValue(data.getUpdatedAt()).equals(model.getHash())) throw new MyValidationException(this.errors.getHashConflict().getCode(), this.errors.getHashConflict().getMessage());
         } else {
             data = new NotificationEntity();
             data.setId(UUID.randomUUID());
@@ -97,13 +103,13 @@ public class NotificationServiceImpl implements NotificationService {
         data.setProvenanceRef(model.getProvenanceRef());
         data.setUpdatedAt(Instant.now());
 
-        if (isUpdate)
-            this.entityManager.merge(data);
+        if (isUpdate) this.entityManager.merge(data);
         else this.entityManager.persist(data);
 
         this.entityManager.flush();
 
-        return this.builderFactory.builder(NotificationBuilder.class).authorize(AuthorizationFlags.OwnerOrPermission).build(BaseFieldSet.build(fields, Notification._id, Notification._hash), data);
+        Notification persisted = this.builderFactory.builder(NotificationBuilder.class).authorize(AuthorizationFlags.OwnerOrPermission).build(BaseFieldSet.build(fields, Notification._id, Notification._hash), data);
+        return persisted;
     }
 
 }

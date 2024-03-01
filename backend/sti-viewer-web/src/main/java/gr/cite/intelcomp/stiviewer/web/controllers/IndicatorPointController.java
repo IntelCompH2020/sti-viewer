@@ -48,203 +48,198 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping(path = "api/indicator-point")
 public class IndicatorPointController {
+	private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(IndicatorPointController.class));
 
-    private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(IndicatorPointController.class));
+	private final BuilderFactory builderFactory;
+	private final AuditService auditService;
+	private final IndicatorPointService indicatorPointService;
+	private final CensorFactory censorFactory;
+	private final QueryFactory queryFactory;
+	private final MessageSource messageSource;
 
-    private final BuilderFactory builderFactory;
+	@Autowired
+	public IndicatorPointController(
+			BuilderFactory builderFactory,
+			AuditService auditService,
+			IndicatorPointService indicatorPointService,
+			CensorFactory censorFactory,
+			QueryFactory queryFactory,
+			MessageSource messageSource
 
-    private final AuditService auditService;
+	) {
+		this.builderFactory = builderFactory;
+		this.auditService = auditService;
+		this.indicatorPointService = indicatorPointService;
+		this.censorFactory = censorFactory;
+		this.queryFactory = queryFactory;
+		this.messageSource = messageSource;
+	}
 
-    private final IndicatorPointService indicatorPointService;
+	@PostMapping("query")
+	public QueryResult<IndicatorPoint> query(@RequestBody IndicatorPointLookup lookup) throws MyApplicationException, MyForbiddenException {
+		logger.debug("querying {}", IndicatorPoint.class.getSimpleName());
 
-    private final CensorFactory censorFactory;
+		this.censorFactory.censor(IndicatorPointCensor.class).censor(lookup.getProject());
 
-    private final QueryFactory queryFactory;
+		IndicatorPointQuery query = lookup.enrich(this.queryFactory).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator);
+		List<IndicatorPointEntity> data = query.collectAs(lookup.getProject());
+		List<IndicatorPoint> models = this.builderFactory.builder(IndicatorPointBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(lookup.getProject(), data);
+		long count = (lookup.getMetadata() != null && lookup.getMetadata().getCountAll()) ? query.count() : models.size();
 
-    private final MessageSource messageSource;
+		this.auditService.track(AuditableAction.Indicator_Point_Query, "lookup", lookup);
+		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
 
-    @Autowired
-    public IndicatorPointController(
-            BuilderFactory builderFactory,
-            AuditService auditService,
-            IndicatorPointService indicatorPointService,
-            CensorFactory censorFactory,
-            QueryFactory queryFactory,
-            MessageSource messageSource
+		return new QueryResult<>(models, count);
+	}
 
-    ) {
-        this.builderFactory = builderFactory;
-        this.auditService = auditService;
-        this.indicatorPointService = indicatorPointService;
-        this.censorFactory = censorFactory;
-        this.queryFactory = queryFactory;
-        this.messageSource = messageSource;
-    }
+	@PostMapping("query-distinct")
+	public ElasticValuesResponse<String> queryDistinct(@RequestBody IndicatorPointDistinctLookup lookup) throws MyApplicationException, MyForbiddenException {
+		logger.debug("querying {}", IndicatorPoint.class.getSimpleName());
 
-    @PostMapping("query")
-    public QueryResult<IndicatorPoint> query(@RequestBody IndicatorPointLookup lookup) throws MyApplicationException, MyForbiddenException {
-        logger.debug("querying {}", IndicatorPoint.class.getSimpleName());
+		this.censorFactory.censor(IndicatorPointCensor.class).censor(new BaseFieldSet().ensure(IndicatorPoint._id));
 
-        this.censorFactory.censor(IndicatorPointCensor.class).censor(lookup.getProject());
+		IndicatorQuery indicatorQuery = this.queryFactory.query(IndicatorQuery.class).ids(lookup.getIndicatorIds()).authorize(lookup.isViewNotApprovedValues() ? EnumSet.of(AuthorizationFlags.None) : AuthorizationFlags.OwnerOrPermissionOrIndicatorOrIndicatorAccess);
+		if (indicatorQuery.count() != lookup.getIndicatorIds().stream().distinct().collect(Collectors.toList()).size()) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{String.join(",", lookup.getIndicatorIds().stream().map(x -> x.toString()).collect(Collectors.toList())), Indicator.class.getSimpleName()}, LocaleContextHolder.getLocale()));
 
-        IndicatorPointQuery query = lookup.enrich(this.queryFactory).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator);
-        List<IndicatorPointEntity> data = query.collectAs(lookup.getProject());
-        List<IndicatorPoint> models = this.builderFactory.builder(IndicatorPointBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(lookup.getProject(), data);
-        long count = (lookup.getMetadata() != null && lookup.getMetadata().getCountAll()) ? query.count() : models.size();
+		IndicatorPointQuery query = lookup.enrich(this.queryFactory).indicatorIds(lookup.getIndicatorIds());
+		if (!lookup.isViewNotApprovedValues()) {
+			query = query.authorize(AuthorizationFlags.OwnerOrPermissionOrIndicatorOrIndicatorAccess);
+		}
 
-        this.auditService.track(AuditableAction.Indicator_Point_Query, "lookup", lookup);
+		DistinctValuesResponse<String> data = query.collectDistinct(lookup.getField(), lookup.getOrder(), (x) -> x, lookup.getAfterKey(), lookup.getBatchSize());
+		long count = data.getTotal();
 
-        return new QueryResult<>(models, count);
-    }
+		this.auditService.track(AuditableAction.Indicator_Point_QueryDistinct, "lookup", lookup);
+		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
 
-    @PostMapping("query-distinct")
-    public ElasticValuesResponse<String> queryDistinct(@RequestBody IndicatorPointDistinctLookup lookup) throws MyApplicationException, MyForbiddenException {
-        logger.debug("querying {}", IndicatorPoint.class.getSimpleName());
+		return new ElasticValuesResponse<>(data.getItems(), count, data.getAfterKey());
+	}
 
-        this.censorFactory.censor(IndicatorPointCensor.class).censor(new BaseFieldSet().ensure(IndicatorPoint._id));
+	@GetMapping("{indicatorId}/{id}")
+	public IndicatorPoint get(@PathVariable("indicatorId") UUID indicatorId, @PathVariable("id") UUID id, FieldSet fieldSet, Locale locale) throws MyApplicationException, MyForbiddenException, MyNotFoundException {
+		logger.debug(new MapLogEntry("retrieving" + IndicatorPoint.class.getSimpleName()).And("id", id).And("fields", fieldSet));
 
-        IndicatorQuery indicatorQuery = this.queryFactory.query(IndicatorQuery.class).ids(lookup.getIndicatorIds()).authorize(lookup.isViewNotApprovedValues() ? EnumSet.of(AuthorizationFlags.None) : AuthorizationFlags.OwnerOrPermissionOrIndicatorOrIndicatorAccess);
-        if (indicatorQuery.count() != lookup.getIndicatorIds().stream().distinct().collect(Collectors.toList()).size())
-            throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{String.join(",", lookup.getIndicatorIds().stream().map(x -> x.toString()).collect(Collectors.toList())), Indicator.class.getSimpleName()}, LocaleContextHolder.getLocale()));
+		this.censorFactory.censor(IndicatorPointCensor.class).censor(fieldSet);
 
-        IndicatorPointQuery query = lookup.enrich(this.queryFactory).indicatorIds(lookup.getIndicatorIds());
-        if (!lookup.isViewNotApprovedValues()) {
-            query = query.authorize(AuthorizationFlags.OwnerOrPermissionOrIndicatorOrIndicatorAccess);
-        }
+		IndicatorQuery indicatorQuery = this.queryFactory.query(IndicatorQuery.class).ids(indicatorId);
+		if (indicatorQuery.count() == 0) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{indicatorId, Indicator.class.getSimpleName()}, LocaleContextHolder.getLocale()));
 
-        DistinctValuesResponse<String> data = query.collectDistinct(lookup.getField(), lookup.getOrder(), (x) -> x, lookup.getAfterKey(), lookup.getBatchSize());
-        long count = data.getTotal();
+		IndicatorPointQuery query = this.queryFactory.query(IndicatorPointQuery.class).indicatorIds(indicatorId).ids(id).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator);
+		IndicatorPoint model = this.builderFactory.builder(IndicatorPointBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(fieldSet, query.firstAs(fieldSet));
+		if (model == null) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{id, IndicatorPoint.class.getSimpleName()}, LocaleContextHolder.getLocale()));
 
-        this.auditService.track(AuditableAction.Indicator_Point_QueryDistinct, "lookup", lookup);
+		this.auditService.track(AuditableAction.Indicator_Point_Lookup, Map.ofEntries(
+				new AbstractMap.SimpleEntry<String, Object>("id", id),
+				new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
+		));
+		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
 
-        return new ElasticValuesResponse<>(data.getItems(), count, data.getAfterKey());
-    }
+		return model;
+	}
 
-    @GetMapping("{indicatorId}/{id}")
-    public IndicatorPoint get(@PathVariable("indicatorId") UUID indicatorId, @PathVariable("id") UUID id, FieldSet fieldSet, Locale locale) throws MyApplicationException, MyForbiddenException, MyNotFoundException {
-        logger.debug(new MapLogEntry("retrieving" + IndicatorPoint.class.getSimpleName()).And("id", id).And("fields", fieldSet));
+	@PostMapping("{indicatorId}/persist")
+	@Transactional
+	public IndicatorPoint persist(@PathVariable("indicatorId") UUID indicatorId, @MyValidate @RequestBody IndicatorPointPersist model, FieldSet fieldSet) throws MyApplicationException, MyForbiddenException, MyNotFoundException, InvalidApplicationException, IOException {
+		logger.debug(new MapLogEntry("persisting" + IndicatorPoint.class.getSimpleName()).And("model", model).And("fieldSet", fieldSet));
 
-        this.censorFactory.censor(IndicatorPointCensor.class).censor(fieldSet);
+		IndicatorPoint persisted = this.indicatorPointService.persist(indicatorId, model, fieldSet);
 
-        IndicatorQuery indicatorQuery = this.queryFactory.query(IndicatorQuery.class).ids(indicatorId);
-        if (indicatorQuery.count() == 0)
-            throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{indicatorId, Indicator.class.getSimpleName()}, LocaleContextHolder.getLocale()));
+		this.auditService.track(AuditableAction.Indicator_Point_Persist, Map.ofEntries(
+				new AbstractMap.SimpleEntry<String, Object>("model", model),
+				new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
+		));
+		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
+		return persisted;
+	}
 
-        IndicatorPointQuery query = this.queryFactory.query(IndicatorPointQuery.class).indicatorIds(indicatorId).ids(id).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator);
-        IndicatorPoint model = this.builderFactory.builder(IndicatorPointBuilder.class).authorize(AuthorizationFlags.OwnerOrPermissionOrIndicator).build(fieldSet, query.firstAs(fieldSet));
-        if (model == null)
-            throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{id, IndicatorPoint.class.getSimpleName()}, LocaleContextHolder.getLocale()));
+	@PostMapping("{indicatorId}/report")
+	public AggregateResponseModel report(@PathVariable("indicatorId") UUID indicatorId, @MyValidate @RequestBody IndicatorPointReportLookup model, FieldSet fieldSet) throws InvalidApplicationException {
+		logger.debug(new MapLogEntry("persisting" + IndicatorPoint.class.getSimpleName()).And("model", model).And("fieldSet", fieldSet));
 
-        this.auditService.track(AuditableAction.Indicator_Point_Lookup, Map.ofEntries(
-                new AbstractMap.SimpleEntry<String, Object>("id", id),
-                new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
-        ));
+		AggregateResponseModel report = this.indicatorPointService.report(indicatorId, model, fieldSet);
 
-        return model;
-    }
+		this.auditService.track(AuditableAction.Indicator_Point_Report, Map.ofEntries(
+				new AbstractMap.SimpleEntry<String, Object>("model", model),
+				new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
+		));
+		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
+		return report;
+	}
 
-    @PostMapping("{indicatorId}/persist")
-    @Transactional
-    public IndicatorPoint persist(@PathVariable("indicatorId") UUID indicatorId, @MyValidate @RequestBody IndicatorPointPersist model, FieldSet fieldSet) throws MyApplicationException, MyForbiddenException, MyNotFoundException, InvalidApplicationException, IOException {
-        logger.debug(new MapLogEntry("persisting" + IndicatorPoint.class.getSimpleName()).And("model", model).And("fieldSet", fieldSet));
+	@PostMapping("{indicatorId}/export-xlsx")
+	public ResponseEntity<?> exportXlsx(@PathVariable("indicatorId") UUID indicatorId, @MyValidate @RequestBody IndicatorPointReportLookup model, HttpServletResponse response) throws InvalidApplicationException, IOException {
+		logger.debug(new MapLogEntry("get data" + IndicatorPoint.class.getSimpleName()).And("model", model));
 
-        IndicatorPoint persisted = this.indicatorPointService.persist(indicatorId, model, fieldSet);
+		byte[] report = this.indicatorPointService.exportXlsx(indicatorId, model);
 
-        this.auditService.track(AuditableAction.Indicator_Point_Persist, Map.ofEntries(
-                new AbstractMap.SimpleEntry<String, Object>("model", model),
-                new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
-        ));
-        return persisted;
-    }
+		this.auditService.track(AuditableAction.Indicator_Point_ExportXlsx, Map.ofEntries(
+				new AbstractMap.SimpleEntry<String, Object>("model", model)
+		));
+		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
 
-    @PostMapping("{indicatorId}/report")
-    public AggregateResponseModel report(@PathVariable("indicatorId") UUID indicatorId, @MyValidate @RequestBody IndicatorPointReportLookup model, FieldSet fieldSet) throws InvalidApplicationException {
-        logger.debug(new MapLogEntry("persisting" + IndicatorPoint.class.getSimpleName()).And("model", model).And("fieldSet", fieldSet));
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.set(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE); // (3) Content-Type: application/octet-stream
+		httpHeaders.set(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.attachment().filename("report.xlsx").build().toString()); // (4) Content-Disposition: attachment; filename="demo-file.txt"
+		return new ResponseEntity(report, httpHeaders, HttpStatus.OK);
+	}
 
-        AggregateResponseModel report = this.indicatorPointService.report(indicatorId, model, fieldSet);
+	@PostMapping("{indicatorId}/export-json")
+	public ResponseEntity<?> exportJson(@PathVariable("indicatorId") UUID indicatorId, @MyValidate @RequestBody IndicatorPointReportLookup model, HttpServletResponse response) throws InvalidApplicationException, IOException {
+		logger.debug(new MapLogEntry("get data" + IndicatorPoint.class.getSimpleName()).And("model", model));
 
-        this.auditService.track(AuditableAction.Indicator_Point_Report, Map.ofEntries(
-                new AbstractMap.SimpleEntry<String, Object>("model", model),
-                new AbstractMap.SimpleEntry<String, Object>("fields", fieldSet)
-        ));
-        return report;
-    }
+		byte[] report = this.indicatorPointService.exportJson(indicatorId, model);
 
-    @PostMapping("{indicatorId}/export-xlsx")
-    public ResponseEntity<?> exportXlsx(@PathVariable("indicatorId") UUID indicatorId, @MyValidate @RequestBody IndicatorPointReportLookup model, HttpServletResponse response) throws InvalidApplicationException, IOException {
-        logger.debug(new MapLogEntry("get data" + IndicatorPoint.class.getSimpleName()).And("model", model));
+		this.auditService.track(AuditableAction.Indicator_Point_ExportJson, Map.ofEntries(
+				new AbstractMap.SimpleEntry<String, Object>("model", model)
+		));
+		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
 
-        byte[] report = this.indicatorPointService.exportXlsx(indicatorId, model);
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.set(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE); // (3) Content-Type: application/octet-stream
+		httpHeaders.set(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.attachment().filename("report.json").build().toString()); // (4) Content-Disposition: attachment; filename="demo-file.txt"
+		return new ResponseEntity(report, httpHeaders, HttpStatus.OK);
+	}
 
-        this.auditService.track(AuditableAction.Indicator_Point_ExportXlsx, Map.ofEntries(
-                new AbstractMap.SimpleEntry<String, Object>("model", model)
-        ));
-        //this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
+	@PostMapping("{indicatorId}/bulk-persist")
+	@Transactional
+	public void bulkPersist(@PathVariable("indicatorId") UUID indicatorId, @MyValidate @RequestBody List<IndicatorPointPersist> models) throws MyApplicationException, MyForbiddenException, MyNotFoundException, InvalidApplicationException, IOException {
+		logger.debug(new MapLogEntry("persisting" + IndicatorPoint.class.getSimpleName()));
 
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.set(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE); // (3) Content-Type: application/octet-stream
-        httpHeaders.set(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.attachment().filename("report.xlsx").build().toString()); // (4) Content-Disposition: attachment; filename="demo-file.txt"
-        return new ResponseEntity(report, httpHeaders, HttpStatus.OK);
-    }
+		this.indicatorPointService.persist(indicatorId, models);
 
-    @PostMapping("{indicatorId}/export-json")
-    public ResponseEntity<?> exportJson(@PathVariable("indicatorId") UUID indicatorId, @MyValidate @RequestBody IndicatorPointReportLookup model, HttpServletResponse response) throws InvalidApplicationException, IOException {
-        logger.debug(new MapLogEntry("get data" + IndicatorPoint.class.getSimpleName()).And("model", model));
+		this.auditService.track(AuditableAction.Indicator_Point_Bulk_Persist, Map.ofEntries(
+				new AbstractMap.SimpleEntry<String, Object>("indicatorId", indicatorId)
+		));
+		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
+		return;
+	}
 
-        byte[] report = this.indicatorPointService.exportJson(indicatorId, model);
+	@DeleteMapping("{indicatorId}/batch/{batchId}")
+	public void report(@PathVariable("indicatorId") UUID indicatorId, @PathVariable("batchId") UUID batchId) throws InvalidApplicationException, IOException {
+		logger.debug(new MapLogEntry("deleting" + IndicatorPoint.class.getSimpleName()).And("indicatorId", indicatorId).And("batchId", batchId));
 
-        this.auditService.track(AuditableAction.Indicator_Point_ExportJson, Map.ofEntries(
-                new AbstractMap.SimpleEntry<String, Object>("model", model)
-        ));
-        //this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
+		this.indicatorPointService.deleteBatch(indicatorId, batchId);
 
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.set(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE); // (3) Content-Type: application/octet-stream
-        httpHeaders.set(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.attachment().filename("report.json").build().toString()); // (4) Content-Disposition: attachment; filename="demo-file.txt"
-        return new ResponseEntity(report, httpHeaders, HttpStatus.OK);
-    }
+		this.auditService.track(AuditableAction.Indicator_Point_Delete_Batch, Map.ofEntries(
+				new AbstractMap.SimpleEntry<String, Object>("indicatorId", indicatorId),
+				new AbstractMap.SimpleEntry<String, Object>("batchId", batchId)
+		));
+		return;
+	}
 
-    @PostMapping("{indicatorId}/bulk-persist")
-    @Transactional
-    public void bulkPersist(@PathVariable("indicatorId") UUID indicatorId, @MyValidate @RequestBody List<IndicatorPointPersist> models) throws MyApplicationException, MyForbiddenException, MyNotFoundException, InvalidApplicationException, IOException {
-        logger.debug(new MapLogEntry("persisting" + IndicatorPoint.class.getSimpleName()));
+	@GetMapping("global-search-config-by-key/{key}")
+	public String getGlobalSearchConfig(@PathVariable("key") String key) throws MyApplicationException, MyForbiddenException, MyNotFoundException, InvalidApplicationException {
+		logger.debug(new MapLogEntry("retrieving" + Indicator.class.getSimpleName()).And("key", key));
 
-        this.indicatorPointService.persist(indicatorId, models);
+		String model = this.indicatorPointService.getGlobalSearchConfig(key);
+		if (model == null || model.isBlank()) throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{key, UserSettings.class.getSimpleName()}, LocaleContextHolder.getLocale()));
 
-        this.auditService.track(AuditableAction.Indicator_Point_Bulk_Persist, Map.ofEntries(
-                new AbstractMap.SimpleEntry<String, Object>("indicatorId", indicatorId)
-        ));
-        //this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
-        return;
-    }
+		this.auditService.track(AuditableAction.Indicator_Point_GetGlobalSearchConfig, Map.ofEntries(
+				new AbstractMap.SimpleEntry<String, Object>("key", key)
+		));
+		//this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
 
-    @DeleteMapping("{indicatorId}/batch/{batchId}")
-    public void report(@PathVariable("indicatorId") UUID indicatorId, @PathVariable("batchId") UUID batchId) throws InvalidApplicationException, IOException {
-        logger.debug(new MapLogEntry("deleting" + IndicatorPoint.class.getSimpleName()).And("indicatorId", indicatorId).And("batchId", batchId));
-
-        this.indicatorPointService.deleteBatch(indicatorId, batchId);
-
-        this.auditService.track(AuditableAction.Indicator_Point_Delete_Batch, Map.ofEntries(
-                new AbstractMap.SimpleEntry<String, Object>("indicatorId", indicatorId),
-                new AbstractMap.SimpleEntry<String, Object>("batchId", batchId)
-        ));
-        return;
-    }
-
-    @GetMapping("global-search-config-by-key/{key}")
-    public String getGlobalSearchConfig(@PathVariable("key") String key) throws MyApplicationException, MyForbiddenException, MyNotFoundException, InvalidApplicationException {
-        logger.debug(new MapLogEntry("retrieving" + Indicator.class.getSimpleName()).And("key", key));
-
-        String model = this.indicatorPointService.getGlobalSearchConfig(key);
-        if (model == null || model.isBlank())
-            throw new MyNotFoundException(messageSource.getMessage("General_ItemNotFound", new Object[]{key, UserSettings.class.getSimpleName()}, LocaleContextHolder.getLocale()));
-
-        this.auditService.track(AuditableAction.Indicator_Point_GetGlobalSearchConfig, Map.ofEntries(
-                new AbstractMap.SimpleEntry<String, Object>("key", key)
-        ));
-        //this.auditService.trackIdentity(AuditableAction.IdentityTracking_Action);
-
-        return model;
-    }
+		return model;
+	}
 
 }

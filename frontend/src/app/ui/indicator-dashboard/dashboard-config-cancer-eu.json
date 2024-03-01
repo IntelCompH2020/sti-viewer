@@ -1,0 +1,2425 @@
+{
+	"id": "dg21_pv03_dashboard",
+	"tabs": [
+		{
+			"name": "Science",
+			"chartGroups": [
+				{
+					"name": "",
+					"type": "gauge",
+					"gauges": [
+						{
+							"chartId": "01727e07-f3aa-4bf5-a491-be7ab3ad2b18",
+							"chartShare": {},
+							"indicatorId": "58c2dde5-a3d6-4da5-9c86-abfbf07f3fcf",
+							"type": "value_card",
+							"name": "",
+							"description": "",
+							"metrics": [
+								{
+									"type": "Sum",
+									"field": "value"
+								}
+							],
+							"labelOverride":"Publications",
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv03"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv01"]
+									},
+									{
+										"field": "indid",
+										"value": ["i01"]
+									}
+								]
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Publications",
+										"labelKey": "indid"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							]
+						},
+						{
+							"chartId": "d74e806c-36bb-47ed-9886-545123a6f050",
+							"chartShare": {},
+							"indicatorId": "58c2dde5-a3d6-4da5-9c86-abfbf07f3fcf",
+							"type": "value_card",
+							"name": "",
+							"description": "",
+							"metrics": [
+								{
+									"type": "Sum",
+									"field": "value"
+								}
+							],
+							"labelOverride":"Citations",
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv03"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv01"]
+									},
+									{
+										"field": "indid",
+										"value": ["i06"]
+									}
+								]
+							},
+							"series": [
+								{
+
+									"label": {
+										"name": "Citations",
+										"labelKey": "indid"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							]
+						},
+						{
+							"chartId": "451a4486-ac5c-4f09-83ea-bd3f7ee8cbea",
+							"chartShare": {},
+							"indicatorId": "58c2dde5-a3d6-4da5-9c86-abfbf07f3fcf",
+							"type": "value_card",
+							"name": "",
+							"description": "",
+							"metrics": [
+								{
+									"type": "Sum",
+									"field": "value"
+								}
+							],
+							"labelOverride":"Publications cited in patents",
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv03"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv01"]
+									},
+									{
+										"field": "indid",
+										"value": ["i13a"]
+									}
+								]
+							},
+							"series": [
+								{
+
+									"label": {
+										"name": "Publications cited in patents ",
+										"labelKey": "indid"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Scientific Production Trends",
+					"charts": [
+						{
+							"chartId": "b9ffc7f2-e83f-493d-b57d-afd0ae27d1c5",
+							"chartShare": {},
+							"indicatorId": "58c2dde5-a3d6-4da5-9c86-abfbf07f3fcf",
+							"type": "line",
+							"dataZoom": {
+								"inside": true,
+								"slider": true
+							},
+							"name": "",
+							"chartName": "Publications in Cancer over time",
+							"xAxis": {
+								"name": "year"
+							},
+							"yAxis": [{
+								"name": "publications"
+							}],
+							"description": "The graph shows the evolution in the number of publications in the Cancer domain, in the EU (at least one author is affiliated to an EU organization). <i>Data Source</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a>",
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "indid",
+										"value": ["i01"]
+									},
+									{
+										"field": "pvid",
+										"value": ["pv03"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv01"]
+									}
+								]
+							},
+							"labelSortKey": "key",
+							"labelsTransform": {},
+							"series": [
+								{
+									"label": {
+										"name": "publications",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"areaStyle": {},
+							"chartDownloadData": {},
+							"chartDownloadImage": {},
+							"chartDownloadJson": {}
+						},
+						{
+							"chartId": "a1e6d95f-ec27-496b-a00c-904c9c53312c",
+							"chartShare": {},
+							"indicatorId": "58c2dde5-a3d6-4da5-9c86-abfbf07f3fcf",
+							"type": "line",
+							"tooltip": {
+								"trigger": "item"
+							},
+							"dataZoom": {
+								"inside": true,
+								"slider": true
+							},
+							"legend": {},
+							"name": "",
+							"chartName": "Share of publications in Cancer topics over time",
+							"xAxis": {
+								"name": "year"
+							},
+							"yAxis": [{
+								"name": "publications"
+							}],
+							"labelSortKey": "year",
+							"description": "The graph shows the evolution in the share of publications in different topics in the Cancer domain in the EU, over time. The ontology of topics has been inferred from the selected publications using Natural Language Processing techniques: Latent Dirichlet Allocation is used detect and categorize the topics, and ChatGPT is used to label them. <i>Data Source</i>: (<a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a>)",
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Composite",
+								"field": "key",
+								"sources": [
+									{
+										"field": "key"
+									},
+									{
+										"field": "year"
+									}
+								],
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv03"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv02"]
+									},
+									{
+										"field": "indid",
+										"value": ["i01"]
+									}
+								]
+							},
+							"series": [
+								{
+									"splitSeries": [
+										{
+											"key": "key"
+										}
+									],
+									"label": {
+										"name": "Topic",
+										"labelKey": "year"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 1
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									},
+									"stack": "x"
+								}
+							],
+							"areaStyle": {}
+						},
+						{
+							"chartId": "8ff0e3e5-f03c-44f6-bb5d-79d8adaa8cbc",
+							"chartShare": {},
+							"indicatorId": "58c2dde5-a3d6-4da5-9c86-abfbf07f3fcf",
+							"type": "line",
+							"dataZoom": {
+								"inside": true
+							},
+							"name": "",
+							"chartName": "Open Access publications in Cancer over time",
+							"xAxis": {
+								"name": "year"
+							},
+							"yAxis": [{
+								"name": "publications"
+							}],
+							"legend": {},
+							"labelSortKey": "year",
+							"description": "The graph shows the evolution in the number of scientific articles published in Open Access, and in the number of publications (any type) that can be found in Open Access in the OpenAIRE graph (best available access rights from any of the OpenAIRE data sources). <i>Data Source</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a>",
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Composite",
+								"field": "key",
+								"sources": [
+									{
+										"field": "key"
+									},
+									{
+										"field": "indid"
+									}
+								],
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv03"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv01"]
+									},
+									{
+										"field": "indid",
+										"value": ["i01", "i23", "i23b"]
+									}
+								]
+							},
+							"series": [
+								{
+									"nested": {
+										"type": "bar"
+									},
+									"label": {
+										"name": "Publications",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										],
+										"groupTests": [
+											{
+												"indid": "i01"
+											}
+										]
+									}
+								},
+								{
+									"label": {
+										"name": "Publications (any type) in Open Access",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										],
+										"groupTests": [
+											{
+												"indid": "i23"
+											}
+										]
+									}
+								},
+								{
+									"label": {
+										"name": "Scientific articles published in Open Access",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										],
+										"groupTests": [
+											{
+												"indid": "i23b"
+											}
+										]
+									}
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Scientific Production Origins",
+					"charts": [
+						{
+							"chartId": "dfe6ef18-cf0a-48e2-9f6d-54c5d76cde2c",
+							"chartShare": {},
+							"indicatorId": "58c2dde5-a3d6-4da5-9c86-abfbf07f3fcf",
+							"type": "map",
+							"name": "",
+							"chartName": "Publications by Country",
+							"description": "The graph shows the number of publications in Cancer by the country of the affiliated organization of an author  (with at least one author affiliated to an EU organization). In the case of multiple authors each organization and corresponding country is counted as a separate publication (e.g., one publication with three authors, where two are from Greece and one is from Spain is counted as two publications in Greece and one in Spain). <i>Data Source</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a>",
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+							"mapChartConfig": {
+								"high": {
+									"text": "High",
+									"color": "#42c39a"
+								}
+							},
+							"countryNameMapping": {"BS":"Bahamas","BZ":"Belize","CA":"Canada","CR":"Costa Rica","CU":"Cuba","DO":"Dominican Rep.","GL":"Greenland","GT":"Guatemala","HN":"Honduras","HT":"Haiti","MX":"Mexico","NI":"Nicaragua","PA":"Panama","PR":"Puerto Rico","SV":"El Salvador","TT":"Trinidad and Tobago","US":"United States","AR":"Argentina","BO":"Bolivia","BR":"Brazil","CL":"Chile","CO":"Colombia","EC":"Ecuador","FK":"Falkland Is.","GY":"Guyana","PE":"Peru","PY":"Paraguay","SR":"Suriname","UY":"Uruguay","VE":"Venezuela","AF":"Afghanistan","AE":"United Arab Emirates","JM":"Jamaica","AM":"Armenia","AZ":"Azerbaijan","BD":"Bangladesh","BN":"Brunei","BT":"Bhutan","CN":"China","-99":"Kosovo","CY":"Cyprus","GE":"Georgia","ID":"Indonesia","IN":"India","IR":"Iran","IQ":"Iraq","IL":"Israel","JO":"Jordan","JP":"Japan","KZ":"Kazakhstan","KG":"Kyrgyzstan","KH":"Cambodia","KR":"Korea","KW":"Kuwait","LA":"Lao PDR","LB":"Lebanon","LK":"Sri Lanka","MM":"Myanmar","MN":"Mongolia","MY":"Malaysia","NP":"Nepal","OM":"Oman","PK":"Pakistan","PH":"Philippines","KP":"Dem. Rep. Korea","PS":"Palestine","QA":"Qatar","SA":"Saudi Arabia","SY":"Syria","TM":"Turkmenistan","TH":"Thailand","TJ":"Tajikistan","TL":"Timor-Leste","TR":"Turkey","TW":"Taiwan","UZ":"Uzbekistan","VN":"Vietnam","AO":"Angola","YE":"Yemen","BI":"Burundi","BJ":"Benin","BF":"Burkina Faso","BW":"Botswana","CF":"Central African Rep.","CI":"Côte d'Ivoire","CM":"Cameroon","CD":"Dem. Rep. Congo","CG":"Congo","DJ":"Djibouti","DZ":"Algeria","EG":"Egypt","ER":"Eritrea","ET":"Ethiopia","GA":"Gabon","GH":"Ghana","GN":"Guinea","GM":"Gambia","GW":"Guinea-Bissau","GQ":"Eq. Guinea","KE":"Kenya","LR":"Liberia","LY":"Libya","LS":"Lesotho","MA":"Morocco","MG":"Madagascar","ML":"Mali","MZ":"Mozambique","MR":"Mauritania","NA":"Namibia","MW":"Malawi","NE":"Niger","NG":"Nigeria","RW":"Rwanda","SS":"S. Sudan","EH":"W. Sahara","SD":"Sudan","SN":"Senegal","SL":"Sierra Leone","SO":"Somalia","SZ":"Swaziland","TD":"Chad","TG":"Togo","TN":"Tunisia","TZ":"Tanzania","UG":"Uganda","ZM":"Zambia","ZA":"South Africa","ZW":"Zimbabwe","AL":"Albania","AT":"Austria","BE":"Belgium","BG":"Bulgaria","BA":"Bosnia and Herz.","BY":"Belarus","CH":"Switzerland","CZ":"Czech Rep.","DE":"Germany","DK":"Denmark","ES":"Spain","EE":"Estonia","FI":"Finland","FR":"France","GB":"United Kingdom","GR":"Greece","HR":"Croatia","HU":"Hungary","IE":"Ireland","IS":"Iceland","IT":"Italy","LT":"Lithuania","LU":"Luxembourg","LV":"Latvia","MD":"Moldova","MK":"Macedonia","ME":"Montenegro","NL":"Netherlands","NO":"Norway","PL":"Poland","PT":"Portugal","RO":"Romania","RU":"Russia","RS":"Serbia","SK":"Slovakia","SI":"Slovenia","SE":"Sweden","UA":"Ukraine","AU":"Australia","FJ":"Fiji","NC":"New Caledonia","NZ":"New Zealand","PG":"Papua New Guinea","SB":"Solomon Is.","VU":"Vanuatu"},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv03"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv09"]
+									},
+									{
+										"field": "indid",
+										"value": ["i01"]
+									}
+								]
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Publications by Country",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							]
+						},
+						{
+							"chartId": "c5b5ceab-5000-41af-9850-6bfd1a9739cd",
+							"chartShare": {},
+							"indicatorId": "58c2dde5-a3d6-4da5-9c86-abfbf07f3fcf",
+							"type": "bar",
+							"name": "",
+							"chartName": "Publications by Organization (top 100)",
+							"description": "The graph shows the top 100 organizations in terms of the number of publications in Cancer with at least one author from an EU organization. <i>Data Source</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a>",
+							"horizontal": false,
+							"dataZoom": {
+								"slider": true,
+								"startValue": 0, 
+								"endValue": 19
+							},
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"yAxis":[{
+								"name":"publications"
+							}],
+							"xAxis": {
+								"name":"organizations",
+								"axisLabel": {
+									"rotate": 45,
+									"width": 100
+								}
+							},
+							"rawDataRequest": {
+								"keyField": "key",
+								"valueField": "value",
+								"order": {
+									"items": ["-value"]
+								},
+								"page": {
+									"offset": 0,
+									"size": 100
+								}
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "indid",
+										"value": ["i01"]
+									},
+									{
+										"field": "pvid",
+										"value": ["pv03"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv06"]
+									}
+								]
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Cancer publications per organization",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							]
+						},
+						{
+							"chartId": "af000b2a-54be-4139-a433-b7dd0585016d",
+							"chartShare": {},
+							"indicatorId": "58c2dde5-a3d6-4da5-9c86-abfbf07f3fcf",
+							"type": "polar_bar",
+							"horizontal": false,
+							"dataZoom": {
+								"inside": true,
+								"slider": true,
+								"areaZoom": {
+									"start": 0,
+									"end": 20
+								}
+							},
+							"name": "",
+							"chartName": "Publications by Funder",
+							"description": "The graph shows the number of grant-supported publications in Cancer with at least one author from an EU organization, by funder. <i>Data Source</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a>",
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"rawDataRequest": {
+								"keyField": "key",
+								"valueField": "value",
+								"order": {
+									"items": ["-value"]
+								},
+								"page": {
+									"offset": 0,
+									"size": 100
+								}
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Citations per publication",
+										"labelKey": "key"
+									},
+									"values": {
+										"valueKey": "value",
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv03"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv12"]
+									},
+									{
+										"field": "indid",
+										"value": ["i01"]
+									}
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Scientific Production Characteristics",
+					"charts": [
+						{
+							"chartId": "86c24808-d524-4c99-af17-d11f29d4b38a",
+							"chartShare": {},
+							"indicatorId": "58c2dde5-a3d6-4da5-9c86-abfbf07f3fcf",
+							"type": "bar",
+							"chartName": "Top 50 Journals",
+							"description": "The graph shows top 50 journals by the number of scientific publications in Cancer, with at least one author from an EU organization. <i>Data Source</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a>",
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+                            "horizontal": false,
+							"dataZoom": {
+								"slider": true,
+								"startValue": 0, 
+								"endValue": 19
+							},
+							"xAxis": {
+								"name": "journal",
+								"axisLabel": {
+									"width": 100,
+									"rotate": 45
+								}
+							},
+							"yAxis": [{
+								"name": "publications"
+							}],
+							"bucket": {
+								"type": "Composite",
+								"field": "key",
+								"sources": [
+									{
+										"field": "key"
+									}
+								],
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "svid",
+										"value": ["sv10"]
+									},
+									{
+										"field": "indid",
+										"value": ["i01"]
+									}
+								]
+							},
+							"labelsTransform": {},
+							"rawDataRequest": {
+								"keyField": "key",
+								"valueField": "value",
+								"order": {
+									"items": ["-value"]
+								},
+								"page": {
+									"offset": 0,
+									"size": 50
+								}
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Scientific publications in Cancer",
+										"labelKey": "key"
+									},
+									"values": {
+										"valueKey": "value",
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Scientific Impact Trends",
+					"charts": [
+						{
+							"chartId": "2f092274-dacc-44cb-86df-eb86b7b0f07b",
+							"chartShare": {},
+							"indicatorId": "58c2dde5-a3d6-4da5-9c86-abfbf07f3fcf",
+							"type": "line",
+							"name": "",
+							"chartName": "Publications cited in patents",
+							"description": "The graph shows the total number of publications, superimposed with the number of those that are cited in patents, over time using data on publications and patents are in the Cancer domain in the EU. <i>Data Sources</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a>, <a href=\"https://www.epo.org/searching-for-patents/business/patstat.html\" target=\"_blank\">Patstat - EPO dataset</a>.",
+							"xAxis": {
+								"name": "year"
+							},
+							"yAxis": [
+								{
+									"name": "publications"
+								},
+								{
+									"name": "Publications cited in patents"
+								}
+							],
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+							"legend":{},
+							"bucket": {
+								"type": "Composite",
+								"field": "key",
+								"sources": [
+									{
+										"field": "key"
+									},
+									{
+										"field": "indid"
+									}
+								],
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}								
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv03"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv01"]
+									},
+									{
+										"field": "indid",
+										"value": ["i01", "i13a"]
+									}
+								]
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Publications",
+										"labelKey": "key"
+									},
+									"nested": {
+										"type": "bar"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										],
+										"groupTests": [
+											{
+												"indid": "i01"
+											}
+										]
+									}
+								},
+								{
+									"yAxisIndex": "1",
+									"label": {
+										"name": "Publications cited in patents",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 1
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										],
+										"groupTests": [
+											{
+												"indid": "i13a"
+											}
+										]
+									}
+								}
+							],
+							"labelSortKey": "key"
+						},
+						{
+							"chartId": "3f9b06f9-77b6-43df-b31a-0dc0188557ae",
+							"chartShare": {},
+							"indicatorId": "58c2dde5-a3d6-4da5-9c86-abfbf07f3fcf",
+							"type": "line",
+							"name": "",
+							"chartName": "Average citations per publication over time",
+							"description": "The graph shows the average number of citations per scientific publication in the Cancer domain, with at least one author from an EU organization, over time by the year of publication. <i>Data Source</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a> using the integrated <a href=\"https://opencitations.net/\" target=\"_blank\">Open Citations</a> dataset.",
+							"xAxis": {
+								"name": "year"
+							},
+							"yAxis": [{
+								"name": "citations per publication"
+							}],
+							"areaStyle": {},
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"labelSortKey": "key",
+							"series": [
+								{
+									"label": {
+										"name": "Number of citations of scientific publications in Cancer domain",
+										"labelKey": "key"
+									},
+									"values": {
+										"valueKey": "value",
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 1
+										},
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv03"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv01"]
+									},
+									{
+										"field": "indid",
+										"value": ["i07"]
+									}
+								]
+							}
+						},
+						{
+							"chartId": "7186b92e-7830-489c-ba1b-f98f5035e239",
+							"chartShare": {},
+							"indicatorId": "58c2dde5-a3d6-4da5-9c86-abfbf07f3fcf",
+							"type": "line",
+							"name": "",
+							"chartName": "Total citations over time",
+							"description": "The graph shows the total number of citations for scientific publications in Cancer with at least one author from an EU organization over time by the year of publication. <i>Data Source</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a> using the integrated <a href=\"https://opencitations.net/\" target=\"_blank\">Open Citations</a> dataset.",
+							"xAxis": {
+								"name": "year"
+							},
+							"yAxis": [{
+								"name": "citations"
+							}],
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+							"areaStyle": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"labelSortKey": "key",
+							"series": [
+								{
+									"label": {
+										"name": "Number of scientific publications in Cancer domain",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv03"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv01"]
+									},
+									{
+										"field": "indid",
+										"value": ["i06"]
+									}
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Scientific Impact Origins",
+					"charts": [
+						{
+							"chartId": "9c617c52-a60e-4254-9b40-86156d5a8382",
+							"chartShare": {},
+							"indicatorId": "58c2dde5-a3d6-4da5-9c86-abfbf07f3fcf",
+							"type": "map",
+							"name": "",
+							"countryNameMapping": {"BS":"Bahamas","BZ":"Belize","CA":"Canada","CR":"Costa Rica","CU":"Cuba","DO":"Dominican Rep.","GL":"Greenland","GT":"Guatemala","HN":"Honduras","HT":"Haiti","MX":"Mexico","NI":"Nicaragua","PA":"Panama","PR":"Puerto Rico","SV":"El Salvador","TT":"Trinidad and Tobago","US":"United States","AR":"Argentina","BO":"Bolivia","BR":"Brazil","CL":"Chile","CO":"Colombia","EC":"Ecuador","FK":"Falkland Is.","GY":"Guyana","PE":"Peru","PY":"Paraguay","SR":"Suriname","UY":"Uruguay","VE":"Venezuela","AF":"Afghanistan","AE":"United Arab Emirates","JM":"Jamaica","AM":"Armenia","AZ":"Azerbaijan","BD":"Bangladesh","BN":"Brunei","BT":"Bhutan","CN":"China","-99":"Kosovo","CY":"Cyprus","GE":"Georgia","ID":"Indonesia","IN":"India","IR":"Iran","IQ":"Iraq","IL":"Israel","JO":"Jordan","JP":"Japan","KZ":"Kazakhstan","KG":"Kyrgyzstan","KH":"Cambodia","KR":"Korea","KW":"Kuwait","LA":"Lao PDR","LB":"Lebanon","LK":"Sri Lanka","MM":"Myanmar","MN":"Mongolia","MY":"Malaysia","NP":"Nepal","OM":"Oman","PK":"Pakistan","PH":"Philippines","KP":"Dem. Rep. Korea","PS":"Palestine","QA":"Qatar","SA":"Saudi Arabia","SY":"Syria","TM":"Turkmenistan","TH":"Thailand","TJ":"Tajikistan","TL":"Timor-Leste","TR":"Turkey","TW":"Taiwan","UZ":"Uzbekistan","VN":"Vietnam","AO":"Angola","YE":"Yemen","BI":"Burundi","BJ":"Benin","BF":"Burkina Faso","BW":"Botswana","CF":"Central African Rep.","CI":"Côte d'Ivoire","CM":"Cameroon","CD":"Dem. Rep. Congo","CG":"Congo","DJ":"Djibouti","DZ":"Algeria","EG":"Egypt","ER":"Eritrea","ET":"Ethiopia","GA":"Gabon","GH":"Ghana","GN":"Guinea","GM":"Gambia","GW":"Guinea-Bissau","GQ":"Eq. Guinea","KE":"Kenya","LR":"Liberia","LY":"Libya","LS":"Lesotho","MA":"Morocco","MG":"Madagascar","ML":"Mali","MZ":"Mozambique","MR":"Mauritania","NA":"Namibia","MW":"Malawi","NE":"Niger","NG":"Nigeria","RW":"Rwanda","SS":"S. Sudan","EH":"W. Sahara","SD":"Sudan","SN":"Senegal","SL":"Sierra Leone","SO":"Somalia","SZ":"Swaziland","TD":"Chad","TG":"Togo","TN":"Tunisia","TZ":"Tanzania","UG":"Uganda","ZM":"Zambia","ZA":"South Africa","ZW":"Zimbabwe","AL":"Albania","AT":"Austria","BE":"Belgium","BG":"Bulgaria","BA":"Bosnia and Herz.","BY":"Belarus","CH":"Switzerland","CZ":"Czech Rep.","DE":"Germany","DK":"Denmark","ES":"Spain","EE":"Estonia","FI":"Finland","FR":"France","GB":"United Kingdom","GR":"Greece","HR":"Croatia","HU":"Hungary","IE":"Ireland","IS":"Iceland","IT":"Italy","LT":"Lithuania","LU":"Luxembourg","LV":"Latvia","MD":"Moldova","MK":"Macedonia","ME":"Montenegro","NL":"Netherlands","NO":"Norway","PL":"Poland","PT":"Portugal","RO":"Romania","RU":"Russia","RS":"Serbia","SK":"Slovakia","SI":"Slovenia","SE":"Sweden","UA":"Ukraine","AU":"Australia","FJ":"Fiji","NC":"New Caledonia","NZ":"New Zealand","PG":"Papua New Guinea","SB":"Solomon Is.","VU":"Vanuatu"},
+							"chartName": "Citations per publication by country",
+							"description": "The graph shows the average number of citations per publication, in Cancer with at least one author from an EU organization, by the country of the affiliated organization of an author. In the case of multiple authors each organization and corresponding country is counted as a separate publication (e.g., one publication with three authors, where two are from Greece and one is from Spain is counted as two publications in Greece and one in Spain). <i>Data Source</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a> using the integrated <a href=\"https://opencitations.net/\" target=\"_blank\">Open Citations</a> dataset.",
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+							"mapChartConfig": {
+								"high": {
+									"text": "High",
+									"color": "#42c39a"
+								}
+							},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Average Number of citation",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 1
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv03"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv09"]
+									},
+									{
+										"field": "indid",
+										"value": ["i07"]
+									}
+								]
+							}
+						},
+						{
+							"chartId": "c52af32e-6f29-459a-889a-a865d9f93ee2",
+							"chartShare": {},
+							"indicatorId": "58c2dde5-a3d6-4da5-9c86-abfbf07f3fcf",
+							"type": "bar",
+							"horizontal": false,
+							"dataZoom": {
+								"slider": true,
+								"startValue": 0, 
+								"endValue": 19
+							},
+							"name": "",
+							"chartName": "Citations per publication by organization (top 100)",
+							"description": "The graph shows the top 100 organizations in terms of the average number of citations per publication in Cancer with at least one author from an EU organization. <i>Data Source</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a> using the integrated <a href=\"https://opencitations.net/\" target=\"_blank\">Open Citations</a> dataset.",
+							"xAxis": {
+								"name": "organization",
+								"axisLabel": {
+									"width": 100,
+									"rotate": 45
+								}
+							},
+							"yAxis": [{
+								"name": "citations per publication"
+							}],
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"rawDataRequest": {
+								"keyField": "key",
+								"valueField": "value",
+								"order": {
+									"items": ["-value"]
+								},
+								"page": {
+									"offset": 0,
+									"size": 100
+								}
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Citations per publication",
+										"labelKey": "key"
+									},
+									"values": {
+										"valueKey": "value",
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 1
+										},
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv03"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv06"]
+									},{
+										"field": "indid",
+										"value": ["i07"]
+									}
+								]
+							}
+						},
+						{
+							"chartId": "7e4b4459-93d0-4d5d-8842-b49c6748a864",
+							"chartShare": {},
+							"indicatorId": "58c2dde5-a3d6-4da5-9c86-abfbf07f3fcf",
+							"type": "polar_bar",
+							"horizontal": false,
+							"dataZoom": {
+								"inside": true,
+								"slider": true,
+								"areaZoom": {
+									"start": 0,
+									"end": 20
+								}
+							},
+							"name": "",
+							"chartName": "Citations per publication by funder",
+							"description": "The graph shows citations per publication for grant-supported publications, by funder (for funders integrated in OpenAIRE – see Methodology for a list), in Cancer with at least one author from an EU organization.  <i>Data Source</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a> using the integrated <a href=\"https://opencitations.net/\" target=\"_blank\">Open Citations</a> dataset.",
+							"xAxis": {
+								"name": "funder",
+								"axisLabel": {
+									"width": 100,
+									"rotate": 45
+								}
+							},
+							"yAxis": [{
+								"name": "citations per publication"
+							}],
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"rawDataRequest": {
+								"keyField": "key",
+								"valueField": "value",
+								"order": {
+									"items": ["-value"]
+								},
+								"page": {
+									"offset": 0,
+									"size": 100
+								}
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Citations per publication",
+										"labelKey": "key"
+									},
+									"values": {
+										"valueKey": "value",
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 1
+										},
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv03"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv12"]
+									},
+									{
+										"field": "indid",
+										"value": ["i07"]
+									}
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Scientific Impact Characteristics",
+					"charts": [
+						{
+							"chartId": "c225d62e-9170-446a-916c-758d16aa1bfa",
+							"chartShare": {},
+							"indicatorId": "58c2dde5-a3d6-4da5-9c86-abfbf07f3fcf",
+							"type": "pie",
+							"doughnut": true,
+							"roseType": "area",
+							"name": "",
+							"chartName": "Publications cited in patents by topic in Cancer",
+							"description": "The graph shows the number of publications cited in patents by topic within the Cancer domain, both publications and patents are in the Cancer domain in the EU. The ontology of topics has been inferred from the selected publications using Natural Language Processing techniques: Latent Dirichlet Allocation is used detect and categorize the topics, and ChatGPT is used to label them. <i>Data Sources</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a>, <a href=\"https://www.epo.org/searching-for-patents/business/patstat.html\" target=\"_blank\">Patstat - EPO dataset</a>.",
+							"xAxis": {
+								"name": "topic"
+							},
+							"yAxis": [{
+								"name": ""
+							}],
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+							"legend": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"rawDataRequest": {
+								"keyField": "key",
+								"valueField": "value",
+								"order": {
+									"items": ["-value"]
+								}
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Average Number of citation",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 1
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv03"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv02"]
+									},
+									{
+										"field": "indid",
+										"value": ["i13a"]
+									}
+								]
+							}
+						},
+						{
+							"chartId": "b5dc3a56-4221-4698-a19f-642f3fd08b42",
+							"chartShare": {},
+							"indicatorId": "58c2dde5-a3d6-4da5-9c86-abfbf07f3fcf",
+							"type": "pie",
+							"doughnut": true,
+							"roseType": "area",
+							"name": "",
+							"chartName": "Citations per publication by topic in Cancer",
+							"description": "The graph shows the average number of citations per scientific publication for different topics in the Cancer domain. The ontology of topics has been inferred from the selected publications using Natural Language Processing techniques: Latent Dirichlet Allocation is used detect and categorize the topics, and ChatGPT is used to label them. <i>Data Source</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a> using the integrated <a href=\"https://opencitations.net/\" target=\"_blank\">Open Citations</a> dataset.",
+							"xAxis": {
+								"name": "topic"
+							},
+							"yAxis": [{
+								"name": ""
+							}],
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+							"legend": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"rawDataRequest": {
+								"keyField": "key",
+								"valueField": "value",
+								"order": {
+									"items": ["-value"]
+								}
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Average Number of citation",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 1
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv03"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv02"]
+									},
+									{
+										"field": "indid",
+										"value": ["i07"]
+									}
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Scientific Collaborations",
+					"charts": [
+						{
+							"chartId": "274bf4ef-809c-4fa2-b537-511874b57242",
+							"chartShare": {},
+							"indicatorId": "58c2dde5-a3d6-4da5-9c86-abfbf07f3fcf",
+							"type": "line",
+							"dataZoom": {
+								"inside": true
+							},
+							"legend": {},
+							"name": "",
+							"chartName": "International collaborations over time",
+							"xAxis": {
+								"name": "year"
+							},
+							"yAxis": [{
+								"name": "publications"
+							},{
+								"name": "co-publications"
+							}],
+							"labelSortKey": "year",
+							"description": "The graph shows the evolution in the number of publications in Cancer with authors affiliated to organizations in at least two different countries, one of which is in the EU. Superimposed is the number of those that are cited by at least one publication. <i>Data Source</i>: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a> using the integrated <a href=\"https://opencitations.net/\" target=\"_blank\">Open Citations</a> dataset.",
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Composite",
+								"field": "key",
+								"sources": [
+									{
+										"field": "key"
+									},
+									{
+										"field": "indid"
+									}
+								],
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv03"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv01"]
+									},
+									{
+										"field": "indid",
+										"value": ["i19", "i20", "i01"]
+									}
+								]
+							},
+							"series": [
+								{
+									"nested": {
+										"type": "bar"
+									},
+									"label": {
+										"name": "Publications over time",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										],
+										"groupTests": [
+											{
+												"indid": "i01"
+											}
+										]
+									}
+								},
+								{
+									"yAxisIndex":"1",
+									"label": {
+										"name": "Citable international co-publications",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										],
+										"groupTests": [
+											{
+												"indid": "i20"
+											}
+										]
+									}
+								},
+								{
+									"yAxisIndex":"1",
+									"label": {
+										"name": "International co-publications",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										],
+										"groupTests": [
+											{
+												"indid": "i19"
+											}
+										]
+									}
+								}
+							]
+						},
+						{
+							"chartId": "8a29024e-c4c1-4b17-898e-571a91c06f63",
+							"chartShare": {},
+							"indicatorId": "58c2dde5-a3d6-4da5-9c86-abfbf07f3fcf",
+							"type": "pie",
+							"doughnut": true,
+							"roseType": "area",
+							"name": "",
+							"chartName": "International collaborations by topic",
+							"description": "The graph shows the number of publications with authors affiliated to organizations in at least two different countries, one of which is in the EU, by topic in the Cancer domain. The ontology of topics has been inferred from the selected publications using Natural Language Processing techniques: Latent Dirichlet Allocation is used detect and categorize the topics, and ChatGPT is used to label them. <i>Data Sourc</i>_: <a href=\"https://graph.openaire.eu/\" target=\"_blank\">OpenAIRE Graph</a>",
+							"xAxis": {
+								"name": "topic"
+							},
+							"yAxis": [{
+								"name": "publications"
+							}],
+							"rawDataRequest": {
+								"keyField": "key",
+								"valueField": "value",
+								"order": {
+									"items": ["-value"]
+								},
+								"page": {
+									"offset": 0,
+									"size": 1000
+								}
+							},
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+							"legend": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Average Number of citation",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 1
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv03"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv02"]
+									},
+									{
+										"field": "indid",
+										"value": ["i19"]
+									}
+								]
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Technology",
+			"chartGroups": [
+				{
+					"name": "",
+					"type": "gauge",
+					"gauges": [
+						{
+							"chartId": "16094920-12d9-42e9-a1f5-61c1fe6327d7",
+							"chartShare": {},
+							"indicatorId": "58c2dde5-a3d6-4da5-9c86-abfbf07f3fcf",
+							"type": "value_card",
+							"name": "",
+							"description": "",
+							"metrics": [
+								{
+									"type": "Sum",
+									"field": "value"
+								}
+							],
+							"labelOverride": "Patents",
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": [ "pv03" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv01" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i09" ]
+									}
+								]
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Publications",
+										"labelKey": "indid"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Technological Production Trends",
+					"charts": [
+						{
+							"chartId": "05bf533b-5f2a-4080-a1aa-fc39ceaa4cd3",
+							"chartShare": {},
+							"indicatorId": "58c2dde5-a3d6-4da5-9c86-abfbf07f3fcf",
+							"type": "line",
+							"dataZoom": {
+								"inside": true,
+								"slider": true
+							},
+							"name": "",
+							"chartName": "Patents in Cancer over time",
+							"xAxis": {
+								"name": "year"
+							},
+							"yAxis": [{
+								"name": "patents"
+							}],
+							"description": "The graph shows the evolution in the number of patents in the Cancer domain granted by the EPO and still valid in 2021-Q2 by priority year. <i>Data Source</i>: <a href=\"https://www.epo.org/searching-for-patents/business/patstat.html\" target=\"_blank\">Patstat - EPO dataset</a>",
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": [ "pv03" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv01" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i09" ]
+									}
+								]
+							},
+							"labelSortKey": "key",
+							"labelsTransform": {},
+							"series": [
+								{
+									"label": {
+										"name": "patents",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"areaStyle": {},
+							"filters": [],
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {}
+						},
+						{
+							"chartId": "66cc63ee-4950-4503-8607-297c9e2c88db",
+							"chartShare": {},
+							"indicatorId": "58c2dde5-a3d6-4da5-9c86-abfbf07f3fcf",
+							"type": "line",
+							"dataZoom": {
+								"inside": true
+							},
+							"legend": {},
+							"name": "",
+							"chartName": "Share of patents in Cancer topics over time",
+							"xAxis": {
+								"name": "year"
+							},
+							"yAxis": [{
+								"name": "patents"
+							}],
+							"labelSortKey": "year",
+							"description": "The graph shows the evolution in the share of patents in different topics in the Cancer domain, granted by the EPO and still valid in 2021-Q2. The ontology of topics is taken from the technical annex of the Final Report of the <a href=\"https://finance.ec.europa.eu/sustainable-finance/tools-and-standards/eu-taxonomy-sustainable-activities_en#documents\" target=\"_blank\">EU taxonomy for sustainable activities</a> (Chapter 4. “Electricity, gas, steam and air conditioning supply,” p. 205). We assigned patents to  topics, by matching topics to CPC codes. <i>Data Source</i>: <a href=\"https://www.epo.org/searching-for-patents/business/patstat.html\" target=\"_blank\">Patstat - EPO dataset</a>",
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Composite",
+								"field": "key",
+								"sources": [
+									{
+										"field": "key"
+									},
+									{
+										"field": "year"
+									}
+								],
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": [ "pv03" ]
+									},
+									{
+										"field": "svid",
+										"value": [ "sv02" ]
+									},
+									{
+										"field": "indid",
+										"value": [ "i09b" ]
+									}
+								]
+							},
+							"series": [
+								{
+									"splitSeries": [
+										{
+											"key": "key"
+										}
+									],
+									"label": {
+										"name": "Topic",
+										"labelKey": "year"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									},
+									"stack": "x"
+								}
+							],
+							"areaStyle": {}
+						}
+					]
+				},
+				{
+					"name": "Technological Production Origins",
+					"charts":[
+						{
+							"chartId": "019af35c-baf9-4dbe-b30e-1c45464fce53",
+							"chartShare": {},
+							"indicatorId": "58c2dde5-a3d6-4da5-9c86-abfbf07f3fcf",
+							"type": "map",
+							"name": "",
+							"chartName": "Patents by country",
+							"description": "The graph shows the number of patents in the Cancer domain granted by the EPO and still valid in 2021-Q2 by the country of the applicant. <i>Data Source<i/>: <a href=\"https://www.epo.org/searching-for-patents/business/patstat.html\" target=\"_blank\">Patstat - EPO dataset</a>",
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+							"mapChartConfig": {
+								"high": {
+									"text": "High",
+									"color": "#42c39a"
+								}
+							},
+							"countryNameMapping": {"BS":"Bahamas","BZ":"Belize","CA":"Canada","CR":"Costa Rica","CU":"Cuba","DO":"Dominican Rep.","GL":"Greenland","GT":"Guatemala","HN":"Honduras","HT":"Haiti","MX":"Mexico","NI":"Nicaragua","PA":"Panama","PR":"Puerto Rico","SV":"El Salvador","TT":"Trinidad and Tobago","US":"United States","AR":"Argentina","BO":"Bolivia","BR":"Brazil","CL":"Chile","CO":"Colombia","EC":"Ecuador","FK":"Falkland Is.","GY":"Guyana","PE":"Peru","PY":"Paraguay","SR":"Suriname","UY":"Uruguay","VE":"Venezuela","AF":"Afghanistan","AE":"United Arab Emirates","JM":"Jamaica","AM":"Armenia","AZ":"Azerbaijan","BD":"Bangladesh","BN":"Brunei","BT":"Bhutan","CN":"China","-99":"Kosovo","CY":"Cyprus","GE":"Georgia","ID":"Indonesia","IN":"India","IR":"Iran","IQ":"Iraq","IL":"Israel","JO":"Jordan","JP":"Japan","KZ":"Kazakhstan","KG":"Kyrgyzstan","KH":"Cambodia","KR":"Korea","KW":"Kuwait","LA":"Lao PDR","LB":"Lebanon","LK":"Sri Lanka","MM":"Myanmar","MN":"Mongolia","MY":"Malaysia","NP":"Nepal","OM":"Oman","PK":"Pakistan","PH":"Philippines","KP":"Dem. Rep. Korea","PS":"Palestine","QA":"Qatar","SA":"Saudi Arabia","SY":"Syria","TM":"Turkmenistan","TH":"Thailand","TJ":"Tajikistan","TL":"Timor-Leste","TR":"Turkey","TW":"Taiwan","UZ":"Uzbekistan","VN":"Vietnam","AO":"Angola","YE":"Yemen","BI":"Burundi","BJ":"Benin","BF":"Burkina Faso","BW":"Botswana","CF":"Central African Rep.","CI":"Côte d'Ivoire","CM":"Cameroon","CD":"Dem. Rep. Congo","CG":"Congo","DJ":"Djibouti","DZ":"Algeria","EG":"Egypt","ER":"Eritrea","ET":"Ethiopia","GA":"Gabon","GH":"Ghana","GN":"Guinea","GM":"Gambia","GW":"Guinea-Bissau","GQ":"Eq. Guinea","KE":"Kenya","LR":"Liberia","LY":"Libya","LS":"Lesotho","MA":"Morocco","MG":"Madagascar","ML":"Mali","MZ":"Mozambique","MR":"Mauritania","NA":"Namibia","MW":"Malawi","NE":"Niger","NG":"Nigeria","RW":"Rwanda","SS":"S. Sudan","EH":"W. Sahara","SD":"Sudan","SN":"Senegal","SL":"Sierra Leone","SO":"Somalia","SZ":"Swaziland","TD":"Chad","TG":"Togo","TN":"Tunisia","TZ":"Tanzania","UG":"Uganda","ZM":"Zambia","ZA":"South Africa","ZW":"Zimbabwe","AL":"Albania","AT":"Austria","BE":"Belgium","BG":"Bulgaria","BA":"Bosnia and Herz.","BY":"Belarus","CH":"Switzerland","CZ":"Czech Rep.","DE":"Germany","DK":"Denmark","ES":"Spain","EE":"Estonia","FI":"Finland","FR":"France","GB":"United Kingdom","GR":"Greece","HR":"Croatia","HU":"Hungary","IE":"Ireland","IS":"Iceland","IT":"Italy","LT":"Lithuania","LU":"Luxembourg","LV":"Latvia","MD":"Moldova","MK":"Macedonia","ME":"Montenegro","NL":"Netherlands","NO":"Norway","PL":"Poland","PT":"Portugal","RO":"Romania","RU":"Russia","RS":"Serbia","SK":"Slovakia","SI":"Slovenia","SE":"Sweden","UA":"Ukraine","AU":"Australia","FJ":"Fiji","NC":"New Caledonia","NZ":"New Zealand","PG":"Papua New Guinea","SB":"Solomon Is.","VU":"Vanuatu"},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv03"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv09"]
+									},
+									{
+										"field": "indid",
+										"value": ["i09"]
+									}
+								]
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Patents by Country",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 1
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							]
+						},
+						{
+							"chartId": "1bcf3c6b-3c5e-40f7-b51c-8fc21050ad00",
+							"chartShare": {},
+							"indicatorId": "58c2dde5-a3d6-4da5-9c86-abfbf07f3fcf",
+							"type": "bar",
+							"horizontal": false,
+							"dataZoom": {
+								"slider": true,
+								"startValue": 0, 
+								"endValue": 19
+							},
+							"name": "",
+							"chartName": "Patents by Organization (top 100)",
+							"description": "The graph shows the top 100 organizations of patent applicants in terms of the number of patents in the Cancer domain granted by the EPO and still valid in 2021-Q2.",
+							"xAxis": {
+								"name": "organization",
+								"axisLabel": {
+									"width": 100,
+									"rotate": 45
+								}
+							},
+							"yAxis": [{
+								"name": "patents"
+							}],
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								],
+								"bucketSort":{
+									"sortFields":[
+										{
+											"field":"value",
+											"metricAggregateType":"Sum",
+											"order":"DESC"
+										}
+									],
+									"paging":{
+										"offset":0,
+										"size":100
+									}
+								}
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Number of patents",
+										"labelKey": "key"
+									},
+									"values": {
+										"valueKey": "value",
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv03"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv06"]
+									},
+									{
+										"field": "indid",
+										"value": ["i09"]
+									}
+								]
+							}
+						},
+						{
+							"chartId": "e646329b-31c8-447f-8a1f-3e712af187ea",
+							"chartShare": {},
+							"indicatorId": "58c2dde5-a3d6-4da5-9c86-abfbf07f3fcf",
+							"type": "pie",
+							"doughnut": false,
+							"radius": ["40%", "70%"],
+							"name": "",
+							"chartName": "Patents by sector",
+							"description": "The graph shows the number of patents in the Cancer domain granted by the EPO and currently valid (at least until 2021 Q2) by the type of patent applicant. <i>Data Source</i>: <a href=\"https://www.epo.org/searching-for-patents/business/patstat.html\" target=\"_blank\">Patstat - EPO dataset</a>",
+							"xAxis": {
+								"name": "topic"
+							},
+							"yAxis": [{
+								"name": ""
+							}],
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+							"legend": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Number of patents",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv03"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv08"]
+									},
+									{
+										"field": "indid",
+										"value": ["i09"]
+									}
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Technological Production Characteristics",
+					"charts":[
+						{
+							"chartId": "98ac4ada-995e-440c-b967-f8fbeda25c8e",
+							"chartShare": {},
+							"indicatorId": "58c2dde5-a3d6-4da5-9c86-abfbf07f3fcf",
+							"type": "pie",
+							"name": "",
+							"chartName": "Patents by NACE code",
+							"description": "The graph shows the number of patents in the Cancer domain granted by the EPO and still valid in 2021-Q2 by the NACE (Nomenclature of Economic Activities) codes of patents as assigned by PATSTAT. <i>Data Source</i>: <a href=\"https://www.epo.org/searching-for-patents/business/patstat.html\" target=\"_blank\">Patstat - EPO dataset</a>",
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+							"legend": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								]
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Number of patents",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 1
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv03"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv07"]
+									},
+									{
+										"field": "indid",
+										"value": ["i09"]
+									}
+								]
+							}
+						},
+						{
+							"chartId": "3e81334e-71b0-4ac3-83c7-40bf4b7de6e9",
+							"chartShare": {},
+							"indicatorId": "58c2dde5-a3d6-4da5-9c86-abfbf07f3fcf",
+							"type": "bar",
+							"horizontal": true,
+							"dataZoom": {
+								"slider": true,
+								"startValue": 0,
+								"endValue": 19							
+							},
+							"name": "",
+							"chartName": "Patents by IPC code (top 20 codes)",
+							"description": "The graph shows the top 20 IPC (International Patent Classification) codes by the number of patents in the Cancer domain granted by the EPO and still valid in 2021-Q2 by IPC. <i>Data Source</i>: <a href=\"https://www.epo.org/searching-for-patents/business/patstat.html\" target=\"_blank\">Patstat - EPO dataset</a>",
+							"xAxis": {
+								"name": "organization",
+								"axisLabel": {
+									"width": 100,
+									"rotate": 45
+								}
+							},
+							"yAxis": [{
+								"name": "citations per publications"
+							}],
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								],
+								"bucketSort":{
+									"sortFields":[
+										{
+											"field":"value",
+											"metricAggregateType":"Sum",
+											"order":"DESC"
+										}
+									],
+									"paging":{
+										"offset":0,
+										"size":20
+									}
+								}
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Number of patents",
+										"labelKey": "key"
+									},
+									"values": {
+										"valueKey": "value",
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 3
+										},
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv03"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv13"]
+									},
+									{
+										"field": "indid",
+										"value": ["i09"]
+									}
+								]
+							}
+						},
+						{
+							"chartId": "f42aea80-d021-4380-8309-0720fba318f6",
+							"chartShare": {},
+							"indicatorId": "58c2dde5-a3d6-4da5-9c86-abfbf07f3fcf",
+							"type": "pie",
+							"roseType": "area",
+							"doughnut": true,
+							"name": "",
+							"chartName": "Patents by topic",
+							"description": "The graph shows the number of patents by topic in the Cancer domain, granted by the EPO and still valid in 2021-Q2. The ontology of topics is taken from the technical annex of the Final Report of the <a href=\"https://finance.ec.europa.eu/sustainable-finance/tools-and-standards/eu-taxonomy-sustainable-activities_en#documents\" target=\"_blank\">EU taxonomy for sustainable activities</a> (Chapter 4. “Electricity, gas, steam and air conditioning supply,” p. 205). We assigned patents to topics, by matching topics to CPC codes. <i>Data Source</i>: <a href=\"https://www.epo.org/searching-for-patents/business/patstat.html\" target=\"_blank\">Patstat - EPO dataset</a>",
+							"chartDownloadData": {},
+							"chartDownloadJson": {},
+							"chartDownloadImage": {},
+							"legend": {},
+							"bucket": {
+								"type": "Terms",
+								"field": "key",
+								"metrics": [
+									{
+										"type": "Sum",
+										"field": "value"
+									}
+								],
+								"bucketSort":{
+									"sortFields":[
+										{
+											"field":"value",
+											"metricAggregateType":"Sum",
+											"order":"DESC"
+										}
+									],
+									"paging":{
+										"offset":0,
+										"size":50
+									}
+								}
+							},
+							"series": [
+								{
+									"label": {
+										"name": "Number of patents",
+										"labelKey": "key"
+									},
+									"values": {
+										"formatter": {
+											"type": "number",
+											"decimalAccuracy": 1
+										},
+										"valueKey": "value",
+										"tests": [
+											{
+												"aggregateType": "Sum"
+											},
+											{
+												"field": "value"
+											}
+										]
+									}
+								}
+							],
+							"staticFilters": {
+								"keywordsFilters": [
+									{
+										"field": "pvid",
+										"value": ["pv03"]
+									},
+									{
+										"field": "svid",
+										"value": ["sv02"]
+									},
+									{
+										"field": "indid",
+										"value": ["i09"]
+									}
+								]
+							}
+						}
+					]
+				}
+			]
+		}
+	]
+}

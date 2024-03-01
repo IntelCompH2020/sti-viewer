@@ -13,24 +13,24 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+
 @Component
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class DatasetCensor extends BaseCensor {
+	private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(DatasetCensor.class));
+	private final AuthorizationService authService;
 
-    private static final LoggerService logger = new LoggerService(LoggerFactory.getLogger(DatasetCensor.class));
+	@Autowired
+	public DatasetCensor(ConventionService conventionService,
+	                     AuthorizationService authService
+	) {
+		super(conventionService);
+		this.authService = authService;
+	}
 
-    private final AuthorizationService authService;
-
-    @Autowired
-    public DatasetCensor(ConventionService conventionService, AuthorizationService authService) {
-        super(conventionService);
-        this.authService = authService;
-    }
-
-    public void censor(FieldSet fields) throws MyForbiddenException {
-        logger.debug(new DataLogEntry("censoring fields", fields));
-        if (this.isEmpty(fields))
-            return;
-        this.authService.authorizeForce(Permission.BrowseDataset);
-    }
+	public void censor(FieldSet fields) throws MyForbiddenException {
+		logger.debug(new DataLogEntry("censoring fields", fields));
+		if (this.isEmpty(fields)) return;
+		this.authService.authorizeForce(Permission.BrowseDataset);
+	}
 }

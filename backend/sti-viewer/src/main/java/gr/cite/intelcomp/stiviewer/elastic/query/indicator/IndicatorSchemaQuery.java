@@ -23,92 +23,87 @@ import java.util.*;
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class IndicatorSchemaQuery extends ElasticInnerObjectQuery<IndicatorSchemaQuery, IndicatorSchemaEntity, UUID> {
 
-    private String innerPath;
+	private String innerPath;
 
-    private final QueryFactory queryFactory;
+	private final QueryFactory queryFactory;
 
-    @Override
-    public IndicatorSchemaQuery innerPath(String value) {
-        this.innerPath = value;
-        return this;
-    }
+	@Override
+	public IndicatorSchemaQuery innerPath(String value) {
+		this.innerPath = value;
+		return this;
+	}
 
-    private final ConventionService conventionService;
+	private final ConventionService conventionService;
 
-    public IndicatorSchemaQuery(
-            ElasticsearchRestTemplate elasticsearchRestTemplate,
-            ElasticProperties elasticProperties,
-            QueryFactory queryFactory,
-            ConventionService conventionService
-    ) {
-        super(elasticsearchRestTemplate, elasticProperties);
-        this.queryFactory = queryFactory;
-        this.conventionService = conventionService;
-    }
+	public IndicatorSchemaQuery(
+			ElasticsearchRestTemplate elasticsearchRestTemplate,
+			ElasticProperties elasticProperties,
+			QueryFactory queryFactory,
+			ConventionService conventionService
+	) {
+		super(elasticsearchRestTemplate, elasticProperties);
+		this.queryFactory = queryFactory;
+		this.conventionService = conventionService;
+	}
 
-    @Override
-    protected Class<IndicatorSchemaEntity> entityClass() {
-        return IndicatorSchemaEntity.class;
-    }
+	@Override
+	protected Class<IndicatorSchemaEntity> entityClass() {
+		return IndicatorSchemaEntity.class;
+	}
 
-    @Override
-    protected Boolean isFalseQuery() {
-        return false;
-    }
+	@Override
+	protected Boolean isFalseQuery() {
+		return false;
+	}
 
-    @Override
-    protected QueryBuilder applyAuthZ() {
-        return null;
-    }
+	@Override
+	protected QueryBuilder applyAuthZ() {
+		return null;
+	}
 
-    @Override
-    protected QueryBuilder applyFilters() {
-//		List<QueryBuilder> predicates = new ArrayList<>();
-//
-//		if (predicates.size() > 0) {
-//			return this.and(predicates);
-//		} else {
-//			return null;
-//		}
-        return null;
-    }
+	@Override
+	protected QueryBuilder applyFilters() {
+		List<QueryBuilder> predicates = new ArrayList<>();
 
-    @Override
-    public IndicatorSchemaEntity convert(Map<String, Object> rawData, Set<String> columns) {
-        IndicatorSchemaEntity mocDoc = new IndicatorSchemaEntity();
-        if (columns.contains(IndicatorSchemaEntity.Fields.id))
-            mocDoc.setId(FieldBasedMapper.shallowSafeConversion(rawData.get(IndicatorSchemaEntity.Fields.id), UUID.class));
-        mocDoc.setFields(this.convertNested(rawData, columns, this.queryFactory.query(FieldQuery.class), IndicatorSchemaEntity.Fields.fields, this.getInnerPath()));
-        return mocDoc;
-    }
+		if (predicates.size() > 0) {
+			return this.and(predicates);
+		} else {
+			return null;
+		}
+	}
 
-    @Override
-    protected ElasticField fieldNameOf(FieldResolver item) {
-        if (item.match(Schema._id))
-            return this.elasticFieldOf(IndicatorSchemaEntity.Fields.id).disableInfer(true);
-        else if (item.prefix(Schema._fields))
-            return this.queryFactory.query(FieldQuery.class).nestedPath(this.conventionService.asIndexer(this.getInnerPath(), IndicatorSchemaEntity.Fields.fields)).fieldNameOf(this.extractPrefixed(item, Schema._fields));
-        else
-            return null;
-    }
+	@Override
+	public IndicatorSchemaEntity convert(Map<String, Object> rawData, Set<String> columns) {
+		IndicatorSchemaEntity mocDoc = new IndicatorSchemaEntity();
+		if (columns.contains(IndicatorSchemaEntity.Fields.id)) mocDoc.setId(FieldBasedMapper.shallowSafeConversion(rawData.get(IndicatorSchemaEntity.Fields.id), UUID.class));
+		mocDoc.setFields(this.convertNested(rawData, columns, this.queryFactory.query(FieldQuery.class), IndicatorSchemaEntity.Fields.fields, this.getInnerPath()));
+		return mocDoc;
+	}
 
-    @Override
-    protected String getInnerPath() {
-        return this.innerPath;
-    }
+	@Override
+	protected ElasticField fieldNameOf(FieldResolver item) {
+		if (item.match(Schema._id)) return this.elasticFieldOf(IndicatorSchemaEntity.Fields.id).disableInfer(true);
+		else if (item.prefix(Schema._fields)) return this.queryFactory.query(FieldQuery.class).nestedPath(this.conventionService.asIndexer(this.getInnerPath(), IndicatorSchemaEntity.Fields.fields)).fieldNameOf(this.extractPrefixed(item, Schema._fields));
+		else return null;
+	}
 
-    @Override
-    protected UUID toKey(String key) {
-        return UUID.fromString(key);
-    }
+	@Override
+	protected String getInnerPath() {
+		return this.innerPath;
+	}
 
-    @Override
-    protected ElasticField getKeyField() {
-        return this.elasticFieldOf(IndicatorIntegerMapEntity.Fields.key);
-    }
+	@Override
+	protected UUID toKey(String key) {
+		return UUID.fromString(key);
+	}
 
-    @Override
-    protected ElasticNestedQuery<?, ?, ?> nestedQueryOf(FieldResolver item) {
-        return null;
-    }
+	@Override
+	protected ElasticField getKeyField() {
+		return this.elasticFieldOf(IndicatorIntegerMapEntity.Fields.key);
+	}
+
+	@Override
+	protected ElasticNestedQuery<?, ?, ?> nestedQueryOf(FieldResolver item) {
+		return null;
+	}
 }
